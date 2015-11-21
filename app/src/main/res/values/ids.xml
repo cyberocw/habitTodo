@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="timeHourId"/>
+    <item type="id" name="timeMinuteId"/>
+    <item type="id" name="timeYearId"/>
+    <item type="id" name="timeMonthId"/>
+    <item type="id" name="timeDayId"/>
+
+</resources>
