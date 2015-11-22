@@ -13,6 +13,7 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -761,10 +762,46 @@ public class DbHelper extends SQLiteOpenHelper {
 				timerList.add(vo);
 			} while (c.moveToNext());
 		}
-
+		closeDB();
 		return timerList;
 	}
 
+	public int updateTimer (TimerVO vo) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		ContentValues values = new ContentValues();
+
+		values.put(KEY_ALARM_TITLE, vo.getAlarmTitle());
+		values.put(KEY_ALARM_TYPE, vo.getAlarmType());
+		values.put(KEY_HOUR, vo.getHour());
+		values.put(KEY_MINUTE, vo.getMinute());
+		values.put(KEY_SECOND, vo.getSecond());
+		values.put(KEY_ALARM_CONTENTS, vo.getAlarmContents());
+		Calendar c = Calendar.getInstance();
+		values.put(KEY_UPDATE_DATE, c.getTimeInMillis());
+		int result = db.update(TABLE_TIMER, values, KEY_ID + "=?", new String[]{Long.toString(vo.getId())});
+		closeDB();
+		return result;
+	}
+
+	public boolean deleteTimer(long id) {
+		// TODO: 2015-08-30 알림 반복인데 오늘만 삭제 때 어떻게 할지 구현 해야 함
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		db.beginTransaction();
+		boolean result = true;
+		try {
+			db.delete(TABLE_TIMER, KEY_ID + "=?", new String[]{String.valueOf(id)});
+			db.setTransactionSuccessful();
+		}
+		catch (Exception e){
+			result = false;
+		}
+		finally{
+			db.endTransaction();
+			closeDB();
+		}
+		return result;
+	}
 
 	public void closeDB() {
 		SQLiteDatabase db = this.getReadableDatabase();

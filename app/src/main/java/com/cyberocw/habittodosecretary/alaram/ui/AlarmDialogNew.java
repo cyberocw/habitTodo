@@ -44,7 +44,6 @@ import static android.util.Log.*;
 /**
  * Created by cyberocw on 2015-08-19.
  */
-//// TODO: 2015-09-28 index 기준으로 option select 값지정한것 교체
 
 public class AlarmDialogNew extends DialogFragment{
 	private AlarmVO mAlarmVO;

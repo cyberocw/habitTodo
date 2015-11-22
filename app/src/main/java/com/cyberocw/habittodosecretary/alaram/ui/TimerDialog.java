@@ -32,6 +32,7 @@ public class TimerDialog extends DialogFragment {
 	private Context mCtx = null;
 	private int mModifyMode = 0;
 	private View mView = null;
+	private TimerVO mTimerVO = null;
 	private EditText mTxAlarmTitle = null;
 	private Spinner mSpAlarmType = null;
 	private NumberPicker mNpHour = null;
@@ -48,11 +49,11 @@ public class TimerDialog extends DialogFragment {
 		Bundle arguments = getArguments();
 
 		if(arguments != null) {
-			//mAlarmVO = (AlarmVO) arguments.getSerializable(Const.ALARM_VO);
+			mTimerVO = (TimerVO) arguments.getSerializable(Const.TIMER_VO);
 			mModifyMode = 1;
 		}
 		else{
-			//mAlarmVO = new AlarmVO();
+			mTimerVO = new TimerVO();
 		}
 
 		//bindEvent();
@@ -94,7 +95,6 @@ public class TimerDialog extends DialogFragment {
 
 	public void getViewRes(){
 		mTxAlarmTitle = (EditText) mView.findViewById(R.id.txAlarmTitle);
-		mTxAlarmTitle.setText("ddddd");
 		mSpAlarmType = (Spinner) mView.findViewById(R.id.spAlarmType);
 		mNpHour = (NumberPicker) mView.findViewById(R.id.addAlarmHourPicker);
 		mNpMinute = (NumberPicker) mView.findViewById(R.id.addAlarmMinutePicker);
@@ -106,6 +106,13 @@ public class TimerDialog extends DialogFragment {
 		mNpMinute.setMinValue(0);
 		mNpSecond.setMaxValue(59);
 		mNpSecond.setMinValue(0);
+
+		if(mModifyMode == 1){
+			mTxAlarmTitle.setText(mTimerVO.getAlarmTitle());
+			mNpHour.setValue(mTimerVO.getHour());
+			mNpMinute.setValue(mTimerVO.getMinute());
+			mNpSecond.setValue(mTimerVO.getSecond());
+		}
 	}
 	public void makeSpinnerAlarmType(){
 		ArrayList<String> arrayList = new ArrayList<String>();
@@ -122,6 +129,11 @@ public class TimerDialog extends DialogFragment {
 		//스피너 속성
 		mSpAlarmType.setPrompt("알람 종류"); // 스피너 제목
 		mSpAlarmType.setAdapter(adapter);
+
+		if(mModifyMode == 1){
+			mSpAlarmType.setSelection(mTimerVO.getAlarmType());
+		}
+
 		mSpAlarmType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -133,6 +145,8 @@ public class TimerDialog extends DialogFragment {
 
 			}
 		});
+
+
 	}
 
 	private void returnData(){
@@ -146,24 +160,23 @@ public class TimerDialog extends DialogFragment {
 			return ;
 		}
 
-		TimerVO vo = new TimerVO();
-		vo.setHour(hour);
-		vo.setMinute(minute);
-		vo.setSecond(second);
+		mTimerVO.setHour(hour);
+		mTimerVO.setMinute(minute);
+		mTimerVO.setSecond(second);
 
 		String alarmTitle = mTxAlarmTitle.getText().toString();
 
 		if(alarmTitle.equals("")){
 			alarmTitle = getString(R.string.alarm_no_title);
 		}
-		vo.setAlarmTitle(alarmTitle);
+		mTimerVO.setAlarmTitle(alarmTitle);
 
 		//알리는 방법
 		int alarmType = mSpAlarmType.getSelectedItemPosition();
-		vo.setAlarmType(alarmType);
+		mTimerVO.setAlarmType(alarmType);
 
 		Bundle bundle = new Bundle();
-		bundle.putSerializable("timerVO", vo);
+		bundle.putSerializable("timerVO", mTimerVO);
 		Intent intent = new Intent();
 		intent.putExtras(bundle);
 

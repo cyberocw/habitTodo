@@ -17,6 +17,7 @@ import com.cyberocw.habittodosecretary.R;
 public class AlarmNotiActivity extends AppCompatActivity {
 	Vibrator mVibe = null;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,7 +33,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				mVibe.cancel();
-
+				finish();
 			}
 		});
 

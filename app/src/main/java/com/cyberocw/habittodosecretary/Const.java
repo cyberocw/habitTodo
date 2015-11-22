@@ -8,10 +8,14 @@ import java.util.Calendar;
 public class Const {
 	public static final String DEBUG_TAG = "HabitToDo Debug";
 	public static final String ALARM_SERVICE_ID = "alarmServiceList";
+	public static final String TIMER_RUNNING_ID = "runningTimerId";
 	public static final String REQ_CODE = "reqCode";
 	public static final String REQ_CODE_REPEAT = "reqCodeRepeat";
 	public static final String ALARM_VO = "alarmVo";
+	public static final String TIMER_VO = "timerVo";
 	public static final String VIEW_TYPE = "viewType";
+	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
+
 
 	public class ALARM_INTERFACE_CODE{
 		public static final int ADD_ALARM_CODE = 111;
@@ -21,7 +25,6 @@ public class Const {
 		public static final int ADD_TIMER_CODE = 221;
 		public static final int ADD_TIMER_FINISH_CODE = 222;
 		public static final int ADD_TIMER_MODIFY_FINISH_CODE = 223;
-
 	}
 
 	public class KEY_FIELD{

@@ -78,7 +78,6 @@ public class MainFragment extends Fragment{
 	 * @param param2 Parameter 2.
 	 * @return A new instance of fragment MainFragment.
 	 */
-	// TODO: Rename and change types and number of parameters
 	public static MainFragment newInstance(Context param1, String param2) {
 		MainFragment fragment = new MainFragment();
 		Bundle args = new Bundle();
@@ -142,7 +141,7 @@ public class MainFragment extends Fragment{
 		Log.d(Const.DEBUG_TAG, "timerui notifyDataSetChanged111");
 		lv.removeAllViewsInLayout();
 		lv.setAdapter(mTimerAdapter);
-
+		mTimerAdapter.refereshStartedTimerId();
 		lv.setClickable(true);
 		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -159,10 +158,6 @@ public class MainFragment extends Fragment{
 				return true;
 			}
 		});
-
-		Toast.makeText(mCtx, "length = "+mTimerAdapter.getCount(), Toast.LENGTH_SHORT).show();
-		Log.d(Const.DEBUG_TAG, "timerui notifyDataSetChanged222");
-		//mTimerAdapter.notifyDataSetChanged();
 	}
 	private void initAlamUi(){
 		ListView lv = (ListView) mView.findViewById(R.id.alramListView);
@@ -211,6 +206,11 @@ public class MainFragment extends Fragment{
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				switch (position) {
 					case 0:
+						if(mViewType == Const.ALARM_OPTION.SET_DATE_TIMER)
+							showNewAlarmDialog(_id);
+						else
+							showNewTimerDialog(_id);
+
 						break;
 					case 1:
 						deleteItemAlertDialog(_id);
@@ -230,7 +230,11 @@ public class MainFragment extends Fragment{
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						deleteAlarm(id);
+						if(mViewType == Const.ALARM_OPTION.SET_DATE_TIMER)
+							deleteAlarm(id);
+						else
+							deleteTimer(id);
+
 						dialog.dismiss();
 					}
 				}).setNegativeButton("취소",
@@ -244,6 +248,12 @@ public class MainFragment extends Fragment{
 		AlertDialog alert = alert_confirm.create();
 		alert.show();
 
+	}
+
+	public void deleteTimer(long id){
+		TimerVO vo = mTimerDataManager.getItemById(id);
+		mTimerDataManager.deleteItemById(id);
+		mTimerAdapter.notifyDataSetChanged();
 	}
 
 	public void deleteAlarm(final long id){
@@ -404,9 +414,6 @@ public class MainFragment extends Fragment{
 			mViewType = Const.ALARM_OPTION.SET_DATE_TIMER;
 			initAlamUi();
 		}
-		//// TODO: 2015-10-11  view hide show 조절 및 datamanager에서 alarmOption에 따라 select 해옴
-		//showNewTimerDialog(-1);
-
 	}
 	public void showNewTimerDialog(long id) {
 		FragmentManager fm;
@@ -416,7 +423,7 @@ public class MainFragment extends Fragment{
 
 		if(id != -1) {
 			Bundle bundle = new Bundle();
-			bundle.putSerializable(Const.ALARM_VO, mAlarmDataManager.getItemById(id));
+			bundle.putSerializable(Const.TIMER_VO, mTimerDataManager.getItemById(id));
 			timerDialog.setArguments(bundle);
 		}
 		timerDialog.show(fm, "fragment_dialog_timer");
@@ -479,16 +486,20 @@ public class MainFragment extends Fragment{
 				Log.d(Const.DEBUG_TAG, "ADD_TIMER_FINISH_CODE ");
 				tvo = (TimerVO) data.getExtras().getSerializable("timerVO");
 				// 알람 추가
-
 				if(mTimerDataManager.addItem(tvo) == true)
 					mTimerAdapter.notifyDataSetChanged();
 				else
 					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
-
+				break;
+			case Const.ALARM_INTERFACE_CODE.ADD_TIMER_MODIFY_FINISH_CODE :
+				Log.d(Const.DEBUG_TAG, "ADD_TIMER_MODIFY_FINISH_CODE ");
+				tvo = (TimerVO) data.getExtras().getSerializable("timerVO");
+				if(mTimerDataManager.modifyItem(tvo) == true)
+					mTimerAdapter.notifyDataSetChanged();
+				else
+					Toast.makeText(mCtx, "DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
+				break;
 		}
-
-
-
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 

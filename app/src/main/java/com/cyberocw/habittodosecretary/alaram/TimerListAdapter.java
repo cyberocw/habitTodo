@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.cyberocw.habittodosecretary.Const;
@@ -23,6 +25,7 @@ import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.HashMap;
 
 /**
  * Created by cyberocw on 2015-10-18.
@@ -33,26 +36,30 @@ public class TimerListAdapter extends BaseAdapter {
 	private Context mCtx;
 	private MainFragment mMainFragment;
 	private CountDownTimer mCountDownTimer;
+	private HashMap<Integer, View> mMapConvertView = new HashMap<>();
+	private ToggleButton mBtnCheckedToggle = null;
+	SharedPreferences mPrefs = null;
+	private long mStartedTimerId;
+
 	NumberFormat mNumberFormat = new DecimalFormat("##00");
 	TimerService mService;
 	boolean mBound = false;
-
-	public TimerListAdapter(Context ctx, TimerDataManager mManager) {
-		this.mManager = mManager;
-		mCtx = ctx;
-		inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	}
 
 	public TimerListAdapter(MainFragment mainFragment, Context ctx, TimerDataManager mManager) {
 		this.mMainFragment = mainFragment;
 		this.mManager = mManager;
 		mCtx = ctx;
 		inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mPrefs = mCtx.getSharedPreferences(Const.TIMER_RUNNING_ID, mCtx.MODE_PRIVATE);
+		refereshStartedTimerId();
+	}
+
+	public void refereshStartedTimerId(){
+		mStartedTimerId = mPrefs.getLong("timerId", -1);
 	}
 
 	@Override
 	public int getCount() {
-		Log.d(Const.DEBUG_TAG, "TimerListAdapter getCount = "+mManager.getCount());
 		return mManager.getCount();
 	}
 
@@ -68,8 +75,7 @@ public class TimerListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		TimerVO vo = mManager.getItem(position);
-
+		Log.d(Const.DEBUG_TAG, "getView");
 		if(convertView == null){
 			convertView = inflater.inflate(R.layout.alarm_view, parent, false);
 		}
@@ -79,7 +85,7 @@ public class TimerListAdapter extends BaseAdapter {
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mMainFragment.showNewAlarmDialog(mManager.getItem(position).getId());
+				mMainFragment.showNewTimerDialog(mManager.getItem(position).getId());
 			}
 
 
@@ -90,12 +96,9 @@ public class TimerListAdapter extends BaseAdapter {
 		minute =  mManager.getItem(position).getMinute();
 		second = mManager.getItem(position).getSecond();
 
+		final ToggleButton btnDateToggle = (ToggleButton) convertView.findViewById(R.id.timeText);
 
-		ToggleButton dateToggleBtn = (ToggleButton) convertView.findViewById(R.id.timeText);
-		dateToggleBtn.setText("Start");
-		//dateToggleBtn.setTextOn(vo.getTimeText());
-		//dateToggleBtn.setTextOff(vo.getTimeText());
-
+		btnDateToggle.setText("Start");
 		ll.removeAllViewsInLayout();
 
 		final TextView tvActionWrap = new TextView(mCtx);
@@ -103,58 +106,120 @@ public class TimerListAdapter extends BaseAdapter {
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		tvActionWrap.setLayoutParams(params);
 
+		this.addTimeRemainView(position, tvActionWrap);
+
 		Log.d(Const.DEBUG_TAG, "adapter position = " + position);
 
 		final String defaultAlarmText = mNumberFormat.format(hour) + ":" + mNumberFormat.format(minute) +
 				":" + mNumberFormat.format(second) + "\n후 알림";
 		tvActionWrap.setText(defaultAlarmText);
-
+		//남은 시간 표시 영역
 		ll.addView(tvActionWrap);
 
+		//timer title
 		TextView tv = (TextView) convertView.findViewById(R.id.alarmTitle);
 		tv.setText(mManager.getItem(position).getAlarmTitle());
 
 		final long remainTime = (hour * 60 * 60 + minute * 60 + second) * 1000;
 
 		//// TODO: 2015-11-17 서비스 시작 및 복구 되도록 변경 하기
-		dateToggleBtn.setOnClickListener(new View.OnClickListener() {
+		btnDateToggle.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-			TimerVO vo = mManager.getItem(position);
-			ToggleButton btn = (ToggleButton) v;
-			boolean isChecked = btn.isChecked();
+				Log.d(Const.DEBUG_TAG, "onclick");
+				TimerVO vo = mManager.getItem(position);
+				ToggleButton btn = (ToggleButton) v;
+				boolean isChecked = btn.isChecked();
 
-			//mManager.setTimer(vo);
-			if (isChecked == true) {
-				Log.d(Const.DEBUG_TAG, "remainTime=" + remainTime);
-				Intent intent;
-				intent = new Intent(mCtx, TimerService.class);
-				mCtx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-				mCountDownTimer = new CountDownTimer(remainTime, 1000) {
+				//이미 실행중인 타이머가 있을 경우
+				if (mBound == true && isChecked == true) {
+					showRunningAlert();
+					btn.toggle();
+					return;
+				}
+				Log.d(Const.DEBUG_TAG, "onclick2222");
+				mBtnCheckedToggle = btnDateToggle;
 
-					public void onTick(long millisUntilFinished) {
+				if (isChecked == true) {
+					Log.d(Const.DEBUG_TAG, "onclick start1111");
+					Intent intent;
+					intent = new Intent(mCtx, TimerService.class);
+					intent.putExtra("remainTime", remainTime);
+					intent.putExtra("position", position);
+					mCtx.startService(intent);
+					mCtx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+					btnDateToggle.setText("Cancel");
+					setPrefsTimerId(mManager.getItem(position).getId());
 
-						int seconds = (int) (millisUntilFinished / 1000) % 60;
-						int minutes = (int) ((millisUntilFinished / (1000 * 60)) % 60);
-						int hours = (int) ((millisUntilFinished / (1000 * 60 * 60)));
+				} else {
+					Log.d(Const.DEBUG_TAG, "onclick start222222");
 
-						tvActionWrap.setText(mNumberFormat.format(hours) + ":" + mNumberFormat.format(minutes) +
-								":" + mNumberFormat.format(seconds));
-					}
+					btnDateToggle.setText("Start");
 
-					public void onFinish() {
-						tvActionWrap.setText(defaultAlarmText);
-					}
-				}.start();
-			}
-			else{
-
-				mCountDownTimer.cancel();
-			}
+					if (mBound)
+						mService.cancelTimer();
+				}
 			}
 		});
 
+		if(mStartedTimerId == mManager.getItem(position).getId()){
+			Log.d(Const.DEBUG_TAG, "mBound = " + mBound + " id = " + mStartedTimerId);
+
+			if(mBound)
+				mService.setTxtMap(mMapConvertView);
+
+			Log.d(Const.DEBUG_TAG, "call onclick");
+			btnDateToggle.toggle();
+			btnDateToggle.callOnClick();
+
+		}
 		return convertView;
+	}
+
+	private void addTimeRemainView(int position, View convertView){
+		mMapConvertView.put(position, convertView);
+	}
+
+	//// TODO: 2015-11-22 나중에 interface로 빼기
+	public void unbindService(){
+		Log.d(Const.DEBUG_TAG, "front unbindservice mConnection=" + mConnection);
+		//activity가 종료되는 경우 mConnection 값이 달라져서 unbindService 호출 에러가 뜸
+		mBound = false;
+		try {
+			if (mConnection != null)
+				mCtx.unbindService(mConnection);
+
+			this.notifyDataSetChanged();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	public void resetButton(){
+		if(mBtnCheckedToggle.isChecked()){
+			mBtnCheckedToggle.toggle();
+		}
+		resetTimerId();
+	}
+
+	public void resetTimerId(){
+		mStartedTimerId = -1;
+		setPrefsTimerId();
+	}
+
+	private void setPrefsTimerId(long id){
+		mStartedTimerId = id;
+		setPrefsTimerId();
+	}
+
+	private void setPrefsTimerId(){
+		SharedPreferences.Editor editor = mPrefs.edit();
+		editor.putLong("timerId", mStartedTimerId);
+		editor.apply();
+	}
+
+	public void showRunningAlert(){
+		Toast.makeText(mCtx, "실행 중인 타이머가 있습니다", Toast.LENGTH_LONG).show();
 	}
 
 	/** Defines callbacks for service binding, passed to bindService() */
@@ -163,10 +228,16 @@ public class TimerListAdapter extends BaseAdapter {
 		@Override
 		public void onServiceConnected(ComponentName className,
 		                               IBinder service) {
+
+			Log.d(Const.DEBUG_TAG, "service connected");
+
 			// We've bound to LocalService, cast the IBinder and get LocalService instance
 			TimerService.LocalBinder binder = (TimerService.LocalBinder) service;
 			mService = binder.getService();
+			mService.bindInterface(TimerListAdapter.this);
+			mService.setTxtMap(mMapConvertView);
 			mBound = true;
+			mService.startTimer();
 		}
 
 		@Override
@@ -174,6 +245,8 @@ public class TimerListAdapter extends BaseAdapter {
 			mBound = false;
 		}
 	};
+
+
 }
 
 

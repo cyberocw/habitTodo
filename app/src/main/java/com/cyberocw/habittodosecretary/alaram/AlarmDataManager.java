@@ -227,62 +227,6 @@ public class AlarmDataManager {
 		return reqCode;
 	}
 
-
-	// TODO: 2015-09-06 set alarm 이전에 db와 repeat 계산해서 setAlarm을 호출하는 로직 만들어야 함, DB관련 조회 로직을 dataManager에 포함시키는게 어떨지...
-	public void setAlarm(AlarmVO alarmVO) {
-
-		String dateName = alarmVO.getAlarmTitle();
-
-		AlarmManager alarmDataManager = (AlarmManager) mCtx
-				.getSystemService(Context.ALARM_SERVICE);
-
-		Calendar cal = Calendar.getInstance();
-		int alarmDateType = alarmVO.getAlarmDateType();
-
-		int year, month, day;
-		int reqCode;
-
-		Log.d(Const.DEBUG_TAG, "new intent start");
-		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
-		//myIntent.putExtra("title", dateName);
-		myIntent.putExtra("id", alarmVO.getId());
-
-		Log.d(Const.DEBUG_TAG, "if else start");
-
-		//날짜 지정 알람
-		if(alarmDateType == Const.ALARM_DATE_TYPE.SET_DATE) {
-			ArrayList<Calendar> dateList = alarmVO.getAlarmDateList();
-			ArrayList<Integer> callList = alarmVO.getAlarmCallList();
-			Calendar cal2 = null;
-
-			for(int i = 0 ; i < dateList.size() ; i++){
-				cal = dateList.get(i);
-				year = cal.get(Calendar.YEAR);
-				month = cal.get(Calendar.MONTH);
-				day = cal.get(Calendar.DAY_OF_MONTH);
-				cal.set(year, month, day, alarmVO.getHour(), alarmVO.getMinute());
-
-				for(int j = 0 ; j < callList.size(); j++) {
-					cal2 = (Calendar)cal.clone();
-					cal.add(Calendar.MINUTE, callList.get(j));
-					reqCode = Integer.valueOf("" + alarmVO.getId() + cal2.get(Calendar.YEAR) + cal2.get(Calendar.MONTH) + cal2.get(Calendar.DAY_OF_MONTH) +
-							cal2.get(Calendar.HOUR_OF_DAY) + cal2.get(Calendar.MINUTE));
-					Log.d(Const.DEBUG_TAG, "reqCode = " + reqCode);
-					//myIntent.removeExtra("title");
-					myIntent.putExtra("title", dateName + " " + Math.abs(callList.get(j)) + "분 전");
-					PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, reqCode, myIntent, 0);
-
-					setAlarmExact(alarmDataManager, AlarmManager.RTC, cal.getTimeInMillis(), pendingIntent);
-				}
-			}
-		}
-		// 요일 반복 알람
-		else if(alarmDateType == Const.ALARM_DATE_TYPE.REPEAT){
-			Log.d(Const.DEBUG_TAG, "repeat receiver");
-
-		}
-	}
-
 	@SuppressLint("NewApi")
 	private void setAlarmExact(AlarmManager am, int type, long time, PendingIntent it){
 		final int sdkVersion = Build.VERSION.SDK_INT;

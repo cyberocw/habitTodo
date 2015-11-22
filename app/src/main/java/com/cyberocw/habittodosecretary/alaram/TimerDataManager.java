@@ -61,8 +61,17 @@ public class TimerDataManager {
 		return null;
 	}
 
+	public int getItemIndexById(long id){
+		for(int i = 0 ; i < dataList.size() ; i++){
+			if(dataList.get(i).getId() == id){
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	public boolean deleteItemById(long id){
-		boolean delResult = mDb.deleteAlarm(id);
+		boolean delResult = mDb.deleteTimer(id);
 
 		if(delResult == false)
 			return false;
@@ -82,7 +91,7 @@ public class TimerDataManager {
 		//알람 인던트 등록
 		if(item.getId() == -1){
 			Log.d(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
-			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG);
+			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
 			return false;
 		}
 
@@ -91,35 +100,17 @@ public class TimerDataManager {
 		return true;
 	}
 
-	public long setTimer(TimerVO alarmVO) {
-		AlarmManager alarmManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
+	public boolean modifyItem(TimerVO item) {
+		int nAffRow = mDb.updateTimer(item);
 
-		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
-
-
-		long reqCode = (Long) alarmVO.getId() * 100 ;
-
-
-		//myIntent.putExtra("title", alarmVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
-		myIntent.putExtra("reqCode", reqCode);
-
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, (int) reqCode, myIntent, 0);
-
-		//setAlarmExact(alarmDataManager, AlarmManager.RTC, alarmVO.getTimeStamp(), pendingIntent);
-
-		return reqCode;
-	}
-
-	@SuppressLint("NewApi")
-	private void setTimerExact(AlarmManager am, int type, long time, PendingIntent it){
-		final int sdkVersion = Build.VERSION.SDK_INT;
-		if(sdkVersion >= Build.VERSION_CODES.KITKAT) {
-			Log.d(Const.DEBUG_TAG, "kitkat set alarmExact");
-			am.setExact(type, time, it);
+		if (nAffRow < 1){
+			Toast.makeText(mCtx, "오류 : 수정에 실패했습니다.", Toast.LENGTH_LONG).show();
+			return false;
 		}
 		else {
-			Log.d(Const.DEBUG_TAG, "low version set alarm");
-			am.set(type, time, it);
+			int posi = this.getItemIndexById(item.getId());
+			this.dataList.set(posi, item);
+			return true;
 		}
 	}
 }
