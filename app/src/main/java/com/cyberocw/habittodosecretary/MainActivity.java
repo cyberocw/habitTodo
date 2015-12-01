@@ -2,90 +2,88 @@ package com.cyberocw.habittodosecretary;
 
 import java.util.Locale;
 
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.ListView;
 
-public class MainActivity extends AppCompatActivity implements ActionBar.TabListener, MainFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements MainFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener {
     public MainFragment mMainFragment;
     public static String TAG = "mainActivity";
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    public SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
-
-    public SectionsPagerAdapter getmSectionsPagerAdapter(){
-        return mSectionsPagerAdapter;
-    }
+    private ListView lvNavList;
+    private FrameLayout flContainer;
+	private String[] navItems = {"Brown", "Cadet Blue", "Dark Olive Green",
+			"Dark Orange", "Golden Rod"};
+	private DrawerLayout dlDrawer;
+	private ActionBarDrawerToggle dtToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
-        // Set up the action bar.
-        final ActionBar actionBar = getSupportActionBar();
-        //actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        lvNavList = (ListView)findViewById(R.id.lv_activity_main_nav_list);
+        flContainer = (FrameLayout)findViewById(R.id.fl_activity_main_container);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        lvNavList.setAdapter(
+                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
+        lvNavList.setOnItemClickListener(new DrawerItemClickListener());
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+	    dlDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
+	    dtToggle = new ActionBarDrawerToggle(this, dlDrawer,
+			    R.drawable.ic_drawer, R.string.open_drawer, R.string.close_drawer){
 
-        // When swiping between different sections, select the corresponding
-        // tab. We can also use ActionBar.Tab#select() to do this if we have
-        // a reference to the Tab.
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
+		    @Override
+		    public void onDrawerClosed(View drawerView) {
+			    super.onDrawerClosed(drawerView);
+		    }
 
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by
-            // the adapter. Also specify this Activity object, which implements
-            // the TabListener interface, as the callback (listener) for when
-            // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
-        }
+		    @Override
+		    public void onDrawerOpened(View drawerView) {
+			    super.onDrawerOpened(drawerView);
+		    }
+
+	    };
+	    dlDrawer.setDrawerListener(dtToggle);
+	    getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+	protected void onPostCreate(Bundle savedInstanceState){
+		super.onPostCreate(savedInstanceState);
+		dtToggle.syncState();
+	}
 
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		dtToggle.onConfigurationChanged(newConfig);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if(dtToggle.onOptionsItemSelected(item)){
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present.
@@ -94,41 +92,36 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
 
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
+	@Override
     public void onFragmentInteraction(Uri uri) {
 
     }
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
+	    @Override
+	    public void onItemClick(AdapterView<?> adapter, View view, int position,
+	                            long id) {
+		    switch (position) {
+			    case 0:
+				    flContainer.setBackgroundColor(Color.parseColor("#A52A2A"));
+				    break;
+			    case 1:
+				    flContainer.setBackgroundColor(Color.parseColor("#5F9EA0"));
+				    break;
+			    case 2:
+				    flContainer.setBackgroundColor(Color.parseColor("#556B2F"));
+				    break;
+			    case 3:
+				    flContainer.setBackgroundColor(Color.parseColor("#FF8C00"));
+				    break;
+			    case 4:
+				    flContainer.setBackgroundColor(Color.parseColor("#DAA520"));
+				    break;
+
+		    }
+
+	    }
+    }
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
