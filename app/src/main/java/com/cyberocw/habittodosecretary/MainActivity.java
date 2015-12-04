@@ -2,37 +2,31 @@ package com.cyberocw.habittodosecretary;
 
 import java.util.Locale;
 
-import android.content.res.Configuration;
-import android.graphics.Color;
 import android.net.Uri;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
-import android.widget.ListView;
 
-public class MainActivity extends AppCompatActivity implements MainFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements MainFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener,
+		NavigationView.OnNavigationItemSelectedListener {
     public MainFragment mMainFragment;
     public static String TAG = "mainActivity";
-    private ListView lvNavList;
-    private FrameLayout flContainer;
-	private String[] navItems = {"Brown", "Cadet Blue", "Dark Olive Green",
-			"Dark Orange", "Golden Rod"};
-	private DrawerLayout dlDrawer;
-	private ActionBarDrawerToggle dtToggle;
+
+	private NavigationView mNavigationView;
+	private DrawerLayout mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,48 +34,33 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 
         setContentView(R.layout.activity_main);
 
-        lvNavList = (ListView)findViewById(R.id.lv_activity_main_nav_list);
-        flContainer = (FrameLayout)findViewById(R.id.fl_activity_main_container);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_drawer);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
-        lvNavList.setAdapter(
-                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
-        lvNavList.setOnItemClickListener(new DrawerItemClickListener());
+	    mDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
+	    mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
+	    mNavigationView.setNavigationItemSelectedListener(this);
 
-	    dlDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
-	    dtToggle = new ActionBarDrawerToggle(this, dlDrawer,
-			    R.drawable.ic_drawer, R.string.open_drawer, R.string.close_drawer){
-
-		    @Override
-		    public void onDrawerClosed(View drawerView) {
-			    super.onDrawerClosed(drawerView);
-		    }
-
-		    @Override
-		    public void onDrawerOpened(View drawerView) {
-			    super.onDrawerOpened(drawerView);
-		    }
-
-	    };
-	    dlDrawer.setDrawerListener(dtToggle);
-	    getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-	protected void onPostCreate(Bundle savedInstanceState){
-		super.onPostCreate(savedInstanceState);
-		dtToggle.syncState();
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		dtToggle.onConfigurationChanged(newConfig);
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if(dtToggle.onOptionsItemSelected(item)){
-			return true;
-		}
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case android.R.id.home:
+                mDrawer.openDrawer(GravityCompat.START);
+                return true;
+            case R.id.action_settings:
+                return true;
+        }
 		return super.onOptionsItemSelected(item);
 	}
     @Override
@@ -89,39 +68,45 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
         //Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
-
     }
 
 	@Override
     public void onFragmentInteraction(Uri uri) {
 
     }
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
-	    @Override
-	    public void onItemClick(AdapterView<?> adapter, View view, int position,
-	                            long id) {
-		    switch (position) {
-			    case 0:
-				    flContainer.setBackgroundColor(Color.parseColor("#A52A2A"));
-				    break;
-			    case 1:
-				    flContainer.setBackgroundColor(Color.parseColor("#5F9EA0"));
-				    break;
-			    case 2:
-				    flContainer.setBackgroundColor(Color.parseColor("#556B2F"));
-				    break;
-			    case 3:
-				    flContainer.setBackgroundColor(Color.parseColor("#FF8C00"));
-				    break;
-			    case 4:
-				    flContainer.setBackgroundColor(Color.parseColor("#DAA520"));
-				    break;
+	@SuppressWarnings("StatementWithEmptyBody")
+	@Override
+	public boolean onNavigationItemSelected(MenuItem item){
+		// update the main content by replacing fragments
+		Fragment fragment = null;
+		int id = item.getItemId();
+		switch (id) {
+			case R.id.nav_item_alaram:
+				fragment = new MainFragment();
+				break;
+			case R.id.nav_item_memo:
+				fragment = new MemoFragment();
+				break;
+			default:
+				break;
+		}
+		if (fragment != null) {
+			FragmentManager fragmentManager = getSupportFragmentManager();
+			fragmentManager.beginTransaction()
+					.replace(R.id.main_container, fragment).commit();
+			// update selected item and title, then close the drawer
 
-		    }
+			mDrawer.closeDrawer(GravityCompat.START);
+		} else {
+			// error in creating fragment
+			Log.e("MainActivity", "Error in creating fragment");
+		}
+		return true;
+	}
 
-	    }
-    }
+
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
