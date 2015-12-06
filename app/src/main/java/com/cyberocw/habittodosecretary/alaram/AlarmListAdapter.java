@@ -12,7 +12,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.cyberocw.habittodosecretary.Const;
-import com.cyberocw.habittodosecretary.MainFragment;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 
@@ -23,7 +22,7 @@ public class AlarmListAdapter extends BaseAdapter{
 	private AlarmDataManager mManager;
 	private LayoutInflater inflater;
 	private Context mCtx;
-	private MainFragment mMainFragment;
+	private AlarmFragment mMainFragment;
 
 	public AlarmListAdapter(Context ctx, AlarmDataManager mManager) {
 		this.mManager = mManager;
@@ -31,7 +30,7 @@ public class AlarmListAdapter extends BaseAdapter{
 		inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
-	public AlarmListAdapter(MainFragment mainFragment, Context ctx, AlarmDataManager mManager) {
+	public AlarmListAdapter(AlarmFragment mainFragment, Context ctx, AlarmDataManager mManager) {
 		this.mMainFragment = mainFragment;
 		this.mManager = mManager;
 		mCtx = ctx;

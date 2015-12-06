@@ -1,12 +1,18 @@
-package com.cyberocw.habittodosecretary;
+package com.cyberocw.habittodosecretary.memo;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.R;
+import com.cyberocw.habittodosecretary.memo.MemoListAdapter;
 
 
 /**
@@ -23,9 +29,16 @@ public class MemoFragment extends Fragment {
 	private static final String ARG_PARAM1 = "param1";
 	private static final String ARG_PARAM2 = "param2";
 
+	MemoDataManager mMemoDataManger;
+	MemoListAdapter mMemoAdapter;
+
 	// TODO: Rename and change types of parameters
 	private String mParam1;
 	private String mParam2;
+
+	private View mView;
+	private Context mCtx;
+	SharedPreferences mPrefs;
 
 	private OnFragmentInteractionListener mListener;
 
@@ -64,8 +77,33 @@ public class MemoFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_memo, container, false);
+		mView = inflater.inflate(R.layout.fragment_memo, container, false);
+		return mView;
 	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState){
+		super.onActivityCreated(savedInstanceState);
+		mCtx = getActivity();
+		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, mCtx.MODE_PRIVATE);
+
+		/*
+		mActionBar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_action_back));
+		mActionBar.setNavigationOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//What to do on back clicked
+			}
+		});
+		*/
+		initActivity();
+	}
+
+	private void initActivity(){
+		mMemoDataManger = new MemoDataManager(mCtx);
+		mMemoAdapter = new MemoListAdapter(this, mCtx, mMemoDataManger);
+	}
+
 
 	// TODO: Rename method, update argument and hook method into UI event
 	public void onButtonPressed(Uri uri) {

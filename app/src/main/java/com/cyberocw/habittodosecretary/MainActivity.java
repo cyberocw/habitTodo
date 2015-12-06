@@ -20,13 +20,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class MainActivity extends AppCompatActivity implements MainFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener,
+import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
+import com.cyberocw.habittodosecretary.category.CategoryFragment;
+import com.cyberocw.habittodosecretary.memo.MemoFragment;
+
+public class MainActivity extends AppCompatActivity implements AlarmFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener,
 		NavigationView.OnNavigationItemSelectedListener {
-    public MainFragment mMainFragment;
+    public AlarmFragment mMainFragment;
     public static String TAG = "mainActivity";
 
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawer;
+
+	private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(R.drawable.ic_drawer);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -44,8 +50,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 	    mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
 	    mNavigationView.setNavigationItemSelectedListener(this);
 
+	    FragmentManager fragmentManager = getSupportFragmentManager();
+	    fragmentManager.beginTransaction()
+			    .replace(R.id.main_container, new AlarmFragment()).commit();
     }
-
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -83,12 +91,16 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 		int id = item.getItemId();
 		switch (id) {
 			case R.id.nav_item_alaram:
-				fragment = new MainFragment();
+				fragment = new AlarmFragment();
 				break;
 			case R.id.nav_item_memo:
 				fragment = new MemoFragment();
 				break;
+			case R.id.nav_item_cate:
+				fragment = new CategoryFragment();
+				break;
 			default:
+                fragment = new AlarmFragment();
 				break;
 		}
 		if (fragment != null) {
@@ -104,89 +116,5 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 		}
 		return true;
 	}
-
-
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        MainFragment mMainFragment = new MainFragment();
-        MemoFragment mMemoFragment = new MemoFragment();
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            Fragment fragment = null;
-            switch (position){
-                case 0 : fragment = mMainFragment.newInstance(null, null);break;
-                case 1 : fragment = mMemoFragment.newInstance("", "");break;
-                case 2 : fragment = PlaceholderFragment.newInstance(position + 1);break;
-                //default : fragment = PlaceholderFragment.newInstance(position + 1);
-            }
-
-            Log.i(TAG, "getItem position=" + position);
-            return fragment;
-        }
-
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
-            }
-            return null;
-        }
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-    }
 
 }

@@ -60,4 +60,8 @@ public class Const {
 		public static final int MINUTE = 55556;
 	}
 
+	public class CATEGORY{
+		public static final String TYPE = "category";
+	}
+
 }

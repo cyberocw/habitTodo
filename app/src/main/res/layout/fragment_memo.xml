@@ -2,7 +2,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.cyberocw.habittodosecretary.MainFragment">
+             tools:context="com.cyberocw.habittodosecretary.alaram.AlarmFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <RelativeLayout
@@ -41,6 +41,15 @@
                 />
         </LinearLayout>
 
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/memoListView"
+            android:longClickable="true"
+            android:clickable="true"
+            android:layout_below="@+id/linearLayout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
     </RelativeLayout>
 
 </FrameLayout>

@@ -1,4 +1,4 @@
-package com.cyberocw.habittodosecretary;
+package com.cyberocw.habittodosecretary.alaram;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -25,11 +25,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cyberocw.habittodosecretary.alaram.AlarmListAdapter;
-import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
+import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
-import com.cyberocw.habittodosecretary.alaram.TimerDataManager;
-import com.cyberocw.habittodosecretary.alaram.TimerListAdapter;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmDialogNew;
 import com.cyberocw.habittodosecretary.alaram.ui.TimerDialog;
@@ -43,12 +41,12 @@ import java.util.Calendar;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MainFragment.OnFragmentInteractionListener} interface
+ * {@link AlarmFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MainFragment#newInstance} factory method to
+ * Use the {@link AlarmFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MainFragment extends Fragment{
+public class AlarmFragment extends Fragment{
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PARAM1 = "param1";
 	private static final String ARG_PARAM2 = "param2";
@@ -78,15 +76,15 @@ public class MainFragment extends Fragment{
 	 * @param param2 Parameter 2.
 	 * @return A new instance of fragment MainFragment.
 	 */
-	public static MainFragment newInstance(Context param1, String param2) {
-		MainFragment fragment = new MainFragment();
+	public static AlarmFragment newInstance(Context param1, String param2) {
+		AlarmFragment fragment = new AlarmFragment();
 		Bundle args = new Bundle();
 		args.putString(ARG_PARAM2, param2);
 		fragment.setArguments(args);
 		return fragment;
 	}
 
-	public MainFragment() {
+	public AlarmFragment() {
 		// Required empty public constructor
 	}
 

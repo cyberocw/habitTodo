@@ -6,12 +6,10 @@ import android.graphics.Color;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cyberocw.habittodosecretary.Const;
-import com.cyberocw.habittodosecretary.MainFragment;
 import com.cyberocw.habittodosecretary.R;
 
 import java.util.Calendar;

@@ -7,24 +7,23 @@
             android:checked="true"
             android:icon="@drawable/ic_tick"
             android:title="@string/nav_item_alaram" />
-        <item
-            android:id="@+id/nav_item_memo"
-            android:icon="@drawable/ic_tick"
-            android:title="@string/nav_item_memo" />
+        <item android:title="Memo">
+            <menu>
+                <item
+                    android:id="@+id/nav_item_cate"
+                    android:icon="@drawable/ic_tick"
+                    android:title="@string/nav_item_cate" />
+                <item
+                    android:id="@+id/nav_item_memo"
+                    android:icon="@drawable/ic_tick"
+                    android:title="@string/nav_item_memo" />
+            </menu>
+        </item>
         <item
             android:id="@+id/nav_item_info"
             android:icon="@drawable/ic_tick"
             android:title="@string/nav_item_info" />
     </group>
 
-    <item android:title="submenu">
-        <menu>
-            <item
-                android:icon="@drawable/ic_tick"
-                android:title="submenu111" />
-            <item
-                android:icon="@drawable/ic_tick"
-                android:title="submenu2222" />
-        </menu>
-     </item>
+
 </menu>

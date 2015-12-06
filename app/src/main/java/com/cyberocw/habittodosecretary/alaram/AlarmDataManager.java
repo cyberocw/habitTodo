@@ -12,7 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
-import com.cyberocw.habittodosecretary.alaram.db.DbHelper;
+import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
 import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
@@ -26,7 +26,7 @@ import java.util.Calendar;
 public class AlarmDataManager {
 	AlarmManager mManager;
 	Context mCtx = null;
-	DbHelper mDb;
+	AlarmDbManager mDb;
 
 	// 각각의 알람이 저장 됨
 	private ArrayList<AlarmVO> dataList = new ArrayList<>();
@@ -34,7 +34,7 @@ public class AlarmDataManager {
 
 	public AlarmDataManager(Context ctx, Calendar cal) {
 		mCtx = ctx;
-		mDb = new DbHelper(ctx);
+		mDb = AlarmDbManager.getInstance(ctx);
 		mManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
 		this.dataList = mDb.getAlarmList(cal);
 	}

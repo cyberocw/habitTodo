@@ -18,7 +18,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.cyberocw.habittodosecretary.Const;
-import com.cyberocw.habittodosecretary.MainFragment;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.service.TimerService;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
@@ -34,7 +33,7 @@ public class TimerListAdapter extends BaseAdapter {
 	private TimerDataManager mManager;
 	private LayoutInflater inflater;
 	private Context mCtx;
-	private MainFragment mMainFragment;
+	private AlarmFragment mMainFragment;
 	private CountDownTimer mCountDownTimer;
 	private HashMap<Integer, View> mMapConvertView = new HashMap<>();
 	private ToggleButton mBtnCheckedToggle = null;
@@ -45,7 +44,7 @@ public class TimerListAdapter extends BaseAdapter {
 	TimerService mService;
 	boolean mBound = false;
 
-	public TimerListAdapter(MainFragment mainFragment, Context ctx, TimerDataManager mManager) {
+	public TimerListAdapter(AlarmFragment mainFragment, Context ctx, TimerDataManager mManager) {
 		this.mMainFragment = mainFragment;
 		this.mManager = mManager;
 		mCtx = ctx;

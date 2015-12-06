@@ -1,41 +1,39 @@
-package com.cyberocw.habittodosecretary.alaram;
+package com.cyberocw.habittodosecretary.category;
 
-import android.app.AlarmManager;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
-import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
-import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
+import com.cyberocw.habittodosecretary.category.db.CategoryDbManager;
+import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 
 import java.util.ArrayList;
 
 /**
- * Created by cyberocw on 2015-10-18.
+ * Created by cyberocw on 2015-12-06.
  */
-public class TimerDataManager {
-	AlarmManager mManager;
+public class CategoryDataManager {
 	Context mCtx = null;
-	AlarmDbManager mDb;
-	ArrayList<TimerVO> dataList = null;
+	CategoryDbManager mDb;
+	ArrayList<CategoryVO> dataList = null;
 
-	public TimerDataManager(Context ctx) {
+	public CategoryDataManager(Context ctx) {
 		mCtx = ctx;
-		mDb = AlarmDbManager.getInstance(ctx);
-		this.dataList = mDb.getTimerList();
-		Log.d(Const.DEBUG_TAG, "timerList length = " + this.dataList.size());
+		mDb = CategoryDbManager.getInstance(ctx);
+		makeDataList();
+		Log.d(Const.DEBUG_TAG, "categoryList length = " + this.dataList.size());
 	}
 
-	public ArrayList<TimerVO> getDataList() {
+	public ArrayList<CategoryVO> getDataList() {
 		return dataList;
 	}
 
 	public void makeDataList(){
-		this.dataList = mDb.getTimerList();
+		this.dataList = mDb.getCategoryList();
 	}
 
-	public void setDataList(ArrayList<TimerVO> dataList) {
+	public void setDataList(ArrayList<CategoryVO> dataList) {
 		this.dataList = dataList;
 	}
 
@@ -43,11 +41,11 @@ public class TimerDataManager {
 		return this.dataList.size();
 	}
 
-	public TimerVO getItem(int position){
+	public CategoryVO getItem(int position){
 		return this.dataList.get(position);
 	}
 
-	public TimerVO getItemById(long id){
+	public CategoryVO getItemById(long id){
 		for(int i = 0 ; i < dataList.size() ; i++){
 			if(dataList.get(i).getId() == id){
 				return dataList.get(i);
@@ -66,7 +64,7 @@ public class TimerDataManager {
 	}
 
 	public boolean deleteItemById(long id){
-		boolean delResult = mDb.deleteTimer(id);
+		boolean delResult = mDb.deleteCategory(id);
 
 		if(delResult == false)
 			return false;
@@ -80,13 +78,13 @@ public class TimerDataManager {
 		return false;
 	}
 
-	public boolean addItem(TimerVO item){
-		mDb.insertTimer(item);
+	public boolean addItem(CategoryVO item){
+		mDb.insertCategory(item);
 
 		//알람 인던트 등록
 		if(item.getId() == -1){
-			Log.d(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
-			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
+			Log.d(Const.DEBUG_TAG, "오류 : CATEGORY ID가 생성되지 않았습니다");
+			Toast.makeText(mCtx, "오류 : CATEGORY ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
 			return false;
 		}
 
@@ -95,8 +93,8 @@ public class TimerDataManager {
 		return true;
 	}
 
-	public boolean modifyItem(TimerVO item) {
-		int nAffRow = mDb.updateTimer(item);
+	public boolean modifyItem(CategoryVO item) {
+		int nAffRow = mDb.updateCategory(item);
 
 		if (nAffRow < 1){
 			Toast.makeText(mCtx, "오류 : 수정에 실패했습니다.", Toast.LENGTH_LONG).show();

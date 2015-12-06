@@ -4,18 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
+import com.cyberocw.habittodosecretary.db.DbHelper;
 
-import java.sql.Time;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -23,168 +19,23 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Created by cyberocw on 2015-08-23.
+ * Created by cyberocw on 2015-12-06.
  */
-public class DbHelper extends SQLiteOpenHelper {
-	private static final String DB_NME = "habit_todo";
-	private static final int DB_VERSION = 6;
+public class AlarmDbManager extends DbHelper{
+	private static AlarmDbManager sInstance;
 
-	private static final String ARRAY_DIV = "_ho8c7wt_";
-
-	public static final String TABLE_ALARM = "alarm";
-	public static final String TABLE_ALARM_DATE = "alarm_date";
-	public static final String TABLE_ALARM_REPEAT = "alarm_repeat";
-	public static final String TABLE_ALARM_ORDER = "alarm_order";
-	public static final String TABLE_TIMER = "timer";
-
-	public static final String KEY_ID = "_id";
-	public static final String KEY_REPEAT_ID = "_rid";
-	public static final String KEY_DATE_ID = "_mid";
-	public static final String KEY_ALARM_TITLE = "alarm_title";
-	public static final String KEY_ALARM_TYPE = "alarm_type";
-	public static final String KEY_ALARM_DATE_TYPE = "alarm_date_type";
-	public static final String KEY_ALARM_OPTION = "alarm_option";
-	public static final String KEY_HOUR = "hour";
-	public static final String KEY_MINUTE = "minute";
-	public static final String KEY_SECOND = "second";
-	public static final String KEY_ALARM_CALL_LIST = "alarm_call_list";
-	public static final String KEY_ALARM_CONTENTS = "alarm_Contents";
-
-	public static final String KEY_ALARM_DATE = "alarm_date";
-	public static final String KEY_F_ALARM_ID = "alarm_id";
-
-	public static final String KEY_MON = "mon";
-	public static final String KEY_TUE = "tue";
-	public static final String KEY_WED = "wed";
-	public static final String KEY_THU = "thu";
-	public static final String KEY_FRI = "fri";
-	public static final String KEY_SAT = "sat";
-	public static final String KEY_SUN = "sun";
-
-	public static final String KEY_TIME_STAMP = "time_stamp";
-	public static final String KEY_CALL_TIME = "call_time";
-	public static final String KEY_USE_YN = "use_yn";
-
-	public static final String KEY_CREATE_DATE = "create_dt";
-	public static final String KEY_UPDATE_DATE = "update_dt";
-
-	public DbHelper(Context context) {
-		super(context, DB_NME, null, DB_VERSION);
+	public AlarmDbManager(Context ctx) {
+		super(ctx);
 	}
+	public static synchronized AlarmDbManager getInstance(Context context) {
 
-	@Override
-	public void onCreate(SQLiteDatabase db) {
-		//alarmTitle, alarmType(진동,소리 등), alarmOption(타이머,시간지정), hour, minute, mArrAlarmCall(몇분전 알림 목록), mDataRepeatDay
-
-		String sql = "create table " + TABLE_ALARM + " (" +
-				KEY_ID + " integer primary key autoincrement, " +
-				KEY_ALARM_TITLE + " text, " +
-				KEY_ALARM_TYPE + " integer, " +
-				KEY_ALARM_DATE_TYPE + " integer, " +
-				KEY_ALARM_OPTION + " integer, " +
-				KEY_HOUR + " integer, " +
-				KEY_MINUTE + " integer, " +
-				KEY_ALARM_CALL_LIST + " text, " +
-				KEY_ALARM_CONTENTS + " text," +
-				KEY_USE_YN + " integer, " +
-				KEY_CREATE_DATE + " integer, " +
-				KEY_UPDATE_DATE + " integer " +
-				");";
-		db.execSQL(sql);
-
-		String sql2 = "create table " + TABLE_ALARM_DATE + " (" +
-				KEY_ID + " integer primary key autoincrement, " +
-				KEY_ALARM_DATE + " integer, " +
-				KEY_F_ALARM_ID + " integer " +
-				");";
-		db.execSQL(sql2);
-
-		String sql3 = "create table " + TABLE_ALARM_REPEAT + " (" +
-				KEY_ID + " integer primary key autoincrement, " +
-				KEY_MON + " integer, " +
-				KEY_TUE + " integer, " +
-				KEY_WED + " integer, " +
-				KEY_THU + " integer, " +
-				KEY_FRI + " integer, " +
-				KEY_SAT + " integer, " +
-				KEY_SUN + " integer, " +
-				KEY_F_ALARM_ID + " integer" +
-				");";
-		db.execSQL(sql3);
-
-		String sql4 = "create table " + TABLE_ALARM_ORDER + " (" +
-				KEY_ID + " integer primary key autoincrement, " +
-				KEY_TIME_STAMP + " integer, " +
-				KEY_CALL_TIME + " integer, " +
-				KEY_USE_YN + " integer, " +
-				KEY_F_ALARM_ID + " integer" +
-				");CREATE INDEX " + TABLE_ALARM_ORDER + " time_stamp_idx ON " + TABLE_ALARM_ORDER + "(" + KEY_TIME_STAMP + ");";
-		db.execSQL(sql4);
-
-		String sql5 = "create table " + TABLE_TIMER + " (" +
-				KEY_ID + " integer primary key autoincrement, " +
-				KEY_ALARM_TITLE + " text, " +
-				KEY_ALARM_TYPE + " integer, " +
-				KEY_HOUR + " integer, " +
-				KEY_MINUTE + " integer, " +
-				KEY_SECOND + " integer, " +
-				KEY_ALARM_CONTENTS + " text, " +
-				KEY_CREATE_DATE + " integer, " +
-				KEY_UPDATE_DATE + " integer " +
-				");CREATE INDEX " + TABLE_TIMER + " timer_create_date_idx ON " + TABLE_TIMER + "(" + KEY_CREATE_DATE + ");";
-
-		sql5 += "CREATE INDEX " + TABLE_ALARM_DATE + " alarm_date_idx ON " + TABLE_ALARM_DATE + "(" + KEY_ALARM_DATE + ");";
-
-		db.execSQL(sql5);
-	}
-
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// db = 적용할 db, old/new 구 버전/신버전
-        /*
-         * db 버전이 업그레이드 되었을 때 실행되는 메소드
-         * 이 부분은 사용에 조심해야 하는 일이 많이 있다. 버전이 1인 사용자가 2로 바뀌면
-         * 한번의 수정만 하면 되지만 버전이 3으로 되면 1인 사용자가 2, 3을 거쳐야 하고
-         * 2인 사용자는 3 까지만 거치면 된다. 이렇게 증가할 수록 수정할 일이 많아지므로
-         * 적절히 사용해야 하며 가능하면 최초 설계 시에 완벽을 기하는 것이 가장 좋을 것이다.
-         * 테스트에서는 기존의 데이터를 모두 지우고 다시 만드는 형태로 하겠다.
-         */
-		//dropTable(db);
-		//onCreate(db); // 테이블을 지웠으므로 다시 테이블을 만들어주는 과정
-
-		Log.d(Const.DEBUG_TAG, "db version old=" + oldVersion + " new=" + newVersion);
-
-		if(oldVersion == 1)
-			onCreate(db);
-		if(oldVersion == 5) {
-			String sql5 = "create table if not exists " + TABLE_TIMER + " (" +
-					KEY_ID + " integer primary key autoincrement, " +
-					KEY_ALARM_TITLE + " text, " +
-					KEY_ALARM_TYPE + " integer, " +
-					KEY_HOUR + " integer, " +
-					KEY_MINUTE + " integer, " +
-					KEY_SECOND + " integer, " +
-					KEY_ALARM_CONTENTS + " text, " +
-					KEY_CREATE_DATE + " integer, " +
-					KEY_UPDATE_DATE + " integer " +
-					");CREATE INDEX if not exists " + TABLE_TIMER + " timer_create_date_idx ON " + TABLE_TIMER + "(" + KEY_CREATE_DATE + ");";
-			sql5 += "CREATE INDEX if not exists " + TABLE_ALARM_DATE + " alarm_date_idx ON " + TABLE_ALARM_DATE + "(" + KEY_ALARM_DATE + ");";
-
-			db.execSQL(sql5);
+		// Use the application context, which will ensure that you
+		// don't accidentally leak an Activity's context.
+		// See this article for more information: http://bit.ly/6LRzfx
+		if (sInstance == null) {
+			sInstance = new AlarmDbManager(context);
 		}
-	}
-
-	private void dropTable(SQLiteDatabase db){
-		String sql = "drop table if exists " + TABLE_ALARM;
-		String sql2 = "drop table if exists " + TABLE_ALARM_DATE;
-		String sql3 = "drop table if exists " + TABLE_ALARM_REPEAT;
-		String sql4 = "drop table if exists " + TABLE_ALARM_ORDER;
-		String sql5 = "drop table if exists " + TABLE_TIMER;
-		db.execSQL(sql);
-		db.execSQL(sql2);
-		db.execSQL(sql3);
-		db.execSQL(sql4);
-		db.execSQL(sql5);
+		return sInstance;
 	}
 
 	public boolean insertAlarm(AlarmVO vo){
@@ -244,7 +95,6 @@ public class DbHelper extends SQLiteOpenHelper {
 		closeDB();
 		return true;
 	}
-
 
 	public boolean modifyAlarm(AlarmVO vo) {
 		//여차하면 다 삭제하고 새로 insert해도 됨
@@ -347,7 +197,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		return alarmTimeVOList;
 	}
 
-	private void insertDate(long id, ArrayList<Calendar> dateList){
+	protected void insertDate(long id, ArrayList<Calendar> dateList){
 		for (int i = 0; i < dateList.size(); i++) {
 			insertDate(id, dateList.get(i));
 		}
@@ -454,8 +304,8 @@ public class DbHelper extends SQLiteOpenHelper {
 		//7번 반복
 		for(int i = 0; i < arrDayResult.length; i++) {
 			queryString = "SELECT B." + KEY_ID + ", B." + KEY_ALARM_CALL_LIST + ", B." + KEY_ALARM_TITLE + ", B."+KEY_HOUR + ", B." + KEY_MINUTE + ", A." + KEY_F_ALARM_ID +
-				" FROM " + TABLE_ALARM_REPEAT + " A LEFT JOIN " + TABLE_ALARM + " B ON A." + KEY_F_ALARM_ID + " = B." + KEY_ID  + " WHERE " +
-				" B." + KEY_USE_YN + " = 1 AND A." + arrDayResult[i] + " = 1 ORDER BY B." + KEY_HOUR + ", B." + KEY_MINUTE;
+					" FROM " + TABLE_ALARM_REPEAT + " A LEFT JOIN " + TABLE_ALARM + " B ON A." + KEY_F_ALARM_ID + " = B." + KEY_ID  + " WHERE " +
+					" B." + KEY_USE_YN + " = 1 AND A." + arrDayResult[i] + " = 1 ORDER BY B." + KEY_HOUR + ", B." + KEY_MINUTE;
 
 			Cursor c = db.rawQuery(queryString, null);
 
@@ -585,9 +435,9 @@ public class DbHelper extends SQLiteOpenHelper {
 		String selectQuery =
 				"SELECT  A.*, B." + KEY_ID + " as " + KEY_REPEAT_ID + ", C." + KEY_ID + " as " + KEY_DATE_ID + ", sun, mon, tue, wed, thu, fri, sat, C." +
 						KEY_ALARM_DATE +" FROM " + TABLE_ALARM + " AS A LEFT JOIN " +
-				TABLE_ALARM_REPEAT + " AS B ON A." + KEY_ID + " = B."+ KEY_F_ALARM_ID + " LEFT JOIN " +
-				TABLE_ALARM_DATE + " AS C ON A." + KEY_ID + " = C." + KEY_F_ALARM_ID +
-					" WHERE A." + KEY_ID + " IN ";
+						TABLE_ALARM_REPEAT + " AS B ON A." + KEY_ID + " = B."+ KEY_F_ALARM_ID + " LEFT JOIN " +
+						TABLE_ALARM_DATE + " AS C ON A." + KEY_ID + " = C." + KEY_F_ALARM_ID +
+						" WHERE A." + KEY_ID + " IN ";
 
 		if (values.size() > 0) {
 			selectQuery += "(SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE 1=1 ";
@@ -600,7 +450,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		//endDate가 null이 아닐때 (주간 리스트 보여줄때 사용 예정)
 		if (startDate != null && endDate != null ) {
 			selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
-			KEY_ALARM_DATE + " BETWEEN " + convertDateType(startDate) + " AND " + convertDateType(endDate) + ")";
+					KEY_ALARM_DATE + " BETWEEN " + convertDateType(startDate) + " AND " + convertDateType(endDate) + ")";
 		}
 		//endDate가 null일때 - 현재 이 경우만 존재
 		if (startDate != null && endDate == null ) {
@@ -801,37 +651,6 @@ public class DbHelper extends SQLiteOpenHelper {
 			closeDB();
 		}
 		return result;
-	}
-
-	public void closeDB() {
-		SQLiteDatabase db = this.getReadableDatabase();
-		if (db != null && db.isOpen())
-			db.close();
-	}
-
-	public String serialize(Object content[]){
-		return TextUtils.join(ARRAY_DIV, content);
-	}
-
-	public String[] derialize(String content){
-		return content.split(ARRAY_DIV);
-	}
-
-	public String convertDateType(Calendar c){
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");// cal.get(Calendar.YEAR)
-		return sdf.format(c.getTime());//sdf.format(c);
-	}
-
-	public Calendar convertDateType(String s) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");// cal.get(Calendar.YEAR)
-		Calendar cal = Calendar.getInstance();
-
-		try {
-			cal.setTime(sdf.parse(s));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return cal;
 	}
 
 }
