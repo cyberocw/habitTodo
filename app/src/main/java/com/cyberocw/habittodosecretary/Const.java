@@ -12,6 +12,7 @@ public class Const {
 	public static final String REQ_CODE = "reqCode";
 	public static final String REQ_CODE_REPEAT = "reqCodeRepeat";
 	public static final String ALARM_VO = "alarmVo";
+	public static final String MEMO_VO = "memoVo";
 	public static final String TIMER_VO = "timerVo";
 	public static final String VIEW_TYPE = "viewType";
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
@@ -62,6 +63,21 @@ public class Const {
 
 	public class CATEGORY{
 		public static final String TYPE = "category";
+		public static final String CATEGORY_ID = "cateId";
 	}
 
+	public class MEMO{
+		public class MEMO_INTERFACE_CODE{
+			public static final int ADD_MEMO_CODE = 1111;
+			public static final int ADD_MEMO_FINISH_CODE = 1112;
+			public static final int ADD_MEMO_MODIFY_FINISH_CODE = 1113;
+
+		}
+	}
+
+	public class ETC_TYPE{
+		public static final String NONE = "";
+		public static final String WEATHER = "WEATHER";
+		public static final String MEMO = "MEMO";
+	}
 }

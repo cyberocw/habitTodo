@@ -24,6 +24,7 @@ public class AlarmVO implements Serializable {
 	private int minute;
 	private int alarmType;
 	private int useYn;
+	private String type;
 	private ArrayList<Integer> alarmCallList = null;
 
 	private Calendar createDt = null;
@@ -39,6 +40,7 @@ public class AlarmVO implements Serializable {
 				", alarmDateType=" + alarmDateType +
 				", alarmDateList=" + (alarmDateList != null ? Arrays.toString(alarmDateList.toArray()) : "") +
 				", alarmOption=" + alarmOption +
+				", type=" + type +
 				", hour=" + hour +
 				", minute=" + minute +
 				", alarmType=" + alarmType +
@@ -140,6 +142,13 @@ public class AlarmVO implements Serializable {
 		this.alarmCallList = alarmCallList;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 	public int getUseYn() {
 		return useYn;
 	}

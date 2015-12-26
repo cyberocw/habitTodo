@@ -2,17 +2,25 @@ package com.cyberocw.habittodosecretary.memo;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
-import com.cyberocw.habittodosecretary.memo.MemoListAdapter;
+import com.cyberocw.habittodosecretary.memo.ui.MemoDialogNew;
+import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 
 
 /**
@@ -29,7 +37,7 @@ public class MemoFragment extends Fragment {
 	private static final String ARG_PARAM1 = "param1";
 	private static final String ARG_PARAM2 = "param2";
 
-	MemoDataManager mMemoDataManger;
+	MemoDataManager mMemoDataManager;
 	MemoListAdapter mMemoAdapter;
 
 	// TODO: Rename and change types of parameters
@@ -39,6 +47,7 @@ public class MemoFragment extends Fragment {
 	private View mView;
 	private Context mCtx;
 	SharedPreferences mPrefs;
+	private long mCateId = -1;
 
 	private OnFragmentInteractionListener mListener;
 
@@ -70,6 +79,7 @@ public class MemoFragment extends Fragment {
 		if (getArguments() != null) {
 			mParam1 = getArguments().getString(ARG_PARAM1);
 			mParam2 = getArguments().getString(ARG_PARAM2);
+			mCateId = getArguments().getLong(Const.CATEGORY.CATEGORY_ID);
 		}
 	}
 
@@ -100,10 +110,75 @@ public class MemoFragment extends Fragment {
 	}
 
 	private void initActivity(){
-		mMemoDataManger = new MemoDataManager(mCtx);
-		mMemoAdapter = new MemoListAdapter(this, mCtx, mMemoDataManger);
+		Log.d(Const.DEBUG_TAG, "mCateId="+mCateId);
+		mMemoDataManager = new MemoDataManager(mCtx, mCateId);
+		mMemoAdapter = new MemoListAdapter(this, mCtx, mMemoDataManager);
+
+		ListView lv = (ListView) mView.findViewById(R.id.memoListView);
+		lv.setAdapter(mMemoAdapter);
+
+		bindEvent();
 	}
 
+	private void bindEvent(){
+		FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fabAddAlarm);
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Toast.makeText(mCtx, "okclick", Toast.LENGTH_SHORT).show();
+				showNewMemoDialog();
+			}
+		});
+	}
+
+	public void showNewMemoDialog(){
+		showNewMemoDialog(-1);
+	}
+
+	public void showNewMemoDialog(long id) {
+
+		MemoDialogNew dialogNew = new MemoDialogNew();
+		Bundle bundle = new Bundle();
+
+		if(id != -1) {
+			bundle.putSerializable(Const.MEMO_VO, mMemoDataManager.getItemById(id));
+			Log.d(Const.DEBUG_TAG, "selected memo=" + mMemoDataManager.getItemById(id).toString());
+
+		}
+		bundle.putSerializable(Const.CATEGORY.CATEGORY_ID, mCateId);
+
+		dialogNew.setArguments(bundle);
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction ft = fragmentManager.beginTransaction();
+		ft.replace(R.id.main_container, dialogNew);
+		ft.addToBackStack(null).commit();
+		dialogNew.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		MemoVO vo;
+
+		vo = (MemoVO) data.getExtras().getSerializable("memoVO");
+
+		switch(resultCode) {
+
+			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE :
+				// 메모 추가
+				if(mMemoDataManager.addItem(vo) == true)
+					mMemoAdapter.notifyDataSetChanged();
+				else
+					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+				break;
+			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE :
+				if(mMemoDataManager.modifyItem(vo) == true)
+					mMemoAdapter.notifyDataSetChanged();
+				else
+					Toast.makeText(mCtx, "DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
+				break;
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 
 	// TODO: Rename method, update argument and hook method into UI event
 	public void onButtonPressed(Uri uri) {

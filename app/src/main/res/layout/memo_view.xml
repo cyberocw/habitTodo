@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:weightSum="1"
+              android:padding="10dp"
+              android:background="#fff"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txMemoTitle"
+            android:text="내가 살아가는 세상에서 가장 행복한 시간"
+            android:layout_marginRight="50dp"
+            android:textSize="15sp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvRegDate"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"
+            android:text="2015.12.15"
+            />
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ratingBar"
+            android:layout_gravity="center"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/btnAddAlarm"
+            android:numStars="5"
+            android:stepSize="1"
+            android:rating="2"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="T"
+            android:id="@+id/ivAlarm"
+            android:src="@drawable/ic_action_alarms"
+            android:layout_alignParentTop="true"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="F"
+            android:id="@+id/ivAttachFile"
+            android:src="@drawable/ic_action_attachment"
+            android:layout_alignParentTop="true"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="I"
+            android:id="@+id/ivInfo"
+            android:src="@drawable/ic_action_about"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+                  android:id="@+id/tvMemoCont"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:maxHeight="30dp"
+                  android:gravity="top"
+                  android:textSize="12sp"
+                  android:text="아누아루 ㄴ미ㅏ울 ㅣㅏㅁㄴ우 라ㅣㄴ우 리ㅏㅁㄴㅇ ㅜ라ㅣ ㅁㄴ이ㅏㄹ ㅜ알닐 미ㅏㄴㅇ 리ㅏㄴ ㅇㄹ"
+                  />
+    </LinearLayout>
+
+</LinearLayout>

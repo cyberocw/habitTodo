@@ -1,12 +1,14 @@
 package com.cyberocw.habittodosecretary.memo;
 
 import android.content.Context;
+import android.media.Rating;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.cyberocw.habittodosecretary.Const;
@@ -39,7 +41,7 @@ public class MemoListAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		Log.d(Const.DEBUG_TAG, "alarmListAdapter getCount = " + mManager.getCount());
+		Log.d(Const.DEBUG_TAG, "memoListAdapter getCount = " + mManager.getCount());
 		return mManager.getCount();
 	}
 
@@ -57,21 +59,25 @@ public class MemoListAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		MemoVO vo = mManager.getItem(position);
 
-		Log.d(Const.DEBUG_TAG, "catelist adapter position = " + position);
+		Log.d(Const.DEBUG_TAG, "memo list adapter position = " + position);
 
 		if(convertView == null){
-			convertView = inflater.inflate(R.layout.cate_view, parent, false);
+			convertView = inflater.inflate(R.layout.memo_view, parent, false);
 		}
-		TextView tvTitle = (TextView) convertView.findViewById(R.id.tvCateTitle);
-		TextView tvCnt = (TextView) convertView.findViewById(R.id.tvCateCnt);
+		TextView tvTitle = (TextView) convertView.findViewById(R.id.txMemoTitle);
+		TextView txMemoCont = (TextView) convertView.findViewById(R.id.tvMemoCont);
+		RatingBar r = (RatingBar) convertView.findViewById(R.id.ratingBar);
+		r.setRating((float) vo.getRank());
 
 		tvTitle.setText(vo.getTitle());
+		txMemoCont.setText(vo.getContents());
 
+		Log.d(Const.DEBUG_TAG, "vo="+vo.toString());
 
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//mFragment.showMemoList(mManager.getItem(position).getId());
+				mFragment.showNewMemoDialog(mManager.getItem(position).getId());
 			}
 		});
 		return convertView;

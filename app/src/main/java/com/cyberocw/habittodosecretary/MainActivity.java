@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 	    FragmentManager fragmentManager = getSupportFragmentManager();
 	    fragmentManager.beginTransaction()
-			    .replace(R.id.main_container, new AlarmFragment()).commit();
+			    .replace(R.id.main_container, new CategoryFragment()).commit();
     }
 
 	@Override
@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		}
 		if (fragment != null) {
 			FragmentManager fragmentManager = getSupportFragmentManager();
+
 			fragmentManager.beginTransaction()
 					.replace(R.id.main_container, fragment).commit();
 			// update selected item and title, then close the drawer
@@ -116,5 +117,4 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		}
 		return true;
 	}
-
 }
