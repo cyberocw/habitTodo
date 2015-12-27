@@ -18,6 +18,8 @@ import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
+import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.memo.ui.MemoDialogNew;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -39,6 +41,7 @@ public class MemoFragment extends Fragment {
 
 	MemoDataManager mMemoDataManager;
 	MemoListAdapter mMemoAdapter;
+	AlarmDataManager mAlarmDataManager;
 
 	// TODO: Rename and change types of parameters
 	private String mParam1;
@@ -113,6 +116,7 @@ public class MemoFragment extends Fragment {
 		Log.d(Const.DEBUG_TAG, "mCateId="+mCateId);
 		mMemoDataManager = new MemoDataManager(mCtx, mCateId);
 		mMemoAdapter = new MemoListAdapter(this, mCtx, mMemoDataManager);
+		mAlarmDataManager = new AlarmDataManager(mCtx);
 
 		ListView lv = (ListView) mView.findViewById(R.id.memoListView);
 		lv.setAdapter(mMemoAdapter);
@@ -157,26 +161,39 @@ public class MemoFragment extends Fragment {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		MemoVO vo;
-
-		vo = (MemoVO) data.getExtras().getSerializable("memoVO");
+		MemoVO memoVO;
+		AlarmVO alarmVO;
+		memoVO = (MemoVO) data.getExtras().getSerializable(Const.MEMO_VO);
+		alarmVO = (AlarmVO) data.getExtras().getSerializable(Const.ALARM_VO);
 
 		switch(resultCode) {
-
 			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE :
 				// 메모 추가
-				if(mMemoDataManager.addItem(vo) == true)
+				if(mMemoDataManager.addItem(memoVO) == true)
 					mMemoAdapter.notifyDataSetChanged();
 				else
 					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+
+				// main Activity 사용 또는 인스턴스 생성
+				// 알람 추가
+				if(mAlarmDataManager.addItem(alarmVO) == false)
+					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+
+				mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
+
 				break;
 			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE :
-				if(mMemoDataManager.modifyItem(vo) == true)
+				if(mMemoDataManager.modifyItem(memoVO) == true)
 					mMemoAdapter.notifyDataSetChanged();
 				else
 					Toast.makeText(mCtx, "DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
 				break;
 		}
+
+
+		//relation insert
+			//memoVO.getId()
+
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 

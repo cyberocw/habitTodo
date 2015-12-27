@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmDialogNew;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
 /**
@@ -36,6 +37,7 @@ public class MemoDialogNew extends Fragment{
 	Button mBtnSave;
 	ImageButton mBtnAddAlarm;
 	MemoVO mMemoVO;
+	AlarmVO mAlarmVO;
 
 	long mCateId = -1;
 
@@ -165,17 +167,27 @@ public class MemoDialogNew extends Fragment{
 		dataBind();
 
 		Bundle bundle = new Bundle();
-		bundle.putSerializable("memoVO", mMemoVO);
+		bundle.putSerializable(Const.MEMO_VO, mMemoVO);
+
+		if(mAlarmVO != null)
+			bundle.putSerializable(Const.ALARM_VO, mMemoVO);
+
 		Intent intent = new Intent();
 		intent.putExtras(bundle);
 
-		Log.d(Const.DEBUG_TAG, "memo="+mMemoVO.toString());
-
-		Log.d(Const.DEBUG_TAG, "activity result start");
 		int returnCode = mModifyMode == 1 ? Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE : Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE;
 		getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
 
 		getActivity().getSupportFragmentManager().popBackStackImmediate();
+	}
 
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch(resultCode) {
+			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE :
+				mAlarmVO = (AlarmVO) data.getExtras().getSerializable("alarmVO");
+				break;
+		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 }

@@ -31,6 +31,9 @@ public class AlarmDataManager {
 	// 각각의 알람이 저장 됨
 	private ArrayList<AlarmVO> dataList = new ArrayList<>();
 
+	public AlarmDataManager(Context ctx) {
+		this(ctx, Calendar.getInstance());
+	}
 
 	public AlarmDataManager(Context ctx, Calendar cal) {
 		mCtx = ctx;
