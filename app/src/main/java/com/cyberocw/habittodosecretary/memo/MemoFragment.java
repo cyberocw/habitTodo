@@ -20,6 +20,8 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.common.vo.RelationVO;
+import com.cyberocw.habittodosecretary.db.CommonRelationManager;
 import com.cyberocw.habittodosecretary.memo.ui.MemoDialogNew;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -43,14 +45,18 @@ public class MemoFragment extends Fragment {
 	MemoListAdapter mMemoAdapter;
 	AlarmDataManager mAlarmDataManager;
 
+	private CommonRelationManager mCommonRelationManager;
+
 	// TODO: Rename and change types of parameters
 	private String mParam1;
 	private String mParam2;
+
 
 	private View mView;
 	private Context mCtx;
 	SharedPreferences mPrefs;
 	private long mCateId = -1;
+	RelationVO mRelationVO;
 
 	private OnFragmentInteractionListener mListener;
 
@@ -121,6 +127,8 @@ public class MemoFragment extends Fragment {
 		ListView lv = (ListView) mView.findViewById(R.id.memoListView);
 		lv.setAdapter(mMemoAdapter);
 
+		mCommonRelationManager = CommonRelationManager.getInstance(mCtx);
+
 		bindEvent();
 	}
 
@@ -189,10 +197,12 @@ public class MemoFragment extends Fragment {
 					Toast.makeText(mCtx, "DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
 				break;
 		}
-
-
 		//relation insert
-			//memoVO.getId()
+		mRelationVO.setAlarmId(alarmVO.getId());
+		mRelationVO.setfId(memoVO.getId());
+		mRelationVO.setType(Const.ETC_TYPE.MEMO);
+
+		mCommonRelationManager.insert(mRelationVO);
 
 		super.onActivityResult(requestCode, resultCode, data);
 	}

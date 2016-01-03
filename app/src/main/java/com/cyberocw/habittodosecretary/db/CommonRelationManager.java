@@ -10,9 +10,7 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 /**
  * Created by cyberocw on 2015-12-26.
@@ -21,19 +19,19 @@ import java.util.HashMap;
  * KEY_F_ALARM_ID + " integer , " +
  * KEY_F_ID + " integer, " +
  */
-public class CommonDbManager extends DbHelper {
-	public static CommonDbManager sInstance = null;
-	public CommonDbManager(Context context) {
+public class CommonRelationManager extends DbHelper {
+	public static CommonRelationManager sInstance = null;
+	public CommonRelationManager(Context context) {
 		super(context);
 	}
-	public static synchronized CommonDbManager getInstance(Context context) {
+	public static synchronized CommonRelationManager getInstance(Context context) {
 
 		// Use the application context, which will ensure that you
 		// don't accidentally leak an Activity's context.
 		// See this article for more information: http://bit.ly/6LRzfx
 
 		if (sInstance == null) {
-			sInstance = new CommonDbManager(context);
+			sInstance = new CommonRelationManager(context);
 		}
 		return sInstance;
 	}
@@ -43,9 +41,21 @@ public class CommonDbManager extends DbHelper {
 		return getQuery(selectQuery);
 	}
 
-	public RelationVO getByEtcTypeId(String type, long id){
+	public RelationVO getByTypeId(String type, long id){
 		String selectQuery = " SELECT * FROM " + TABLE_ALARAM_RELATION + " WHERE " + KEY_F_ID + " = " + id + " AND " + KEY_TYPE + " = '" + type + "'";
 		return getQuery(selectQuery);
+	}
+
+	public long insert(String type, long alarmId, long fId){
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_TYPE, type);
+		values.put(KEY_F_ALARM_ID, alarmId);
+		values.put(KEY_F_ID, fId);
+
+		long _id = db.insert(TABLE_ALARAM_RELATION, null, values);
+		return _id;
 	}
 
 	public RelationVO getQuery(String selectQuery) {
@@ -88,30 +98,20 @@ public class CommonDbManager extends DbHelper {
 		return false;
 	}
 
-	public void insert(MemoVO item) {
+	public void insert(RelationVO vo) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
-		long now = Calendar.getInstance().getTimeInMillis();
-
 		ContentValues values = new ContentValues();
-		values.put(KEY_TITLE, item.getTitle());
-		values.put(KEY_CONTENTS, item.getContents());
-		values.put(KEY_TYPE, "MEMO");
-		values.put(KEY_VIEW_CNT, 0);
-		values.put(KEY_URL, item.getUrl());
-		values.put(KEY_RANK, item.getRank());
-		values.put(KEY_CATEGORY_ID, item.getCategoryId());
-		values.put(KEY_CREATE_DATE, now);
-		values.put(KEY_UPDATE_DATE, now);
+		values.put(KEY_TYPE, vo.getType());
+		values.put(KEY_F_ALARM_ID, vo.getAlarmId());
+		values.put(KEY_F_ID, vo.getfId());
 
-		long _id = db.insert(TABLE_MEMO, null, values);
+		long _id = db.insert(TABLE_ALARAM_RELATION, null, values);
 
 		if(_id == -1){
-			Log.e(Const.DEBUG_TAG, "DB memo INSERT ERROR");
-			throw new Error("DB memo INSERT ERROR");
+			Log.e(Const.DEBUG_TAG, "DB Relation INSERT ERROR");
+			throw new Error("DB Relation INSERT ERROR");
 		}
-		else
-			item.setId(_id);
 
 	}
 }
