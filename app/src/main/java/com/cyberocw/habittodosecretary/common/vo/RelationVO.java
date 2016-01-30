@@ -5,7 +5,7 @@ package com.cyberocw.habittodosecretary.common.vo;
  */
 public class RelationVO {
 	private long fId;
-	private long alarmId;
+	private long alarmId = -1;
 	private String type;
 
 	public long getfId() {
@@ -30,5 +30,14 @@ public class RelationVO {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	@Override
+	public String toString() {
+		return "RelationVO{" +
+				"fId=" + fId +
+				", alarmId=" + alarmId +
+				", type='" + type + '\'' +
+				'}';
 	}
 }

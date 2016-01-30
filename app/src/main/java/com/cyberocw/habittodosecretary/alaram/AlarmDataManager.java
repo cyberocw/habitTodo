@@ -62,13 +62,17 @@ public class AlarmDataManager {
 		return this.dataList.get(position);
 	}
 
-	public AlarmVO getItemById(long id){
+	public AlarmVO getItemByIdInList(long id){
 		for(int i = 0 ; i < dataList.size() ; i++){
 			if(dataList.get(i).getId() == id){
 				return dataList.get(i);
 			}
 		}
 		return null;
+	}
+
+	public AlarmVO getItemByIdInDB(long id){
+		return mDb.getAlarmById(id);
 	}
 
 	public boolean deleteItemById(long id){

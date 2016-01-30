@@ -21,7 +21,7 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
-import com.cyberocw.habittodosecretary.db.CommonRelationManager;
+import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
 import com.cyberocw.habittodosecretary.memo.ui.MemoDialogNew;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -45,7 +45,7 @@ public class MemoFragment extends Fragment {
 	MemoListAdapter mMemoAdapter;
 	AlarmDataManager mAlarmDataManager;
 
-	private CommonRelationManager mCommonRelationManager;
+	private CommonRelationDBManager mCommonRelationDBManager;
 
 	// TODO: Rename and change types of parameters
 	private String mParam1;
@@ -56,7 +56,6 @@ public class MemoFragment extends Fragment {
 	private Context mCtx;
 	SharedPreferences mPrefs;
 	private long mCateId = -1;
-	RelationVO mRelationVO;
 
 	private OnFragmentInteractionListener mListener;
 
@@ -127,7 +126,7 @@ public class MemoFragment extends Fragment {
 		ListView lv = (ListView) mView.findViewById(R.id.memoListView);
 		lv.setAdapter(mMemoAdapter);
 
-		mCommonRelationManager = CommonRelationManager.getInstance(mCtx);
+		mCommonRelationDBManager = CommonRelationDBManager.getInstance(mCtx);
 
 		bindEvent();
 	}
@@ -153,9 +152,22 @@ public class MemoFragment extends Fragment {
 		Bundle bundle = new Bundle();
 
 		if(id != -1) {
-			bundle.putSerializable(Const.MEMO_VO, mMemoDataManager.getItemById(id));
-			Log.d(Const.DEBUG_TAG, "selected memo=" + mMemoDataManager.getItemById(id).toString());
+			// relation이 있으면 가져옴
+			RelationVO relationVO = mCommonRelationDBManager.getByTypeId(Const.ETC_TYPE.MEMO, id);
 
+			Log.d(Const.DEBUG_TAG, "ocw selected relattionVO =" + relationVO.toString());
+
+			if(relationVO.getAlarmId() != -1) {
+				AlarmVO alarmVO = mAlarmDataManager.getItemByIdInDB(relationVO.getAlarmId());
+				if(alarmVO != null) {
+					Log.d(Const.DEBUG_TAG, "ocw relation get alaarm id = " + alarmVO.getId());
+					bundle.putSerializable(Const.ALARM_VO, alarmVO);
+				}else{
+					Log.d(Const.DEBUG_TAG, "ocw relation get alaarm failed");
+				}
+			}
+
+			bundle.putSerializable(Const.MEMO_VO, mMemoDataManager.getItemById(id));
 		}
 		bundle.putSerializable(Const.CATEGORY.CATEGORY_ID, mCateId);
 
@@ -173,6 +185,7 @@ public class MemoFragment extends Fragment {
 		AlarmVO alarmVO;
 		memoVO = (MemoVO) data.getExtras().getSerializable(Const.MEMO_VO);
 		alarmVO = (AlarmVO) data.getExtras().getSerializable(Const.ALARM_VO);
+		RelationVO relationVO = new RelationVO();
 
 		switch(resultCode) {
 			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE :
@@ -184,25 +197,67 @@ public class MemoFragment extends Fragment {
 
 				// main Activity 사용 또는 인스턴스 생성
 				// 알람 추가
-				if(mAlarmDataManager.addItem(alarmVO) == false)
-					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+				if(alarmVO != null) {
+					if (mAlarmDataManager.addItem(alarmVO) == false) {
+						Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+					}
+					//relation insert
+					else {
+						relationVO.setAlarmId(alarmVO.getId());
+						relationVO.setfId(memoVO.getId());
+						relationVO.setType(Const.ETC_TYPE.MEMO);
 
-				mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
+						mCommonRelationDBManager.insert(relationVO);
+						mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
+					}
+				}
 
 				break;
 			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE :
-				if(mMemoDataManager.modifyItem(memoVO) == true)
+				if(mMemoDataManager.modifyItem(memoVO) == true) {
 					mMemoAdapter.notifyDataSetChanged();
-				else
-					Toast.makeText(mCtx, "DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
+				}
+				else {
+					Toast.makeText(mCtx, "Memo DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
+				}
+
+				if(alarmVO != null) {
+					long oriId = alarmVO.getId();
+
+					Log.d(Const.DEBUG_TAG, "ocw 기존 알람 id = " + oriId);
+
+					if (mAlarmDataManager.modifyItem(alarmVO) == false) {
+						Log.d(Const.DEBUG_TAG, "ocw modify 실패");
+						Toast.makeText(mCtx, "Alarm DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
+					}
+					//relation modify
+					else {
+						if(mCommonRelationDBManager.deleteByAlarmId(oriId)){
+							Log.d(Const.DEBUG_TAG, "ocw delete Alarm 성공");
+						}else{
+							Log.d(Const.DEBUG_TAG, "ocw delete Alarm 실패");
+						}
+
+						Log.d(Const.DEBUG_TAG, "ocw 새로 생성된 alarmVO.getId()" + alarmVO.getId());
+
+						relationVO.setAlarmId(alarmVO.getId());
+						relationVO.setfId(memoVO.getId());
+						relationVO.setType(Const.ETC_TYPE.MEMO);
+
+						if(mCommonRelationDBManager.insert(relationVO)){
+							Log.d(Const.DEBUG_TAG, "Relation 수정 등록 성공");
+							Toast.makeText(mCtx, "Relation 수정 등록 성공", Toast.LENGTH_LONG).show();
+						}
+						else{
+							Log.d(Const.DEBUG_TAG, "Relation 수정 등록 실패");
+							Toast.makeText(mCtx, "Relation 수정 등록 실패", Toast.LENGTH_LONG).show();
+						}
+						mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
+					}
+				}
 				break;
 		}
-		//relation insert
-		mRelationVO.setAlarmId(alarmVO.getId());
-		mRelationVO.setfId(memoVO.getId());
-		mRelationVO.setType(Const.ETC_TYPE.MEMO);
 
-		mCommonRelationManager.insert(mRelationVO);
 
 		super.onActivityResult(requestCode, resultCode, data);
 	}

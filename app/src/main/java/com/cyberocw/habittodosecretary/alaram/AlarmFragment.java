@@ -255,7 +255,7 @@ public class AlarmFragment extends Fragment{
 	}
 
 	public void deleteAlarm(final long id){
-		AlarmVO vo = mAlarmDataManager.getItemById(id);
+		AlarmVO vo = mAlarmDataManager.getItemByIdInList(id);
 
 		if(vo == null) {
 			Log.d(Const.DEBUG_TAG, "getItemId is null id = " + id);
@@ -438,7 +438,7 @@ public class AlarmFragment extends Fragment{
 		if(id != -1) {
 			Bundle bundle = new Bundle();
 
-			bundle.putSerializable(Const.ALARM_VO, mAlarmDataManager.getItemById(id));
+			bundle.putSerializable(Const.ALARM_VO, mAlarmDataManager.getItemByIdInList(id));
 			alarmDialogNew.setArguments(bundle);
 		}
 		alarmDialogNew.show(fm, "fragment_dialog_alarm_add");

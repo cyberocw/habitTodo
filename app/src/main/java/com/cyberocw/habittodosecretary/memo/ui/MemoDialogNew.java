@@ -75,6 +75,8 @@ public class MemoDialogNew extends Fragment{
 		if(arguments != null) {
 			Log.d(Const.DEBUG_TAG, "arguments="+arguments);
 			mMemoVO = (MemoVO) arguments.getSerializable(Const.MEMO_VO);
+			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.ALARM_VO);
+
 			if(mMemoVO != null)
 				mModifyMode = 1;
 			else
@@ -151,6 +153,7 @@ public class MemoDialogNew extends Fragment{
 		Bundle bundle = new Bundle();
 		dataBind();
 		bundle.putSerializable(Const.MEMO_VO, mMemoVO);
+		bundle.putSerializable(Const.ALARM_VO, mAlarmVO);
 		alarmDialogNew.setArguments(bundle);
 		alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
 		alarmDialogNew.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE);
@@ -170,7 +173,7 @@ public class MemoDialogNew extends Fragment{
 		bundle.putSerializable(Const.MEMO_VO, mMemoVO);
 
 		if(mAlarmVO != null)
-			bundle.putSerializable(Const.ALARM_VO, mMemoVO);
+			bundle.putSerializable(Const.ALARM_VO, mAlarmVO);
 
 		Intent intent = new Intent();
 		intent.putExtras(bundle);
