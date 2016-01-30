@@ -185,7 +185,7 @@ public class MemoFragment extends Fragment {
 		AlarmVO alarmVO;
 		memoVO = (MemoVO) data.getExtras().getSerializable(Const.MEMO_VO);
 		alarmVO = (AlarmVO) data.getExtras().getSerializable(Const.ALARM_VO);
-		RelationVO relationVO = new RelationVO();
+
 
 		switch(resultCode) {
 			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE :
@@ -198,17 +198,20 @@ public class MemoFragment extends Fragment {
 				// main Activity 사용 또는 인스턴스 생성
 				// 알람 추가
 				if(alarmVO != null) {
-					if (mAlarmDataManager.addItem(alarmVO) == false) {
-						Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
-					}
-					//relation insert
-					else {
-						relationVO.setAlarmId(alarmVO.getId());
-						relationVO.setfId(memoVO.getId());
-						relationVO.setType(Const.ETC_TYPE.MEMO);
-
-						mCommonRelationDBManager.insert(relationVO);
+					if (mAlarmDataManager.addItem(alarmVO) == true) {
 						mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
+
+						if (insertRelation(alarmVO, memoVO)){
+							Log.d(Const.DEBUG_TAG, "Relation 수정 등록 성공");
+							Toast.makeText(mCtx, "Relation 수정 등록 성공", Toast.LENGTH_LONG).show();
+						}
+						else{
+							Log.d(Const.DEBUG_TAG, "Relation 수정 등록 실패");
+							Toast.makeText(mCtx, "Relation 수정 등록 실패", Toast.LENGTH_LONG).show();
+						}
+					}
+					else {
+						Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
 					}
 				}
 
@@ -226,40 +229,51 @@ public class MemoFragment extends Fragment {
 
 					Log.d(Const.DEBUG_TAG, "ocw 기존 알람 id = " + oriId);
 
-					if (mAlarmDataManager.modifyItem(alarmVO) == false) {
-						Log.d(Const.DEBUG_TAG, "ocw modify 실패");
-						Toast.makeText(mCtx, "Alarm DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
+					if(alarmVO.getId() == -1){
+						if (mAlarmDataManager.addItem(alarmVO) == false) {
+							Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+							break;
+						}
 					}
-					//relation modify
-					else {
-						if(mCommonRelationDBManager.deleteByAlarmId(oriId)){
-							Log.d(Const.DEBUG_TAG, "ocw delete Alarm 성공");
-						}else{
-							Log.d(Const.DEBUG_TAG, "ocw delete Alarm 실패");
-						}
+					else{
+						if (mAlarmDataManager.modifyItem(alarmVO) == true) {
+							if(mCommonRelationDBManager.deleteByAlarmId(oriId)){
+								Log.d(Const.DEBUG_TAG, "ocw delete Alarm 성공");
+							}else{
+								Log.d(Const.DEBUG_TAG, "ocw delete Alarm 실패");
+								break;
+							}
 
-						Log.d(Const.DEBUG_TAG, "ocw 새로 생성된 alarmVO.getId()" + alarmVO.getId());
-
-						relationVO.setAlarmId(alarmVO.getId());
-						relationVO.setfId(memoVO.getId());
-						relationVO.setType(Const.ETC_TYPE.MEMO);
-
-						if(mCommonRelationDBManager.insert(relationVO)){
-							Log.d(Const.DEBUG_TAG, "Relation 수정 등록 성공");
-							Toast.makeText(mCtx, "Relation 수정 등록 성공", Toast.LENGTH_LONG).show();
+							Log.d(Const.DEBUG_TAG, "ocw 새로 생성된 alarmVO.getId()" + alarmVO.getId());
 						}
-						else{
-							Log.d(Const.DEBUG_TAG, "Relation 수정 등록 실패");
-							Toast.makeText(mCtx, "Relation 수정 등록 실패", Toast.LENGTH_LONG).show();
+						else {
+							Log.d(Const.DEBUG_TAG, "ocw modify 실패");
+							Toast.makeText(mCtx, "Alarm DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
+							break;
 						}
-						mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
 					}
+					if(insertRelation(alarmVO, memoVO)){
+						Log.d(Const.DEBUG_TAG, "Relation 수정 등록 성공");
+						Toast.makeText(mCtx, "Relation 수정 등록 성공", Toast.LENGTH_LONG).show();
+					}
+					else{
+						Log.d(Const.DEBUG_TAG, "Relation 수정 등록 실패");
+						Toast.makeText(mCtx, "Relation 수정 등록 실패", Toast.LENGTH_LONG).show();
+					}
+					mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
 				}
 				break;
 		}
-
-
 		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	private boolean insertRelation(AlarmVO alarmVO, MemoVO memoVO){
+		RelationVO relationVO = new RelationVO();
+
+		relationVO.setAlarmId(alarmVO.getId());
+		relationVO.setfId(memoVO.getId());
+		relationVO.setType(Const.ETC_TYPE.MEMO);
+		return mCommonRelationDBManager.insert(relationVO);
 	}
 
 	// TODO: Rename method, update argument and hook method into UI event

@@ -87,7 +87,7 @@ public class AlarmDataManager {
 				return true;
 			}
 		}
-		return false;
+		return true;
 	}
 
 	public AlarmVO deleteItemById(int position){

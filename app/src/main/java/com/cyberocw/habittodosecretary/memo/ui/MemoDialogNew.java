@@ -39,6 +39,7 @@ public class MemoDialogNew extends Fragment{
 	MemoVO mMemoVO;
 	AlarmVO mAlarmVO;
 
+	boolean isModifyAlarm = false;
 	long mCateId = -1;
 
 	int mModifyMode = 0;
@@ -172,7 +173,7 @@ public class MemoDialogNew extends Fragment{
 		Bundle bundle = new Bundle();
 		bundle.putSerializable(Const.MEMO_VO, mMemoVO);
 
-		if(mAlarmVO != null)
+		if(isModifyAlarm && mAlarmVO != null)
 			bundle.putSerializable(Const.ALARM_VO, mAlarmVO);
 
 		Intent intent = new Intent();
@@ -186,11 +187,8 @@ public class MemoDialogNew extends Fragment{
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch(resultCode) {
-			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE :
-				mAlarmVO = (AlarmVO) data.getExtras().getSerializable("alarmVO");
-				break;
-		}
+		isModifyAlarm = true;
+		mAlarmVO = (AlarmVO) data.getExtras().getSerializable("alarmVO");
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 }

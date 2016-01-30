@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
@@ -72,12 +74,20 @@ public class MemoListAdapter extends BaseAdapter {
 		tvTitle.setText(vo.getTitle());
 		txMemoCont.setText(vo.getContents());
 
-		Log.d(Const.DEBUG_TAG, "vo="+vo.toString());
+		Log.d(Const.DEBUG_TAG, "vo=" + vo.toString());
+
+		ImageButton ibtn = (ImageButton) convertView.findViewById(R.id.memoOptionButton);
+		ibtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Toast.makeText(mCtx, "selected position"+position, Toast.LENGTH_SHORT).show();
+			}
+		});
 
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mFragment.showNewMemoDialog(mManager.getItem(position).getId());
+			mFragment.showNewMemoDialog(mManager.getItem(position).getId());
 			}
 		});
 		return convertView;
