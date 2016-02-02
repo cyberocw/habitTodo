@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
 import com.cyberocw.habittodosecretary.db.DbHelper;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
@@ -17,6 +18,7 @@ import java.util.Calendar;
  * Created by cyberocw on 2015-12-06.
  */
 public class MemoDbManager extends DbHelper{
+	private static Context mCtx;
 	public static MemoDbManager sInstance = null;
 	public MemoDbManager(Context context) {
 		super(context);
@@ -30,6 +32,8 @@ public class MemoDbManager extends DbHelper{
 		if (sInstance == null) {
 			sInstance = new MemoDbManager(context);
 		}
+		mCtx = context;
+
 		return sInstance;
 	}
 
@@ -86,12 +90,45 @@ public class MemoDbManager extends DbHelper{
 		int result = db.update(TABLE_MEMO, values, KEY_ID + "=?", new String[]{Long.toString(item.getId())});
 		closeDB();
 		return result;
-
-
 	}
 
 	public boolean delete(long id) {
-		return false;
+		SQLiteDatabase db = this.getWritableDatabase();
+		String query = "SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARAM_RELATION + " WHERE " + KEY_F_ALARM_ID + "=" + id + " AND " +
+				KEY_TYPE + " = '" +  Const.ETC_TYPE.MEMO + "'";
+		Cursor c = db.rawQuery(query, null);
+		c.moveToFirst();
+		long alarmId = -1;
+
+		Log.d(Const.DEBUG_TAG, "ocw Relation getCount()=" + c.getCount());
+
+		if(c.getCount() > 0)
+			alarmId = c.getLong(0);
+
+		Log.d(Const.DEBUG_TAG, "ocw Relation getCount()=" + c.getCount() + "alarmId=" + alarmId);
+
+
+		boolean result = true;
+		try {
+			db.beginTransaction();
+			// relation이 맺어져 있다면
+			if(alarmId > -1) {
+				AlarmDbManager alarmDbManager = AlarmDbManager.getInstance(mCtx);
+				alarmDbManager.deleteAlarm(alarmId, db);
+				db.delete(TABLE_ALARAM_RELATION, KEY_F_ID + "=? AND " + KEY_TYPE + " =?", new String[]{String.valueOf(id), Const.ETC_TYPE.MEMO});
+			}
+			db.delete(TABLE_MEMO, KEY_ID + "=?", new String[]{String.valueOf(id)});
+			db.setTransactionSuccessful();
+		}
+		catch (Exception e){
+			Log.d(Const.DEBUG_TAG, "error msg="+e.getMessage());
+			result = false;
+		}
+		finally{
+			db.endTransaction();
+			closeDB();
+		}
+		return result;
 	}
 
 	public void insert(MemoVO item) {

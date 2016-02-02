@@ -368,21 +368,16 @@ public class AlarmDbManager extends DbHelper{
 		closeDB();
 		return arrList;
 	}
-
 	public boolean deleteAlarm(long id) {
-		// TODO: 2015-08-30 알림 반복인데 오늘만 삭제 때 어떻게 할지 구현 해야 함
-		SQLiteDatabase db = this.getWritableDatabase();
+		//// TODO: 2016-02-03  Relation이 있을 경우 처리 필요
 
-		db.beginTransaction();
+		SQLiteDatabase db = this.getWritableDatabase();
 		boolean result = true;
 		try {
-			db.delete(TABLE_ALARM, KEY_ID + "=?", new String[]{String.valueOf(id)});
-			db.delete(TABLE_ALARM_REPEAT, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
-			db.delete(TABLE_ALARM_DATE, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
-			db.delete(TABLE_ALARM_ORDER, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
+			db.beginTransaction();
+			deleteAlarm(id, db);
 			db.setTransactionSuccessful();
-		}
-		catch (Exception e){
+		}catch(Exception e){
 			result = false;
 		}
 		finally{
@@ -390,6 +385,15 @@ public class AlarmDbManager extends DbHelper{
 			closeDB();
 		}
 		return result;
+	}
+
+	public SQLiteDatabase deleteAlarm(long id, SQLiteDatabase db) {
+		// TODO: 2015-08-30 알림 반복인데 오늘만 삭제 때 어떻게 할지 구현 해야 함
+		db.delete(TABLE_ALARM, KEY_ID + "=?", new String[]{String.valueOf(id)});
+		db.delete(TABLE_ALARM_REPEAT, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
+		db.delete(TABLE_ALARM_DATE, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
+		db.delete(TABLE_ALARM_ORDER, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
+		return db;
 	}
 
 	/**

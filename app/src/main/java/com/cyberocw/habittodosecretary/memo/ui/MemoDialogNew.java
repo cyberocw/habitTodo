@@ -181,7 +181,6 @@ public class MemoDialogNew extends Fragment{
 
 		int returnCode = mModifyMode == 1 ? Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE : Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE;
 		getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
-
 		getActivity().getSupportFragmentManager().popBackStackImmediate();
 	}
 
