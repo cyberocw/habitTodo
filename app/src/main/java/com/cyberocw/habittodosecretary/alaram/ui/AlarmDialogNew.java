@@ -33,11 +33,14 @@ import android.widget.Toast;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import static android.util.Log.*;
 
@@ -47,7 +50,11 @@ import static android.util.Log.*;
 
 public class AlarmDialogNew extends DialogFragment{
 	private AlarmVO mAlarmVO;
+	private MemoVO mMemoVO;
+
+	private LinkedHashMap mEtcMap;
 	private int mModifyMode = 0;
+	private Boolean mMemoMode = false;
 	private Spinner mSpAlarmType, mSpAppList, mSpDateType;
 	private Button mBtnAddAlarm = null;
 	private EditText mTxAlarmTitle;
@@ -66,6 +73,7 @@ public class AlarmDialogNew extends DialogFragment{
 	private int[] mArrDayId = {R.id.btnRepeatSun, R.id.btnRepeatMon, R.id.btnRepeatTue, R.id.btnRepeatWed, R.id.btnRepeatThur, R.id.btnRepeatFri, R.id.btnRepeatSat};
 	private ArrayList<Integer> mDataRepeatDay = new ArrayList<>();
 	private ArrayList<Integer> mArrAlarmCall = new ArrayList<Integer>();
+	private String mEtcType = "";
 	private Object mTemp;
 	private Calendar mCalendar;
 
@@ -82,11 +90,30 @@ public class AlarmDialogNew extends DialogFragment{
 
 		if(arguments != null) {
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.ALARM_VO);
-			mModifyMode = 1;
+
+			if(mAlarmVO != null)
+				mModifyMode = 1;
+
+			mMemoVO = (MemoVO) arguments.getSerializable(Const.MEMO_VO);
+
+			if(mMemoVO != null)
+				mMemoMode = true;
+
 		}
-		else{
+		if(mAlarmVO == null){
 			mAlarmVO = new AlarmVO();
 		}
+		mEtcMap = new LinkedHashMap();
+
+		mEtcMap.put(Const.ETC_TYPE.NONE, "없음");
+		mEtcMap.put(Const.ETC_TYPE.WEATHER, "날씨");
+		mEtcMap.put(Const.ETC_TYPE.MEMO, "메모");
+
+//		arraylist.add("날씨");
+//		arraylist.add("뉴스 구독");
+//		arraylist.add("메모");
+//		arraylist.add("앱 단축아이콘");
+//		arraylist.add("링크");
 
 		makeSpinnerDateType();
 		makeSpinnerAlarmType();
@@ -160,11 +187,36 @@ public class AlarmDialogNew extends DialogFragment{
 				appendAlarmRow(Math.abs(temp), (temp < 0 ? -1 : 1));
 			}
 
+			mEtcType = mAlarmVO.getType();
+
+			restoreEtcType();
+
 		}
 		else {
 			txTimeSet(mCalendar.get(Calendar.HOUR_OF_DAY), mCalendar.get(Calendar.MINUTE));
 			appendAlarmRow(0, 1);
 		}
+
+		if(mMemoMode)
+			initMemoMode();
+
+	}
+
+	private void restoreEtcType(){
+		Object[] arrkeys = mEtcMap.keySet().toArray();
+		for(int i = 0 ; i < arrkeys.length; i++){
+			if(arrkeys[i].equals(mEtcType)){
+				mSpAppList.setSelection(i);
+				break;
+			}
+		}
+	}
+
+	private void initMemoMode(){
+		mEtcType = Const.ETC_TYPE.MEMO;
+		restoreEtcType();
+		mSpAppList.setEnabled(false);
+		mTxAlarmTitle.setText(mMemoVO.getTitle());
 	}
 
 	private void returnData(){
@@ -228,11 +280,8 @@ public class AlarmDialogNew extends DialogFragment{
 
 		//mArrAlarmCall
 
-		String aaa = "alarmTitle="+alarmTitle + " alarmType= "+alarmType + "hour = "+hour + " minute="+minute;
-		String bbb = "mCallList = "+Arrays.toString(mArrAlarmCall.toArray()) + "mRepeat = " + Arrays.toString(mDataRepeatDay.toArray());
+		int etcType = mSpAppList.getSelectedItemPosition();
 
-		d(Const.DEBUG_TAG, aaa);
-		d(Const.DEBUG_TAG, bbb);
 //alarmTitle, alarmType(진동,소리 등), alarmOption(타이머,시간지정), hour, minute, mArrAlarmCall(몇분전 알림 목록), mDataRepeatDay, mAlarmDateType
 
 		AlarmVO vo;
@@ -251,6 +300,7 @@ public class AlarmDialogNew extends DialogFragment{
 		vo.setRepeatDay(mDataRepeatDay);
 		vo.setAlarmDateType(mAlarmDateType);
 		vo.setAlarmDateList(alarmDate);
+		vo.setType(mEtcType);
 
 		Bundle bundle = new Bundle();
 		bundle.putSerializable("alarmVO", vo);
@@ -412,9 +462,9 @@ public class AlarmDialogNew extends DialogFragment{
 //		llTimePickWrap = (LinearLayout) getView().findViewById(R.id.llTimePickWrap);
 //		llRepeatDayWrap = (LinearLayout) getView().findViewById(R.id.llRepeatDayWrap);
 
-		Log.d(Const.DEBUG_TAG, "renderDateTypeUi start type=" +alarmDateType);
+		Log.d(Const.DEBUG_TAG, "renderDateTypeUi start type=" + alarmDateType);
 
-		Log.d(Const.DEBUG_TAG, "c.get(Calendar.DAY_OF_MONTH)="+c.get(Calendar.DAY_OF_MONTH));
+		Log.d(Const.DEBUG_TAG, "c.get(Calendar.DAY_OF_MONTH)=" + c.get(Calendar.DAY_OF_MONTH));
 
 		llTimePickWrap.setVisibility(View.VISIBLE);
 
@@ -480,12 +530,12 @@ public class AlarmDialogNew extends DialogFragment{
 	public void makeSpinnerAppList(){
 		//mSpAppList
 		ArrayList<String> arraylist = new ArrayList<String>();
-		arraylist.add("없음");
-		arraylist.add("날씨");
-		arraylist.add("뉴스 구독");
-		arraylist.add("메모");
-		arraylist.add("앱 단축아이콘");
-		arraylist.add("링크");
+
+		for (Object key : mEtcMap.keySet()) {
+			arraylist.add((String) mEtcMap.get(key));
+		}
+
+		final Object[] values = mEtcMap.keySet().toArray();
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
 				android.R.layout.simple_spinner_item, arraylist);
@@ -496,7 +546,8 @@ public class AlarmDialogNew extends DialogFragment{
 		mSpAppList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Toast.makeText(getActivity(), "position=" + position, Toast.LENGTH_SHORT).show();
+				mEtcType = (String) values[position];
+				Toast.makeText(mCtx, "mEtcType = "+mEtcType, Toast.LENGTH_SHORT).show();
 			}
 
 			@Override

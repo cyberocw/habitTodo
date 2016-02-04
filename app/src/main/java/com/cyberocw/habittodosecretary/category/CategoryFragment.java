@@ -183,9 +183,14 @@ public class CategoryFragment extends Fragment {
 	}
 
 	public void showMemoList(long id) {
+		Fragment f = new MemoFragment();
+		Bundle b = new Bundle();
+		b.putLong(Const.CATEGORY.CATEGORY_ID, id);
+		f.setArguments(b);
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 		fragmentManager.beginTransaction()
-				.add(R.id.main_container, new MemoFragment()).commit();
+				.addToBackStack(null)
+				.replace(R.id.main_container, f).commit();
 	}
 
 	/**
@@ -202,6 +207,5 @@ public class CategoryFragment extends Fragment {
 		// TODO: Update argument type and name
 		public void onFragmentInteraction(Uri uri);
 	}
-
 }
 

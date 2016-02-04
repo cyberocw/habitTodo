@@ -1,0 +1,12 @@
+Index: app/src/main/java/com/cyberocw/habittodosecretary/alaram/db/dbManager.java
+===================================================================
+--- app/src/main/java/com/cyberocw/habittodosecretary/alaram/db/dbManager.java	(date 1453361663000)
++++ app/src/main/java/com/cyberocw/habittodosecretary/alaram/db/dbManager.java	(date 1453361663000)
+@@ -1,7 +0,0 @@
+-package com.cyberocw.habittodosecretary.alaram.db;
+-
+-/**
+- * Created by cyberocw on 2015-12-06.
+- */
+-public class dbManager {
+-}

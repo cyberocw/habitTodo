@@ -1,9 +1,11 @@
 package com.cyberocw.habittodosecretary.memo.vo;
 
+import java.io.Serializable;
+
 /**
  * Created by cyberocw on 2015-12-06.
  */
-public class MemoVO {
+public class MemoVO implements Serializable {
 	private long id;
 	private String title;
 	private String contents;

@@ -75,10 +75,7 @@ public class AlarmListAdapter extends BaseAdapter{
 			public void onClick(View v) {
 				mMainFragment.showNewAlarmDialog(mManager.getItem(position).getId());
 			}
-
-
 		});
-
 
 		ToggleButton dateToggleBtn = (ToggleButton) convertView.findViewById(R.id.timeText);
 		dateToggleBtn.setText(vo.getTimeText());
@@ -108,7 +105,6 @@ public class AlarmListAdapter extends BaseAdapter{
 					Log.d(Const.DEBUG_TAG, "dateToggleBtn change resetMinAlarmCall start");
 					mManager.resetMinAlarmCall(vo.getAlarmDateType());
 				}
-
 			}
 		});
 

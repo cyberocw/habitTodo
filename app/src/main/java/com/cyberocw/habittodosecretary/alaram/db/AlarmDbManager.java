@@ -368,21 +368,16 @@ public class AlarmDbManager extends DbHelper{
 		closeDB();
 		return arrList;
 	}
-
 	public boolean deleteAlarm(long id) {
-		// TODO: 2015-08-30 알림 반복인데 오늘만 삭제 때 어떻게 할지 구현 해야 함
-		SQLiteDatabase db = this.getWritableDatabase();
+		//// TODO: 2016-02-03  Relation이 있을 경우 처리 필요
 
-		db.beginTransaction();
+		SQLiteDatabase db = this.getWritableDatabase();
 		boolean result = true;
 		try {
-			db.delete(TABLE_ALARM, KEY_ID + "=?", new String[]{String.valueOf(id)});
-			db.delete(TABLE_ALARM_REPEAT, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
-			db.delete(TABLE_ALARM_DATE, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
-			db.delete(TABLE_ALARM_ORDER, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
+			db.beginTransaction();
+			deleteAlarm(id, db);
 			db.setTransactionSuccessful();
-		}
-		catch (Exception e){
+		}catch(Exception e){
 			result = false;
 		}
 		finally{
@@ -390,6 +385,15 @@ public class AlarmDbManager extends DbHelper{
 			closeDB();
 		}
 		return result;
+	}
+
+	public SQLiteDatabase deleteAlarm(long id, SQLiteDatabase db) {
+		// TODO: 2015-08-30 알림 반복인데 오늘만 삭제 때 어떻게 할지 구현 해야 함
+		db.delete(TABLE_ALARM, KEY_ID + "=?", new String[]{String.valueOf(id)});
+		db.delete(TABLE_ALARM_REPEAT, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
+		db.delete(TABLE_ALARM_DATE, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
+		db.delete(TABLE_ALARM_ORDER, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
+		return db;
 	}
 
 	/**
@@ -401,61 +405,75 @@ public class AlarmDbManager extends DbHelper{
 		c.setTime(date.getTime());
 		c.add(Calendar.DAY_OF_MONTH, 1);
 
-		return getAlarmList(date, null, day);
+		return getAlarmList(-1, date, null, day);
 	}
 
-	private ArrayList<AlarmVO> getAlarmList(Calendar startDate, Calendar endDate, int[] dayName) {
-		ContentValues values = new ContentValues();
-
-		for (int i = 0; i < dayName.length; i++) {
-			switch (dayName[i]) {
-				case Calendar.MONDAY:
-					values.put(KEY_MON, 1);
-					break;
-				case Calendar.TUESDAY:
-					values.put(KEY_TUE, 1);
-					break;
-				case Calendar.WEDNESDAY:
-					values.put(KEY_WED, 1);
-					break;
-				case Calendar.THURSDAY:
-					values.put(KEY_THU, 1);
-					break;
-				case Calendar.FRIDAY:
-					values.put(KEY_FRI, 1);
-					break;
-				case Calendar.SATURDAY:
-					values.put(KEY_SAT, 1);
-					break;
-				case Calendar.SUNDAY:
-					values.put(KEY_SUN, 1);
-					break;
-			}
+	public AlarmVO getAlarmById(long id){
+		ArrayList<AlarmVO> arrayList = getAlarmList(id, null, null, null);
+		if(arrayList.size() == 0){
+			return null;
 		}
+		return arrayList.get(0);
+
+	}
+
+	private ArrayList<AlarmVO> getAlarmList(long id, Calendar startDate, Calendar endDate, int[] dayName) {
 		String selectQuery =
 				"SELECT  A.*, B." + KEY_ID + " as " + KEY_REPEAT_ID + ", C." + KEY_ID + " as " + KEY_DATE_ID + ", sun, mon, tue, wed, thu, fri, sat, C." +
 						KEY_ALARM_DATE +" FROM " + TABLE_ALARM + " AS A LEFT JOIN " +
 						TABLE_ALARM_REPEAT + " AS B ON A." + KEY_ID + " = B."+ KEY_F_ALARM_ID + " LEFT JOIN " +
 						TABLE_ALARM_DATE + " AS C ON A." + KEY_ID + " = C." + KEY_F_ALARM_ID +
 						" WHERE A." + KEY_ID + " IN ";
+		if(id == -1) {
+			ContentValues values = new ContentValues();
 
-		if (values.size() > 0) {
-			selectQuery += "(SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE 1=1 ";
-			for (String key : values.keySet()) {
-				selectQuery += " AND " + key + " = 1";
+			for (int i = 0; i < dayName.length; i++) {
+				switch (dayName[i]) {
+					case Calendar.MONDAY:
+						values.put(KEY_MON, 1);
+						break;
+					case Calendar.TUESDAY:
+						values.put(KEY_TUE, 1);
+						break;
+					case Calendar.WEDNESDAY:
+						values.put(KEY_WED, 1);
+						break;
+					case Calendar.THURSDAY:
+						values.put(KEY_THU, 1);
+						break;
+					case Calendar.FRIDAY:
+						values.put(KEY_FRI, 1);
+						break;
+					case Calendar.SATURDAY:
+						values.put(KEY_SAT, 1);
+						break;
+					case Calendar.SUNDAY:
+						values.put(KEY_SUN, 1);
+						break;
+				}
 			}
-			selectQuery += ")";
-		}
 
-		//endDate가 null이 아닐때 (주간 리스트 보여줄때 사용 예정)
-		if (startDate != null && endDate != null ) {
-			selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
-					KEY_ALARM_DATE + " BETWEEN " + convertDateType(startDate) + " AND " + convertDateType(endDate) + ")";
+			if (values.size() > 0) {
+				selectQuery += "(SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE 1=1 ";
+				for (String key : values.keySet()) {
+					selectQuery += " AND " + key + " = 1";
+				}
+				selectQuery += ")";
+			}
+
+			//endDate가 null이 아닐때 (주간 리스트 보여줄때 사용 예정)
+			if (startDate != null && endDate != null) {
+				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
+						KEY_ALARM_DATE + " BETWEEN " + convertDateType(startDate) + " AND " + convertDateType(endDate) + ")";
+			}
+			//endDate가 null일때 - 현재 이 경우만 존재
+			if (startDate != null && endDate == null) {
+				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
+						KEY_ALARM_DATE + " = " + convertDateType(startDate) + ")";
+			}
 		}
-		//endDate가 null일때 - 현재 이 경우만 존재
-		if (startDate != null && endDate == null ) {
-			selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
-					KEY_ALARM_DATE + " = " + convertDateType(startDate) + ")";
+		else{
+			selectQuery += "("+id+")";
 		}
 
 		selectQuery += " ORDER BY C." + KEY_ALARM_DATE + " ASC, A." + KEY_HOUR + " ASC, A." + KEY_MINUTE + " ASC";
