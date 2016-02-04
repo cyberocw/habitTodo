@@ -29,7 +29,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static DbHelper sInstance;
 
 	private static final String DB_NME = "habit_todo";
-	private static final int DB_VERSION = 8;
+	private static final int DB_VERSION = 9;
 
 	private static final String ARRAY_DIV = "_ho8c7wt_";
 
