@@ -21,20 +21,19 @@ public class MemoDataManager {
 	public MemoDataManager(Context ctx) {
 		mCtx = ctx;
 		mDb = MemoDbManager.getInstance(ctx);
-		makeDataList();
-		Log.d(Const.DEBUG_TAG, "MemoList length = " + this.dataList.size());
+		//makeDataList();
 	}
 
 	public MemoDataManager(Context ctx, Long cateId) {
 		mCtx = ctx;
 		mDb = MemoDbManager.getInstance(ctx);
 		makeDataList(cateId);
-		Log.d(Const.DEBUG_TAG, "MemoList length = " + this.dataList.size());
 	}
 
 	public ArrayList<MemoVO> getDataList() {
 		return dataList;
 	}
+
 	public void makeDataList(){
 		this.dataList = mDb.getList();
 	}
@@ -93,7 +92,6 @@ public class MemoDataManager {
 
 		//알람 인던트 등록
 		if(item.getId() == -1){
-			Log.d(Const.DEBUG_TAG, "오류 : CATEGORY ID가 생성되지 않았습니다");
 			Toast.makeText(mCtx, "오류 : CATEGORY ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
 			return false;
 		}

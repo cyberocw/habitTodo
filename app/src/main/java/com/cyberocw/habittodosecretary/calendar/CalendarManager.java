@@ -79,7 +79,6 @@ public class CalendarManager {
 	}
 
 	public void renderDayNum(){
-		Log.d(Const.DEBUG_TAG, "render day num");
 		int dayOfWeek = mCalendar.get(Calendar.DAY_OF_WEEK) -1;
 		Calendar cal2 = (Calendar) mCalendar.clone();
 		cal2.add(Calendar.DAY_OF_MONTH, -1 * dayOfWeek);

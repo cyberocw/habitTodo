@@ -23,7 +23,6 @@ import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 
 import java.util.ArrayList;
 
-import static android.util.Log.d;
 
 /**
  * Created by cyberocw on 2015-10-18.
@@ -180,7 +179,6 @@ public class TimerDialog extends DialogFragment {
 		Intent intent = new Intent();
 		intent.putExtras(bundle);
 
-		Log.d(Const.DEBUG_TAG, "activity result start");
 		int returnCode = mModifyMode == 1 ? Const.ALARM_INTERFACE_CODE.ADD_TIMER_MODIFY_FINISH_CODE : Const.ALARM_INTERFACE_CODE.ADD_TIMER_FINISH_CODE;
 		getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
 	}

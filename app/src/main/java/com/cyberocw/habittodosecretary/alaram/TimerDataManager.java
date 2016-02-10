@@ -24,7 +24,6 @@ public class TimerDataManager {
 		mCtx = ctx;
 		mDb = AlarmDbManager.getInstance(ctx);
 		this.dataList = mDb.getTimerList();
-		Log.d(Const.DEBUG_TAG, "timerList length = " + this.dataList.size());
 	}
 
 	public ArrayList<TimerVO> getDataList() {
@@ -85,7 +84,7 @@ public class TimerDataManager {
 
 		//알람 인던트 등록
 		if(item.getId() == -1){
-			Log.d(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
+			Log.e(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
 			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
 			return false;
 		}

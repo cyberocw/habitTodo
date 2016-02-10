@@ -124,6 +124,8 @@ public class AlarmDialogNew extends DialogFragment{
 	}
 
 	private void init(){
+		Toast.makeText(mCtx, "alarmId= "+ mAlarmVO.getId(), Toast.LENGTH_SHORT).show();
+
 		/* alarmTitle, alarmType(진동,소리 등), alarmOption(타이머,시간지정), hour, minute, mArrAlarmCall(몇분전 알림 목록)
 		 , mDataRepeatDay, mAlarmDateType, ArrayList<Calendar> alarmDate = null;
 		*/
@@ -146,12 +148,8 @@ public class AlarmDialogNew extends DialogFragment{
 
 			ArrayList<Calendar> arrAlarmDate = mAlarmVO.getAlarmDateList();
 
-			Log.d(Const.DEBUG_TAG, "arrAlarmDate = " + arrAlarmDate + " size=" + arrAlarmDate.size());
-
 			if(arrAlarmDate != null && arrAlarmDate.size() > 0)
 				mCalendar = arrAlarmDate.get(0);
-
-			Log.d(Const.DEBUG_TAG, "11111 date = " + mCalendar.get(Calendar.DAY_OF_MONTH));
 
 			renderDateTypeUi(mAlarmDateType, mCalendar);
 
@@ -265,9 +263,6 @@ public class AlarmDialogNew extends DialogFragment{
 
 		//alarmOption에 따라 time 가져오는게 다름 타이머 일 경우 arrAlarmCall에 초단위로 변환해서 삽입.
 		if(mAlarmOption == Const.ALARM_OPTION.NO_DATE_TIMER) {
-			if(!mArrAlarmCall.isEmpty())
-				Log.d(Const.DEBUG_TAG, "mArrAlarmCall array is not empty");
-
 			mArrAlarmCall.clear();
 
 			int m = mNpHour.getValue() * 60 + mNpMinute.getValue();
@@ -307,7 +302,6 @@ public class AlarmDialogNew extends DialogFragment{
 		Intent intent = new Intent();
 		intent.putExtras(bundle);
 
-		Log.d(Const.DEBUG_TAG, "activity result start");
 		int returnCode = mModifyMode == 1 ? Const.ALARM_INTERFACE_CODE.ADD_ALARM_MODIFY_FINISH_CODE : Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE;
 		getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
 	}
@@ -398,7 +392,6 @@ public class AlarmDialogNew extends DialogFragment{
 		mSpDateType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Log.d(Const.DEBUG_TAG, "spinner select event fire");
 				renderDateTypeUi(position, mCalendar);
 			}
 
@@ -461,11 +454,6 @@ public class AlarmDialogNew extends DialogFragment{
 //		llDatePicWrap = (LinearLayout) getView().findViewById(R.id.llDatePicWrap);
 //		llTimePickWrap = (LinearLayout) getView().findViewById(R.id.llTimePickWrap);
 //		llRepeatDayWrap = (LinearLayout) getView().findViewById(R.id.llRepeatDayWrap);
-
-		Log.d(Const.DEBUG_TAG, "renderDateTypeUi start type=" + alarmDateType);
-
-		Log.d(Const.DEBUG_TAG, "c.get(Calendar.DAY_OF_MONTH)=" + c.get(Calendar.DAY_OF_MONTH));
-
 		llTimePickWrap.setVisibility(View.VISIBLE);
 
 		switch(alarmDateType){
@@ -639,9 +627,6 @@ public class AlarmDialogNew extends DialogFragment{
 		int time = hourOfDay % 12;
 		if (isPm && time == 0)
 			time = 12;
-
-		if(mTvAlarmTime == null)
-			Log.d(Const.DEBUG_TAG, "alarmTime is null...");
 
 		mTvAlarmTime.setTag(R.id.timeHourId, hourOfDay);
 		mTvAlarmTime.setTag(R.id.timeMinuteId, minute);

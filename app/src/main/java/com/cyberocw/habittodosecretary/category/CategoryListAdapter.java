@@ -37,7 +37,6 @@ public class CategoryListAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		Log.d(Const.DEBUG_TAG, "alarmListAdapter getCount = " + mManager.getCount());
 		return mManager.getCount();
 	}
 
@@ -55,8 +54,6 @@ public class CategoryListAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		CategoryVO vo = mManager.getItem(position);
 
-		Log.d(Const.DEBUG_TAG, "catelist adapter position = " + position);
-
 		if(convertView == null){
 			convertView = inflater.inflate(R.layout.cate_view, parent, false);
 		}
@@ -64,7 +61,6 @@ public class CategoryListAdapter extends BaseAdapter {
 		TextView tvCnt = (TextView) convertView.findViewById(R.id.tvCateCnt);
 
 		tvTitle.setText(vo.getTitle());
-		Log.d(Const.DEBUG_TAG, "sortOrder = " + vo.getSortOrder());
 
 		tvCnt.setText(Integer.toString(vo.getCnt()));
 

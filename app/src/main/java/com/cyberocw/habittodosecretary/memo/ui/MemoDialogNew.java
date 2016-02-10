@@ -1,18 +1,24 @@
 package com.cyberocw.habittodosecretary.memo.ui;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Rating;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -74,7 +80,6 @@ public class MemoDialogNew extends Fragment{
 		Bundle arguments = getArguments();
 
 		if(arguments != null) {
-			Log.d(Const.DEBUG_TAG, "arguments="+arguments);
 			mMemoVO = (MemoVO) arguments.getSerializable(Const.MEMO_VO);
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.ALARM_VO);
 
@@ -106,8 +111,6 @@ public class MemoDialogNew extends Fragment{
 
 	}
 	public void initActivity(){
-		Log.d(Const.DEBUG_TAG, "mView=" + mView);
-
 		mTvTitle = (EditText) mView.findViewById(R.id.txMemoTitle);
 		mSpCategory = (Spinner) mView.findViewById(R.id.spCategory);
 		mEtMemoEditor = (EditText) mView.findViewById(R.id.etMemoEditor);
@@ -121,7 +124,6 @@ public class MemoDialogNew extends Fragment{
 
 	private void init(){
 		if(mModifyMode == 1){
-			Log.d(Const.DEBUG_TAG, "mMemoVO.getTitle()="+mMemoVO.getTitle());
 			mTvTitle.setText(mMemoVO.getTitle());
 			mEtMemoEditor.setText(mMemoVO.getContents());
 			mRatingBar.setRating((float) mMemoVO.getRank());
@@ -141,9 +143,54 @@ public class MemoDialogNew extends Fragment{
 		mBtnAddAlarm.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showAlarmPopup();
+				btnAddAlarmPopup();
 			}
 		});
+	}
+
+	private void btnAddAlarmPopup(){
+		if(mAlarmVO == null) {
+			showAlarmPopup();
+		}else{
+			String names[] ={"편집","삭제"};
+			AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
+
+			ListView lv = new ListView(mCtx);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+			alertDialog.setView(lv);
+			alertDialog.setTitle("옵션");
+
+			lv.setLayoutParams(params);
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,android.R.layout.simple_list_item_1,names);
+			lv.setAdapter(adapter);
+
+			final DialogInterface dialogInterface = alertDialog.show();
+
+			lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					switch (position) {
+						case 0:
+							showAlarmPopup();
+							break;
+						case 1:
+							deleteAlarm();
+							break;
+					}
+					dialogInterface.dismiss();
+				}
+			});
+		}
+	}
+
+	private void deleteAlarm(){
+		if(mModifyMode == 1) {
+			mAlarmVO.setId(-2);
+		}
+		else {
+			mAlarmVO = null;
+		}
+		isModifyAlarm = true;
 	}
 
 	private void showAlarmPopup(){

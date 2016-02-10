@@ -2,6 +2,7 @@ package com.cyberocw.habittodosecretary.memo;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,7 +120,6 @@ public class MemoFragment extends Fragment {
 	}
 
 	private void initActivity(){
-		Log.d(Const.DEBUG_TAG, "mCateId="+mCateId);
 		mMemoDataManager = new MemoDataManager(mCtx, mCateId);
 		mMemoAdapter = new MemoListAdapter(this, mCtx, mMemoDataManager);
 		mAlarmDataManager = new AlarmDataManager(mCtx);
@@ -136,7 +137,6 @@ public class MemoFragment extends Fragment {
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(mCtx, "okclick", Toast.LENGTH_SHORT).show();
 				showNewMemoDialog();
 			}
 		});
@@ -155,15 +155,10 @@ public class MemoFragment extends Fragment {
 			// relation이 있으면 가져옴
 			RelationVO relationVO = mCommonRelationDBManager.getByTypeId(Const.ETC_TYPE.MEMO, id);
 
-			Log.d(Const.DEBUG_TAG, "ocw selected relattionVO =" + relationVO.toString());
-
 			if(relationVO.getAlarmId() != -1) {
 				AlarmVO alarmVO = mAlarmDataManager.getItemByIdInDB(relationVO.getAlarmId());
 				if(alarmVO != null) {
-					Log.d(Const.DEBUG_TAG, "ocw relation get alaarm id = " + alarmVO.getId());
 					bundle.putSerializable(Const.ALARM_VO, alarmVO);
-				}else{
-					Log.d(Const.DEBUG_TAG, "ocw relation get alaarm failed");
 				}
 			}
 
@@ -201,12 +196,7 @@ public class MemoFragment extends Fragment {
 					if (mAlarmDataManager.addItem(alarmVO) == true) {
 						mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
 
-						if (insertRelation(alarmVO, memoVO)){
-							Log.d(Const.DEBUG_TAG, "Relation 수정 등록 성공");
-							Toast.makeText(mCtx, "Relation 수정 등록 성공", Toast.LENGTH_LONG).show();
-						}
-						else{
-							Log.d(Const.DEBUG_TAG, "Relation 수정 등록 실패");
+						if (!insertRelation(alarmVO, memoVO)){
 							Toast.makeText(mCtx, "Relation 수정 등록 실패", Toast.LENGTH_LONG).show();
 						}
 					}
@@ -225,46 +215,72 @@ public class MemoFragment extends Fragment {
 				}
 
 				if(alarmVO != null) {
-					long oriId = alarmVO.getId();
-
-					Log.d(Const.DEBUG_TAG, "ocw 기존 알람 id = " + oriId);
-
 					if(alarmVO.getId() == -1){
 						if (mAlarmDataManager.addItem(alarmVO) == false) {
 							Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
 							break;
+						}else {
+							insertRelation(alarmVO, memoVO);
+						}
+					}
+					else if(alarmVO.getId() == -2){
+
+						//기존 알람 삭제
+						RelationVO relationVO = mCommonRelationDBManager.getByTypeId(Const.ETC_TYPE.MEMO, memoVO.getId());
+
+						if(mAlarmDataManager.deleteItemById(relationVO.getAlarmId())){
+							Toast.makeText(mCtx, "기존 알람이 삭제되었습니다", Toast.LENGTH_SHORT).show();
+						}else{
+							Toast.makeText(mCtx, "기존 알람을 삭제하는데 실패했습니다", Toast.LENGTH_SHORT).show();
 						}
 					}
 					else{
-						if (mAlarmDataManager.modifyItem(alarmVO) == true) {
-							if(mCommonRelationDBManager.deleteByAlarmId(oriId)){
-								Log.d(Const.DEBUG_TAG, "ocw delete Alarm 성공");
-							}else{
-								Log.d(Const.DEBUG_TAG, "ocw delete Alarm 실패");
-								break;
-							}
-
-							Log.d(Const.DEBUG_TAG, "ocw 새로 생성된 alarmVO.getId()" + alarmVO.getId());
-						}
-						else {
-							Log.d(Const.DEBUG_TAG, "ocw modify 실패");
+						Log.d(Const.DEBUG_TAG, "elselese");
+						//alarm modify시 delete 후 insert 과정에서 delete하면서 relation도 함께 지워짐
+						if (mAlarmDataManager.modifyItem(alarmVO) == false) {
 							Toast.makeText(mCtx, "Alarm DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
 							break;
 						}
 					}
-					if(insertRelation(alarmVO, memoVO)){
-						Log.d(Const.DEBUG_TAG, "Relation 수정 등록 성공");
-						Toast.makeText(mCtx, "Relation 수정 등록 성공", Toast.LENGTH_LONG).show();
-					}
-					else{
-						Log.d(Const.DEBUG_TAG, "Relation 수정 등록 실패");
-						Toast.makeText(mCtx, "Relation 수정 등록 실패", Toast.LENGTH_LONG).show();
-					}
+
 					mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
 				}
 				break;
 		}
 		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	public void deleteItemAlertDialog(final long id){
+		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
+		alert_confirm.setMessage("해당 메모를 삭제하시겠습니까?").setCancelable(false).setPositiveButton("확인",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						deleteMemo(id);
+
+						dialog.dismiss();
+					}
+				}).setNegativeButton("취소",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// 'No'
+						dialog.dismiss();
+					}
+				});
+		AlertDialog alert = alert_confirm.create();
+		alert.show();
+	}
+
+	public void deleteMemo(long id){
+		if(mMemoDataManager.deleteItemById(id)){
+			Toast.makeText(mCtx, "삭제 되었습니다", Toast.LENGTH_SHORT).show();
+			mAlarmDataManager.resetMinAlarmCall(Const.ALARM_DATE_TYPE.SET_DATE);
+			mAlarmDataManager.resetMinAlarmCall(Const.ALARM_DATE_TYPE.REPEAT);
+		}else{
+			Toast.makeText(mCtx, "삭제에 실패했습니다", Toast.LENGTH_SHORT).show();
+		}
+		mMemoAdapter.notifyDataSetChanged();
 	}
 
 	private boolean insertRelation(AlarmVO alarmVO, MemoVO memoVO){

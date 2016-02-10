@@ -74,7 +74,6 @@ public class TimerListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		Log.d(Const.DEBUG_TAG, "getView");
 		if(convertView == null){
 			convertView = inflater.inflate(R.layout.alarm_view, parent, false);
 		}
@@ -107,8 +106,6 @@ public class TimerListAdapter extends BaseAdapter {
 
 		this.addTimeRemainView(position, tvActionWrap);
 
-		Log.d(Const.DEBUG_TAG, "adapter position = " + position);
-
 		final String defaultAlarmText = mNumberFormat.format(hour) + ":" + mNumberFormat.format(minute) +
 				":" + mNumberFormat.format(second) + "\n후 알림";
 		tvActionWrap.setText(defaultAlarmText);
@@ -125,7 +122,6 @@ public class TimerListAdapter extends BaseAdapter {
 		btnDateToggle.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Log.d(Const.DEBUG_TAG, "onclick");
 				TimerVO vo = mManager.getItem(position);
 				ToggleButton btn = (ToggleButton) v;
 				boolean isChecked = btn.isChecked();
@@ -136,11 +132,9 @@ public class TimerListAdapter extends BaseAdapter {
 					btn.toggle();
 					return;
 				}
-				Log.d(Const.DEBUG_TAG, "onclick2222");
 				mBtnCheckedToggle = btnDateToggle;
 
 				if (isChecked == true) {
-					Log.d(Const.DEBUG_TAG, "onclick start1111");
 					Intent intent;
 					intent = new Intent(mCtx, TimerService.class);
 					intent.putExtra("remainTime", remainTime);
@@ -151,8 +145,6 @@ public class TimerListAdapter extends BaseAdapter {
 					setPrefsTimerId(mManager.getItem(position).getId());
 
 				} else {
-					Log.d(Const.DEBUG_TAG, "onclick start222222");
-
 					btnDateToggle.setText("Start");
 
 					if (mBound)
@@ -162,12 +154,9 @@ public class TimerListAdapter extends BaseAdapter {
 		});
 
 		if(mStartedTimerId == mManager.getItem(position).getId()){
-			Log.d(Const.DEBUG_TAG, "mBound = " + mBound + " id = " + mStartedTimerId);
-
 			if(mBound)
 				mService.setTxtMap(mMapConvertView);
 
-			Log.d(Const.DEBUG_TAG, "call onclick");
 			btnDateToggle.toggle();
 			btnDateToggle.callOnClick();
 
@@ -181,7 +170,6 @@ public class TimerListAdapter extends BaseAdapter {
 
 	//// TODO: 2015-11-22 나중에 interface로 빼기
 	public void unbindService(){
-		Log.d(Const.DEBUG_TAG, "front unbindservice mConnection=" + mConnection);
 		//activity가 종료되는 경우 mConnection 값이 달라져서 unbindService 호출 에러가 뜸
 		mBound = false;
 		try {
@@ -227,9 +215,6 @@ public class TimerListAdapter extends BaseAdapter {
 		@Override
 		public void onServiceConnected(ComponentName className,
 		                               IBinder service) {
-
-			Log.d(Const.DEBUG_TAG, "service connected");
-
 			// We've bound to LocalService, cast the IBinder and get LocalService instance
 			TimerService.LocalBinder binder = (TimerService.LocalBinder) service;
 			mService = binder.getService();

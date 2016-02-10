@@ -10,10 +10,12 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
+import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
 import com.cyberocw.habittodosecretary.db.DbHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,6 +25,7 @@ import java.util.Map;
  */
 public class AlarmDbManager extends DbHelper{
 	private static AlarmDbManager sInstance;
+	private static Context mCtx;
 
 	public AlarmDbManager(Context ctx) {
 		super(ctx);
@@ -32,6 +35,8 @@ public class AlarmDbManager extends DbHelper{
 		// Use the application context, which will ensure that you
 		// don't accidentally leak an Activity's context.
 		// See this article for more information: http://bit.ly/6LRzfx
+		mCtx = context;
+
 		if (sInstance == null) {
 			sInstance = new AlarmDbManager(context);
 		}
@@ -39,8 +44,6 @@ public class AlarmDbManager extends DbHelper{
 	}
 
 	public boolean insertAlarm(AlarmVO vo){
-		Log.d(Const.DEBUG_TAG, "serialize(vo.getAlarmCallList() = " + serialize(vo.getAlarmCallList().toArray()));
-
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
@@ -104,8 +107,6 @@ public class AlarmDbManager extends DbHelper{
 	}
 
 	public boolean modifyUse(AlarmVO vo){
-		Log.d(Const.DEBUG_TAG, "db modify use");
-
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
@@ -206,13 +207,9 @@ public class AlarmDbManager extends DbHelper{
 	private void insertDate(long id, Calendar cal) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
-		Log.d(Const.DEBUG_TAG, "insertDate before day = " + cal.get(Calendar.MONTH) + "day2 = " + cal.get(Calendar.DAY_OF_MONTH) + " id=" + id);
-
 		ContentValues values = new ContentValues();
 		values.put(KEY_ALARM_DATE, convertDateType(cal));
 		values.put(KEY_F_ALARM_ID, id);
-
-		Log.d(Const.DEBUG_TAG, "insertDate day = " + convertDateType(cal) + " id=" + id);
 
 		long _id = db.insert(TABLE_ALARM_DATE, null, values);
 
@@ -259,8 +256,6 @@ public class AlarmDbManager extends DbHelper{
 
 	//반복 알람 가장 가까운 시간 가져오기
 	public ArrayList<AlarmTimeVO> getMinRepeatAlarm(int dayNum) {
-		Log.d(Const.DEBUG_TAG, "getMinRepeatAlarm start");
-
 		HashMap<Integer, Integer> dayMap = new HashMap<>();
 		dayMap.put(Calendar.SUNDAY, 0);
 		dayMap.put(Calendar.MONDAY, 0);
@@ -311,8 +306,6 @@ public class AlarmDbManager extends DbHelper{
 
 			if (c.moveToFirst()) {
 				do {
-					//c.getString(c.getColumnIndex(KEY_ALARM_TITLE))
-					//Log.d(Const.DEBUG_TAG, "title = " + c.getString(c.getColumnIndex(KEY_ALARM_TITLE)));
 					hour =  c.getInt(c.getColumnIndex(KEY_HOUR));
 					minute = c.getInt(c.getColumnIndex(KEY_MINUTE));
 					alarmCallList = derialize(c.getString(c.getColumnIndex(KEY_ALARM_CALL_LIST)));
@@ -324,7 +317,6 @@ public class AlarmDbManager extends DbHelper{
 
 					//지금 시간 이전과 같으면 통과
 					if( i == 0 && nowTimeInMil >= cal.getTimeInMillis()){
-						Log.d(Const.DEBUG_TAG, "continue ok");
 						continue;
 					}
 					//오늘 기준 하루씩 추가
@@ -369,15 +361,17 @@ public class AlarmDbManager extends DbHelper{
 		return arrList;
 	}
 	public boolean deleteAlarm(long id) {
-		//// TODO: 2016-02-03  Relation이 있을 경우 처리 필요
-
 		SQLiteDatabase db = this.getWritableDatabase();
 		boolean result = true;
+
 		try {
 			db.beginTransaction();
+			CommonRelationDBManager.getInstance(mCtx).deleteByAlarmId(id, db);
 			deleteAlarm(id, db);
 			db.setTransactionSuccessful();
 		}catch(Exception e){
+			e.printStackTrace();
+			Log.e(Const.ERROR_TAG, "delete alarm error" + e.getMessage());
 			result = false;
 		}
 		finally{
@@ -492,8 +486,6 @@ public class AlarmDbManager extends DbHelper{
 		String alarmDate;
 		// TODO: 2015-08-30 date가 여럿일 경우는 고려하지 않았음, 일단 여러개일 경우를 대비하기 위해 테이블은 분리해 둠
 
-		Log.d(Const.DEBUG_TAG, "select result count = " + c.getCount());
-
 		ArrayList<AlarmVO> alarmVOList = new ArrayList<AlarmVO>();
 		HashMap<Long, AlarmVO> voMap = new HashMap<Long, AlarmVO>();
 
@@ -552,13 +544,8 @@ public class AlarmDbManager extends DbHelper{
 				cc.setTimeInMillis(c.getInt(c.getColumnIndex(KEY_UPDATE_DATE)));
 				vo.setCreateDt((Calendar) cc.clone());
 
-				Log.d(Const.DEBUG_TAG, "db title = " + vo.getAlarmTitle());
-				Log.d(Const.DEBUG_TAG, "db setAlarmType = " + vo.getAlarmType());
-
 				alarmVOList.add(vo);
 				voMap.put(vo.getId(), vo);
-
-				Log.d(Const.DEBUG_TAG, "selected VO = " + vo.toString());
 			} while (c.moveToNext());
 		}
 		closeDB();
@@ -593,8 +580,6 @@ public class AlarmDbManager extends DbHelper{
 		//values.put(KEY_ALARM_CONTENTS, vo.getA());
 
 		long id = db.insert(TABLE_TIMER, null, values);
-
-		Log.d(Const.DEBUG_TAG, "insert timer id="+id);
 
 		if(id == -1){
 			Log.e(Const.DEBUG_TAG, "DB Alarm INSERT ERROR");

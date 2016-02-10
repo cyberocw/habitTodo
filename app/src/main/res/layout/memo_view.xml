@@ -57,6 +57,7 @@
                 android:layout_height="wrap_content"
                 android:text="T"
                 android:id="@+id/ivAlarm"
+                android:visibility="gone"
                 android:src="@drawable/ic_action_alarms"
                 android:layout_alignParentTop="true"
                 />
@@ -68,6 +69,7 @@
                 android:id="@+id/ivAttachFile"
                 android:src="@drawable/ic_action_attachment"
                 android:layout_alignParentTop="true"
+                android:visibility="gone"
                 />
             <ImageView
                 android:layout_width="wrap_content"
@@ -75,6 +77,7 @@
                 android:text="I"
                 android:id="@+id/ivInfo"
                 android:src="@drawable/ic_action_about"
+                android:visibility="gone"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"/>

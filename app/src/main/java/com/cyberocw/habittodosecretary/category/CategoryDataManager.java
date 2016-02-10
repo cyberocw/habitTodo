@@ -22,7 +22,6 @@ public class CategoryDataManager {
 		mCtx = ctx;
 		mDb = CategoryDbManager.getInstance(ctx);
 		makeDataList();
-		Log.d(Const.DEBUG_TAG, "categoryList length = " + this.dataList.size());
 	}
 
 	public ArrayList<CategoryVO> getDataList() {
@@ -83,7 +82,7 @@ public class CategoryDataManager {
 
 		//알람 인던트 등록
 		if(item.getId() == -1){
-			Log.d(Const.DEBUG_TAG, "오류 : CATEGORY ID가 생성되지 않았습니다");
+			Log.e(Const.DEBUG_TAG, "오류 : CATEGORY ID가 생성되지 않았습니다");
 			Toast.makeText(mCtx, "오류 : CATEGORY ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
 			return false;
 		}

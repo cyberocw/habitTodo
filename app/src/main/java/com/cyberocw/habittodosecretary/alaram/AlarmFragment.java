@@ -136,14 +136,13 @@ public class AlarmFragment extends Fragment{
 
 	private void initTimerUi(){
 		ListView lv = (ListView) mView.findViewById(R.id.alramListView);
-		Log.d(Const.DEBUG_TAG, "timerui notifyDataSetChanged111");
+
 		lv.removeAllViewsInLayout();
 		lv.setAdapter(mTimerAdapter);
 		mTimerAdapter.refereshStartedTimerId();
 		lv.setClickable(true);
 		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Toast.makeText(mCtx, "click", Toast.LENGTH_SHORT).show();
 				showNewTimerDialog(id);
 			}
 		});
@@ -165,7 +164,6 @@ public class AlarmFragment extends Fragment{
 		lv.setClickable(true);
 		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Toast.makeText(mCtx, "click", Toast.LENGTH_SHORT).show();
 				showNewAlarmDialog(id);
 			}
 		});
@@ -183,8 +181,6 @@ public class AlarmFragment extends Fragment{
 	}
 
 	private void longClickPopup(int position, final long _id){
-
-		Log.d(Const.DEBUG_TAG, "clicked Id222 = " + _id);
 		String names[] ={"편집","삭제"};
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
 
@@ -221,8 +217,6 @@ public class AlarmFragment extends Fragment{
 	}
 
 	public void deleteItemAlertDialog(final long id){
-		Log.d(Const.DEBUG_TAG, "clicked Id333 = " + id);
-
 		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
 		alert_confirm.setMessage("해당 알림을 삭제하시겠습니까?").setCancelable(false).setPositiveButton("확인",
 				new DialogInterface.OnClickListener() {
@@ -258,7 +252,6 @@ public class AlarmFragment extends Fragment{
 		AlarmVO vo = mAlarmDataManager.getItemByIdInList(id);
 
 		if(vo == null) {
-			Log.d(Const.DEBUG_TAG, "getItemId is null id = " + id);
 			return;
 		}
 
@@ -353,7 +346,6 @@ public class AlarmFragment extends Fragment{
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//Toast.makeText(mCtx,"okclick", Toast.LENGTH_SHORT).show();
 				if(mViewType == Const.ALARM_OPTION.SET_DATE_TIMER)
 					showNewAlarmDialog(-1);
 				else
@@ -453,7 +445,6 @@ public class AlarmFragment extends Fragment{
 		switch(resultCode) {
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE :
 				vo = (AlarmVO) data.getExtras().getSerializable("alarmVO");
-				Toast.makeText(mCtx, "title=" + vo.getAlarmTitle() + " repeatDay=" + Arrays.toString(vo.getRepeatDay().toArray()), Toast.LENGTH_LONG).show();
 
 				// 알람 추가
 				if(mAlarmDataManager.addItem(vo) == true)
@@ -481,7 +472,6 @@ public class AlarmFragment extends Fragment{
 				break;
 
 			case Const.ALARM_INTERFACE_CODE.ADD_TIMER_FINISH_CODE :
-				Log.d(Const.DEBUG_TAG, "ADD_TIMER_FINISH_CODE ");
 				tvo = (TimerVO) data.getExtras().getSerializable("timerVO");
 				// 알람 추가
 				if(mTimerDataManager.addItem(tvo) == true)
@@ -490,7 +480,6 @@ public class AlarmFragment extends Fragment{
 					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
 				break;
 			case Const.ALARM_INTERFACE_CODE.ADD_TIMER_MODIFY_FINISH_CODE :
-				Log.d(Const.DEBUG_TAG, "ADD_TIMER_MODIFY_FINISH_CODE ");
 				tvo = (TimerVO) data.getExtras().getSerializable("timerVO");
 				if(mTimerDataManager.modifyItem(tvo) == true)
 					mTimerAdapter.notifyDataSetChanged();

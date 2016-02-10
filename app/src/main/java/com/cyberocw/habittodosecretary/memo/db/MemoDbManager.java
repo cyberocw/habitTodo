@@ -8,6 +8,8 @@ import android.util.Log;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
+import com.cyberocw.habittodosecretary.common.vo.RelationVO;
+import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
 import com.cyberocw.habittodosecretary.db.DbHelper;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
@@ -38,7 +40,8 @@ public class MemoDbManager extends DbHelper{
 	}
 
 	public ArrayList<MemoVO> getListByCate(long cateId){
-		String selectQuery = " SELECT * FROM " + TABLE_MEMO + " WHERE " + KEY_CATEGORY_ID + " = " + cateId;
+		String selectQuery = " SELECT TM.*, AR." + KEY_F_ALARM_ID + " FROM " + TABLE_MEMO + " TM LEFT JOIN " + TABLE_ALARAM_RELATION + " AR " +
+				" ON TM." + KEY_ID + "= AR." + KEY_F_ID + " AND AR." + KEY_TYPE + " = '"+ Const.ETC_TYPE.MEMO + "' WHERE " + KEY_CATEGORY_ID + " = " + cateId;
 		return getQuery(selectQuery);
 	}
 	public ArrayList<MemoVO> getList(){
@@ -61,11 +64,13 @@ public class MemoDbManager extends DbHelper{
 				vo.setContents(c.getString(c.getColumnIndex(KEY_CONTENTS)));
 				vo.setCategoryId(c.getLong(c.getColumnIndex(KEY_CATEGORY_ID)));
 				vo.setUrl(c.getString(c.getColumnIndex(KEY_URL)));
-				vo.setCreateDt(c.getInt(c.getColumnIndex(KEY_CREATE_DATE)));
-				vo.setUpdateDt(c.getInt(c.getColumnIndex(KEY_UPDATE_DATE)));
+				vo.setCreateDt(c.getLong(c.getColumnIndex(KEY_CREATE_DATE)));
+				vo.setUpdateDt(c.getLong(c.getColumnIndex(KEY_UPDATE_DATE)));
 				vo.setViewCnt(c.getInt(c.getColumnIndex(KEY_VIEW_CNT)));
 				vo.setRank(c.getInt(c.getColumnIndex(KEY_RANK)));
 
+				if(!c.isNull(c.getColumnIndex(KEY_F_ALARM_ID)))
+					vo.setAlarmId(c.getLong(c.getColumnIndex(KEY_F_ALARM_ID)));
 				list.add(vo);
 			} while (c.moveToNext());
 		}
@@ -93,29 +98,22 @@ public class MemoDbManager extends DbHelper{
 	}
 
 	public boolean delete(long id) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		String query = "SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARAM_RELATION + " WHERE " + KEY_F_ALARM_ID + "=" + id + " AND " +
-				KEY_TYPE + " = '" +  Const.ETC_TYPE.MEMO + "'";
-		Cursor c = db.rawQuery(query, null);
-		c.moveToFirst();
-		long alarmId = -1;
 
-		Log.d(Const.DEBUG_TAG, "ocw Relation getCount()=" + c.getCount());
+		CommonRelationDBManager commonRelationDbManager = CommonRelationDBManager.getInstance(mCtx);
+		RelationVO relationVO = commonRelationDbManager.getByTypeId(Const.ETC_TYPE.MEMO, id);
 
-		if(c.getCount() > 0)
-			alarmId = c.getLong(0);
-
-		Log.d(Const.DEBUG_TAG, "ocw Relation getCount()=" + c.getCount() + "alarmId=" + alarmId);
-
-
+		long alarmId = relationVO.getAlarmId();
 		boolean result = true;
+
+		SQLiteDatabase db = this.getWritableDatabase();
+
 		try {
 			db.beginTransaction();
 			// relation이 맺어져 있다면
 			if(alarmId > -1) {
 				AlarmDbManager alarmDbManager = AlarmDbManager.getInstance(mCtx);
 				alarmDbManager.deleteAlarm(alarmId, db);
-				db.delete(TABLE_ALARAM_RELATION, KEY_F_ID + "=? AND " + KEY_TYPE + " =?", new String[]{String.valueOf(id), Const.ETC_TYPE.MEMO});
+				commonRelationDbManager.deleteByTypeAndId(Const.ETC_TYPE.MEMO, id, db);
 			}
 			db.delete(TABLE_MEMO, KEY_ID + "=?", new String[]{String.valueOf(id)});
 			db.setTransactionSuccessful();

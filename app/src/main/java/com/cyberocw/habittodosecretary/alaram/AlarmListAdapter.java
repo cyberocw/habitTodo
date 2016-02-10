@@ -39,7 +39,6 @@ public class AlarmListAdapter extends BaseAdapter{
 
 	@Override
 	public int getCount() {
-		Log.d(Const.DEBUG_TAG, "alarmListAdapter getCount = "+mManager.getCount());
 		return mManager.getCount();
 	}
 
@@ -56,8 +55,6 @@ public class AlarmListAdapter extends BaseAdapter{
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		AlarmVO vo = mManager.getItem(position);
-
-		Log.d(Const.DEBUG_TAG, "alarmList adapter position = " + position);
 
 		if(convertView == null){
 			convertView = inflater.inflate(R.layout.alarm_view, parent, false);
@@ -102,7 +99,6 @@ public class AlarmListAdapter extends BaseAdapter{
 				if(mManager.modifyUseYn(vo) == false)
 					Toast.makeText(mCtx, "useYn 변환에 실패했습니다", Toast.LENGTH_SHORT).show();
 				else {
-					Log.d(Const.DEBUG_TAG, "dateToggleBtn change resetMinAlarmCall start");
 					mManager.resetMinAlarmCall(vo.getAlarmDateType());
 				}
 			}

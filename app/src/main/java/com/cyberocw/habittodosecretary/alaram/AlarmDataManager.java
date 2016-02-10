@@ -16,6 +16,8 @@ import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
 import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.common.vo.RelationVO;
+import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -95,9 +97,6 @@ public class AlarmDataManager {
 	}
 
 	public AlarmVO addItem(Calendar date, String title, ArrayList<Integer> repeatDay, String type){
-
-		Log.d(Const.DEBUG_TAG, "data added1");
-
 		AlarmVO item = new AlarmVO(date, title, repeatDay);
 		this.dataList.add(item);
 		return item;
@@ -109,7 +108,7 @@ public class AlarmDataManager {
 
 		//알람 인던트 등록
 		if(item.getId() == -1){
-			Log.d(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
+			Log.e(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
 			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG);
 			return false;
 		}
@@ -119,10 +118,19 @@ public class AlarmDataManager {
 		return true;
 	}
 
+	/**
+	 * alarm을 지웠다가 새로 insert 하는 메서드
+	 * relation 또한 지우고 새로 insert 해줌
+	 * @param item (AlaramVO)
+	 * @return boolean
+	 */
 	public boolean modifyItem(AlarmVO item){
-		//삭제 후 새로 insert
+		//삭제 후 새로 insert, relation 또한 새로 insert 해줌 (일단 하나의 alarm은 하나의 relation만을 가진 상태의 로직)
+		long oriId = item.getId();
+		CommonRelationDBManager relationDBManager = CommonRelationDBManager.getInstance(mCtx);
+		RelationVO rvo = relationDBManager.getByAlarmId(oriId);
 
-		boolean delResult = this.deleteItemById(item.getId());
+		boolean delResult = this.deleteItemById(oriId);
 
 		if(delResult == false)
 			return false;
@@ -131,9 +139,12 @@ public class AlarmDataManager {
 
 		addItem(item);
 
+		rvo.setAlarmId(item.getId());
+		relationDBManager.insert(rvo);
+
 		//알람 인던트 등록
 		if(item.getId() == -1){
-			Log.d(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
+			Log.e(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
 			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG);
 			return false;
 		}
@@ -148,7 +159,6 @@ public class AlarmDataManager {
 	}
 
 	public void resetMinAlarmCall(int type){
-		Log.d(Const.DEBUG_TAG, "resetMinAlarmCall start type=" + type);
 		ArrayList<AlarmTimeVO> alarmTimetList = null;
 		String reqCode;
 		reqCode = Const.REQ_CODE;
@@ -171,8 +181,6 @@ public class AlarmDataManager {
 
 		String text = prefs.getString(reqCode, null);
 
-		Log.d(Const.DEBUG_TAG, "pref text = " + text);
-
 		AlarmManager alarmDataManager = (AlarmManager) mCtx
 				.getSystemService(Context.ALARM_SERVICE);
 		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
@@ -194,13 +202,10 @@ public class AlarmDataManager {
 		String[] arrReq = new String[alarmTimetList.size()];
 
 		for(int i = 0; i < alarmTimetList.size(); i++){
-			Log.d(Const.DEBUG_TAG, "alarmTimeList for call Time = " + String.valueOf(alarmTimetList.get(i).getCallTime()));
 			arrReq[i] = String.valueOf(setAlarm(alarmTimetList.get(i), type));
 		}
 
 		String newReqCode = TextUtils.join("," , arrReq);
-
-		Log.d(Const.DEBUG_TAG, "joind pref text = " + newReqCode);
 
 		//등록된 code 저장해둠
 		SharedPreferences.Editor editor = prefs.edit();
@@ -216,13 +221,10 @@ public class AlarmDataManager {
 
 		long reqCode = (Long) alarmVO.getId() * 100 + callTime;
 
-		Log.d(Const.DEBUG_TAG, "reqCode = " + reqCode + " calltime = " + callTime);
 		//myIntent.removeExtra("title");
 		Calendar ccc = Calendar.getInstance();
 		ccc.setTimeInMillis(alarmVO.getTimeStamp());
 		String strDay = ccc.get(Calendar.HOUR_OF_DAY) + "시 " + ccc.get(Calendar.MINUTE) + "분 " + ccc.get(Calendar.SECOND) + " 초";
-
-		Toast.makeText(mCtx, "알람 : reqCode=" + reqCode+ " 시간: " + strDay + " " + alarmVO.getAlarmTitle() + "" + callTime + (callTime < 0 ? "분 전" : (callTime > 0 ? "분 후" : "")), Toast.LENGTH_SHORT).show();
 
 		myIntent.putExtra("title", alarmVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
 		myIntent.putExtra("reqCode", reqCode);

@@ -11,10 +11,19 @@ public class MemoVO implements Serializable {
 	private String contents;
 	private long categoryId;
 	private String url;
-	private int createDt;
-	private int updateDt;
+	private long createDt;
+	private long updateDt;
 	private int viewCnt;
 	private int rank;
+	private long alarmId = -1;
+
+	public long getAlarmId() {
+		return alarmId;
+	}
+
+	public void setAlarmId(long alarmId) {
+		this.alarmId = alarmId;
+	}
 
 	public long getId() {
 		return id;
@@ -56,19 +65,19 @@ public class MemoVO implements Serializable {
 		this.url = url;
 	}
 
-	public int getCreateDt() {
+	public long getCreateDt() {
 		return createDt;
 	}
 
-	public void setCreateDt(int createDt) {
+	public void setCreateDt(long createDt) {
 		this.createDt = createDt;
 	}
 
-	public int getUpdateDt() {
+	public long getUpdateDt() {
 		return updateDt;
 	}
 
-	public void setUpdateDt(int updateDt) {
+	public void setUpdateDt(long updateDt) {
 		this.updateDt = updateDt;
 	}
 
@@ -100,6 +109,7 @@ public class MemoVO implements Serializable {
 				", updateDt=" + updateDt +
 				", viewCnt=" + viewCnt +
 				", rank=" + rank +
+				", alarmId=" + alarmId +
 				'}';
 	}
 }
