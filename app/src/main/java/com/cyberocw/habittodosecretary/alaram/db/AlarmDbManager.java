@@ -401,7 +401,9 @@ public class AlarmDbManager extends DbHelper{
 
 		return getAlarmList(-1, date, null, day);
 	}
-
+	public ArrayList<AlarmVO> getAlarmList(Calendar startDate, Calendar endDate){
+		return getAlarmList(-1, startDate, endDate, null);
+	}
 	public AlarmVO getAlarmById(long id){
 		ArrayList<AlarmVO> arrayList = getAlarmList(id, null, null, null);
 		if(arrayList.size() == 0){
@@ -421,43 +423,45 @@ public class AlarmDbManager extends DbHelper{
 		if(id == -1) {
 			ContentValues values = new ContentValues();
 
-			for (int i = 0; i < dayName.length; i++) {
-				switch (dayName[i]) {
-					case Calendar.MONDAY:
-						values.put(KEY_MON, 1);
-						break;
-					case Calendar.TUESDAY:
-						values.put(KEY_TUE, 1);
-						break;
-					case Calendar.WEDNESDAY:
-						values.put(KEY_WED, 1);
-						break;
-					case Calendar.THURSDAY:
-						values.put(KEY_THU, 1);
-						break;
-					case Calendar.FRIDAY:
-						values.put(KEY_FRI, 1);
-						break;
-					case Calendar.SATURDAY:
-						values.put(KEY_SAT, 1);
-						break;
-					case Calendar.SUNDAY:
-						values.put(KEY_SUN, 1);
-						break;
+			if(dayName != null) {
+				for (int i = 0; i < dayName.length; i++) {
+					switch (dayName[i]) {
+						case Calendar.MONDAY:
+							values.put(KEY_MON, 1);
+							break;
+						case Calendar.TUESDAY:
+							values.put(KEY_TUE, 1);
+							break;
+						case Calendar.WEDNESDAY:
+							values.put(KEY_WED, 1);
+							break;
+						case Calendar.THURSDAY:
+							values.put(KEY_THU, 1);
+							break;
+						case Calendar.FRIDAY:
+							values.put(KEY_FRI, 1);
+							break;
+						case Calendar.SATURDAY:
+							values.put(KEY_SAT, 1);
+							break;
+						case Calendar.SUNDAY:
+							values.put(KEY_SUN, 1);
+							break;
+					}
+				}
+
+				if (values.size() > 0) {
+					selectQuery += "(SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE 1=1 ";
+					for (String key : values.keySet()) {
+						selectQuery += " AND " + key + " = 1";
+					}
+					selectQuery += ")";
 				}
 			}
 
-			if (values.size() > 0) {
-				selectQuery += "(SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE 1=1 ";
-				for (String key : values.keySet()) {
-					selectQuery += " AND " + key + " = 1";
-				}
-				selectQuery += ")";
-			}
-
-			//endDate가 null이 아닐때 (주간 리스트 보여줄때 사용 예정)
+			//endDate가 null이 아닐때 (이때는 day 배열이 없는 상태 -1로 key_id in 무효화 시켜줌)
 			if (startDate != null && endDate != null) {
-				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
+				selectQuery += " (-1) OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
 						KEY_ALARM_DATE + " BETWEEN " + convertDateType(startDate) + " AND " + convertDateType(endDate) + ")";
 			}
 			//endDate가 null일때 - 현재 이 경우만 존재
@@ -531,7 +535,6 @@ public class AlarmDbManager extends DbHelper{
 				arrRepeatDay = new ArrayList<Integer>();
 
 				for (int i = 0; i < arrDateColumn.length; i++) {
-
 					if (c.getInt(c.getColumnIndex(arrDateColumn[i])) == 1)
 						arrRepeatDay.add(Const.DAY.ARR_CAL_DAY[i]);
 				}

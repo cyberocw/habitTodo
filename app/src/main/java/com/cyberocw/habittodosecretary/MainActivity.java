@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 	    FragmentManager fragmentManager = getSupportFragmentManager();
 	    fragmentManager.beginTransaction()
-			    .replace(R.id.main_container, new CategoryFragment()).commit();
+			    .replace(R.id.main_container, new AlarmFragment()).commit();
     }
 
 	@Override

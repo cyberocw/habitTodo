@@ -6,12 +6,16 @@ import android.graphics.Color;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
+import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -21,19 +25,46 @@ import java.util.HashMap;
 public class CalendarManager {
 	private Context mCtx;
 	private Calendar mCalendar;
+	private AlarmDbManager mAlarmDbManager;
 	private LinearLayout mWrapper;
+	private LinearLayout[] arrIconWrap = new LinearLayout[7];
 	private HashMap[] mArrDateMap = new HashMap[7];
 	private String[] dayText = {"일", "월", "화", "수", "목", "금", "토"};
 	private TextView[] arrTextViewDayTitle = new TextView[7];
 	private TextView[] arrTextViewDayNum = new TextView[7];
+	private ImageView[] arrImageView = new ImageView[7];
+	private ArrayList<Integer> mArrAlarmList;
 	private DatePickerDialog.OnDateSetListener mListener;
+	private Calendar mStartDate;
+	private Calendar mEndDate;
+	int pixelsHeight, pixelsIcon;
+
 
 	public CalendarManager(Context context, LinearLayout llWeekOfDayWrap, Calendar calendar) {
 		mCtx = context;
 		mCalendar = calendar;
 		mWrapper = llWeekOfDayWrap;
+		final float scale = mCtx.getResources().getDisplayMetrics().density;
+		pixelsHeight = mCtx.getResources().getDimensionPixelSize(R.dimen.calendarDayTextHeight);
+		pixelsIcon = (int) (5 * scale + 0.5f);
+	}
+
+	public void init(){
+		mAlarmDbManager = AlarmDbManager.getInstance(mCtx);
+
 		initWeekDay();
 		renderDayNum();
+
+
+	}
+
+	private void getAlarmList(){
+		ArrayList<AlarmVO> vo =  mAlarmDbManager.getAlarmList(mStartDate, mEndDate);
+		mArrAlarmList = new ArrayList<>();
+
+		for(int i = 0; i < vo.size(); i++){
+			mArrAlarmList.add(vo.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
+		}
 	}
 
 	public void initWeekDay(){
@@ -43,8 +74,6 @@ public class CalendarManager {
 	}
 
 	private void initDayArea(final int index){
-		final float scale = mCtx.getResources().getDisplayMetrics().density;
-		int pixels = (int) (20 * scale + 0.5f);
 
 		LinearLayout dayWrap = new LinearLayout(mCtx);
 		LinearLayout.LayoutParams paramsLl = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f);
@@ -59,7 +88,7 @@ public class CalendarManager {
 		});
 
 		TextView tvTitle = new TextView(mCtx);
-		LinearLayout.LayoutParams paramsTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, pixels);
+		LinearLayout.LayoutParams paramsTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, pixelsHeight);
 		tvTitle.setLayoutParams(paramsTv);
 		tvTitle.setText(dayText[index]);
 		tvTitle.setGravity(Gravity.CENTER);
@@ -67,11 +96,29 @@ public class CalendarManager {
 		arrTextViewDayTitle[index] = tvTitle;
 
 		TextView tvDayNum = new TextView(mCtx);
+
 		tvDayNum.setLayoutParams(paramsTv);
 		tvDayNum.setGravity(Gravity.CENTER);
 		dayWrap.addView(tvDayNum);
 
 		arrTextViewDayNum[index] = tvDayNum;
+		LinearLayout iconWrap = new LinearLayout(mCtx);
+		LinearLayout.LayoutParams paramsIconWrap = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+		iconWrap.setOrientation(LinearLayout.VERTICAL);
+		paramsIconWrap.gravity = Gravity.CENTER;
+		iconWrap.setLayoutParams(paramsIconWrap);
+
+		arrIconWrap[index] = iconWrap;
+
+		ImageView iv = new ImageView(mCtx);
+		LinearLayout.LayoutParams paramsIv = new LinearLayout.LayoutParams(pixelsIcon, pixelsIcon);
+		paramsIv.gravity = Gravity.CENTER;
+		iv.setLayoutParams(paramsIv);
+
+		arrImageView[index] = iv;
+		iconWrap.addView(iv);
+
+		dayWrap.addView(iconWrap);
 
 		mWrapper.addView(dayWrap);
 
@@ -79,10 +126,18 @@ public class CalendarManager {
 	}
 
 	public void renderDayNum(){
+		int fDay;
 		int dayOfWeek = mCalendar.get(Calendar.DAY_OF_WEEK) -1;
 		Calendar cal2 = (Calendar) mCalendar.clone();
 		cal2.add(Calendar.DAY_OF_MONTH, -1 * dayOfWeek);
-		int fDay;
+		Calendar cal3 = (Calendar) cal2.clone();
+
+		mStartDate = cal3;
+		Calendar cal4 = (Calendar) cal3.clone();
+		cal4.add(Calendar.DAY_OF_MONTH, 6);
+		mEndDate = cal4;
+
+		getAlarmList();
 
 		for(int i = 0 ; i < 7; i++){
 			fDay = cal2.get(Calendar.DAY_OF_MONTH);
@@ -98,15 +153,30 @@ public class CalendarManager {
 			arrTextViewDayNum[i].setText(fDay + "");
 
 			if(mCalendar.getTimeInMillis() == cal2.getTimeInMillis()){
-				arrTextViewDayNum[i].setBackgroundResource(R.drawable.day_of_week_ring);
+				//arrTextViewDayNum[i].setBackgroundResource(R.drawable.day_of_week_ring);
+				arrIconWrap[i].setBackgroundResource(R.drawable.day_of_week_ring);
 			}else{
-				arrTextViewDayNum[i].setBackgroundResource(0);
+				//arrTextViewDayNum[i].setBackgroundResource(0);
+				arrIconWrap[i].setBackgroundResource(0);
+			}
+
+			if(i == 0){
+				mStartDate = (Calendar) cal2.clone();
+			}
+			else if(i == 6){
+				mEndDate = (Calendar) cal2.clone();
 			}
 
 			mArrDateMap[i].put("year", cal2.get(Calendar.YEAR));
 			mArrDateMap[i].put("month", cal2.get(Calendar.MONTH));
 			mArrDateMap[i].put("day", cal2.get(Calendar.DAY_OF_MONTH));
 
+			//일정이 있으면 날짜 아래에 o 표시
+			if(mArrAlarmList.contains(fDay)){
+				arrImageView[i].setImageResource(R.drawable.dot);
+			}else{
+				arrImageView[i].setImageResource(0);
+			}
 			cal2.add(Calendar.DAY_OF_MONTH, 1);
 		}
 	}

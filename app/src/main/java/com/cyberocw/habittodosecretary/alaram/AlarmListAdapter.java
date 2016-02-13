@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,8 +67,14 @@ public class AlarmListAdapter extends BaseAdapter{
 					break;
 			}
 		}
-		LinearLayout ll = (LinearLayout) convertView.findViewById(R.id.actionWrap);
 
+		ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);
+		btnOption.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mMainFragment.longClickPopup(0, mManager.getItem(position).getId());
+			}
+		});
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

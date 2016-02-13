@@ -75,7 +75,7 @@ public class TimerListAdapter extends BaseAdapter {
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		if(convertView == null){
-			convertView = inflater.inflate(R.layout.alarm_view, parent, false);
+			convertView = inflater.inflate(R.layout.timer_view, parent, false);
 		}
 
 		LinearLayout ll = (LinearLayout) convertView.findViewById(R.id.actionWrap);

@@ -120,6 +120,7 @@ public class AlarmFragment extends Fragment{
 
 		mCalendarManager = new CalendarManager(mCtx, llWeekOfDayWrap, mCalendar);
 		mCalendarManager.setDayClickListener(myDateSetListener);
+		mCalendarManager.init();
 		mAlarmDataManager = new AlarmDataManager(mCtx, mCalendar);
 		mTimerDataManager = new TimerDataManager(mCtx);
 		//Calendar date, String title, String[] repeatDay, String type
@@ -180,7 +181,7 @@ public class AlarmFragment extends Fragment{
 		//mAlarmAdapter.notifyDataSetChanged();
 	}
 
-	private void longClickPopup(int position, final long _id){
+	protected void longClickPopup(int position, final long _id){
 		String names[] ={"편집","삭제"};
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
 

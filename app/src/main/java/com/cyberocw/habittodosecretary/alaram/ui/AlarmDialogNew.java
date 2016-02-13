@@ -535,7 +535,7 @@ public class AlarmDialogNew extends DialogFragment{
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				mEtcType = (String) values[position];
-				Toast.makeText(mCtx, "mEtcType = "+mEtcType, Toast.LENGTH_SHORT).show();
+				Toast.makeText(mCtx, "mEtcType = " + mEtcType, Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
@@ -586,7 +586,13 @@ public class AlarmDialogNew extends DialogFragment{
 		mTvAlarmDate.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Calendar calendar = Calendar.getInstance();
+				Calendar calendar;
+				if(mModifyMode == 1 && mAlarmDateType == Const.ALARM_DATE_TYPE.SET_DATE){
+					calendar = mAlarmVO.getAlarmDateList().get(0);
+				}else{
+					calendar = Calendar.getInstance();
+				}
+
 				int myYear = calendar.get(Calendar.YEAR);
 				int myMonth = calendar.get(Calendar.MONTH);
 				int myDay = calendar.get(Calendar.DAY_OF_MONTH);
