@@ -177,7 +177,7 @@ public class AlarmDataManager {
 			return;
 		}
 
-		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, mCtx.MODE_PRIVATE);
+		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 
 		String text = prefs.getString(reqCode, null);
 
@@ -219,7 +219,7 @@ public class AlarmDataManager {
 
 		int callTime = alarmVO.getCallTime();
 
-		long reqCode = (Long) alarmVO.getId() * 100 + callTime;
+		long reqCode = alarmVO.getId() * 100 + callTime;
 
 		//myIntent.removeExtra("title");
 		Calendar ccc = Calendar.getInstance();

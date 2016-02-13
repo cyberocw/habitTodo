@@ -559,7 +559,7 @@ public class AlarmDialogNew extends DialogFragment{
 				@Override
 				public void onClick(View v) {
 					//mDataRepeatDay.contains(mArrDayString[i]);
-					int index = Arrays.binarySearch(mArrDayId, (int)v.getId());
+					int index = Arrays.binarySearch(mArrDayId, v.getId());
 					int index2 = mDataRepeatDay.indexOf(mArrDayString[index]);
 					toggleBtnRepeatDay(v, index, index2, true);
 				}
@@ -758,7 +758,7 @@ public class AlarmDialogNew extends DialogFragment{
 		bt.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				int index = mArrAlarmCall.indexOf((Integer) v.getTag());
+				int index = mArrAlarmCall.indexOf(v.getTag());
 				d(Const.DEBUG_TAG, "removeIndex = " + index);
 
 				mArrAlarmCall.remove(index);

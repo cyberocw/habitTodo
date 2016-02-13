@@ -73,7 +73,7 @@ public class CategoryFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
 		mCtx = getActivity();
-		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, mCtx.MODE_PRIVATE);
+		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 		initActivity();
 	}
 
@@ -205,7 +205,7 @@ public class CategoryFragment extends Fragment {
 	 */
 	public interface OnFragmentInteractionListener {
 		// TODO: Update argument type and name
-		public void onFragmentInteraction(Uri uri);
+		void onFragmentInteraction(Uri uri);
 	}
 }
 

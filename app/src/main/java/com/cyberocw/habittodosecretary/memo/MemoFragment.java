@@ -105,7 +105,7 @@ public class MemoFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
 		mCtx = getActivity();
-		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, mCtx.MODE_PRIVATE);
+		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 
 		/*
 		mActionBar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_action_back));
@@ -328,7 +328,7 @@ public class MemoFragment extends Fragment {
 	 */
 	public interface OnFragmentInteractionListener {
 		// TODO: Update argument type and name
-		public void onFragmentInteraction(Uri uri);
+		void onFragmentInteraction(Uri uri);
 	}
 
 }

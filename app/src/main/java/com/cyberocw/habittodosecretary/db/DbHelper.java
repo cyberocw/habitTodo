@@ -197,7 +197,7 @@ public class DbHelper extends SQLiteOpenHelper {
 			db.execSQL(getCreateTableQuery(TABLE_CATEGORY));
 			db.execSQL(getCreateTableQuery(TABLE_ALARAM_RELATION));
 		}
-		if(oldVersion >= 6 && oldVersion <= 8){
+		if(oldVersion >= 6 && oldVersion <= 7){
 			String sql = "ALTER TABLE " + TABLE_CATEGORY + " ADD COLUMN " + KEY_USE_YN + " integer ;";
 			db.execSQL(sql);
 			sql = "ALTER TABLE " + TABLE_ALARM + " ADD COLUMN " + KEY_TYPE + " text ;";

@@ -49,7 +49,7 @@ public class TimerListAdapter extends BaseAdapter {
 		this.mManager = mManager;
 		mCtx = ctx;
 		inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		mPrefs = mCtx.getSharedPreferences(Const.TIMER_RUNNING_ID, mCtx.MODE_PRIVATE);
+		mPrefs = mCtx.getSharedPreferences(Const.TIMER_RUNNING_ID, Context.MODE_PRIVATE);
 		refereshStartedTimerId();
 	}
 

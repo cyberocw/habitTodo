@@ -102,7 +102,7 @@ public class AlarmFragment extends Fragment{
 		super.onActivityCreated(savedInstanceState);
 		mDateTv = (TextView) mView.findViewById(R.id.dateView);
 		mCtx = getActivity();
-		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, mCtx.MODE_PRIVATE);
+		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 		initActivity();
 	}
 
@@ -200,7 +200,7 @@ public class AlarmFragment extends Fragment{
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				switch (position) {
 					case 0:
-						if(mViewType == Const.ALARM_OPTION.SET_DATE_TIMER)
+						if (mViewType == Const.ALARM_OPTION.SET_DATE_TIMER)
 							showNewAlarmDialog(_id);
 						else
 							showNewTimerDialog(_id);
@@ -528,7 +528,7 @@ public class AlarmFragment extends Fragment{
 	 */
 	public interface OnFragmentInteractionListener {
 		// TODO: Update argument type and name
-		public void onFragmentInteraction(Uri uri);
+		void onFragmentInteraction(Uri uri);
 	}
 
 }
