@@ -68,6 +68,11 @@ public class AlarmListAdapter extends BaseAdapter{
 			}
 		}
 
+		if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT)
+			convertView.setBackgroundResource(R.color.background_repeat);
+		else
+			convertView.setBackgroundResource(R.color.background_date);
+
 		ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);
 		btnOption.setOnClickListener(new View.OnClickListener() {
 			@Override

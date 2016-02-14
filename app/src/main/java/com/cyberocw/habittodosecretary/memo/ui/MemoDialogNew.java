@@ -8,6 +8,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.Spannable;
+import android.text.TextWatcher;
+import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +34,7 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmDialogNew;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
+import com.cyberocw.habittodosecretary.util.MyMovementMethod;
 
 /**
  * Created by cyberocw on 2015-12-14.
@@ -39,12 +45,14 @@ public class MemoDialogNew extends Fragment{
 	EditText mTvTitle;
 	Spinner mSpCategory;
 	EditText mEtMemoEditor;
+	TextView mTvMemoEditor;
 	RatingBar mRatingBar;
 	Button mBtnSave;
 	ImageButton mBtnAddAlarm;
 	MemoVO mMemoVO;
 	AlarmVO mAlarmVO;
 
+	boolean isMemoEditable = true;
 	boolean isModifyAlarm = false;
 	long mCateId = -1;
 
@@ -114,6 +122,7 @@ public class MemoDialogNew extends Fragment{
 		mTvTitle = (EditText) mView.findViewById(R.id.txMemoTitle);
 		mSpCategory = (Spinner) mView.findViewById(R.id.spCategory);
 		mEtMemoEditor = (EditText) mView.findViewById(R.id.etMemoEditor);
+		mTvMemoEditor = (TextView) mView.findViewById(R.id.tvMemoEditor);
 		mRatingBar = (RatingBar) mView.findViewById(R.id.ratingBar);
 		mBtnSave = (Button) mView.findViewById(R.id.btnMemoSave);
 		mBtnAddAlarm = (ImageButton) mView.findViewById(R.id.btnAddAlarm);
@@ -126,17 +135,76 @@ public class MemoDialogNew extends Fragment{
 		if(mModifyMode == 1){
 			mTvTitle.setText(mMemoVO.getTitle());
 			mEtMemoEditor.setText(mMemoVO.getContents());
+			mTvMemoEditor.setText(mMemoVO.getContents());
+			isMemoEditable = false;
 			mRatingBar.setRating((float) mMemoVO.getRank());
+		}
+		bindEventSaveAndEdit();
+	}
+
+	private void bindEventSaveAndEdit(){
+		if(isMemoEditable){
+			mBtnSave.setText("SAVE");
+			mTvMemoEditor.setVisibility(View.INVISIBLE);
+			mEtMemoEditor.setVisibility(View.VISIBLE);
+
+			mBtnSave.setOnClickListener(null);
+			mBtnSave.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					returnData();
+				}
+			});
+		}
+		else{
+			mBtnSave.setText("EDIT");
+
+			mTvMemoEditor.setVisibility(View.VISIBLE);
+			mEtMemoEditor.setVisibility(View.INVISIBLE);
+
+			//mEtMemoEditor.setLinksClickable(true);
+			mTvMemoEditor.setAutoLinkMask(Linkify.WEB_URLS);
+			//mEtMemoEditor.setMovementMethod(MyMovementMethod.getInstance());
+			//If the edit text contains previous text with potential links
+			Linkify.addLinks(mTvMemoEditor, Linkify.WEB_URLS);
+
+			//mEtMemoEditor.setClickable(false);
+			mBtnSave.setOnClickListener(null);
+			mBtnSave.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					isMemoEditable = true;
+					bindEventSaveAndEdit();
+				}
+			});
 		}
 	}
 
 	private void bindEvent(){
+		/*
 		mBtnSave.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				returnData();
 			}
 		});
+		*/
+
+		mEtMemoEditor.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				//Linkify.addLinks(s, Linkify.WEB_URLS);
+			}
+		});
+
 
 		mRatingBar.setIsIndicator(false);
 
