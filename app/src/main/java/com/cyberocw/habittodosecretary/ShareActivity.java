@@ -31,7 +31,7 @@ import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.memo.ui.MemoDialogNew;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
-public class ShareActivity extends AppCompatActivity{
+public class ShareActivity extends AppCompatActivity implements AlarmFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener{
 	public AlarmFragment mMainFragment;
 	public static String TAG = "mainActivity";
 
@@ -46,7 +46,7 @@ public class ShareActivity extends AppCompatActivity{
 
 		setContentView(R.layout.activity_main);
 
-		MemoDialogNew dialogNew = new MemoDialogNew();
+		//MemoDialogNew dialogNew = new MemoDialogNew();
 		Bundle bundle = new Bundle();
 
 		MemoVO memoVO = new MemoVO();
@@ -58,16 +58,23 @@ public class ShareActivity extends AppCompatActivity{
 			memoVO.setContents(intent.getStringExtra(Intent.EXTRA_TEXT));    // 가져온 인텐트의 텍스트 정보
 			memoVO.setTitle(intent.getStringExtra(Intent.EXTRA_TITLE));
 		}
+		Fragment fragment = new MemoFragment();
 
 		bundle.putSerializable(Const.MEMO_VO, memoVO);
-		bundle.putSerializable(Const.CATEGORY.CATEGORY_ID, 1);
+		bundle.putSerializable(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE, true);
 
-		dialogNew.setArguments(bundle);
+		fragment.setArguments(bundle);
+
+
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction ft = fragmentManager.beginTransaction();
-		ft.replace(R.id.main_container, dialogNew);
-		ft.addToBackStack(null).commit();
-		//dialogNew.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
+		ft.replace(R.id.main_container, fragment).commit();
+		//ft.addToBackStack(null).commit();
+		//fragment.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
 	}
 
+	@Override
+	public void onFragmentInteraction(Uri uri) {
+
+	}
 }

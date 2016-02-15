@@ -3,17 +3,13 @@ package com.cyberocw.habittodosecretary.memo.ui;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.Rating;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
-import android.text.Spannable;
 import android.text.TextWatcher;
-import android.text.style.URLSpan;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,8 +29,12 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmDialogNew;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.category.CategoryDataManager;
+import com.cyberocw.habittodosecretary.category.CategoryListAdapter;
+import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
-import com.cyberocw.habittodosecretary.util.MyMovementMethod;
+
+import java.util.ArrayList;
 
 /**
  * Created by cyberocw on 2015-12-14.
@@ -51,11 +51,14 @@ public class MemoDialogNew extends Fragment{
 	ImageButton mBtnAddAlarm;
 	MemoVO mMemoVO;
 	AlarmVO mAlarmVO;
+	CategoryDataManager mCateDataManager;
+	CategoryListAdapter mCateAdapter;
+	ArrayList<CategoryVO> mArrayCategoryVOList = null;
+	boolean mShareMode = false;
 
+	long mSelectedCateId = -1;
 	boolean isMemoEditable = true;
 	boolean isModifyAlarm = false;
-	long mCateId = -1;
-
 	int mModifyMode = 0;
 
 	public MemoDialogNew() {
@@ -91,12 +94,17 @@ public class MemoDialogNew extends Fragment{
 			mMemoVO = (MemoVO) arguments.getSerializable(Const.MEMO_VO);
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.ALARM_VO);
 
-			if(mMemoVO != null)
+
+			if(arguments.containsKey(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE))
+				mShareMode = (boolean) arguments.getSerializable(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE);
+
+			if(mShareMode == true){
+
+			}
+			else if(mMemoVO != null)
 				mModifyMode = 1;
 			else
 				mMemoVO = new MemoVO();
-			mCateId = arguments.getLong(Const.CATEGORY.CATEGORY_ID);
-			mMemoVO.setCategoryId(mCateId);
 		}
 		else{
 			Toast.makeText(mCtx, "카테고리 ID가 전달되지 않았습니다", Toast.LENGTH_SHORT).show();
@@ -126,20 +134,58 @@ public class MemoDialogNew extends Fragment{
 		mRatingBar = (RatingBar) mView.findViewById(R.id.ratingBar);
 		mBtnSave = (Button) mView.findViewById(R.id.btnMemoSave);
 		mBtnAddAlarm = (ImageButton) mView.findViewById(R.id.btnAddAlarm);
-
+		makeCategoryList();
 		bindEvent();
 		init();
 	}
 
 	private void init(){
-		if(mModifyMode == 1){
+		if(mModifyMode == 1 || mShareMode){
 			mTvTitle.setText(mMemoVO.getTitle());
 			mEtMemoEditor.setText(mMemoVO.getContents());
 			mTvMemoEditor.setText(mMemoVO.getContents());
 			isMemoEditable = false;
 			mRatingBar.setRating((float) mMemoVO.getRank());
+			long cateId = mMemoVO.getCategoryId();
+			for(int i = 0; i < mArrayCategoryVOList.size(); i++){
+				if(mArrayCategoryVOList.get(i).getId() == cateId){
+					mSpCategory.setSelection(i+1);
+					break;
+				}
+			}
 		}
 		bindEventSaveAndEdit();
+	}
+
+	private void makeCategoryList(){
+		ArrayList<String> arrayList = new ArrayList<String>();
+		mCateDataManager = new CategoryDataManager(mCtx);
+		//mCateAdapter = new CategoryListAdapter(this, mCtx, mCateDataManager);
+		mArrayCategoryVOList = mCateDataManager.getDataList();
+
+		for(int i = 0; i < mArrayCategoryVOList.size(); i++){
+			arrayList.add(mArrayCategoryVOList.get(i).getTitle());
+		}
+
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+				android.R.layout.simple_spinner_item, arrayList);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		//스피너 속성
+		mSpCategory.setPrompt("카테고리"); // 스피너 제목
+		mSpCategory.setAdapter(adapter);
+		mSpCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				//if(position > 0)
+					mSelectedCateId = mArrayCategoryVOList.get(position).getId();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
 	}
 
 	private void bindEventSaveAndEdit(){
@@ -277,14 +323,26 @@ public class MemoDialogNew extends Fragment{
 
 	private void dataBind(){
 		String title =  mTvTitle.getText().toString();
+		mMemoVO.setCategoryId(mSelectedCateId);
 		mMemoVO.setTitle(title);
 		mMemoVO.setContents(mEtMemoEditor.getText().toString());
 		mMemoVO.setRank((int) mRatingBar.getRating());
 	}
 
+	private boolean validate(){
+		if(mSelectedCateId == -1){
+			Toast.makeText(mCtx, "카테고리를 선택해 주세요", Toast.LENGTH_SHORT).show();
+			return false;
+		}
+
+		return true;
+	}
+
 	private void returnData(){
 		dataBind();
-
+		if(validate() == false){
+			return ;
+		}
 		Bundle bundle = new Bundle();
 		bundle.putSerializable(Const.MEMO_VO, mMemoVO);
 
@@ -295,6 +353,7 @@ public class MemoDialogNew extends Fragment{
 		intent.putExtras(bundle);
 
 		int returnCode = mModifyMode == 1 ? Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE : Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE;
+
 		getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
 		getActivity().getSupportFragmentManager().popBackStackImmediate();
 	}

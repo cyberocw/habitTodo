@@ -72,6 +72,7 @@ public class Const {
 			public static final int ADD_MEMO_CODE = 1111;
 			public static final int ADD_MEMO_FINISH_CODE = 1112;
 			public static final int ADD_MEMO_MODIFY_FINISH_CODE = 1113;
+			public static final String SHARE_MEMO_MODE = "MEMO_MODE";
 
 		}
 	}

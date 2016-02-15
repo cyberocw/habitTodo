@@ -41,7 +41,9 @@ public class MemoDbManager extends DbHelper{
 
 	public ArrayList<MemoVO> getListByCate(long cateId){
 		String selectQuery = " SELECT TM.*, AR." + KEY_F_ALARM_ID + " FROM " + TABLE_MEMO + " TM LEFT JOIN " + TABLE_ALARAM_RELATION + " AR " +
-				" ON TM." + KEY_ID + "= AR." + KEY_F_ID + " AND AR." + KEY_TYPE + " = '"+ Const.ETC_TYPE.MEMO + "' WHERE " + KEY_CATEGORY_ID + " = " + cateId;
+				" ON TM." + KEY_ID + "= AR." + KEY_F_ID + " AND AR." + KEY_TYPE + " = '"+ Const.ETC_TYPE.MEMO + "'";
+				if(cateId > -1)
+					selectQuery += " WHERE " + KEY_CATEGORY_ID + " = " + cateId;
 		return getQuery(selectQuery);
 	}
 	public ArrayList<MemoVO> getList(){

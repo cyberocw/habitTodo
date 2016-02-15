@@ -53,6 +53,7 @@ public class MemoFragment extends Fragment {
 	private String mParam1;
 	private String mParam2;
 
+	boolean mIsShareMode = false;
 
 	private View mView;
 	private Context mCtx;
@@ -87,9 +88,12 @@ public class MemoFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			mParam1 = getArguments().getString(ARG_PARAM1);
-			mParam2 = getArguments().getString(ARG_PARAM2);
-			mCateId = getArguments().getLong(Const.CATEGORY.CATEGORY_ID);
+			Bundle arguments = getArguments();
+
+			if(arguments.containsKey(Const.CATEGORY.CATEGORY_ID))
+				mCateId = arguments.getLong(Const.CATEGORY.CATEGORY_ID);
+			if(arguments.containsKey(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE))
+				mIsShareMode = (boolean) arguments.get(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE);
 		}
 	}
 
@@ -130,6 +134,13 @@ public class MemoFragment extends Fragment {
 		mCommonRelationDBManager = CommonRelationDBManager.getInstance(mCtx);
 
 		bindEvent();
+
+
+		if(mIsShareMode){
+			showNewMemoDialog();
+			mIsShareMode = false;
+		}
+
 	}
 
 	private void bindEvent(){
@@ -164,6 +175,11 @@ public class MemoFragment extends Fragment {
 
 			bundle.putSerializable(Const.MEMO_VO, mMemoDataManager.getItemById(id));
 		}
+		else if(mIsShareMode){
+			bundle.putSerializable(Const.MEMO_VO, (MemoVO) getArguments().get(Const.MEMO_VO));
+			bundle.putSerializable(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE, mIsShareMode);
+		}
+
 		bundle.putSerializable(Const.CATEGORY.CATEGORY_ID, mCateId);
 
 		dialogNew.setArguments(bundle);
