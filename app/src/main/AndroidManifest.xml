@@ -26,14 +26,14 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name=".util.AlarmNotiActivity" android:label="Alarm"/>
+        <activity android:name=".util.AlarmNotiActivity" android:label="AlarmNoti"/>
         <receiver android:name=".alaram.receiver.AlarmReceiver">
         </receiver>
         <service android:name=".alaram.service.NotificationService" />
         <service android:name=".alaram.service.TimerService"></service>
         <service android:name=".util.TTSNoti" />
 
-        <receiver android:name="util.BootReceiver" android:enabled="true">
+        <receiver android:name=".util.BootReceiver" android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"></action>
             </intent-filter>

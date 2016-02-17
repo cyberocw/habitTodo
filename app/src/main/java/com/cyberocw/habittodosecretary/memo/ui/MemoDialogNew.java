@@ -149,7 +149,7 @@ public class MemoDialogNew extends Fragment{
 			long cateId = mMemoVO.getCategoryId();
 			for(int i = 0; i < mArrayCategoryVOList.size(); i++){
 				if(mArrayCategoryVOList.get(i).getId() == cateId){
-					mSpCategory.setSelection(i+1);
+					mSpCategory.setSelection(i);
 					break;
 				}
 			}
