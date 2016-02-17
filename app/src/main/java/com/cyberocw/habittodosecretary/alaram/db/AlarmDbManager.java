@@ -255,6 +255,7 @@ public class AlarmDbManager extends DbHelper{
 	}
 
 	//반복 알람 가장 가까운 시간 가져오기
+	// day num = sun 1 mon 2 ...
 	public ArrayList<AlarmTimeVO> getMinRepeatAlarm(int dayNum) {
 		HashMap<Integer, Integer> dayMap = new HashMap<>();
 		dayMap.put(Calendar.SUNDAY, 0);
@@ -273,11 +274,13 @@ public class AlarmDbManager extends DbHelper{
 		Iterator a = dayMap.keySet().iterator();
 		for (Map.Entry<Integer, Integer> entry : dayMap.entrySet()){
 			day = entry.getKey();
+			//현재 요일 (day) 이후 일 경우 이후 요일과 오늘 요일 차이 값을 map value로 지정 - 사용 안함 나중에 봐서 daymap 로직 삭제하기
+			//aarrDayResult에 오늘 요일부터 순서대로 요일
 			if(day >= dayNum){
 				dayMap.put(day, day - dayNum);
 				arrDayResult[day-dayNum ] = arrDay[day-1];
 			}
-			else {
+ 			else {
 				dayMap.put(day, day + 7 - dayNum);
 				arrDayResult[day + 7 - dayNum] = arrDay[day-1];
 			}
@@ -315,10 +318,10 @@ public class AlarmDbManager extends DbHelper{
 					cal.set(Calendar.HOUR_OF_DAY, hour);
 					cal.set(Calendar.MINUTE, minute);
 
-					//지금 시간 이전과 같으면 통과
-					if( i == 0 && nowTimeInMil >= cal.getTimeInMillis()){
-						continue;
-					}
+					//지금 시간 이후가 아니면 통과 ( 몇 분 후 로직이 안먹혀서 삭제 )
+					//if( i == 0 && nowTimeInMil >= cal.getTimeInMillis())
+					//	continue;
+
 					//오늘 기준 하루씩 추가
 					if (i > 0)
 						cal.add(Calendar.DAY_OF_MONTH, i);
@@ -329,10 +332,11 @@ public class AlarmDbManager extends DbHelper{
 						cal2.add(Calendar.MINUTE, Integer.valueOf(alarmCallList[j]));
 						timeinMil = cal2.getTimeInMillis();
 
-						// - 몇분전 계산 값이 현재 시간보다 빠르면 건너 뜀
+						// - 몇분전/후 계산 값이 현재 시간보다 빠르면 건너 뜀
 						if(nowTimeInMil >= timeinMil)
 							continue;
 
+						// min 값을 arr에 추가 (동일 시간) , min보다 더 작을 경우 arr 초기화 후 추가
 						if (min >= timeinMil || min == 0) {
 							if(min > timeinMil){
 								arrList.clear();
@@ -350,7 +354,8 @@ public class AlarmDbManager extends DbHelper{
 						}
 					}
 				} while (c.moveToNext());
-			}
+			}//movetofirst if end
+
 			if(searchDayIndex >= 1)
 				break;
 			// 한번 찾은 뒤 다음 날 더 찾아보고 중지

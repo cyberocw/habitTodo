@@ -100,7 +100,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				fragment = new CategoryFragment();
 				break;
 			default:
-                fragment = new AlarmFragment();
+                //fragment = new AlarmFragment();
+				android.os.Process.killProcess(android.os.Process.myPid());
 				break;
 		}
 		if (fragment != null) {
