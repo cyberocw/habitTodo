@@ -33,8 +33,8 @@ public class CategoryDbManager extends DbHelper{
 	}
 	public ArrayList<CategoryVO> getCategoryList() {
 
-		String selectQuery = " SELECT *, (SELECT COUNT(" + KEY_ID + ") FROM " + TABLE_MEMO +
-				" WHERE " + KEY_CATEGORY_ID + "=" + KEY_ID + ") AS cnt FROM " + TABLE_CATEGORY + " CATE WHERE " + KEY_TYPE + "=\"" + Const.CATEGORY.TYPE + "\"";
+		String selectQuery = " SELECT *, (SELECT COUNT(*) FROM " + TABLE_MEMO +
+				" WHERE " + KEY_CATEGORY_ID + "= CATE." + KEY_ID + ") AS cnt FROM " + TABLE_CATEGORY + " CATE WHERE " + KEY_TYPE + "=\"" + Const.CATEGORY.TYPE + "\"";
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);

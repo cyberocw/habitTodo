@@ -93,7 +93,7 @@ public class MemoDialogNew extends Fragment{
 		if(arguments != null) {
 			mMemoVO = (MemoVO) arguments.getSerializable(Const.MEMO_VO);
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.ALARM_VO);
-
+			mSelectedCateId = (long) arguments.getSerializable(Const.CATEGORY.CATEGORY_ID);
 
 			if(arguments.containsKey(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE))
 				mShareMode = (boolean) arguments.getSerializable(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE);
@@ -146,14 +146,18 @@ public class MemoDialogNew extends Fragment{
 			mTvMemoEditor.setText(mMemoVO.getContents());
 			isMemoEditable = false;
 			mRatingBar.setRating((float) mMemoVO.getRank());
-			long cateId = mMemoVO.getCategoryId();
+			mSelectedCateId = mMemoVO.getCategoryId();
+		}
+
+		if(mSelectedCateId != -1){
 			for(int i = 0; i < mArrayCategoryVOList.size(); i++){
-				if(mArrayCategoryVOList.get(i).getId() == cateId){
+				if(mArrayCategoryVOList.get(i).getId() == mSelectedCateId){
 					mSpCategory.setSelection(i);
 					break;
 				}
 			}
 		}
+
 		bindEventSaveAndEdit();
 	}
 
@@ -193,7 +197,7 @@ public class MemoDialogNew extends Fragment{
 			mBtnSave.setText("SAVE");
 			mTvMemoEditor.setVisibility(View.INVISIBLE);
 			mEtMemoEditor.setVisibility(View.VISIBLE);
-
+			mTvMemoEditor.setOnClickListener(null);
 			mBtnSave.setOnClickListener(null);
 			mBtnSave.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -206,6 +210,13 @@ public class MemoDialogNew extends Fragment{
 			mBtnSave.setText("EDIT");
 
 			mTvMemoEditor.setVisibility(View.VISIBLE);
+			mTvMemoEditor.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					isMemoEditable = true;
+					bindEventSaveAndEdit();
+				}
+			});
 			mEtMemoEditor.setVisibility(View.INVISIBLE);
 
 			//mEtMemoEditor.setLinksClickable(true);

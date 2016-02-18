@@ -17,6 +17,7 @@ import java.util.Locale;
 public class TTSNoti extends Service implements TextToSpeech.OnInitListener, TextToSpeech.OnUtteranceCompletedListener {
 	private TextToSpeech mTts;
 	private String spokenText;
+	private boolean mIsNUll = true;
 
 	@Override
 	public void onCreate() {
@@ -26,14 +27,17 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener, Tex
 	@SuppressWarnings({ "static-access", "deprecation" })
 	@Override
 	public void onStart(Intent intent, int startId) {
-		String Noti_title = intent.getExtras().getString("alaramTitle");
-		spokenText = Noti_title;
-		mTts = new TextToSpeech(this, this);
+		if(intent != null && intent.getExtras() != null) {
+			String Noti_title = intent.getExtras().getString("alaramTitle");
+			spokenText = Noti_title;
+			mTts = new TextToSpeech(this, this);
+			mIsNUll = false;
+		}
 	}
 
 	@Override
 	public void onInit(int status) {
-		if (status == TextToSpeech.SUCCESS) {
+		if (status == TextToSpeech.SUCCESS && mIsNUll == false) {
 			int result = mTts.setLanguage(Locale.KOREA);
 			if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
 				Toast.makeText(this, "tts start" + spokenText, Toast.LENGTH_SHORT).show();
