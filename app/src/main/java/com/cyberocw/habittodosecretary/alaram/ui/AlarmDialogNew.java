@@ -63,7 +63,7 @@ public class AlarmDialogNew extends DialogFragment{
 	private NumberPicker mNpHour, mNpMinute, mNpSecond;
 	private ScrollView mScvAddAlarm;
 	private int mAlarmOption = Const.ALARM_OPTION.SET_DATE_TIMER;
-	private int mAlarmDateType = Const.ALARM_DATE_TYPE.REPEAT; //날짜지정 or repeat
+	private int mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE; //날짜지정 or repeat
 	private TextView mTvAlarmDate, mTvAlarmTime = null;
 
 	private RadioGroup mRgAlarmOption;
@@ -400,6 +400,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 			}
 		});
+		mSpDateType.setSelection(1, false);
 	}
 
 
