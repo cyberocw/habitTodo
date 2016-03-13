@@ -231,7 +231,7 @@ public class AlarmDataManager {
 		myIntent.putExtra("alarmDateType", type);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, (int) reqCode, myIntent, 0);
 
-		setAlarmExact(alarmDataManager, AlarmManager.RTC, alarmVO.getTimeStamp(), pendingIntent);
+		setAlarmExact(alarmDataManager, AlarmManager.RTC_WAKEUP, alarmVO.getTimeStamp(), pendingIntent);
 
 		return reqCode;
 	}
