@@ -467,9 +467,8 @@ public class AlarmFragment extends Fragment{
 					Toast.makeText(mCtx, "DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
 
 				// 수정일 경우 date type이 변경 될 수도 있기 때문에 두개 모두 갱신
-				mAlarmDataManager.resetMinAlarmCall(Const.ALARM_DATE_TYPE.REPEAT);
-				mAlarmDataManager.resetMinAlarmCall(Const.ALARM_DATE_TYPE.SET_DATE);
 				refreshAlarmList();
+				mAlarmDataManager.resetMinAlarmCall();
 				break;
 
 			case Const.ALARM_INTERFACE_CODE.ADD_TIMER_FINISH_CODE :

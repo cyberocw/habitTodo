@@ -158,18 +158,24 @@ public class AlarmDataManager {
 		return mDb.modifyUse(item);
 	}
 
+	public void resetMinAlarmCall(){
+		resetMinAlarmCall(Const.ALARM_DATE_TYPE.REPEAT);
+		resetMinAlarmCall(Const.ALARM_DATE_TYPE.SET_DATE);
+	}
+
 	public void resetMinAlarmCall(int type){
-		ArrayList<AlarmTimeVO> alarmTimetList = null;
+		ArrayList<AlarmTimeVO> alarmTimeList = null;
 		String reqCode;
-		reqCode = Const.REQ_CODE;
 
 		if(type == Const.ALARM_DATE_TYPE.SET_DATE) {
-			alarmTimetList = mDb.getMinAlarmTime();
+			alarmTimeList = mDb.getMinAlarmTime();
+			reqCode = Const.REQ_CODE;
 		}
 		else if(type == Const.ALARM_DATE_TYPE.REPEAT){
 			Calendar cal = Calendar.getInstance();
 			int dayNum = cal.get(Calendar.DAY_OF_WEEK); //sun 1 mon 2 ...
-			alarmTimetList = mDb.getMinRepeatAlarm(dayNum);
+			alarmTimeList = mDb.getMinRepeatAlarm(dayNum);
+			reqCode = Const.REQ_CODE_REPEAT;
 		}
 		else{
 			Toast.makeText(mCtx, "알람 TYPE을 가져오지 못했습니다" + type, Toast.LENGTH_LONG).show();
@@ -199,16 +205,17 @@ public class AlarmDataManager {
 		}
 
 		//새로 등록
-		String[] arrReq = new String[alarmTimetList.size()];
+		String[] arrReq = new String[alarmTimeList.size()];
 
-		for(int i = 0; i < alarmTimetList.size(); i++){
-			arrReq[i] = String.valueOf(setAlarm(alarmTimetList.get(i), type));
+		for(int i = 0; i < alarmTimeList.size(); i++){
+			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i), type));
 		}
 
 		String newReqCode = TextUtils.join("," , arrReq);
 
 		//등록된 code 저장해둠
 		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(reqCode);
 		editor.putString(reqCode, newReqCode);
 	}
 
@@ -218,17 +225,21 @@ public class AlarmDataManager {
 		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
 
 		int callTime = alarmVO.getCallTime();
-
-		long reqCode = alarmVO.getId() * 100 + callTime;
+		Calendar ccc = Calendar.getInstance();
+		long reqCode = ccc.getTimeInMillis();//alarmVO.getId() * 100 + callTime;
 
 		//myIntent.removeExtra("title");
-		Calendar ccc = Calendar.getInstance();
-		ccc.setTimeInMillis(alarmVO.getTimeStamp());
+
 		String strDay = ccc.get(Calendar.HOUR_OF_DAY) + "시 " + ccc.get(Calendar.MINUTE) + "분 " + ccc.get(Calendar.SECOND) + " 초";
 
+		long timeStamp = alarmVO.getTimeStamp();
+		ccc.setTimeInMillis(timeStamp);
+		ccc.add(Calendar.MINUTE, -10);
+		myIntent.putExtra("alarmTimeVO", alarmVO);
 		myIntent.putExtra("title", alarmVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
 		myIntent.putExtra("reqCode", reqCode);
 		myIntent.putExtra("alarmDateType", type);
+		myIntent.putExtra("realTime", timeStamp);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, (int) reqCode, myIntent, 0);
 
 		setAlarmExact(alarmDataManager, AlarmManager.RTC_WAKEUP, alarmVO.getTimeStamp(), pendingIntent);
@@ -239,7 +250,11 @@ public class AlarmDataManager {
 	@SuppressLint("NewApi")
 	private void setAlarmExact(AlarmManager am, int type, long time, PendingIntent it){
 		final int sdkVersion = Build.VERSION.SDK_INT;
-		if(sdkVersion >= Build.VERSION_CODES.KITKAT) {
+		/*
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			am.setExactAndAllowWhileIdle(type, time, it);
+		}
+		else*/ if(sdkVersion >= Build.VERSION_CODES.KITKAT) {
 			Log.d(Const.DEBUG_TAG, "kitkat set alarmExact");
 			am.setExact(type, time, it);
 		}

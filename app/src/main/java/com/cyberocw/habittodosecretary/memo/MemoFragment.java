@@ -291,8 +291,7 @@ public class MemoFragment extends Fragment {
 	public void deleteMemo(long id){
 		if(mMemoDataManager.deleteItemById(id)){
 			Toast.makeText(mCtx, "삭제 되었습니다", Toast.LENGTH_SHORT).show();
-			mAlarmDataManager.resetMinAlarmCall(Const.ALARM_DATE_TYPE.SET_DATE);
-			mAlarmDataManager.resetMinAlarmCall(Const.ALARM_DATE_TYPE.REPEAT);
+			mAlarmDataManager.resetMinAlarmCall();
 		}else{
 			Toast.makeText(mCtx, "삭제에 실패했습니다", Toast.LENGTH_SHORT).show();
 		}

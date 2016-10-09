@@ -21,8 +21,7 @@ public class BootReceiver extends BroadcastReceiver
 		if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
 			AlarmDataManager alarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
 
-			alarmDataManager.resetMinAlarmCall(Const.ALARM_DATE_TYPE.REPEAT);
-			alarmDataManager.resetMinAlarmCall(Const.ALARM_DATE_TYPE.SET_DATE);
+			alarmDataManager.resetMinAlarmCall();
 		}
 	}
 }

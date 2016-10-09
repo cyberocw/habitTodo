@@ -1,16 +1,19 @@
 package com.cyberocw.habittodosecretary.alaram.vo;
 
+import java.io.Serializable;
+
 /**
  * Created by cyberocw on 2015-09-06.
  *
  */
-public class AlarmTimeVO {
+public class AlarmTimeVO implements Serializable{
 	private long timeStamp;
 	private long id;
 	private int callTime;
 	private int useYn;
 	private long fId;
 	private String alarmTitle;
+	private static final long serialVersionUID = 1L;
 
 	public String getAlarmTitle() {
 		return alarmTitle;
