@@ -27,23 +27,16 @@ public class AlarmReceiver extends BroadcastReceiver{
 	public void onReceive(Context context, Intent intent) {
 		String Noti_title = intent.getExtras().getString("title");
 		String Noti_message = intent.getExtras().getString("notes");
-		long reqCode = intent.getExtras().getLong("reqCode");
-		int alarmDateType = intent.getExtras().getInt("alarmDateType");
-		long realTime = intent.getExtras().getLong("realTime");
 
-		Log.d("AlarmReciever", Noti_title + " " + Noti_message + " type= " + alarmDateType);
+		Log.d("AlarmReciever", Noti_title + " " + Noti_message );
 		Intent myIntent = new Intent(context, AlarmBackgroudService.class);
 		myIntent.putExtras(intent.getExtras());
-		myIntent.putExtra("title", Noti_title);
-		myIntent.putExtra("notes", Noti_message);
-		myIntent.putExtra("reqCode", reqCode);
-		myIntent.putExtra("alarmDateType", alarmDateType);
-		myIntent.putExtra("realTime", realTime);
+
 		context.startService(myIntent);
 		//context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-		AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
-		mAlarmDataManager.resetMinAlarmCall(alarmDateType);
+		//AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
+		//mAlarmDataManager.resetMinAlarmCall();
 	}
 
 	public void onReceiveOri(Context context, Intent intent) {

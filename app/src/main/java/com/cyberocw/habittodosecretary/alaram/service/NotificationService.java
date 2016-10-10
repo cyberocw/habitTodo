@@ -41,8 +41,6 @@ public class NotificationService extends Service{
 		String Noti_message = intent.getExtras().getString("notes");
 		long reqCode = intent.getExtras().getLong("reqCode");
 
-		Log.d(Const.DEBUG_TAG, "notify reqCode = " + reqCode);
-
 		mManager = (NotificationManager) this.getApplicationContext().getSystemService(this.getApplicationContext().NOTIFICATION_SERVICE);
 
 		Intent intent1 = new Intent(this.getApplicationContext(), MainActivity.class);

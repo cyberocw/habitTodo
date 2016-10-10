@@ -22,6 +22,7 @@ import com.cyberocw.habittodosecretary.util.TTSNoti;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by cyberocw on 2016-09-19.
@@ -43,8 +44,9 @@ public class AlarmBackgroudService extends Service {
      */
     private Context mCtx = this;
     private CountDownTimer mCountDownTimer = null;
-    private int mPosition = -1;
+    private int mMaxRemainPosition = -1;
     private String mTitle = "";
+
     private AlarmReceiver mTimerListAdapter = null;
 
     public AlarmBackgroudService() {
@@ -67,10 +69,9 @@ public class AlarmBackgroudService extends Service {
 
         // Get messager from the Activity
         if (extras != null) {
-            Log.d("service", "onBind with extra");
+            Log.d("service", "onBind with extra @@@@@@@@@@@@");
             //mMillisRemainTime = (Long) extras.get("realTime");
-            long realTime = (Long) extras.get("realTime");
-            int alarmDateType = (int) extras.get("alarmDateType");
+
             AlarmTimeVO alarmTimeVO = (AlarmTimeVO) intent.getSerializableExtra("alarmTimeVO");
 
             int index = findAlarmIndex(alarmTimeVO);
@@ -86,10 +87,23 @@ public class AlarmBackgroudService extends Service {
     }
     public void setMaxReaminTime(){
         mMillisRemainTime = -1;
+        mMaxRemainPosition = -1;
+        if(mArrAlarmVOList == null)
+            return;
         for(int i = 0 ; i < mArrAlarmVOList.size(); i++){
-            if(mArrAlarmVOList.get(i).getTimeStamp() > mMillisRemainTime) {
-               mMillisRemainTime = mArrAlarmVOList.get(i).getTimeStamp();
+            if(i == 0){
+                mMaxRemainPosition = 0;
+                mMillisRemainTime = mArrAlarmVOList.get(i).getTimeStamp();
             }
+
+            if(mArrAlarmVOList.get(i).getTimeStamp() < mMillisRemainTime) {
+               mMillisRemainTime = mArrAlarmVOList.get(i).getTimeStamp();
+                mMaxRemainPosition = i;
+            }
+        }
+
+        if(mMillisRemainTime > -1){
+            mMillisRemainTime = mMillisRemainTime - Calendar.getInstance().getTimeInMillis();
         }
     }
     public int findAlarmIndex(AlarmTimeVO alarmTimeVO){
@@ -104,13 +118,19 @@ public class AlarmBackgroudService extends Service {
     }
 
     public void startTimer() {
-        startTimer(mMillisRemainTime);
+        if(mMillisRemainTime == -1){
+            stopForeground(true);
+            stopSelf();
+        }
+        startTimer(mMillisRemainTime, mArrAlarmVOList.get(mMaxRemainPosition));
     }
 
-    public void startTimer(long remainTime) {
+    public void startTimer(long remainTime, AlarmTimeVO alarmTimeVO) {
         if (mCountDownTimer != null)
             return;
+        int callTime = alarmTimeVO.getCallTime();
 
+        mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : ""));
         Notification notification = new Notification(R.drawable.ic_launcher, "타이머", System.currentTimeMillis());
 
         int second = (int) (remainTime / 1000) % 60;
@@ -134,18 +154,10 @@ public class AlarmBackgroudService extends Service {
                 int hour = (int) ((millisUntilFinished / (1000 * 60 * 60)));
 
                 Log.d(Const.DEBUG_TAG, "on tinck =" + second);
-
-                if (mTv != null) {
-                    mTv.setText(mNumberFormat.format(hour) + ":" + mNumberFormat.format(minute) +
-                            ":" + mNumberFormat.format(second));
-                }
             }
 
             public void onFinish() {
-                if (mTv != null) {
-                    mTv.setText(mNumberFormat.format(0) + ":" + mNumberFormat.format(0) +
-                            ":" + mNumberFormat.format(0));
-                }
+                Log.d("Service", "on tinck finish");
                 startAleart();
                 cancelTimer();
                 mCountDownTimer = null;
@@ -154,6 +166,14 @@ public class AlarmBackgroudService extends Service {
     }
 
     private void startAleart() {
+        Intent myIntent = new Intent(mCtx, NotificationService.class);
+        myIntent.putExtra("title", mTitle);
+        myIntent.putExtra("notes", "");
+        myIntent.putExtra("reqCode", mArrAlarmVOList.get(mMaxRemainPosition).getId());
+        Log.d("Service", "start noti ");
+
+        mCtx.startService(myIntent);
+
         Intent ttsIntent = new Intent(mCtx, TTSNoti.class);
         ttsIntent.putExtra("alaramTitle", mTitle);
         mCtx.startService(ttsIntent);
@@ -162,9 +182,18 @@ public class AlarmBackgroudService extends Service {
     public void cancelTimer() {
         mMillisRemainTime = -1;
         mCountDownTimer.cancel();
-        //stopForeground(true);
-        stopSelf();
+        mArrAlarmVOList.remove(mMaxRemainPosition);
+        Log.d("Service", "remove and mArrAlarmVOList.size() == " + mArrAlarmVOList.size());
+        if(mArrAlarmVOList.size() > 0){
+            setMaxReaminTime();
+            startTimer();
+        }
+        else {
+            //setMinAlarm 호출해서 다시 등록 루틴 타야함
 
+            stopForeground(true);
+            stopSelf();
+        }
     }
     @Override
     public void onTaskRemoved(Intent rootIntent) {
@@ -175,6 +204,9 @@ public class AlarmBackgroudService extends Service {
     @Override
     public void onDestroy() {
         Log.d(Const.DEBUG_TAG, "onDestroy Service");
+        if(mCountDownTimer != null)
+            mCountDownTimer.cancel();
+        stopForeground(true);
         super.onDestroy();
     }
 

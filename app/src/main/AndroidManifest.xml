@@ -31,6 +31,7 @@
         </receiver>
         <service android:name=".alaram.service.NotificationService" />
         <service android:name=".alaram.service.TimerService"></service>
+        <service android:name=".alaram.service.AlarmBackgroudService"></service>
         <service android:name=".util.TTSNoti" />
 
         <receiver android:name=".util.BootReceiver" android:enabled="true">

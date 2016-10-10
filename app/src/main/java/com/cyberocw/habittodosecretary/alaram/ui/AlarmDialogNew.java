@@ -457,6 +457,9 @@ public class AlarmDialogNew extends DialogFragment{
 //		llRepeatDayWrap = (LinearLayout) getView().findViewById(R.id.llRepeatDayWrap);
 		llTimePickWrap.setVisibility(View.VISIBLE);
 
+		if(c == null)
+			c = Calendar.getInstance();
+
 		switch(alarmDateType){
 			case Const.ALARM_DATE_TYPE.REPEAT :
 				llRepeatDayWrap.setVisibility(View.VISIBLE);

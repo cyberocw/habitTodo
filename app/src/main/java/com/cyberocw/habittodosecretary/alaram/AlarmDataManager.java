@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
 import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
+import com.cyberocw.habittodosecretary.alaram.service.AlarmBackgroudService;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
@@ -159,29 +160,41 @@ public class AlarmDataManager {
 	}
 
 	public void resetMinAlarmCall(){
-		resetMinAlarmCall(Const.ALARM_DATE_TYPE.REPEAT);
-		resetMinAlarmCall(Const.ALARM_DATE_TYPE.SET_DATE);
+		//resetMinAlarmCall(Const.ALARM_DATE_TYPE.REPEAT);
+		//resetMinAlarmCall(Const.ALARM_DATE_TYPE.SET_DATE);
+		resetMinAlarm();
 	}
 
-	public void resetMinAlarmCall(int type){
+	public void resetMinAlarmCall(int type) {
+		resetMinAlarm();
+	}
+	public void resetMinAlarm(){
+		ArrayList<AlarmTimeVO> alarmTimeList1 = null;
+		ArrayList<AlarmTimeVO> alarmTimeList2 = null;
 		ArrayList<AlarmTimeVO> alarmTimeList = null;
-		String reqCode;
+		String reqCode = Const.REQ_CODE;
 
-		if(type == Const.ALARM_DATE_TYPE.SET_DATE) {
-			alarmTimeList = mDb.getMinAlarmTime();
-			reqCode = Const.REQ_CODE;
+		alarmTimeList1 = mDb.getMinAlarmTime();
+
+		Calendar cal = Calendar.getInstance();
+		int dayNum = cal.get(Calendar.DAY_OF_WEEK); //sun 1 mon 2 ...
+		alarmTimeList2 = mDb.getMinRepeatAlarm(dayNum);
+
+		int minList = 0;
+		long minTimeStamp = 0;
+		// setTime 과 repeat 비교하여 더 가까운 시간 것을 지정
+		if(alarmTimeList1 != null && alarmTimeList1.size() > 0){
+			minList = 1;
+			minTimeStamp = alarmTimeList1.get(0).getTimeStamp();
 		}
-		else if(type == Const.ALARM_DATE_TYPE.REPEAT){
-			Calendar cal = Calendar.getInstance();
-			int dayNum = cal.get(Calendar.DAY_OF_WEEK); //sun 1 mon 2 ...
-			alarmTimeList = mDb.getMinRepeatAlarm(dayNum);
-			reqCode = Const.REQ_CODE_REPEAT;
+		if(alarmTimeList2 != null && alarmTimeList2.size() > 0){
+			if(minTimeStamp == 0 || minTimeStamp > alarmTimeList2.get(0).getTimeStamp())
+				minList = 2;
 		}
-		else{
-			Toast.makeText(mCtx, "알람 TYPE을 가져오지 못했습니다" + type, Toast.LENGTH_LONG).show();
-			Log.e(Const.DEBUG_TAG, "resetMinalarmCall type is miss match =" + type);
-			return;
-		}
+		if(minList == 1)
+			alarmTimeList = alarmTimeList1;
+		else if(minList == 2)
+			alarmTimeList = alarmTimeList2;
 
 		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 
@@ -199,16 +212,27 @@ public class AlarmDataManager {
 				arrReq[0] = text;
 
 			for(int i = 0 ; i < arrReq.length; i++){
-				PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, Integer.valueOf(arrReq[i]), myIntent, 0);
-				alarmDataManager.cancel(pendingIntent);
+				boolean alarmUp = (PendingIntent.getBroadcast(mCtx, Integer.valueOf(arrReq[i]), myIntent, PendingIntent.FLAG_NO_CREATE) != null);
+				if (alarmUp) {
+					PendingIntent sender1 = PendingIntent.getBroadcast(mCtx, Integer.valueOf(arrReq[i]), myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+					alarmDataManager.cancel(sender1);
+					sender1.cancel();
+				}
 			}
+
+			//background 서비스 취소
+			Intent intentAlarmbackground = new Intent(mCtx, AlarmBackgroudService.class);
+			mCtx.stopService(intentAlarmbackground);
 		}
 
 		//새로 등록
+		if(alarmTimeList == null)
+			return ;
+
 		String[] arrReq = new String[alarmTimeList.size()];
 
 		for(int i = 0; i < alarmTimeList.size(); i++){
-			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i), type));
+			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i), i));
 		}
 
 		String newReqCode = TextUtils.join("," , arrReq);
@@ -219,28 +243,31 @@ public class AlarmDataManager {
 		editor.putString(reqCode, newReqCode);
 	}
 
-	public long setAlarm(AlarmTimeVO alarmVO, int type) {
-		AlarmManager alarmDataManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
-
-		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
-
+	public long setAlarm(AlarmTimeVO alarmVO, int index) {
 		int callTime = alarmVO.getCallTime();
 		Calendar ccc = Calendar.getInstance();
-		long reqCode = ccc.getTimeInMillis();//alarmVO.getId() * 100 + callTime;
+		Calendar nowCal = Calendar.getInstance();
+		int reqCode = index;
 
 		//myIntent.removeExtra("title");
-
-		String strDay = ccc.get(Calendar.HOUR_OF_DAY) + "시 " + ccc.get(Calendar.MINUTE) + "분 " + ccc.get(Calendar.SECOND) + " 초";
-
 		long timeStamp = alarmVO.getTimeStamp();
 		ccc.setTimeInMillis(timeStamp);
 		ccc.add(Calendar.MINUTE, -10);
+
+		//10분 이내일 경우 바로 서비스 실행
+		if(ccc.getTimeInMillis() < nowCal.getTimeInMillis()){
+			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
+			myIntent.putExtra("alarmTimeVO", alarmVO);
+			mCtx.startService(myIntent);
+			return reqCode;
+		}
+		//10분 이상일 경우 setTime 시킴
+		AlarmManager alarmDataManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
+		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
+
 		myIntent.putExtra("alarmTimeVO", alarmVO);
 		myIntent.putExtra("title", alarmVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
-		myIntent.putExtra("reqCode", reqCode);
-		myIntent.putExtra("alarmDateType", type);
-		myIntent.putExtra("realTime", timeStamp);
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, (int) reqCode, myIntent, 0);
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, reqCode, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		setAlarmExact(alarmDataManager, AlarmManager.RTC_WAKEUP, alarmVO.getTimeStamp(), pendingIntent);
 
