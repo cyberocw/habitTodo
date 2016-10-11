@@ -190,12 +190,17 @@ public class AlarmDataManager {
 		if(alarmTimeList2 != null && alarmTimeList2.size() > 0){
 			if(minTimeStamp == 0 || minTimeStamp > alarmTimeList2.get(0).getTimeStamp())
 				minList = 2;
+			else if(minTimeStamp == alarmTimeList2.get(0).getTimeStamp())
+				minList = 3;
 		}
 		if(minList == 1)
 			alarmTimeList = alarmTimeList1;
 		else if(minList == 2)
 			alarmTimeList = alarmTimeList2;
-
+		else if(minList == 3){
+			alarmTimeList = alarmTimeList1;
+			alarmTimeList.addAll(alarmTimeList2);
+		}
 		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 
 		String text = prefs.getString(reqCode, null);
@@ -204,6 +209,7 @@ public class AlarmDataManager {
 				.getSystemService(Context.ALARM_SERVICE);
 		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
 
+		Log.d(Const.DEBUG_TAG, " get text = " + text);
 		//기존것 취소
 		if(text != null && !"".equals(text)){
 			String[] arrReq = text.split(",");
@@ -222,7 +228,9 @@ public class AlarmDataManager {
 
 			//background 서비스 취소
 			Intent intentAlarmbackground = new Intent(mCtx, AlarmBackgroudService.class);
+			Log.d(Const.DEBUG_TAG, "background Service stop");
 			mCtx.stopService(intentAlarmbackground);
+
 		}
 
 		//새로 등록
@@ -237,9 +245,9 @@ public class AlarmDataManager {
 
 		String newReqCode = TextUtils.join("," , arrReq);
 
+		Log.d(Const.DEBUG_TAG, "newReqCode=" + newReqCode);
 		//등록된 code 저장해둠
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.remove(reqCode);
 		editor.putString(reqCode, newReqCode);
 	}
 
@@ -247,8 +255,8 @@ public class AlarmDataManager {
 		int callTime = alarmVO.getCallTime();
 		Calendar ccc = Calendar.getInstance();
 		Calendar nowCal = Calendar.getInstance();
-		int reqCode = index;
-
+		int reqCode = index + 1;
+		Log.d(Const.DEBUG_TAG, "reqCode=" + reqCode);
 		//myIntent.removeExtra("title");
 		long timeStamp = alarmVO.getTimeStamp();
 		ccc.setTimeInMillis(timeStamp);
@@ -269,7 +277,7 @@ public class AlarmDataManager {
 		myIntent.putExtra("title", alarmVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, reqCode, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		setAlarmExact(alarmDataManager, AlarmManager.RTC_WAKEUP, alarmVO.getTimeStamp(), pendingIntent);
+		setAlarmExact(alarmDataManager, AlarmManager.RTC_WAKEUP, ccc.getTimeInMillis(), pendingIntent);
 
 		return reqCode;
 	}

@@ -14,9 +14,9 @@ import android.widget.TextView;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
+import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
-import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
 
 import java.text.DecimalFormat;
@@ -44,7 +44,7 @@ public class AlarmBackgroudService extends Service {
      */
     private Context mCtx = this;
     private CountDownTimer mCountDownTimer = null;
-    private int mMaxRemainPosition = -1;
+    private int mMinRemainPosition = -1;
     private String mTitle = "";
 
     private AlarmReceiver mTimerListAdapter = null;
@@ -76,29 +76,31 @@ public class AlarmBackgroudService extends Service {
 
             int index = findAlarmIndex(alarmTimeVO);
 
-            if(index == -1)
+            if(index == -1) {
                 mArrAlarmVOList.add(alarmTimeVO);
+                setMinReaminTime();
+                startTimer();
+            }
         }
-        setMaxReaminTime();
-        startTimer();
+
 
         return START_REDELIVER_INTENT;
         //return super.onStartCommand(intent, flags, startId);
     }
-    public void setMaxReaminTime(){
+    public void setMinReaminTime(){
         mMillisRemainTime = -1;
-        mMaxRemainPosition = -1;
+        mMinRemainPosition = -1;
         if(mArrAlarmVOList == null)
             return;
         for(int i = 0 ; i < mArrAlarmVOList.size(); i++){
             if(i == 0){
-                mMaxRemainPosition = 0;
+                mMinRemainPosition = 0;
                 mMillisRemainTime = mArrAlarmVOList.get(i).getTimeStamp();
             }
 
             if(mArrAlarmVOList.get(i).getTimeStamp() < mMillisRemainTime) {
                mMillisRemainTime = mArrAlarmVOList.get(i).getTimeStamp();
-                mMaxRemainPosition = i;
+                mMinRemainPosition = i;
             }
         }
 
@@ -122,7 +124,7 @@ public class AlarmBackgroudService extends Service {
             stopForeground(true);
             stopSelf();
         }
-        startTimer(mMillisRemainTime, mArrAlarmVOList.get(mMaxRemainPosition));
+        startTimer(mMillisRemainTime, mArrAlarmVOList.get(mMinRemainPosition));
     }
 
     public void startTimer(long remainTime, AlarmTimeVO alarmTimeVO) {
@@ -160,7 +162,7 @@ public class AlarmBackgroudService extends Service {
                 Log.d("Service", "on tinck finish");
                 startAleart();
                 cancelTimer();
-                mCountDownTimer = null;
+
             }
         }.start();
     }
@@ -169,7 +171,7 @@ public class AlarmBackgroudService extends Service {
         Intent myIntent = new Intent(mCtx, NotificationService.class);
         myIntent.putExtra("title", mTitle);
         myIntent.putExtra("notes", "");
-        myIntent.putExtra("reqCode", mArrAlarmVOList.get(mMaxRemainPosition).getId());
+        myIntent.putExtra("reqCode", mArrAlarmVOList.get(mMinRemainPosition).getId());
         Log.d("Service", "start noti ");
 
         mCtx.startService(myIntent);
@@ -181,16 +183,20 @@ public class AlarmBackgroudService extends Service {
 
     public void cancelTimer() {
         mMillisRemainTime = -1;
-        mCountDownTimer.cancel();
-        mArrAlarmVOList.remove(mMaxRemainPosition);
+        if(mCountDownTimer != null)
+            mCountDownTimer.cancel();
+        mArrAlarmVOList.remove(mMinRemainPosition);
+        mCountDownTimer = null;
+
         Log.d("Service", "remove and mArrAlarmVOList.size() == " + mArrAlarmVOList.size());
         if(mArrAlarmVOList.size() > 0){
-            setMaxReaminTime();
+            setMinReaminTime();
             startTimer();
         }
         else {
             //setMinAlarm 호출해서 다시 등록 루틴 타야함
-
+            AlarmDataManager mAlarmDataManager = new AlarmDataManager(mCtx, Calendar.getInstance());
+            mAlarmDataManager.resetMinAlarmCall();
             stopForeground(true);
             stopSelf();
         }
