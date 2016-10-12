@@ -205,7 +205,7 @@ public class AlarmDataManager {
 
 		String text = prefs.getString(reqCode, null);
 
-		AlarmManager alarmDataManager = (AlarmManager) mCtx
+		AlarmManager alarmManager = (AlarmManager) mCtx
 				.getSystemService(Context.ALARM_SERVICE);
 		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
 
@@ -221,7 +221,7 @@ public class AlarmDataManager {
 				boolean alarmUp = (PendingIntent.getBroadcast(mCtx, Integer.valueOf(arrReq[i]), myIntent, PendingIntent.FLAG_NO_CREATE) != null);
 				if (alarmUp) {
 					PendingIntent sender1 = PendingIntent.getBroadcast(mCtx, Integer.valueOf(arrReq[i]), myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-					alarmDataManager.cancel(sender1);
+					alarmManager.cancel(sender1);
 					sender1.cancel();
 				}
 			}
@@ -248,7 +248,9 @@ public class AlarmDataManager {
 		Log.d(Const.DEBUG_TAG, "newReqCode=" + newReqCode);
 		//등록된 code 저장해둠
 		SharedPreferences.Editor editor = prefs.edit();
+		editor.clear();
 		editor.putString(reqCode, newReqCode);
+		editor.commit();
 	}
 
 	public long setAlarm(AlarmTimeVO alarmVO, int index) {
