@@ -669,6 +669,36 @@ public class AlarmDbManager extends DbHelper{
 		return result;
 	}
 
+	/*
+		Holiday
+		KEY_ID + " integer primary key autoincrement, " +
+					KEY_YEAR + " integer , " +
+					KEY_MONTH + " integer , " +
+					KEY_DAY + " integer , " +
+					KEY_TYPE + " text, " +
+					KEY_NAME + " text )" +
+	 */
+
+	private void insertHoliday(long id, Calendar cal) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		String year = "" , month = "", day = "", type = "", name = "";
+
+		ContentValues values = new ContentValues();
+
+		values.put(KEY_YEAR, year);
+		values.put(KEY_MONTH, month);
+		values.put(KEY_DAY, day);
+		values.put(KEY_TYPE, type);
+		values.put(KEY_NAME, name);
+
+		long _id = db.insert(TABLE_HOLIDAY, null, values);
+
+		if(_id == -1){
+			Log.e(Const.DEBUG_TAG, "DB Date INSERT ERROR");
+			throw new Error("DB Date INSERT ERROR");
+		}
+	}
+
 	public boolean deleteTimer(long id) {
 		// TODO: 2015-08-30 알림 반복인데 오늘만 삭제 때 어떻게 할지 구현 해야 함
 		SQLiteDatabase db = this.getWritableDatabase();
