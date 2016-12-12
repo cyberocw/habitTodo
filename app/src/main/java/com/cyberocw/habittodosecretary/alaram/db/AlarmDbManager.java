@@ -53,6 +53,8 @@ public class AlarmDbManager extends DbHelper{
 		values.put(KEY_ALARM_OPTION, vo.getAlarmOption());
 		values.put(KEY_HOUR, vo.getHour());
 		values.put(KEY_MINUTE, vo.getMinute());
+		values.put(KEY_HOLIDAY_ALL, vo.getIsHolidayALL());
+		values.put(KEY_HOLIDAY_NONE, vo.getIsHolidayNone());
 
 		Calendar c = vo.getCreateDt();
 
@@ -275,6 +277,7 @@ public class AlarmDbManager extends DbHelper{
 		for (Map.Entry<Integer, Integer> entry : dayMap.entrySet()){
 			day = entry.getKey();
 			//현재 요일 (day) 이후 일 경우 이후 요일과 오늘 요일 차이 값을 map value로 지정 - 사용 안함 나중에 봐서 daymap 로직 삭제하기
+			//arrDayResult는 사용
 			//aarrDayResult에 오늘 요일부터 순서대로 요일
 			if(day >= dayNum){
 				dayMap.put(day, day - dayNum);
@@ -299,11 +302,18 @@ public class AlarmDbManager extends DbHelper{
 
 		long nowTimeInMil = nowCal.getTimeInMillis();
 
-		//7번 반복
+		//오늘 기준 7번 반복하면서 최소값 찾으면 +1 일 더 찾아보고 중지
 		for(int i = 0; i < arrDayResult.length; i++) {
 			queryString = "SELECT B." + KEY_ID + ", B." + KEY_ALARM_CALL_LIST + ", B." + KEY_ALARM_TITLE + ", B."+KEY_HOUR + ", B." + KEY_MINUTE + ", A." + KEY_F_ALARM_ID +
+					", B." + KEY_HOLIDAY_ALL + ", B." + KEY_HOLIDAY_NONE +
 					" FROM " + TABLE_ALARM_REPEAT + " A LEFT JOIN " + TABLE_ALARM + " B ON A." + KEY_F_ALARM_ID + " = B." + KEY_ID  + " WHERE " +
 					" B." + KEY_USE_YN + " = 1 AND A." + arrDayResult[i] + " = 1 ORDER BY B." + KEY_HOUR + ", B." + KEY_MINUTE;
+
+
+			//// TODO: 2016-11-06 isholiday 체크해서 가져오는 로직
+			// or isHoliday = 1, 만약 내일이 공휴일일 경우도 고려해야함, 내일 공휴일 0:10 -20분전 알림 일 경우....
+			// -> 반복 돌때 날짜의 공휴일도 계속 가져와서 isHoliday 옵션 도 동적으로 변경해줘야함
+			//공휴일 포함시 -> 공휴일을 계속 가져와서 공휴일일 경우 조건 -> or (isHolidayAll = 1 and isHolidayNone <> 1)
 
 			Cursor c = db.rawQuery(queryString, null);
 
@@ -404,12 +414,17 @@ public class AlarmDbManager extends DbHelper{
 		c.setTime(date.getTime());
 		c.add(Calendar.DAY_OF_MONTH, 1);
 
+		Log.d(Const.DEBUG_TAG, "getAlarmList only startDate");
+
 		return getAlarmList(-1, date, null, day);
 	}
 	public ArrayList<AlarmVO> getAlarmList(Calendar startDate, Calendar endDate){
+		//1주일치 불러와서 아래 o 아이콘 삽입을 위한 용도
+		Log.d(Const.DEBUG_TAG, "getAlarmList start, end date is not null");
 		return getAlarmList(-1, startDate, endDate, null);
 	}
 	public AlarmVO getAlarmById(long id){
+		Log.d(Const.DEBUG_TAG, "getAlarmList getAlarmById");
 		ArrayList<AlarmVO> arrayList = getAlarmList(id, null, null, null);
 		if(arrayList.size() == 0){
 			return null;
@@ -418,7 +433,12 @@ public class AlarmDbManager extends DbHelper{
 
 	}
 
+	/*
+	dayName은 요일을 받음
+	 */
 	private ArrayList<AlarmVO> getAlarmList(long id, Calendar startDate, Calendar endDate, int[] dayName) {
+
+
 		String selectQuery =
 				"SELECT  A.*, B." + KEY_ID + " as " + KEY_REPEAT_ID + ", C." + KEY_ID + " as " + KEY_DATE_ID + ", sun, mon, tue, wed, thu, fri, sat, C." +
 						KEY_ALARM_DATE +" FROM " + TABLE_ALARM + " AS A LEFT JOIN " +
@@ -429,6 +449,7 @@ public class AlarmDbManager extends DbHelper{
 			ContentValues values = new ContentValues();
 
 			if(dayName != null) {
+				//아직까지는 dayName이 배열일 경우는 없음...
 				for (int i = 0; i < dayName.length; i++) {
 					switch (dayName[i]) {
 						case Calendar.MONDAY:
@@ -454,22 +475,23 @@ public class AlarmDbManager extends DbHelper{
 							break;
 					}
 				}
-
+				//repeat 테이블 내용 불러옴
 				if (values.size() > 0) {
 					selectQuery += "(SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE 1=1 ";
 					for (String key : values.keySet()) {
+						//and 인지 or인지 잘 구분 필요 아직까지는 dayName이 배열일 경우는 없어서 and던 or던 상관 없는듯...
 						selectQuery += " AND " + key + " = 1";
 					}
 					selectQuery += ")";
 				}
 			}
-
+			//////// 날짜 지정 알림에서 불러옴
 			//endDate가 null이 아닐때 (이때는 day 배열이 없는 상태 -1로 key_id in 무효화 시켜줌)
 			if (startDate != null && endDate != null) {
 				selectQuery += " (-1) OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
 						KEY_ALARM_DATE + " BETWEEN " + convertDateType(startDate) + " AND " + convertDateType(endDate) + ")";
 			}
-			//endDate가 null일때 - 현재 이 경우만 존재
+			//endDate가 null일때 -- 한개 날짜만 사용
 			if (startDate != null && endDate == null) {
 				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
 						KEY_ALARM_DATE + " = " + convertDateType(startDate) + ")";
@@ -522,6 +544,9 @@ public class AlarmDbManager extends DbHelper{
 				vo.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
 				vo.setHour(c.getInt(c.getColumnIndex(KEY_HOUR)));
 				vo.setMinute(c.getInt(c.getColumnIndex(KEY_MINUTE)));
+
+				vo.setIsHolidayALL((c.getInt(c.getColumnIndex(KEY_HOLIDAY_ALL))));
+				vo.setIsHolidayNone((c.getInt(c.getColumnIndex(KEY_HOLIDAY_NONE))));
 
 				tempData = c.getString(c.getColumnIndex(KEY_ALARM_CALL_LIST));
 

@@ -29,7 +29,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static DbHelper sInstance;
 
 	private static final String DB_NME = "habit_todo";
-	private static final int DB_VERSION = 9;
+	private static final int DB_VERSION = 11;
 
 	private static final String ARRAY_DIV = "_ho8c7wt_";
 
@@ -41,6 +41,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String TABLE_MEMO = "memo";
 	public static final String TABLE_CATEGORY = "category";
 	public static final String TABLE_ALARAM_RELATION = "alarm_relation";
+	public static final String TABLE_HOLIDAY = "holiday";
 
 	public static final String KEY_ID = "_id";
 	public static final String KEY_REPEAT_ID = "_rid";
@@ -54,6 +55,9 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String KEY_SECOND = "second";
 	public static final String KEY_ALARM_CALL_LIST = "alarm_call_list";
 	public static final String KEY_ALARM_CONTENTS = "alarm_Contents"; // key_type 이랑 동일하게 씀
+
+	public static final String KEY_HOLIDAY_ALL = "is_holiday_all";
+	public static final String KEY_HOLIDAY_NONE = "is_holiday_none";
 
 	public static final String KEY_ALARM_DATE = "alarm_date";
 	public static final String KEY_F_ALARM_ID = "alarm_id";
@@ -84,6 +88,12 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	public static final String KEY_TYPE = "type";
 	public static final String KEY_SORT = "sort_order";
+
+	// holiday
+	public static final String KEY_NAME = "name";
+	public static final String KEY_YEAR = "year";
+	public static final String KEY_MONTH = "month";
+	public static final String KEY_DAY = "day";
 
 	public static synchronized DbHelper getInstance(Context context) {
 
@@ -169,6 +179,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		db.execSQL(getCreateTableQuery(TABLE_MEMO));
 		db.execSQL(getCreateTableQuery(TABLE_CATEGORY));
 		db.execSQL(getCreateTableQuery(TABLE_ALARAM_RELATION));
+		db.execSQL(getCreateTableQuery(TABLE_HOLIDAY));
 	}
 
 	@Override
@@ -202,6 +213,15 @@ public class DbHelper extends SQLiteOpenHelper {
 			db.execSQL(sql);
 			sql = "ALTER TABLE " + TABLE_ALARM + " ADD COLUMN " + KEY_TYPE + " text ;";
 			db.execSQL(sql);
+		}
+		if(oldVersion < 10){
+			String sql = "ALTER TABLE " + TABLE_ALARM + " ADD COLUMN " + KEY_HOLIDAY_ALL + " integer ;";
+			db.execSQL(sql);
+			sql = "ALTER TABLE " + TABLE_ALARM + " ADD COLUMN " + KEY_HOLIDAY_NONE + " integer ;";
+			db.execSQL(sql);
+		}
+		if(oldVersion < 11){
+			db.execSQL(getCreateTableQuery(TABLE_HOLIDAY));
 		}
 	}
 
@@ -253,7 +273,17 @@ public class DbHelper extends SQLiteOpenHelper {
 					KEY_F_ID + " integer, " +
 					"PRIMARY KEY ([" + KEY_TYPE + "],[" + KEY_F_ALARM_ID + "],[" + KEY_F_ID + "]))";
 		}
-
+		else if(tableName.equals(TABLE_HOLIDAY)) {
+			sql = "create table if not exists " + TABLE_HOLIDAY + " (" +
+					KEY_ID + " integer primary key autoincrement, " +
+					KEY_YEAR + " integer , " +
+					KEY_MONTH + " integer , " +
+					KEY_DAY + " integer , " +
+					KEY_TYPE + " text, " +
+					KEY_NAME + " text )" +
+					";CREATE INDEX if not exists " + TABLE_HOLIDAY + " holiday_idx ON " + TABLE_HOLIDAY +
+					"(" + KEY_YEAR + ", " + KEY_MONTH + "," + KEY_DAY + ");";
+		}
 		return sql;
 	}
 

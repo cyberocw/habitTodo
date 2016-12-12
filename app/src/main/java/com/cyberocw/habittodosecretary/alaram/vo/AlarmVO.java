@@ -27,6 +27,9 @@ public class AlarmVO implements Serializable {
 	private String type;
 	private ArrayList<Integer> alarmCallList = null;
 
+	private int isHolidayALL = 0;
+	private int isHolidayNone = 0;
+
 	private Calendar createDt = null;
 	private Calendar updateDt = null;
 
@@ -171,5 +174,21 @@ public class AlarmVO implements Serializable {
 
 	public void setUpdateDt(Calendar updateDt) {
 		this.updateDt = updateDt;
+	}
+
+	public int getIsHolidayALL() {
+		return isHolidayALL;
+	}
+
+	public void setIsHolidayALL(int isHolidayALL) {
+		this.isHolidayALL = isHolidayALL;
+	}
+
+	public int getIsHolidayNone() {
+		return isHolidayNone;
+	}
+
+	public void setIsHolidayNone(int isHolidayNone) {
+		this.isHolidayNone = isHolidayNone;
 	}
 }

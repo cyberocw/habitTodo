@@ -23,8 +23,10 @@ import android.view.ViewGroup;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
+import com.cyberocw.habittodosecretary.settings.SettingFragment;
 
 public class MainActivity extends AppCompatActivity implements AlarmFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener,
+		SettingFragment.OnFragmentInteractionListener,
 		NavigationView.OnNavigationItemSelectedListener {
     public AlarmFragment mMainFragment;
     public static String TAG = "mainActivity";
@@ -98,6 +100,9 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				break;
 			case R.id.nav_item_cate:
 				fragment = new CategoryFragment();
+				break;
+			case R.id.nav_item_setting:
+				fragment = new SettingFragment();
 				break;
 			default:
                 //fragment = new AlarmFragment();

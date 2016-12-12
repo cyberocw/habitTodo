@@ -23,6 +23,10 @@
             android:id="@+id/nav_item_info"
             android:icon="@drawable/ic_tick"
             android:title="@string/nav_item_info" />
+        <item
+            android:id="@+id/nav_item_setting"
+            android:icon="@drawable/ic_tick"
+            android:title="@string/nav_item_setting" />
     </group>
 
 

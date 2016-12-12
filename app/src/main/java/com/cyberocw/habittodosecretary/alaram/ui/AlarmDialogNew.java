@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -65,9 +66,12 @@ public class AlarmDialogNew extends DialogFragment{
 	private int mAlarmOption = Const.ALARM_OPTION.SET_DATE_TIMER;
 	private int mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE; //날짜지정 or repeat
 	private TextView mTvAlarmDate, mTvAlarmTime = null;
+	private CheckBox mCbHolidayAll = null;
+	private CheckBox mCbHolidayNone = null;
+
 
 	private RadioGroup mRgAlarmOption;
-	private LinearLayout mAlarmList, llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap;
+	private LinearLayout mAlarmList, llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap, llHolidayOptionWrap;
 	private HashMap<Integer, Button> mMapDay = new HashMap<>();
 	private int[] mArrDayString = {Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY};//{"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
 	private int[] mArrDayId = {R.id.btnRepeatSun, R.id.btnRepeatMon, R.id.btnRepeatTue, R.id.btnRepeatWed, R.id.btnRepeatThur, R.id.btnRepeatFri, R.id.btnRepeatSat};
@@ -85,7 +89,7 @@ public class AlarmDialogNew extends DialogFragment{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		mCtx = getActivity();
-
+		Log.d(Const.DEBUG_TAG, "ddd");
 		Bundle arguments = getArguments();
 
 		if(arguments != null) {
@@ -124,7 +128,6 @@ public class AlarmDialogNew extends DialogFragment{
 	}
 
 	private void init(){
-		Toast.makeText(mCtx, "alarmId= "+ mAlarmVO.getId(), Toast.LENGTH_SHORT).show();
 
 		/* alarmTitle, alarmType(진동,소리 등), alarmOption(타이머,시간지정), hour, minute, mArrAlarmCall(몇분전 알림 목록)
 		 , mDataRepeatDay, mAlarmDateType, ArrayList<Calendar> alarmDate = null;
@@ -158,7 +161,6 @@ public class AlarmDialogNew extends DialogFragment{
 				View view;
 				int index;
 
-				Toast.makeText(mCtx, Arrays.toString(mDataRepeatDay.toArray()), Toast.LENGTH_LONG).show();
 				ArrayList<Integer> temp = new ArrayList<>();
 				for (int i = 0; i < mDataRepeatDay.size(); i++) {
 					value = mDataRepeatDay.get(i);
@@ -169,7 +171,11 @@ public class AlarmDialogNew extends DialogFragment{
 					toggleBtnRepeatDay(view, index);
 				}
 
-				Toast.makeText(mCtx, "ttt=" + temp.toString(), Toast.LENGTH_SHORT).show();
+				if(mAlarmVO.getIsHolidayALL() == 1)
+					mCbHolidayAll.setChecked(true);
+				if(mAlarmVO.getIsHolidayNone() == 1)
+					mCbHolidayNone.setChecked(true);
+
 			}
 
 			txTimeSet(mAlarmVO.getHour(), mAlarmVO.getMinute());
@@ -243,7 +249,6 @@ public class AlarmDialogNew extends DialogFragment{
 
 			Object[] aa = mDataRepeatDay.toArray();
 			Arrays.sort(aa);
-
 			alarmDate = null;
 		}
 		else{
@@ -297,6 +302,15 @@ public class AlarmDialogNew extends DialogFragment{
 		vo.setAlarmDateList(alarmDate);
 		vo.setType(mEtcType);
 
+		Toast.makeText(mCtx, " holiday is checked = "+ mCbHolidayAll.isChecked(), Toast.LENGTH_LONG);
+		Log.d(Const.DEBUG_TAG, "holiday start");
+		if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT){
+
+			Log.d(Const.DEBUG_TAG, "mCbHolidayAll.isChecked() =" + mCbHolidayAll.isChecked());
+			vo.setIsHolidayALL(mCbHolidayAll.isChecked() ? 1 : 0);
+			vo.setIsHolidayNone(mCbHolidayNone.isChecked() ? 1 : 0);
+		}
+
 		Bundle bundle = new Bundle();
 		bundle.putSerializable("alarmVO", vo);
 		Intent intent = new Intent();
@@ -344,11 +358,16 @@ public class AlarmDialogNew extends DialogFragment{
 		mTvAlarmDate = (TextView) view.findViewById(R.id.tvAlarmDate);
 		mTvAlarmTime = (TextView) view.findViewById(R.id.tvAlarmTime);
 
+		mCbHolidayAll = (CheckBox) view.findViewById(R.id.cbHolidayAll);
+		mCbHolidayNone = (CheckBox) view.findViewById(R.id.cbHolidayNone);
+
 		//mTimePickerWrap = (LinearLayout) view.findViewById(R.id.timePickerWrap);
 
 		bindVarLayoutView(view);
 
 		mScvAddAlarm = (ScrollView) view.findViewById(R.id.scvAddAlarm);
+
+
 
 		for(int i = 0; i < mArrDayId.length; i++) {
 			mMapDay.put(mArrDayString[i], (Button) view.findViewById(mArrDayId[i]));
@@ -367,6 +386,7 @@ public class AlarmDialogNew extends DialogFragment{
 		llTimePickWrap = (LinearLayout) v.findViewById(R.id.llTimePickWrap);
 		llRepeatDayWrap = (LinearLayout) v.findViewById(R.id.llRepeatDayWrap);
 		llAlertTimeWrap = (LinearLayout) v.findViewById(R.id.alertTimeWrap);
+		llHolidayOptionWrap = (LinearLayout) v.findViewById(R.id.holidayOptionWrap);
 	}
 
 	@Override
@@ -405,7 +425,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 
 	private void timeWrapperHide() {
-		View[] arrView = {llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap};
+		View[] arrView = {llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap, llHolidayOptionWrap};
 		for(int i = 0 ; i < arrView.length; i++) {
 			arrView[i].setVisibility(View.GONE);
 		}
@@ -421,6 +441,7 @@ public class AlarmDialogNew extends DialogFragment{
 		llTimePickWrap.setVisibility(View.VISIBLE);
 		llTimerWrap.setVisibility(View.VISIBLE);
 		llRepeatDayWrap.setVisibility(View.VISIBLE);
+		llHolidayOptionWrap.setVisibility(View.VISIBLE);
 		mNpHour.setMaxValue(10);
 		mNpHour.setMinValue(0);
 		mNpMinute.setMaxValue(59);
@@ -433,6 +454,8 @@ public class AlarmDialogNew extends DialogFragment{
 	private void renderSetTimeUi(){
 		//timeWrapperHide();
 		llTimerWrap.setVisibility(View.GONE);
+		llAlertTimeWrap.setVisibility(View.GONE);
+		llHolidayOptionWrap.setVisibility(View.GONE);
 		llDatePicWrap.setVisibility(View.VISIBLE);
 		llTimePickWrap.setVisibility(View.VISIBLE);
 		llRepeatDayWrap.setVisibility(View.VISIBLE);
@@ -464,17 +487,23 @@ public class AlarmDialogNew extends DialogFragment{
 			case Const.ALARM_DATE_TYPE.REPEAT :
 				llRepeatDayWrap.setVisibility(View.VISIBLE);
 				llDatePicWrap.setVisibility(View.GONE);
+				llHolidayOptionWrap.setVisibility(View.VISIBLE);
+				llAlertTimeWrap.setVisibility(View.VISIBLE);
 				mAlarmDateType = Const.ALARM_DATE_TYPE.REPEAT;
 				break;
 			case Const.ALARM_DATE_TYPE.SET_DATE :
 				llDatePicWrap.setVisibility(View.VISIBLE);
 				llRepeatDayWrap.setVisibility(View.GONE);
+				llHolidayOptionWrap.setVisibility(View.GONE);
+				llAlertTimeWrap.setVisibility(View.GONE);
 				alarmDateChange(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
 				mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE;
 				break;
 			case Const.ALARM_DATE_TYPE.TOMORROW :
 				llDatePicWrap.setVisibility(View.VISIBLE);
 				llRepeatDayWrap.setVisibility(View.GONE);
+				llAlertTimeWrap.setVisibility(View.GONE);
+				llHolidayOptionWrap.setVisibility(View.GONE);
 				c.add(Calendar.DAY_OF_MONTH, 1);
 				alarmDateChange(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
 				mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE;
@@ -482,14 +511,14 @@ public class AlarmDialogNew extends DialogFragment{
 			case Const.ALARM_DATE_TYPE.AFTER_DAY_TOMORROW :
 				llDatePicWrap.setVisibility(View.VISIBLE);
 				llRepeatDayWrap.setVisibility(View.GONE);
+				llHolidayOptionWrap.setVisibility(View.GONE);
+				llAlertTimeWrap.setVisibility(View.GONE);
 				c = Calendar.getInstance();
 				c.add(Calendar.DAY_OF_MONTH, 2);
 				alarmDateChange(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
 				mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE;
 				break;
 		}
-
-
 	}
 
 	public void makeSpinnerAlarmType(){
@@ -539,7 +568,7 @@ public class AlarmDialogNew extends DialogFragment{
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				mEtcType = (String) values[position];
-				Toast.makeText(mCtx, "mEtcType = " + mEtcType, Toast.LENGTH_SHORT).show();
+
 			}
 
 			@Override
