@@ -1,30 +1,24 @@
-package com.cyberocw.habittodosecretary.settings;
+package com.cyberocw.habittodosecretary.settings.ui;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.category.CategoryDataManager;
 import com.cyberocw.habittodosecretary.category.CategoryListAdapter;
-import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
-import com.cyberocw.habittodosecretary.memo.MemoFragment;
+import com.cyberocw.habittodosecretary.settings.HolidaySync;
 
 import org.json.JSONObject;
 
@@ -100,6 +94,7 @@ public class SettingFragment extends Fragment {
         });
     }
 
+    //공휴일 데이터 동기화
     private void holidaySync(){
         CheckTypesTask task = new CheckTypesTask();
         task.execute();

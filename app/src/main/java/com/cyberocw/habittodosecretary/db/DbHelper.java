@@ -301,9 +301,12 @@ public class DbHelper extends SQLiteOpenHelper {
 	}
 
 	public void closeDB() {
+		this.close();
+		/*
 		SQLiteDatabase db = this.getReadableDatabase();
 		if (db != null && db.isOpen())
 			db.close();
+			*/
 	}
 
 	public String serialize(Object content[]){

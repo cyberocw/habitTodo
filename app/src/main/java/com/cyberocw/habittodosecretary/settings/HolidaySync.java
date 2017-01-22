@@ -26,7 +26,7 @@ import javax.net.ssl.X509TrustManager;
 /**
  * Created by cyberocw on 2016-11-13.
  */
-class HolidaySync {
+public class HolidaySync {
     public void HolidaySync(){}
 
     public JSONObject getHolidayData(){
