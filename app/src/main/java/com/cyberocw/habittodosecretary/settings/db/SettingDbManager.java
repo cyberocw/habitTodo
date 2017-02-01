@@ -4,8 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.cyberocw.habittodosecretary.alaram.vo.HolidayVO;
 import com.cyberocw.habittodosecretary.db.DbHelper;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -36,10 +38,27 @@ public class SettingDbManager extends DbHelper {
 
     }
 
-    private void insertHoliday(JSONObject jsonObject) {
+    private long insertHoliday(JSONObject jsonObject) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+
+        long id = -1;
+
+        try {
+            values.put(KEY_YEAR, jsonObject.getString("year"));
+            values.put(KEY_MONTH, jsonObject.getString("month"));
+            values.put(KEY_DAY, jsonObject.getString("day"));
+            values.put(KEY_TYPE, jsonObject.getString("type"));
+            values.put(KEY_NAME, jsonObject.getString("name"));
+
+            id = db.insert(TABLE_HOLIDAY, null, values);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return id;
 
         /*
 

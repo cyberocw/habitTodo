@@ -127,16 +127,16 @@ public class DbHelper extends SQLiteOpenHelper {
 				KEY_TYPE + " text," +
 				KEY_USE_YN + " integer, " +
 				KEY_CREATE_DATE + " integer, " +
-				KEY_UPDATE_DATE + " integer " +
+				KEY_UPDATE_DATE + " integer, " +
+				KEY_HOLIDAY_ALL + " integer, " +
+				KEY_HOLIDAY_NONE + " integer " +
 				");";
-		db.execSQL(sql);
 
 		String sql2 = "create table " + TABLE_ALARM_DATE + " (" +
 				KEY_ID + " integer primary key autoincrement, " +
 				KEY_ALARM_DATE + " integer, " +
 				KEY_F_ALARM_ID + " integer " +
 				");";
-		db.execSQL(sql2);
 
 		String sql3 = "create table " + TABLE_ALARM_REPEAT + " (" +
 				KEY_ID + " integer primary key autoincrement, " +
@@ -149,7 +149,6 @@ public class DbHelper extends SQLiteOpenHelper {
 				KEY_SUN + " integer, " +
 				KEY_F_ALARM_ID + " integer" +
 				");";
-		db.execSQL(sql3);
 
 		String sql4 = "create table " + TABLE_ALARM_ORDER + " (" +
 				KEY_ID + " integer primary key autoincrement, " +
@@ -158,7 +157,6 @@ public class DbHelper extends SQLiteOpenHelper {
 				KEY_USE_YN + " integer, " +
 				KEY_F_ALARM_ID + " integer" +
 				");CREATE INDEX " + TABLE_ALARM_ORDER + " time_stamp_idx ON " + TABLE_ALARM_ORDER + "(" + KEY_TIME_STAMP + ");";
-		db.execSQL(sql4);
 
 		String sql5 = "create table " + TABLE_TIMER + " (" +
 				KEY_ID + " integer primary key autoincrement, " +
@@ -174,12 +172,30 @@ public class DbHelper extends SQLiteOpenHelper {
 
 		sql5 += "CREATE INDEX " + TABLE_ALARM_DATE + " alarm_date_idx ON " + TABLE_ALARM_DATE + "(" + KEY_ALARM_DATE + ");";
 
-		db.execSQL(sql5);
 
-		db.execSQL(getCreateTableQuery(TABLE_MEMO));
-		db.execSQL(getCreateTableQuery(TABLE_CATEGORY));
-		db.execSQL(getCreateTableQuery(TABLE_ALARAM_RELATION));
-		db.execSQL(getCreateTableQuery(TABLE_HOLIDAY));
+		db.beginTransaction();
+		try {
+			db.execSQL(sql);
+			db.execSQL(sql2);
+			db.execSQL(sql3);
+			db.execSQL(sql4);
+			db.execSQL(sql5);
+
+			db.execSQL(getCreateTableQuery(TABLE_MEMO));
+			db.execSQL(getCreateTableQuery(TABLE_CATEGORY));
+			db.execSQL(getCreateTableQuery(TABLE_ALARAM_RELATION));
+			db.execSQL(getCreateTableQuery(TABLE_HOLIDAY));
+
+			db.setTransactionSuccessful();
+			Log.d(Const.DEBUG_DB_TAG, "DB CREATE SUCCESS OCW");
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.d(Const.DEBUG_DB_TAG, "DB CREATE Exception " + e.getMessage() + " clause=" + e.getCause());
+		} finally {
+
+			db.endTransaction();
+			Log.d(Const.DEBUG_DB_TAG, "DB END Transaction OCW");
+		}
 	}
 
 	@Override
@@ -233,7 +249,8 @@ public class DbHelper extends SQLiteOpenHelper {
 					KEY_ID + " integer primary key autoincrement, " +
 					KEY_TITLE + " text, " +
 					KEY_TYPE + " text, " +
-					KEY_SORT + " integer " +
+					KEY_SORT + " integer, " +
+					KEY_USE_YN + " integer " +
 					");CREATE INDEX if not exists " + TABLE_CATEGORY + " category_sort_order ON " + TABLE_CATEGORY + "(" + KEY_SORT + ");";
 			sql += "CREATE INDEX if not exists " + TABLE_CATEGORY + " category_title ON " + TABLE_CATEGORY + "(" + KEY_TITLE + ");";
 		}

@@ -7,6 +7,8 @@ import java.util.Calendar;
  */
 public class Const {
 	public static final String DEBUG_TAG = "HabitToDo Debug";
+	public static final String DEBUG_DB_TAG = "HabitToDo DB Debug";
+
 	public static final String ERROR_TAG = "HabitToDo Error";
 	public static final String ALARM_SERVICE_ID = "alarmServiceList";
 	public static final String TIMER_RUNNING_ID = "runningTimerId";

@@ -1,4 +1,4 @@
-package com.cyberocw.habittodosecretary.settings.ui;
+package com.cyberocw.habittodosecretary.settings;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -18,9 +18,10 @@ import android.widget.EditText;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.category.CategoryDataManager;
 import com.cyberocw.habittodosecretary.category.CategoryListAdapter;
-import com.cyberocw.habittodosecretary.settings.HolidaySync;
 
 import org.json.JSONObject;
+
+import java.util.Calendar;
 
 /**
  * Created by cyberocw on 2016-11-06.
@@ -37,6 +38,8 @@ public class SettingFragment extends Fragment {
 
     private View mView;
     private Context mCtx;
+    private SettingDataManager mSettingDataManager;
+
     SharedPreferences mPrefs;
     CategoryDataManager mCateDataManager;
     CategoryListAdapter mCateAdapter;
@@ -81,6 +84,7 @@ public class SettingFragment extends Fragment {
     }
 
     private void initActivity(){
+        mSettingDataManager = new SettingDataManager(mCtx);
         bindBtnEvent();
     }
 
@@ -151,9 +155,13 @@ public class SettingFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... arg0) {
             HolidaySync sync = new HolidaySync();
-            JSONObject jObj = sync.getHolidayData();
+            int year = Calendar.getInstance().get(Calendar.YEAR);
 
+            JSONObject jObj = sync.getHolidayData(year);
 
+            //mSettingDataManager.
+
+            //db 가져와서 지우고 insert 하기
 
             return null;
         }

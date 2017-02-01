@@ -29,8 +29,8 @@ import javax.net.ssl.X509TrustManager;
 public class HolidaySync {
     public void HolidaySync(){}
 
-    public JSONObject getHolidayData(){
-        String year = "2016";
+    public JSONObject getHolidayData(int year){
+        //year = "2016";
         String addr = "https://apis.sktelecom.com/v1/eventday/days?type=h&year=" + year ;
 
         StringBuilder html = new StringBuilder();
@@ -71,7 +71,6 @@ public class HolidaySync {
         }
         catch (Exception ex) {
             Log.i("error",ex.getMessage());
-
         }
         Log.d(Const.DEBUG_TAG, "result="+html.toString());
 
