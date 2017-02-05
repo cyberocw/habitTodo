@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.category.CategoryDataManager;
@@ -138,7 +139,7 @@ public class SettingFragment extends Fragment {
     }
 
 
-    private class CheckTypesTask extends AsyncTask<Void, Void, Void> {
+    private class CheckTypesTask extends AsyncTask<Void, Void, String> {
 
         ProgressDialog asyncDialog = new ProgressDialog(mCtx);
 
@@ -153,23 +154,44 @@ public class SettingFragment extends Fragment {
         }
 
         @Override
-        protected Void doInBackground(Void... arg0) {
+        protected String doInBackground(Void... arg0) {
             HolidaySync sync = new HolidaySync();
+
             int year = Calendar.getInstance().get(Calendar.YEAR);
 
             JSONObject jObj = sync.getHolidayData(year);
+            boolean result = mSettingDataManager.addItems(jObj, year);
+            String resultMsg ;
 
-            //mSettingDataManager.
+            if(!result) {
+                resultMsg = year + "년 공휴일 데이터 동기화에 실패했습니다";
+                return resultMsg;
+            }
+            jObj = sync.getHolidayData(year + 1);
+            result = mSettingDataManager.addItems(jObj, year + 1);
 
-            //db 가져와서 지우고 insert 하기
+            if(!result){
+                resultMsg = year+1 + "년 공휴일 데이터 동기화에 실패했습니다";
+            }
+            else
+                resultMsg = "공휴일 데이터 동기화 완료";
 
-            return null;
+            mSettingDataManager.getList(year);
+
+            return resultMsg;
         }
 
         @Override
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(String result) {
             asyncDialog.dismiss();
+
+            Toast.makeText(mCtx, result, Toast.LENGTH_LONG).show();
+
+
+
             super.onPostExecute(result);
+
+
         }
     }
 }

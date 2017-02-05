@@ -7,11 +7,20 @@ package com.cyberocw.habittodosecretary.alaram.vo;
 public class HolidayVO {
     //Seq, Year, month, day, type, name
     private long seq = -1;
+    private long id = -1;
     private int year = -1;
     private int month = -1;
     private int day = -1;
     private String type = "";
     private String name = "";
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getSeq() {
         return seq;
@@ -59,5 +68,18 @@ public class HolidayVO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "HolidayVO{" +
+                "seq=" + seq +
+                ", id=" + id +
+                ", year=" + year +
+                ", month=" + month +
+                ", day=" + day +
+                ", type='" + type + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
