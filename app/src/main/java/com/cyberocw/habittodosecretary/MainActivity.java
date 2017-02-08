@@ -1,5 +1,9 @@
 package com.cyberocw.habittodosecretary;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +21,7 @@ import android.view.MenuItem;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
+import com.cyberocw.habittodosecretary.settings.InitializeSetting;
 import com.cyberocw.habittodosecretary.settings.SettingFragment;
 
 public class MainActivity extends AppCompatActivity implements AlarmFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener,
@@ -49,7 +54,36 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	    FragmentManager fragmentManager = getSupportFragmentManager();
 	    fragmentManager.beginTransaction()
 			    .replace(R.id.main_container, new AlarmFragment()).commit();
+
+		afterUpdateVersion();
     }
+
+	private void afterUpdateVersion(){
+		Context ctx = getApplicationContext();
+		SharedPreferences setPrefs = ctx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+
+		String prefsSavedVersion = setPrefs.getString(Const.SETTING.VERSION, "0");
+		String versionName = "";
+		PackageInfo info = null;
+
+		try {
+			info = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0);
+			versionName = info.versionName;
+		} catch (PackageManager.NameNotFoundException e) {
+
+		}
+
+		Log.d(Const.DEBUG_TAG, "versionName = " + versionName + " , prefsSavedVersion= " + prefsSavedVersion);
+
+		if(prefsSavedVersion.equals("0") || !prefsSavedVersion.equals(versionName)){
+			InitializeSetting initializeSetting = new InitializeSetting(getApplication());
+			initializeSetting.execute();
+			SharedPreferences.Editor editor = setPrefs.edit();
+			editor.putString(Const.SETTING.VERSION, versionName);
+			editor.apply();
+			editor.commit();
+		}
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

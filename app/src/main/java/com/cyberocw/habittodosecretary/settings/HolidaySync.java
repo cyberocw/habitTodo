@@ -30,8 +30,7 @@ public class HolidaySync {
     public void HolidaySync(){}
 
     public JSONObject getHolidayData(int year){
-        //year = "2016";
-        String addr = "https://apis.sktelecom.com/v1/eventday/days?type=h&year=" + year ;
+        String addr = "https://apis.sktelecom.com/v1/eventday/days?type=h,i&year=" + year ;
 
         StringBuilder html = new StringBuilder();
         try {
@@ -72,7 +71,7 @@ public class HolidaySync {
         catch (Exception ex) {
             Log.i("error",ex.getMessage());
         }
-        Log.d(Const.DEBUG_TAG, "result="+html.toString());
+        //Log.d(Const.DEBUG_TAG, "year = " + year + ", result="+html.toString());
 
         JSONObject jObject = null;
         try {

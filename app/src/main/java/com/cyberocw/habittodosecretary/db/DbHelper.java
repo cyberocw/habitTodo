@@ -116,6 +116,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		//alarmTitle, alarmType(진동,소리 등), alarmOption(타이머,시간지정), hour, minute, mArrAlarmCall(몇분전 알림 목록), mDataRepeatDay
 
+
 		String sql = "create table " + TABLE_ALARM + " (" +
 				KEY_ID + " integer primary key autoincrement, " +
 				KEY_ALARM_TITLE + " text, " +

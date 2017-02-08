@@ -33,9 +33,11 @@ public class SettingDataManager {
 
     }
 
+    /*
     public boolean addItems(JSONObject jsonObject){
         return this.addItems(jsonObject, 0);
     }
+    */
 
     public boolean addItems(JSONObject jsonObject, int year){
         try {

@@ -84,4 +84,10 @@ public class Const {
 		public static final String WEATHER = "WEATHER";
 		public static final String MEMO = "MEMO";
 	}
+
+	public class SETTING{
+
+		public static final String PREFS_ID = "settingPrefs";
+		public static final String VERSION = "version";
+	}
 }

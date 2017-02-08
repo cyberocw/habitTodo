@@ -101,8 +101,10 @@ public class SettingFragment extends Fragment {
 
     //공휴일 데이터 동기화
     private void holidaySync(){
-        CheckTypesTask task = new CheckTypesTask();
-        task.execute();
+        //CheckTypesTask task = new CheckTypesTask();
+        //task.execute();
+        InitializeSetting is = new InitializeSetting(mCtx);
+        is.execute();
     }
 
 
@@ -138,62 +140,6 @@ public class SettingFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-
-    private class CheckTypesTask extends AsyncTask<Void, Void, String> {
-
-        ProgressDialog asyncDialog = new ProgressDialog(mCtx);
-
-        @Override
-        protected void onPreExecute() {
-            asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            asyncDialog.setMessage("로딩중입니다..");
-
-            // show dialog
-            asyncDialog.show();
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... arg0) {
-            HolidaySync sync = new HolidaySync();
-
-            int year = Calendar.getInstance().get(Calendar.YEAR);
-
-            JSONObject jObj = sync.getHolidayData(year);
-            boolean result = mSettingDataManager.addItems(jObj, year);
-            String resultMsg ;
-
-            if(!result) {
-                resultMsg = year + "년 공휴일 데이터 동기화에 실패했습니다";
-                return resultMsg;
-            }
-            jObj = sync.getHolidayData(year + 1);
-            result = mSettingDataManager.addItems(jObj, year + 1);
-
-            if(!result){
-                resultMsg = year+1 + "년 공휴일 데이터 동기화에 실패했습니다";
-            }
-            else
-                resultMsg = "공휴일 데이터 동기화 완료";
-
-            mSettingDataManager.getList(year);
-
-            return resultMsg;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            asyncDialog.dismiss();
-
-            Toast.makeText(mCtx, result, Toast.LENGTH_LONG).show();
-
-
-
-            super.onPostExecute(result);
-
-
-        }
-    }
 }
 
 

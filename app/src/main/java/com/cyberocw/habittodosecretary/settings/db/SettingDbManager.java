@@ -62,7 +62,7 @@ public class SettingDbManager extends DbHelper {
 
             db.delete(TABLE_HOLIDAY, KEY_YEAR + "=?", new String[]{String.valueOf(year)});
 
-            Log.d(Const.DEBUG_TAG, "jsonArray.length();="+jsonArray.length());
+            //Log.d(Const.DEBUG_TAG, "jsonArray.length();="+jsonArray.length());
 
             JSONObject jsonObject;
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -113,7 +113,7 @@ public class SettingDbManager extends DbHelper {
 
                 //vo.setCreateDt(c.getInt(c.getColumnIndex(KEY_CREATE_DATE)));
                 //vo.setUpdateDt(c.getInt(c.getColumnIndex(KEY_UPDATE_DATE)));
-                Log.d(Const.DEBUG_DB_TAG, "holiday=" + vo.toString());
+                //Log.d(Const.DEBUG_DB_TAG, "holiday=" + vo.toString());
                 list.add(vo);
             } while (c.moveToNext());
         }

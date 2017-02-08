@@ -7,12 +7,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,6 @@ import com.cyberocw.habittodosecretary.alaram.ui.TimerDialog;
 import com.cyberocw.habittodosecretary.calendar.CalendarManager;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
-import java.util.Arrays;
 import java.util.Calendar;
 
 
