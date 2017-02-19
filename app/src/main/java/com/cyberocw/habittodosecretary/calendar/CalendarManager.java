@@ -14,6 +14,9 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.alaram.vo.HolidayVO;
+import com.cyberocw.habittodosecretary.settings.db.SettingDbManager;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,6 +29,7 @@ public class CalendarManager {
 	private Context mCtx;
 	private Calendar mCalendar;
 	private AlarmDbManager mAlarmDbManager;
+	private SettingDbManager mSettingDbManager;
 	private LinearLayout mWrapper;
 	private LinearLayout[] arrIconWrap = new LinearLayout[7];
 	private HashMap[] mArrDateMap = new HashMap[7];
@@ -38,6 +42,7 @@ public class CalendarManager {
 	private Calendar mStartDate;
 	private Calendar mEndDate;
 	int pixelsHeight, pixelsIcon;
+	private HashMap<String, ArrayList> mHolidayMap;
 
 
 	public CalendarManager(Context context, LinearLayout llWeekOfDayWrap, Calendar calendar) {
@@ -51,11 +56,9 @@ public class CalendarManager {
 
 	public void init(){
 		mAlarmDbManager = AlarmDbManager.getInstance(mCtx);
-
+		mSettingDbManager = SettingDbManager.getInstance(mCtx);
 		initWeekDay();
 		renderDayNum();
-
-
 	}
 
 	private void getAlarmList(){
@@ -65,6 +68,16 @@ public class CalendarManager {
 		for(int i = 0; i < vo.size(); i++){
 			mArrAlarmList.add(vo.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
 		}
+	}
+
+	private void getHolidayList(Calendar calOri){
+		Calendar cal = (Calendar) calOri.clone();
+
+		String startDate = String.valueOf(cal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
+		cal.add(Calendar.DAY_OF_MONTH, 7);
+		String endDate = String.valueOf(cal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
+
+		mHolidayMap = mSettingDbManager.getHolidayMap(startDate, endDate);
 	}
 
 	public void initWeekDay(){
@@ -138,20 +151,48 @@ public class CalendarManager {
 		mEndDate = cal4;
 
 		getAlarmList();
+		getHolidayList(mStartDate);
+
+		//mHolidayMap
+
 
 		for(int i = 0 ; i < 7; i++){
 			fDay = cal2.get(Calendar.DAY_OF_MONTH);
-
 			if(i == 0) {
 				arrTextViewDayTitle[i].setTextColor(Color.RED);
 				arrTextViewDayNum[i].setTextColor(Color.RED);
 			}
-			if(i == 6){
+			else if(i == 6){
 				arrTextViewDayTitle[i].setTextColor(Color.BLUE);
 				arrTextViewDayNum[i].setTextColor(Color.BLUE);
 			}
+			else{
+				arrTextViewDayTitle[i].setTextColor(Color.BLACK);
+				arrTextViewDayNum[i].setTextColor(Color.BLACK);
+			}
+
+
+
+			// 공휴일정보 체크
+			String strCal = String.valueOf(cal2.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal2.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal2.get(Calendar.DAY_OF_MONTH));
+
+			if (mHolidayMap.containsKey(strCal)) {
+				ArrayList<HolidayVO> arrHoliday = mHolidayMap.get(strCal);
+				for (int m = 0; m < arrHoliday.size(); m++) {
+					HolidayVO hVO = arrHoliday.get(m);
+
+					if (hVO.getType().equals("h") || hVO.getType().equals("i")) {
+						arrTextViewDayTitle[i].setTextColor(Color.RED);
+						arrTextViewDayNum[i].setTextColor(Color.RED);
+						break;
+					}
+				}
+			}
+
+
 			arrTextViewDayNum[i].setText(fDay + "");
 
+			//오늘 날짜
 			if(mCalendar.getTimeInMillis() == cal2.getTimeInMillis()){
 				//arrTextViewDayNum[i].setBackgroundResource(R.drawable.day_of_week_ring);
 				arrIconWrap[i].setBackgroundResource(R.drawable.day_of_week_ring);

@@ -1,28 +1,16 @@
 package com.cyberocw.habittodosecretary.db;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.cyberocw.habittodosecretary.Const;
-import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
-import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
-import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 
-import org.json.JSONArray;
-
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Created by cyberocw on 2015-08-23.
@@ -31,7 +19,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static DbHelper sInstance;
 
 	private static final String DB_NME = "habit_todo";
-	private static final int DB_VERSION = 11;
+	private static final int DB_VERSION = 12;
 
 	private static final String ARRAY_DIV = "_ho8c7wt_";
 
@@ -96,6 +84,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String KEY_YEAR = "year";
 	public static final String KEY_MONTH = "month";
 	public static final String KEY_DAY = "day";
+	public static final String KEY_FULL_DATE = "full_date";
 
 	public static synchronized DbHelper getInstance(Context context) {
 
@@ -115,7 +104,6 @@ public class DbHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		//alarmTitle, alarmType(진동,소리 등), alarmOption(타이머,시간지정), hour, minute, mArrAlarmCall(몇분전 알림 목록), mDataRepeatDay
-
 
 		String sql = "create table " + TABLE_ALARM + " (" +
 				KEY_ID + " integer primary key autoincrement, " +
@@ -139,7 +127,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				KEY_ID + " integer primary key autoincrement, " +
 				KEY_ALARM_DATE + " integer, " +
 				KEY_F_ALARM_ID + " integer " +
-				");";
+				");CREATE INDEX " + TABLE_ALARM_DATE + " alarm_date_idx ON " + TABLE_ALARM_DATE + "(" + KEY_ALARM_DATE + ");";
 
 		String sql3 = "create table " + TABLE_ALARM_REPEAT + " (" +
 				KEY_ID + " integer primary key autoincrement, " +
@@ -173,7 +161,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				KEY_UPDATE_DATE + " integer " +
 				");CREATE INDEX " + TABLE_TIMER + " timer_create_date_idx ON " + TABLE_TIMER + "(" + KEY_CREATE_DATE + ");";
 
-		sql5 += "CREATE INDEX " + TABLE_ALARM_DATE + " alarm_date_idx ON " + TABLE_ALARM_DATE + "(" + KEY_ALARM_DATE + ");";
+
 
 
 		db.beginTransaction();
@@ -242,6 +230,11 @@ public class DbHelper extends SQLiteOpenHelper {
 		if(oldVersion < 11){
 			db.execSQL(getCreateTableQuery(TABLE_HOLIDAY));
 		}
+		if(oldVersion < 12){
+			String sql = "ALTER TABLE " + TABLE_HOLIDAY + " ADD COLUMN " + KEY_FULL_DATE + " integer ; ";
+			sql += " CREATE INDEX " + TABLE_HOLIDAY + " holiday_create_full_day_idx ON " + TABLE_HOLIDAY + "(" + KEY_FULL_DATE + ");";
+			db.execSQL(sql);
+		}
 	}
 
 	private String getCreateTableQuery(String tableName){
@@ -300,9 +293,10 @@ public class DbHelper extends SQLiteOpenHelper {
 					KEY_MONTH + " integer , " +
 					KEY_DAY + " integer , " +
 					KEY_TYPE + " text, " +
-					KEY_NAME + " text )" +
+					KEY_NAME + " text," +
+					KEY_FULL_DATE + " integer )" +
 					";CREATE INDEX if not exists " + TABLE_HOLIDAY + " holiday_idx ON " + TABLE_HOLIDAY +
-					"(" + KEY_YEAR + ", " + KEY_MONTH + "," + KEY_DAY + ");";
+					"(" + KEY_YEAR + ", " + KEY_MONTH + "," + KEY_DAY + "," + KEY_FULL_DATE + ");";
 		}
 		return sql;
 	}
@@ -322,6 +316,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	public void closeDB() {
 		this.close();
+
 		/*
 		SQLiteDatabase db = this.getReadableDatabase();
 		if (db != null && db.isOpen())

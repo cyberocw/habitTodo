@@ -9,13 +9,15 @@ import android.util.Log;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.alaram.vo.HolidayVO;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
 import com.cyberocw.habittodosecretary.db.DbHelper;
+import com.cyberocw.habittodosecretary.settings.db.SettingDbManager;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -278,7 +280,7 @@ public class AlarmDbManager extends DbHelper{
 			day = entry.getKey();
 			//현재 요일 (day) 이후 일 경우 이후 요일과 오늘 요일 차이 값을 map value로 지정 - 사용 안함 나중에 봐서 daymap 로직 삭제하기
 			//arrDayResult는 사용
-			//aarrDayResult에 오늘 요일부터 순서대로 요일
+			//arrDayResult에 오늘 요일부터 순서대로 요일
 			if(day >= dayNum){
 				dayMap.put(day, day - dayNum);
 				arrDayResult[day-dayNum ] = arrDay[day-1];
@@ -297,17 +299,61 @@ public class AlarmDbManager extends DbHelper{
 
 		AlarmTimeVO alarmTimeVO ;
 		ArrayList<AlarmTimeVO> arrList = new ArrayList<>();
-		Calendar cal, nowCal = Calendar.getInstance(), cal2;
+		Calendar cal = Calendar.getInstance(), nowCal = Calendar.getInstance(), cal2;
 		nowCal.set(Calendar.SECOND, 0);
 
 		long nowTimeInMil = nowCal.getTimeInMillis();
+
+		Log.d(Const.DEBUG_TAG, " today month = " + nowCal.get(Calendar.MONTH));
+
+		// get holiday list for week
+
+		String startDate = String.valueOf(nowCal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, nowCal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, nowCal.get(Calendar.DAY_OF_MONTH));
+		cal.add(Calendar.DAY_OF_MONTH, 7);
+		String endDate = String.valueOf(cal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
+
+		SettingDbManager settingDb = SettingDbManager.getInstance(mCtx);
+		HashMap<String, ArrayList> holidayMap = settingDb.getHolidayMap(startDate, endDate);
+
+		/*
+		ArrayList<HolidayVO> tempArr = new ArrayList<HolidayVO>();
+		HolidayVO tempVO = new HolidayVO();
+		tempVO.setType("i");
+		tempArr.add(tempVO);
+		holidayMap.put("20170219", tempArr);
+		*/
+
+		int dayofWeek;
+		Cursor c = null;
 
 		//오늘 기준 7번 반복하면서 최소값 찾으면 +1 일 더 찾아보고 중지
 		for(int i = 0; i < arrDayResult.length; i++) {
 			queryString = "SELECT B." + KEY_ID + ", B." + KEY_ALARM_CALL_LIST + ", B." + KEY_ALARM_TITLE + ", B."+KEY_HOUR + ", B." + KEY_MINUTE + ", A." + KEY_F_ALARM_ID +
 					", B." + KEY_HOLIDAY_ALL + ", B." + KEY_HOLIDAY_NONE +
-					" FROM " + TABLE_ALARM_REPEAT + " A LEFT JOIN " + TABLE_ALARM + " B ON A." + KEY_F_ALARM_ID + " = B." + KEY_ID  + " WHERE " +
-					" B." + KEY_USE_YN + " = 1 AND A." + arrDayResult[i] + " = 1 ORDER BY B." + KEY_HOUR + ", B." + KEY_MINUTE;
+					" FROM " + TABLE_ALARM_REPEAT + " A INNER JOIN " + TABLE_ALARM + " B ON A." + KEY_F_ALARM_ID + " = B." + KEY_ID  +
+					" WHERE B." + KEY_USE_YN + " = 1 AND (A." + arrDayResult[i] + " = 1 ";
+
+			cal = (Calendar) nowCal.clone();
+			cal.add(Calendar.DAY_OF_MONTH, i);
+			dayofWeek = cal.get(Calendar.DAY_OF_WEEK);
+			//평일일 경우에만 holiday 여부 체크
+			if(dayofWeek != 1 && dayofWeek != 7){
+				String strCal = String.valueOf(cal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
+				Log.d(Const.DEBUG_TAG, "strCal = " + strCal);
+				if (holidayMap.containsKey(strCal)) {
+					ArrayList<HolidayVO> arrHoliday = holidayMap.get(strCal);
+					for (int m = 0; m < arrHoliday.size(); m++) {
+						HolidayVO hVO = arrHoliday.get(m);
+						Log.d(Const.DEBUG_TAG, "hVO type = " + hVO.getType());
+						if (hVO.getType().equals("h") || hVO.getType().equals("i")) {
+							queryString += " or B." + KEY_HOLIDAY_ALL + " = 1 ) and (B." + KEY_HOLIDAY_NONE + " <> 1";
+							break;
+						}
+					}
+				}
+			}
+
+			queryString += ") ORDER BY B." + KEY_HOUR + ", B." + KEY_MINUTE;
 
 
 			//// TODO: 2016-11-06 isholiday 체크해서 가져오는 로직
@@ -315,7 +361,7 @@ public class AlarmDbManager extends DbHelper{
 			// -> 반복 돌때 날짜의 공휴일도 계속 가져와서 isHoliday 옵션 도 동적으로 변경해줘야함
 			//공휴일 포함시 -> 공휴일을 계속 가져와서 공휴일일 경우 조건 -> or (isHolidayAll = 1 and isHolidayNone <> 1)
 
-			Cursor c = db.rawQuery(queryString, null);
+			c = db.rawQuery(queryString, null);
 
 			if (c.moveToFirst()) {
 				do {
@@ -368,11 +414,16 @@ public class AlarmDbManager extends DbHelper{
 
 			if(searchDayIndex >= 1)
 				break;
+
 			// 한번 찾은 뒤 다음 날 더 찾아보고 중지
 			if(searchDayIndex == 0 && arrList.size() > 0)
 				searchDayIndex = 1;
-		}
+		} // end for
+		if(c != null && !c.isClosed())
+			c.close();
+
 		closeDB();
+
 		return arrList;
 	}
 	public boolean deleteAlarm(long id) {

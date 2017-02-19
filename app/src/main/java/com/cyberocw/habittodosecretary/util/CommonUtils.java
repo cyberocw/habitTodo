@@ -6,9 +6,12 @@ import java.text.DecimalFormat;
  * Created by cyberocw on 2015-11-01.
  */
 public class CommonUtils {
-	public static String numberFormat(int digit, int value){
-
-		DecimalFormat df = new DecimalFormat("##");
+	public static String numberDigit(int digit, int value){
+		String strDigit = "";
+		for(int i = 0 ; i  < digit; i++){
+			strDigit += "0";
+		}
+		DecimalFormat df = new DecimalFormat(strDigit);
 
 		return df.format(value);
 	}

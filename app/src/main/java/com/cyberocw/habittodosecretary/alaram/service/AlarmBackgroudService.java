@@ -155,7 +155,7 @@ public class AlarmBackgroudService extends Service {
                 int minute = (int) ((millisUntilFinished / (1000 * 60)) % 60);
                 int hour = (int) ((millisUntilFinished / (1000 * 60 * 60)));
 
-                Log.d(Const.DEBUG_TAG, "on tinck =" + second);
+                //Log.d(Const.DEBUG_TAG, "on tinck =" + second);
             }
 
             public void onFinish() {

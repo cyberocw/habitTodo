@@ -11,11 +11,10 @@ import com.cyberocw.habittodosecretary.alaram.vo.HolidayVO;
 import com.cyberocw.habittodosecretary.db.DbHelper;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.HashMap;
 
 /**
  * Created by cyberocw on 2017-01-22.
@@ -43,6 +42,45 @@ public class SettingDbManager extends DbHelper {
 
     public void deleteHolidayData(int year, String type){
 
+    }
+
+    public HashMap getHolidayMap(String startDate, String endDate){
+        ArrayList<HolidayVO> list = getHolidayList(startDate, endDate);
+        HashMap<String, ArrayList<HolidayVO>> resultMap = new HashMap<>();
+
+        Log.d(Const.DEBUG_DB_TAG, "holiday list cnt = " + list.size());
+
+        for(int i = 0 ; i < list.size(); i++){
+            if(!resultMap.containsKey(list.get(i).getFullDate()))
+                resultMap.put(list.get(i).getFullDate(), new ArrayList<HolidayVO>());
+            resultMap.get(list.get(i).getFullDate()).add(list.get(i));
+        }
+        return resultMap;
+    }
+
+    public ArrayList getHolidayList(String startDate, String endDate){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String holidayQuery = "select " + KEY_ID + ", " +
+                KEY_YEAR +", " +
+                KEY_MONTH +", " +
+                KEY_DAY +", " +
+                KEY_TYPE +", " +
+                KEY_NAME +", " +
+                KEY_FULL_DATE +" " +
+                " from " + TABLE_HOLIDAY + " where " + KEY_FULL_DATE + " >= " + startDate + " and " + KEY_FULL_DATE + " <= " + endDate;
+
+        Log.d(Const.DEBUG_DB_TAG, "holidayQuery="+holidayQuery);
+
+        Cursor c = db.rawQuery(holidayQuery, null);
+
+        ArrayList<HolidayVO> list;
+        list = bindVO(c);
+
+        c.close();
+        this.close();
+
+        return list;
     }
 
 
@@ -74,6 +112,7 @@ public class SettingDbManager extends DbHelper {
                 values.put(KEY_DAY, jsonObject.getString("day"));
                 values.put(KEY_TYPE, jsonObject.getString("type"));
                 values.put(KEY_NAME, jsonObject.getString("name"));
+                values.put(KEY_FULL_DATE, jsonObject.getString("year") + jsonObject.getString("month") + jsonObject.getString("day"));
 
                 db.insert(TABLE_HOLIDAY, null, values);
             }
@@ -98,26 +137,41 @@ public class SettingDbManager extends DbHelper {
         Cursor c = db.rawQuery(selectQuery, null);
 
         ArrayList<HolidayVO> list = new ArrayList<HolidayVO>();
-        HolidayVO vo;
-        Log.d(Const.DEBUG_DB_TAG, " holiday cnt = " + c.getCount());
+
+        list = bindVO(c);
+
+        c.close();
+        this.close();
+        return list;
+    }
+
+    private ArrayList<HolidayVO> bindVO(Cursor c){
+        ArrayList<HolidayVO> list = new ArrayList<HolidayVO>();
 
         if (c.moveToFirst()) {
-            do {
-                vo = new HolidayVO();
-                vo.setId(c.getLong(c.getColumnIndex(KEY_ID)));
-                vo.setYear(c.getInt(c.getColumnIndex(KEY_YEAR)));
-                vo.setMonth(c.getInt(c.getColumnIndex(KEY_MONTH)));
-                vo.setDay(c.getInt(c.getColumnIndex(KEY_DAY)));
-                vo.setName(c.getString(c.getColumnIndex(KEY_NAME)));
-                vo.setType(c.getString(c.getColumnIndex(KEY_TYPE)));
+            do{
+                HolidayVO vo;
+                Log.d(Const.DEBUG_DB_TAG, " holiday cnt = " + c.getCount());
 
-                //vo.setCreateDt(c.getInt(c.getColumnIndex(KEY_CREATE_DATE)));
-                //vo.setUpdateDt(c.getInt(c.getColumnIndex(KEY_UPDATE_DATE)));
-                //Log.d(Const.DEBUG_DB_TAG, "holiday=" + vo.toString());
-                list.add(vo);
-            } while (c.moveToNext());
+                if (c.moveToFirst()) {
+                    do {
+                        vo = new HolidayVO();
+                        vo.setId(c.getLong(c.getColumnIndex(KEY_ID)));
+                        vo.setYear(c.getInt(c.getColumnIndex(KEY_YEAR)));
+                        vo.setMonth(c.getInt(c.getColumnIndex(KEY_MONTH)));
+                        vo.setDay(c.getInt(c.getColumnIndex(KEY_DAY)));
+                        vo.setName(c.getString(c.getColumnIndex(KEY_NAME)));
+                        vo.setType(c.getString(c.getColumnIndex(KEY_TYPE)));
+                        vo.setFullDate(c.getString(c.getColumnIndex(KEY_FULL_DATE)));
+
+                        //vo.setCreateDt(c.getInt(c.getColumnIndex(KEY_CREATE_DATE)));
+                        //vo.setUpdateDt(c.getInt(c.getColumnIndex(KEY_UPDATE_DATE)));
+                        Log.d(Const.DEBUG_DB_TAG, "holiday=" + vo.toString());
+                        list.add(vo);
+                    } while (c.moveToNext());
+                }
+            }while(c.moveToNext());
         }
-        closeDB();
         return list;
     }
 }

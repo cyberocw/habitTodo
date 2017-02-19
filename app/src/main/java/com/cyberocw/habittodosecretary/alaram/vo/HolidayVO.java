@@ -13,6 +13,7 @@ public class HolidayVO {
     private int day = -1;
     private String type = "";
     private String name = "";
+    private String fullDate = "";
 
     public long getId() {
         return id;
@@ -70,6 +71,14 @@ public class HolidayVO {
         this.name = name;
     }
 
+    public String getFullDate() {
+        return fullDate;
+    }
+
+    public void setFullDate(String fullDate) {
+        this.fullDate = fullDate;
+    }
+
     @Override
     public String toString() {
         return "HolidayVO{" +
@@ -80,6 +89,7 @@ public class HolidayVO {
                 ", day=" + day +
                 ", type='" + type + '\'' +
                 ", name='" + name + '\'' +
+                ", fullDate='" + fullDate + '\'' +
                 '}';
     }
 }

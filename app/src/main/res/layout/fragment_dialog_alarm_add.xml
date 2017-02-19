@@ -253,14 +253,14 @@
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="선택 요일 이외의 월~금 공휴일 포함"
+                        android:text="평일 중 휴일 포함"
                         android:id="@+id/cbHolidayAll"
                         android:layout_weight="1" />
 
                     <CheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="선택요일이 월~금 중 공휴일인 경우 제외"
+                        android:text="평일 휴일인 경우 제외"
                         android:id="@+id/cbHolidayNone"
                         android:layout_weight="1" />
 

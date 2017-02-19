@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -171,6 +172,7 @@ public class AlarmDialogNew extends DialogFragment{
 					toggleBtnRepeatDay(view, index);
 				}
 
+				Log.d(Const.DEBUG_TAG, "mAlarmVO.getIsHolidayALL() " + mAlarmVO.getIsHolidayALL()  + " true = " + (mAlarmVO.getIsHolidayALL() == 1));
 				if(mAlarmVO.getIsHolidayALL() == 1)
 					mCbHolidayAll.setChecked(true);
 				if(mAlarmVO.getIsHolidayNone() == 1)
@@ -656,10 +658,27 @@ public class AlarmDialogNew extends DialogFragment{
 				timePickerDialog.show();
 			}
 		});
+
+		mCbHolidayAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked && mCbHolidayNone.isChecked()){
+					mCbHolidayNone.setChecked(false);
+				}
+			}
+		});
+
+		mCbHolidayNone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked && mCbHolidayAll.isChecked()){
+					mCbHolidayAll.setChecked(false);
+				}
+			}
+		});
 	}
 
 	private void txTimeSet(int hourOfDay, int minute){
-
 		boolean isPm = false;
 		if (hourOfDay >= 12)
 			isPm = true;
