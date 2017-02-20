@@ -456,7 +456,7 @@ public class AlarmDialogNew extends DialogFragment{
 	private void renderSetTimeUi(){
 		//timeWrapperHide();
 		llTimerWrap.setVisibility(View.GONE);
-		llAlertTimeWrap.setVisibility(View.GONE);
+		llAlertTimeWrap.setVisibility(View.VISIBLE);
 		llHolidayOptionWrap.setVisibility(View.GONE);
 		llDatePicWrap.setVisibility(View.VISIBLE);
 		llTimePickWrap.setVisibility(View.VISIBLE);
@@ -497,14 +497,14 @@ public class AlarmDialogNew extends DialogFragment{
 				llDatePicWrap.setVisibility(View.VISIBLE);
 				llRepeatDayWrap.setVisibility(View.GONE);
 				llHolidayOptionWrap.setVisibility(View.GONE);
-				llAlertTimeWrap.setVisibility(View.GONE);
+				llAlertTimeWrap.setVisibility(View.VISIBLE);
 				alarmDateChange(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
 				mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE;
 				break;
 			case Const.ALARM_DATE_TYPE.TOMORROW :
 				llDatePicWrap.setVisibility(View.VISIBLE);
 				llRepeatDayWrap.setVisibility(View.GONE);
-				llAlertTimeWrap.setVisibility(View.GONE);
+				llAlertTimeWrap.setVisibility(View.VISIBLE);
 				llHolidayOptionWrap.setVisibility(View.GONE);
 				c.add(Calendar.DAY_OF_MONTH, 1);
 				alarmDateChange(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
@@ -514,7 +514,7 @@ public class AlarmDialogNew extends DialogFragment{
 				llDatePicWrap.setVisibility(View.VISIBLE);
 				llRepeatDayWrap.setVisibility(View.GONE);
 				llHolidayOptionWrap.setVisibility(View.GONE);
-				llAlertTimeWrap.setVisibility(View.GONE);
+				llAlertTimeWrap.setVisibility(View.VISIBLE);
 				c = Calendar.getInstance();
 				c.add(Calendar.DAY_OF_MONTH, 2);
 				alarmDateChange(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));

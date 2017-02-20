@@ -230,7 +230,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		if(oldVersion < 11){
 			db.execSQL(getCreateTableQuery(TABLE_HOLIDAY));
 		}
-		if(oldVersion < 12){
+		if(oldVersion == 11){
 			String sql = "ALTER TABLE " + TABLE_HOLIDAY + " ADD COLUMN " + KEY_FULL_DATE + " integer ; ";
 			sql += " CREATE INDEX " + TABLE_HOLIDAY + " holiday_create_full_day_idx ON " + TABLE_HOLIDAY + "(" + KEY_FULL_DATE + ");";
 			db.execSQL(sql);
