@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.category.CategoryDataManager;
 import com.cyberocw.habittodosecretary.category.CategoryListAdapter;
@@ -91,6 +93,24 @@ public class SettingFragment extends Fragment {
 
     private void bindBtnEvent(){
         Button btnHlidaySync = (Button) mView.findViewById(R.id.btnHolidaySync);
+        Button btnDbBackup = (Button) mView.findViewById(R.id.btnDbBackup);
+        Button btnDbRetore= (Button) mView.findViewById(R.id.btnDbRestore);
+
+        btnDbBackup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(Const.DEBUG_TAG, "onclick backup");
+                mSettingDataManager.exportDB();
+            }
+        });
+
+        btnDbRetore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSettingDataManager.importDB();
+            }
+        });
+
         btnHlidaySync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

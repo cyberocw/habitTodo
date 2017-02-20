@@ -9,4 +9,18 @@
         android:text="공휴일 동기화"
         android:id="@+id/btnHolidaySync"
         android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="데이터 백업"
+        android:id="@+id/btnDbBackup"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="데이터 복구"
+        android:id="@+id/btnDbRestore"
+        android:layout_gravity="center_horizontal" />
 </LinearLayout>
