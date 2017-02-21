@@ -118,7 +118,7 @@ public class AlarmFragment extends Fragment{
 
 		llWeekOfDayWrap = (LinearLayout) mView.findViewById(R.id.weekOfDayWrap);
 
-		mCalendarManager = new CalendarManager(mCtx, llWeekOfDayWrap, mCalendar);
+		mCalendarManager = new CalendarManager(mCtx, llWeekOfDayWrap, mCalendar, mDateTv);
 		mCalendarManager.setDayClickListener(myDateSetListener);
 		mCalendarManager.init();
 		mAlarmDataManager = new AlarmDataManager(mCtx, mCalendar);

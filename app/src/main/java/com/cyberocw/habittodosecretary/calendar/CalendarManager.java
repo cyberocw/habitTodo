@@ -3,7 +3,9 @@ package com.cyberocw.habittodosecretary.calendar;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,21 +39,27 @@ public class CalendarManager {
 	private TextView[] arrTextViewDayTitle = new TextView[7];
 	private TextView[] arrTextViewDayNum = new TextView[7];
 	private ImageView[] arrImageView = new ImageView[7];
+	private TextView[] arrTextDayName= new TextView[7];
+	private TextView mFullDateView = null;
 	private ArrayList<Integer> mArrAlarmList;
 	private DatePickerDialog.OnDateSetListener mListener;
 	private Calendar mStartDate;
 	private Calendar mEndDate;
-	int pixelsHeight, pixelsIcon;
+	int pixelsHeight, pixelsIcon, pixelsDayName, pixelsIconWrapHeight;
 	private HashMap<String, ArrayList> mHolidayMap;
 
 
-	public CalendarManager(Context context, LinearLayout llWeekOfDayWrap, Calendar calendar) {
+	public CalendarManager(Context context, LinearLayout llWeekOfDayWrap, Calendar calendar, TextView fullDateView) {
 		mCtx = context;
 		mCalendar = calendar;
 		mWrapper = llWeekOfDayWrap;
+		mFullDateView = fullDateView;
 		final float scale = mCtx.getResources().getDisplayMetrics().density;
 		pixelsHeight = mCtx.getResources().getDimensionPixelSize(R.dimen.calendarDayTextHeight);
-		pixelsIcon = (int) (5 * scale + 0.5f);
+		pixelsIcon = (int) (4 * scale + 0.5f);
+		pixelsDayName = mCtx.getResources().getDimensionPixelSize(R.dimen.calendarDayNameHeight);
+		pixelsIconWrapHeight = mCtx.getResources().getDimensionPixelSize(R.dimen.calendarDayIconWrapHeight);
+
 	}
 
 	public void init(){
@@ -115,23 +123,37 @@ public class CalendarManager {
 		dayWrap.addView(tvDayNum);
 
 		arrTextViewDayNum[index] = tvDayNum;
+
 		LinearLayout iconWrap = new LinearLayout(mCtx);
-		LinearLayout.LayoutParams paramsIconWrap = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+		LinearLayout.LayoutParams paramsIconWrap = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, pixelsIconWrapHeight, 1f);
 		iconWrap.setOrientation(LinearLayout.VERTICAL);
 		paramsIconWrap.gravity = Gravity.CENTER;
 		iconWrap.setLayoutParams(paramsIconWrap);
-
 		arrIconWrap[index] = iconWrap;
 
 		ImageView iv = new ImageView(mCtx);
+
 		LinearLayout.LayoutParams paramsIv = new LinearLayout.LayoutParams(pixelsIcon, pixelsIcon);
 		paramsIv.gravity = Gravity.CENTER;
+
 		iv.setLayoutParams(paramsIv);
 
 		arrImageView[index] = iv;
 		iconWrap.addView(iv);
 
 		dayWrap.addView(iconWrap);
+
+
+		TextView tvDayName = new TextView(mCtx);
+		//LinearLayout.LayoutParams paramsDayName = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+		tvDayName.setLayoutParams(paramsTv);
+		tvDayName.setHeight(pixelsDayName);
+		tvDayName.setGravity(Gravity.CENTER);
+		tvDayName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+		tvDayName.setSingleLine(true);
+		tvDayName.setEllipsize(TextUtils.TruncateAt.END);
+		dayWrap.addView(tvDayName);
+		arrTextDayName[index] = tvDayName;
 
 		mWrapper.addView(dayWrap);
 
@@ -174,6 +196,8 @@ public class CalendarManager {
 
 
 			// 공휴일정보 체크
+			arrTextDayName[i].setText("");
+
 			String strCal = String.valueOf(cal2.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal2.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal2.get(Calendar.DAY_OF_MONTH));
 
 			if (mHolidayMap.containsKey(strCal)) {
@@ -184,6 +208,24 @@ public class CalendarManager {
 					if (hVO.getType().equals("h") || hVO.getType().equals("i")) {
 						arrTextViewDayTitle[i].setTextColor(Color.RED);
 						arrTextViewDayNum[i].setTextColor(Color.RED);
+						String daytext ="";
+						if(hVO.getType().equals("i"))
+							daytext = "대체공휴일";
+
+						else
+							daytext = hVO.getName();
+
+						arrTextDayName[i].setText(daytext);
+
+						/*
+						arrTextDayName[i].setGravity(Gravity.CENTER);
+						arrTextDayName[i].setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+						arrTextDayName[i].setSingleLine(true);
+						arrTextDayName[i].setEllipsize(TextUtils.TruncateAt.END);
+						*/
+						if(mCalendar.getTimeInMillis() == cal2.getTimeInMillis()){
+							mFullDateView.setText(mFullDateView.getText() + " - " + daytext);
+						}
 						break;
 					}
 				}
@@ -196,6 +238,9 @@ public class CalendarManager {
 			if(mCalendar.getTimeInMillis() == cal2.getTimeInMillis()){
 				//arrTextViewDayNum[i].setBackgroundResource(R.drawable.day_of_week_ring);
 				arrIconWrap[i].setBackgroundResource(R.drawable.day_of_week_ring);
+
+
+
 			}else{
 				//arrTextViewDayNum[i].setBackgroundResource(0);
 				arrIconWrap[i].setBackgroundResource(0);
@@ -225,4 +270,5 @@ public class CalendarManager {
 	public void setDayClickListener(DatePickerDialog.OnDateSetListener dayClickListener) {
 		mListener = dayClickListener;
 	}
+
 }

@@ -20,14 +20,14 @@
             <RelativeLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:id="@+id/optionWrap"
                 >
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="2015.08.14"
+                    android:text="2015년08월14일"
                     android:id="@+id/dateView"
                     android:gravity="center_horizontal|fill_vertical"
                     android:layout_gravity="center"
@@ -35,22 +35,18 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_toLeftOf="@+id/btnToday"
-                    android:layout_toStartOf="@+id/btnToday"/>
+                    android:layout_toStartOf="@+id/btnToday"
+                    android:textSize="14sp"
+                    android:singleLine="true"
+                    android:ellipsize="end" />
                 <Button
-                    android:layout_width="65dp"
+                    android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:text="오늘"
                     android:id="@+id/btnToday"
-                    android:layout_toLeftOf="@+id/btnToggleViewType"
-                    />
-                <Button
-                    android:layout_width="70dp"
-                    android:layout_height="match_parent"
-                    android:text="패키지"
-                    android:id="@+id/btnToggleViewType"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
                     android:layout_toLeftOf="@+id/btnToggleViewTimer"
                     />
+
                 <Button
                     android:layout_width="70dp"
                     android:layout_height="match_parent"
@@ -74,14 +70,14 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="64dp"
                 android:layout_gravity="center_horizontal"
                 >
                 <Button
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/btnPrevWeek"
-                    android:text="b"
+                    android:text="B"
                     />
                 <LinearLayout
                     android:orientation="horizontal"
@@ -217,7 +213,7 @@
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/btnNextWeek"
-                    android:text="n"
+                    android:text="N"
                     />
             </LinearLayout>
 
@@ -227,7 +223,7 @@
                 android:id="@+id/alramListView"
                 android:longClickable="true"
                 android:clickable="true"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="6dp"/>
         </LinearLayout>
 
         <com.getbase.floatingactionbutton.FloatingActionButton

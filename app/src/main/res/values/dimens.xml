@@ -25,8 +25,10 @@
     <dimen name="fab_icon_size">24dp</dimen>
 
     <dimen name="catePopupPadding">10dp</dimen>
-    <dimen name="calendarDayTextHeight">20dp</dimen>
+    <dimen name="calendarDayTextHeight">19dp</dimen>
     <dimen name="calendarDayNumPadding">3dp</dimen>
+    <dimen name="calendarDayIconWrapHeight">10dp</dimen>
     <dimen name="calendarDayNumPaddingBottom">10dp</dimen>
+    <dimen name="calendarDayNameHeight">12dp</dimen>
 
 </resources>

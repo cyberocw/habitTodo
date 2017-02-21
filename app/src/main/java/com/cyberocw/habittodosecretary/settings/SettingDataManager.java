@@ -67,9 +67,9 @@ public class SettingDataManager {
             File data = Environment.getDataDirectory();
             File sd = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOCUMENTS);
-            Log.d(Const.DEBUG_TAG, "sd.canWrite() = " + sd.canWrite());
 
-            if (1==1) {
+
+
                 String currentDBPath = "//data//" + "com.cyberocw.habittodosecretary"
                         + "//databases//" + "habit_todo";
                 String backupDBPath = "//backup//back_habit_todo";
@@ -93,7 +93,7 @@ public class SettingDataManager {
                 Toast.makeText(mCtx, "Backup Successful!",
                         Toast.LENGTH_SHORT).show();
 
-            }
+
         } catch (Exception e) {
             Log.d(Const.DEBUG_TAG, "Backup Failed!" + e.getCause() + " " + e.getMessage());
             Toast.makeText(mCtx, "Backup Failed!", Toast.LENGTH_SHORT)
@@ -110,7 +110,7 @@ public class SettingDataManager {
                     Environment.DIRECTORY_DOCUMENTS);
 
             File data = Environment.getDataDirectory();
-            if (sd.canWrite()) {
+
                 String currentDBPath = "//data//" + "com.cyberocw.habittodosecretary"
                         + "//databases//" + "habit_todo";
                 String backupDBPath = "//backup//back_habit_todo";
@@ -130,7 +130,7 @@ public class SettingDataManager {
                 Toast.makeText(mCtx, "Import Successful!",
                         Toast.LENGTH_SHORT).show();
 
-            }
+
         } catch (Exception e) {
             Log.d(Const.DEBUG_TAG, "Import Failed!" + e.getCause() + " " + e.getMessage());
             Toast.makeText(mCtx, "Import Failed!", Toast.LENGTH_SHORT)
