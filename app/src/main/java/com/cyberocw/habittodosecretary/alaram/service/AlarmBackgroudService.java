@@ -17,6 +17,7 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
+import com.cyberocw.habittodosecretary.util.AlarmNotiActivity;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
 
 import java.text.DecimalFormat;
@@ -46,6 +47,8 @@ public class AlarmBackgroudService extends Service {
     private CountDownTimer mCountDownTimer = null;
     private int mMinRemainPosition = -1;
     private String mTitle = "";
+    private int mAlarmOption = -1;
+    private int mAlarmType = -1;
 
     private AlarmReceiver mTimerListAdapter = null;
 
@@ -135,6 +138,9 @@ public class AlarmBackgroudService extends Service {
         mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : ""));
         Notification notification = new Notification(R.drawable.ic_launcher, "타이머", System.currentTimeMillis());
 
+        mAlarmOption = alarmTimeVO.getAlarmOption();
+        mAlarmType = alarmTimeVO.getAlarmType();
+
         int second = (int) (remainTime / 1000) % 60;
         int minute = (int) ((remainTime / (1000 * 60)) % 60);
         int hour = (int) ((remainTime / (1000 * 60 * 60)));
@@ -168,16 +174,30 @@ public class AlarmBackgroudService extends Service {
     }
 
     private void startAleart() {
-        Intent myIntent = new Intent(mCtx, NotificationService.class);
-        myIntent.putExtra("title", mTitle);
-        myIntent.putExtra("notes", "");
-        myIntent.putExtra("reqCode", mArrAlarmVOList.get(mMinRemainPosition).getId());
-        Log.d("Service", "start noti ");
+        //Intent myIntent = null;
+        Log.d(Const.DEBUG_TAG, "mAlarmType="+mAlarmType + " mAlarmOption= " + mAlarmOption);
+        if(mAlarmType < 1) {
+            Intent myIntent = new Intent(mCtx, NotificationService.class);
+            myIntent.putExtra("title", mTitle);
+            myIntent.putExtra("notes", "");
+            myIntent.putExtra("reqCode", mArrAlarmVOList.get(mMinRemainPosition).getId());
+            Log.d("Service", "start noti ");
+            mCtx.startService(myIntent);
+        }else{
+            Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
+            myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mCtx.startActivity(myIntent);
+        }
 
-        mCtx.startService(myIntent);
 
+        if(mAlarmOption == 1) {
+            startTTS(mTitle);
+        }
+    }
+
+    private void startTTS(String title){
         Intent ttsIntent = new Intent(mCtx, TTSNoti.class);
-        ttsIntent.putExtra("alaramTitle", mTitle);
+        ttsIntent.putExtra("alaramTitle", title);
         mCtx.startService(ttsIntent);
     }
 

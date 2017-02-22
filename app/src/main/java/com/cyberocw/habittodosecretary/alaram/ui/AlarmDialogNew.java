@@ -48,6 +48,14 @@ import static android.util.Log.*;
 
 /**
  * Created by cyberocw on 2015-08-19.
+ * data colum 관련
+ * alarm_title - 제목
+ * alarm_date_type - 반복 0, 날짜 지정 1
+ * alarm_option - 시간 지정알림, 미지정 알림(타이머) - 안씀
+ * alaram_contents - 안씀
+ * type - 안씀
+ *
+ *
  */
 
 public class AlarmDialogNew extends DialogFragment{
@@ -64,14 +72,15 @@ public class AlarmDialogNew extends DialogFragment{
 	private TimePicker mAddAlarmTimePicker;
 	private NumberPicker mNpHour, mNpMinute, mNpSecond;
 	private ScrollView mScvAddAlarm;
-	private int mAlarmOption = Const.ALARM_OPTION.SET_DATE_TIMER;
+	private int mAlarmOption = 1;
 	private int mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE; //날짜지정 or repeat
 	private TextView mTvAlarmDate, mTvAlarmTime = null;
 	private CheckBox mCbHolidayAll = null;
 	private CheckBox mCbHolidayNone = null;
+	private CheckBox mCbTTS = null;
 
 
-	private RadioGroup mRgAlarmOption;
+	//private RadioGroup mRgAlarmOption;
 	private LinearLayout mAlarmList, llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap, llHolidayOptionWrap;
 	private HashMap<Integer, Button> mMapDay = new HashMap<>();
 	private int[] mArrDayString = {Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY};//{"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
@@ -139,7 +148,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 			//타이머 , 트리거
 			int alarmOption = mAlarmVO.getAlarmOption();
-			mRgAlarmOption.check(alarmOption == Const.ALARM_OPTION.SET_DATE_TIMER ? R.id.rbSetTime : R.id.rbNoSetTime);
+			//mRgAlarmOption.check(alarmOption == Const.ALARM_OPTION.SET_DATE_TIMER ? R.id.rbSetTime : R.id.rbNoSetTime);
 
 			//날짜 지정, 반복
 			mAlarmDateType = mAlarmVO.getAlarmDateType();
@@ -184,6 +193,10 @@ public class AlarmDialogNew extends DialogFragment{
 			mTxAlarmTitle.setText(mAlarmVO.getAlarmTitle());
 
 			mSpAlarmType.setSelection(alarmType);
+Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
+			mCbTTS.setChecked(mAlarmVO.getAlarmOption() == 1);
+
+
 
 			ArrayList<Integer> arrAlarmCall = mAlarmVO.getAlarmCallList();
 			int temp;
@@ -201,6 +214,7 @@ public class AlarmDialogNew extends DialogFragment{
 		else {
 			txTimeSet(mCalendar.get(Calendar.HOUR_OF_DAY), mCalendar.get(Calendar.MINUTE));
 			appendAlarmRow(0, 1);
+			mCbTTS.setChecked(true);
 		}
 
 		if(mMemoMode)
@@ -269,6 +283,7 @@ public class AlarmDialogNew extends DialogFragment{
 		minute = (int) mTvAlarmTime.getTag(R.id.timeMinuteId);
 
 		//alarmOption에 따라 time 가져오는게 다름 타이머 일 경우 arrAlarmCall에 초단위로 변환해서 삽입.
+		/*
 		if(mAlarmOption == Const.ALARM_OPTION.NO_DATE_TIMER) {
 			mArrAlarmCall.clear();
 
@@ -276,7 +291,7 @@ public class AlarmDialogNew extends DialogFragment{
 			m = m * 60 + mNpSecond.getValue();
 			mArrAlarmCall.add(m);
 		}
-
+		*/
 		//알리는 방법
 		int alarmType = mSpAlarmType.getSelectedItemPosition();
 
@@ -295,7 +310,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 		vo.setAlarmTitle(alarmTitle);
 		vo.setAlarmType(alarmType);
-		vo.setAlarmOption(mAlarmOption);
+		vo.setAlarmOption(mCbTTS.isChecked() == true ? 1 : 0);
 		vo.setHour(hour);
 		vo.setMinute(minute);
 		vo.setAlarmCallList(mArrAlarmCall);
@@ -303,6 +318,7 @@ public class AlarmDialogNew extends DialogFragment{
 		vo.setAlarmDateType(mAlarmDateType);
 		vo.setAlarmDateList(alarmDate);
 		vo.setType(mEtcType);
+
 
 		Toast.makeText(mCtx, " holiday is checked = "+ mCbHolidayAll.isChecked(), Toast.LENGTH_LONG);
 		Log.d(Const.DEBUG_TAG, "holiday start");
@@ -351,7 +367,7 @@ public class AlarmDialogNew extends DialogFragment{
 		mSpDateType = (Spinner) view.findViewById(R.id.spDateType);
 		mTxAlarmTitle = (EditText) view.findViewById(R.id.txAlarmTitle);
 		//mAddAlarmTimePicker = (TimePicker) view.findViewById(R.id.addAlarmTimePicker);
-		mRgAlarmOption = (RadioGroup) view.findViewById(R.id.rgAlarmOption);
+		//mRgAlarmOption = (RadioGroup) view.findViewById(R.id.rgAlarmOption);
 
 		mNpHour = (NumberPicker) view.findViewById(R.id.addAlarmHourPicker);
 		mNpMinute = (NumberPicker) view.findViewById(R.id.addAlarmMinutePicker);
@@ -369,7 +385,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 		mScvAddAlarm = (ScrollView) view.findViewById(R.id.scvAddAlarm);
 
-
+		mCbTTS = (CheckBox) view.findViewById(R.id.cbTTS);
 
 		for(int i = 0; i < mArrDayId.length; i++) {
 			mMapDay.put(mArrDayString[i], (Button) view.findViewById(mArrDayId[i]));
@@ -433,6 +449,7 @@ public class AlarmDialogNew extends DialogFragment{
 		}
 	}
 
+	/*
 	// 시간 미지정 알람
 	private void renderNoTimerUi(){
 		mAlarmOption = Const.ALARM_OPTION.NO_DATE_TIMER;
@@ -451,6 +468,7 @@ public class AlarmDialogNew extends DialogFragment{
 		mNpSecond.setMaxValue(59);
 		mNpSecond.setMinValue(0);
 	}
+
 
 	//시간 지정 알람
 	private void renderSetTimeUi(){
@@ -472,6 +490,7 @@ public class AlarmDialogNew extends DialogFragment{
 		renderDateTypeUi(alarmDateType, c);
 
 	}
+	*/
 
 	//날짜 선택 - spinner 선택에 따른
 	private void renderDateTypeUi(int alarmDateType, Calendar c) {
@@ -525,10 +544,8 @@ public class AlarmDialogNew extends DialogFragment{
 
 	public void makeSpinnerAlarmType(){
 		ArrayList<String> arrayList = new ArrayList<String>();
-		arrayList.add("없음");
-		arrayList.add("진동");
-		arrayList.add("진동+소리");
-		arrayList.add("무음");
+		arrayList.add("1회 알림");
+		arrayList.add("계속 알림");
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
 				android.R.layout.simple_spinner_item, arrayList);
@@ -600,23 +617,6 @@ public class AlarmDialogNew extends DialogFragment{
 				}
 			});
 		}
-
-		mRgAlarmOption.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(RadioGroup group, int checkedId) {
-				//renderNoTimerUi(checkedId);
-				//mTimePickerWrap.removeAllViews();
-
-				if (checkedId == R.id.rbSetTime)
-					//SET_DATE_TIMER
-					renderSetTimeUi();
-
-				else {
-					//NO_DATE_TIMER
-					renderNoTimerUi();
-				}
-			}
-		});
 
 		mTvAlarmDate.setOnClickListener(new View.OnClickListener() {
 			@Override

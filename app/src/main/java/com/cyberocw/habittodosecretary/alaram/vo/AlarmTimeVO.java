@@ -13,6 +13,8 @@ public class AlarmTimeVO implements Serializable{
 	private int useYn;
 	private long fId;
 	private String alarmTitle;
+	private int alarmOption;
+	private int alarmType;
 	private static final long serialVersionUID = 1L;
 
 	public String getAlarmTitle() {
@@ -63,6 +65,21 @@ public class AlarmTimeVO implements Serializable{
 		this.fId = fId;
 	}
 
+	public int getAlarmOption() {
+		return alarmOption;
+	}
+
+	public void setAlarmOption(int alarmOption) {
+		this.alarmOption = alarmOption;
+	}
+
+	public int getAlarmType() {
+		return alarmType;
+	}
+
+	public void setAlarmType(int alarmType) {
+		this.alarmType = alarmType;
+	}
 
 	@Override
 	public String toString() {
@@ -73,6 +90,8 @@ public class AlarmTimeVO implements Serializable{
 				", useYn=" + useYn +
 				", fId=" + fId +
 				", alarmTitle='" + alarmTitle + '\'' +
+				", alarmOption=" + alarmOption +
+				", alarmType=" + alarmType +
 				'}';
 	}
 }

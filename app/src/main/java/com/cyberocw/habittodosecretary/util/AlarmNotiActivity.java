@@ -26,7 +26,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		mVibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		long[] pattern = {1000, 200, 1000, 2000, 1200};          // 진동, 무진동, 진동 무진동 숫으로 시간을 설정한다.
 		mVibe.vibrate(pattern, 0);                                         // 패턴을 지정하고 반복횟수를 지정
-		mVibe.vibrate(30000);                                                   //1초 동안 진동이 울린다.
+		//mVibe.vibrate(30000);                                                   //1초 동안 진동이 울린다.
 
 		PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
 		PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");

@@ -174,6 +174,7 @@ public class AlarmDbManager extends DbHelper{
 	public ArrayList<AlarmTimeVO> getMinAlarmTime(long nowTime){
 		String selectQuery =
 				"SELECT A." + KEY_ID + ", A." + KEY_TIME_STAMP + ", A." + KEY_CALL_TIME + ", B." + KEY_ALARM_TITLE + ", A." + KEY_F_ALARM_ID +
+						", B." + KEY_ALARM_TYPE + ", B." + KEY_ALARM_OPTION +
 						" FROM " + TABLE_ALARM_ORDER +" AS A INNER JOIN " + TABLE_ALARM + " AS B ON " +
 						" A." + KEY_F_ALARM_ID + " = B." + KEY_ID + " WHERE  B." + KEY_USE_YN + " = 1 AND A." + KEY_TIME_STAMP + " = " +
 						" (SELECT MIN(" + KEY_TIME_STAMP + " ) FROM " + TABLE_ALARM_ORDER + " AS C INNER JOIN " + TABLE_ALARM +
@@ -195,6 +196,8 @@ public class AlarmDbManager extends DbHelper{
 				vo.setTimeStamp(c.getLong(c.getColumnIndex(KEY_TIME_STAMP)));
 				vo.setCallTime(c.getInt(c.getColumnIndex(KEY_CALL_TIME)));
 				vo.setfId(c.getLong(c.getColumnIndex(KEY_F_ALARM_ID)));
+				vo.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
+				vo.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
 
 				alarmTimeVOList.add(vo);
 			} while (c.moveToNext());
@@ -329,7 +332,7 @@ public class AlarmDbManager extends DbHelper{
 		//오늘 기준 7번 반복하면서 최소값 찾으면 +1 일 더 찾아보고 중지
 		for(int i = 0; i < arrDayResult.length; i++) {
 			queryString = "SELECT B." + KEY_ID + ", B." + KEY_ALARM_CALL_LIST + ", B." + KEY_ALARM_TITLE + ", B."+KEY_HOUR + ", B." + KEY_MINUTE + ", A." + KEY_F_ALARM_ID +
-					", B." + KEY_HOLIDAY_ALL + ", B." + KEY_HOLIDAY_NONE +
+					", B." + KEY_ALARM_OPTION + ", B." + KEY_ALARM_TYPE + ", B." + KEY_HOLIDAY_ALL + ", B." + KEY_HOLIDAY_NONE +
 					" FROM " + TABLE_ALARM_REPEAT + " A INNER JOIN " + TABLE_ALARM + " B ON A." + KEY_F_ALARM_ID + " = B." + KEY_ID  +
 					" WHERE B." + KEY_USE_YN + " = 1 AND (A." + arrDayResult[i] + " = 1 ";
 
@@ -405,6 +408,8 @@ public class AlarmDbManager extends DbHelper{
 							alarmTimeVO.setAlarmTitle(c.getString(c.getColumnIndex(KEY_ALARM_TITLE)));
 							alarmTimeVO.setId(c.getInt(c.getColumnIndex(KEY_ID)));
 							alarmTimeVO.setfId(c.getInt(c.getColumnIndex(KEY_F_ALARM_ID)));
+							alarmTimeVO.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
+							alarmTimeVO.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
 
 							arrList.add(alarmTimeVO);
 						}
