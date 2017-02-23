@@ -49,6 +49,7 @@ public class AlarmBackgroudService extends Service {
     private String mTitle = "";
     private int mAlarmOption = -1;
     private int mAlarmType = -1;
+    private final String mAppTitle = "HabitTodoSecretary";
 
     private AlarmReceiver mTimerListAdapter = null;
 
@@ -136,7 +137,7 @@ public class AlarmBackgroudService extends Service {
         int callTime = alarmTimeVO.getCallTime();
 
         mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : ""));
-        Notification notification = new Notification(R.drawable.ic_launcher, "타이머", System.currentTimeMillis());
+        Notification notification = new Notification(R.drawable.ic_launcher, mAppTitle, System.currentTimeMillis());
 
         mAlarmOption = alarmTimeVO.getAlarmOption();
         mAlarmType = alarmTimeVO.getAlarmType();
@@ -149,18 +150,18 @@ public class AlarmBackgroudService extends Service {
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_TIMER_NOTI_ID, notificationIntent, 0);
 
-        notification.setLatestEventInfo(this, "HbitTodo Timer is running",
-                mNumberFormat.format(hour) + ":" + mNumberFormat.format(minute) +
-                        ":" + mNumberFormat.format(second), pendingIntent);
+        notification.setLatestEventInfo(this, mAppTitle,
+                mTitle + " 알림 예정 ", pendingIntent);
         startForeground(Const.ONGOING_TIMER_NOTI_ID, notification);
 
         mCountDownTimer = new CountDownTimer(remainTime, 1000) {
             public void onTick(long millisUntilFinished) {
                 mMillisRemainTime = millisUntilFinished;
+                /*
                 int second = (int) (millisUntilFinished / 1000) % 60;
                 int minute = (int) ((millisUntilFinished / (1000 * 60)) % 60);
                 int hour = (int) ((millisUntilFinished / (1000 * 60 * 60)));
-
+                */
                 //Log.d(Const.DEBUG_TAG, "on tinck =" + second);
             }
 
@@ -174,17 +175,17 @@ public class AlarmBackgroudService extends Service {
     }
 
     private void startAleart() {
-        //Intent myIntent = null;
         Log.d(Const.DEBUG_TAG, "mAlarmType="+mAlarmType + " mAlarmOption= " + mAlarmOption);
         if(mAlarmType < 1) {
             Intent myIntent = new Intent(mCtx, NotificationService.class);
             myIntent.putExtra("title", mTitle);
             myIntent.putExtra("notes", "");
             myIntent.putExtra("reqCode", mArrAlarmVOList.get(mMinRemainPosition).getId());
-            Log.d("Service", "start noti ");
+            Log.d("Service", "start noti");
             mCtx.startService(myIntent);
         }else{
             Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
+            myIntent.putExtra("title", mTitle);
             myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mCtx.startActivity(myIntent);
         }

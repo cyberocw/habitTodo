@@ -17,5 +17,18 @@
             android:id="@+id/btnTimerStop"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"/>
+
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvAlarmTitle"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:layout_above="@+id/btnTimerStop"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="31dp" />
+
     </RelativeLayout>
 </LinearLayout>

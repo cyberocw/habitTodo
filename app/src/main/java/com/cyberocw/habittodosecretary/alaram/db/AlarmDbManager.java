@@ -557,7 +557,7 @@ public class AlarmDbManager extends DbHelper{
 			selectQuery += "("+id+")";
 		}
 
-		selectQuery += " ORDER BY C." + KEY_ALARM_DATE + " ASC, A." + KEY_HOUR + " ASC, A." + KEY_MINUTE + " ASC";
+		selectQuery += " ORDER BY A." + KEY_HOUR + " ASC, A." + KEY_MINUTE + " ASC";
 
 		Log.e(Const.DEBUG_TAG, selectQuery);
 

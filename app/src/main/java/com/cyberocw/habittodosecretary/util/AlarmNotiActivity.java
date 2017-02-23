@@ -2,14 +2,18 @@ package com.cyberocw.habittodosecretary.util;
 
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.cyberocw.habittodosecretary.R;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by cyberocw on 2015-11-16.
@@ -23,6 +27,9 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.timer_noti);
 
+		Intent intent = getIntent();
+		String title = intent.getExtras().getString("title");
+
 		mVibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		long[] pattern = {1000, 200, 1000, 2000, 1200};          // 진동, 무진동, 진동 무진동 숫으로 시간을 설정한다.
 		mVibe.vibrate(pattern, 0);                                         // 패턴을 지정하고 반복횟수를 지정
@@ -35,6 +42,12 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
 		KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("TAG");
 		keyguardLock.disableKeyguard();
+
+		TextView tvTitle = (TextView) findViewById(R.id.tvAlarmTitle);
+
+		if(!title.equals("")){
+			tvTitle.setText(title);
+		}
 
 		Button btnStop = (Button) findViewById(R.id.btnTimerStop);
 		btnStop.setOnClickListener(new View.OnClickListener() {
