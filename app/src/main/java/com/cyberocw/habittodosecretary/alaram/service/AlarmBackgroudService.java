@@ -1,6 +1,7 @@
 package com.cyberocw.habittodosecretary.alaram.service;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -164,7 +166,6 @@ public class AlarmBackgroudService extends Service {
                 */
                 //Log.d(Const.DEBUG_TAG, "on tinck =" + second);
             }
-
             public void onFinish() {
                 Log.d("Service", "on tinck finish");
                 startAleart();
@@ -184,6 +185,7 @@ public class AlarmBackgroudService extends Service {
             Log.d("Service", "start noti");
             mCtx.startService(myIntent);
         }else{
+
             Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
             myIntent.putExtra("title", mTitle);
             myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
