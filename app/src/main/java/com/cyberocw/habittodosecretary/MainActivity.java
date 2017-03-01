@@ -1,6 +1,7 @@
 package com.cyberocw.habittodosecretary;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -52,10 +53,17 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	    mNavigationView.setNavigationItemSelectedListener(this);
 
 	    FragmentManager fragmentManager = getSupportFragmentManager();
+
+		Fragment alarmFragment = new AlarmFragment();
+		Intent intent = getIntent();
+		alarmFragment.setArguments(intent.getExtras());
+
 	    fragmentManager.beginTransaction()
-			    .replace(R.id.main_container, new AlarmFragment()).commit();
+			    .replace(R.id.main_container, alarmFragment).commit();
 
 		afterUpdateVersion();
+
+
     }
 
 	private void afterUpdateVersion(){
@@ -139,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		}
 		if (fragment != null) {
 			FragmentManager fragmentManager = getSupportFragmentManager();
-
 			fragmentManager.beginTransaction()
 					.replace(R.id.main_container, fragment).commit();
 			// update selected item and title, then close the drawer

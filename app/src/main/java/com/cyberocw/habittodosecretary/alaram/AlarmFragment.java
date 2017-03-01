@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,6 +64,8 @@ public class AlarmFragment extends Fragment{
 	CalendarManager mCalendarManager;
 	SharedPreferences mPrefs;
 	private int mViewType;
+	private int mMode = -1;
+	private long mAlarmId = -1;
 
 	private OnFragmentInteractionListener mListener;
 	private View mView;
@@ -92,8 +95,8 @@ public class AlarmFragment extends Fragment{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			mParam1 = getArguments().getString(ARG_PARAM1);
-			mParam2 = getArguments().getString(ARG_PARAM2);
+			mMode = getArguments().getInt(Const.PARAM.MODE);
+			mAlarmId = getArguments().getLong(Const.PARAM.ALARM_ID);
 		}
 	}
 
@@ -133,6 +136,17 @@ public class AlarmFragment extends Fragment{
 			initTimerUi();
 
 		mAlarmDataManager.resetMinAlarmCall(Const.ALARM_DATE_TYPE.REPEAT);
+
+		//Toast.makeText(mCtx, "mMode = " + mMode + " alarm id = "+ mAlarmId, Toast.LENGTH_LONG).show();
+
+
+		Log.d(Const.DEBUG_TAG, "mMode = " + mMode + " alarm id = "+ mAlarmId);
+
+		if(mMode == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG && mAlarmId > -1){
+			showNewAlarmDialog(mAlarmId);
+			mMode = -1;
+			mAlarmId = -1;
+		}
 	}
 
 	private void initTimerUi(){
@@ -432,8 +446,15 @@ public class AlarmFragment extends Fragment{
 			Bundle bundle = new Bundle();
 
 			bundle.putSerializable(Const.ALARM_VO, mAlarmDataManager.getItemByIdInList(id));
+
+
+			if(mMode == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG){
+				Log.d(Const.DEBUG_TAG, " put mode ok " ) ;
+				bundle.putInt(Const.PARAM.MODE, mMode);
+			}
 			alarmDialogNew.setArguments(bundle);
 		}
+
 		alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
 		alarmDialogNew.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE);
 	}

@@ -21,10 +21,18 @@ public class Const {
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
 
 
+	public class PARAM{
+		public static final String MODE = "mode";
+		public static final String ALARM_ID = "alarmId";
+
+	}
+
 	public class ALARM_INTERFACE_CODE{
 		public static final int ADD_ALARM_CODE = 111;
 		public static final int ADD_ALARM_FINISH_CODE = 112;
 		public static final int ADD_ALARM_MODIFY_FINISH_CODE = 113;
+
+		public static final int ALARM_POSTPONE_DIALOG = 114;
 
 		public static final int ADD_TIMER_CODE = 221;
 		public static final int ADD_TIMER_FINISH_CODE = 222;

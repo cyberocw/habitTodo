@@ -1,5 +1,6 @@
 package com.cyberocw.habittodosecretary.alaram.ui;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -16,6 +17,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -134,6 +136,7 @@ public class AlarmDialogNew extends DialogFragment{
 		makeSpinnerAppList();
 		bindEvent();
 		init();
+
 		super.onActivityCreated(savedInstanceState);
 	}
 
@@ -219,6 +222,10 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 
 		if(mMemoMode)
 			initMemoMode();
+
+		if(getArguments().getInt(Const.PARAM.MODE) == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG){
+			makeAlarmPostpone();
+		}
 
 	}
 
@@ -392,8 +399,10 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 		}
 
 		b.setView(view);
+		Dialog dialog = b.create();
+		dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
-		return b.create();
+		return dialog;
 
 	}
 
@@ -492,7 +501,7 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 	}
 	*/
 
-	//날짜 선택 - spinner 선택에 따른
+	//날짜 선택 - spinner 선택에 따른 - 내일 , 모레,
 	private void renderDateTypeUi(int alarmDateType, Calendar c) {
 //		llTimerWrap = (LinearLayout) getView().findViewById(R.id.llTimerWrap);
 //		llDateTypeWrap = (LinearLayout) getView().findViewById(R.id.llDateTypeWrap);
@@ -714,6 +723,40 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 				mDataRepeatDay.add(mArrDayString[index]);
 			v.setBackgroundResource(R.color.blue_semi_transparent_pressed);
 		}
+	}
+
+	private void makeAlarmPostpone(){
+		Log.d(Const.DEBUG_TAG, "makeAlarmPostpone");
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+		builder.setTitle("알림 연장");
+
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		View view = inflater.inflate(R.layout.dialog_postpone, null);
+
+		builder.setView(view);
+
+		NumberPicker npHour = (NumberPicker) view.findViewById(R.id.addAlarmHourPicker);
+		NumberPicker npMinute = (NumberPicker) view.findViewById(R.id.addAlarmHourPicker);
+
+
+		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				d(Const.DEBUG_TAG, "getTag = " + ((Button) mTemp).getTag());
+				int aa = Integer.parseInt(((Button) mTemp).getTag().toString());
+				//appendAlarmRow(np.getValue(), aa);
+			}
+		});
+		builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				// User cancelled the dialog
+			}
+		});
+
+// 3. Get the AlertDialog from create()
+		AlertDialog dialog = builder.create();
+		dialog.show();
+
 	}
 
 	public void makeBeforeTimer(){

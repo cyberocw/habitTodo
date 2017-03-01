@@ -175,13 +175,15 @@ public class AlarmBackgroudService extends Service {
         }.start();
     }
 
+    //단순 알림, 끌때까지 울리는 알림
     private void startAleart() {
         Log.d(Const.DEBUG_TAG, "mAlarmType="+mAlarmType + " mAlarmOption= " + mAlarmOption);
         if(mAlarmType < 1) {
             Intent myIntent = new Intent(mCtx, NotificationService.class);
             myIntent.putExtra("title", mTitle);
             myIntent.putExtra("notes", "");
-            myIntent.putExtra("reqCode", mArrAlarmVOList.get(mMinRemainPosition).getId());
+            myIntent.putExtra("reqCode", mArrAlarmVOList.get(mMinRemainPosition).getfId());
+            myIntent.putExtra("alarmId", mArrAlarmVOList.get(mMinRemainPosition).getfId());
             Log.d("Service", "start noti");
             mCtx.startService(myIntent);
         }else{
