@@ -137,6 +137,10 @@ public class AlarmDialogNew extends DialogFragment{
 		bindEvent();
 		init();
 
+		if(arguments != null && arguments.getInt(Const.PARAM.MODE) == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG){
+			makeAlarmPostpone();
+		}
+
 		super.onActivityCreated(savedInstanceState);
 	}
 
@@ -222,10 +226,6 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 
 		if(mMemoMode)
 			initMemoMode();
-
-		if(getArguments().getInt(Const.PARAM.MODE) == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG){
-			makeAlarmPostpone();
-		}
 
 	}
 
