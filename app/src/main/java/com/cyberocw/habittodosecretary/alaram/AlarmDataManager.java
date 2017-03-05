@@ -104,8 +104,7 @@ public class AlarmDataManager {
 	}
 
 	public boolean addItem(AlarmVO item){
-		Log.d(Const.DEBUG_TAG, "is holidayALL = " + item.getIsHolidayALL() + " is HOliday none = " + item.getIsHolidayNone());
-		Toast.makeText(mCtx, "is holidayALL = " + item.getIsHolidayALL() + " is HOliday none = " + item.getIsHolidayNone(), Toast.LENGTH_LONG);
+
 		mDb.insertAlarm(item);
 
 		//알람 인던트 등록
@@ -131,8 +130,6 @@ public class AlarmDataManager {
 		long oriId = item.getId();
 		CommonRelationDBManager relationDBManager = CommonRelationDBManager.getInstance(mCtx);
 		RelationVO rvo = relationDBManager.getByAlarmId(oriId);
-
-		Log.d(Const.DEBUG_TAG, "is holidayALL = " + item.getIsHolidayALL() + " is HOliday none = " + item.getIsHolidayNone());
 
 		boolean delResult = this.deleteItemById(oriId);
 

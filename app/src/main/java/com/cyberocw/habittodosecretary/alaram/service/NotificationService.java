@@ -131,6 +131,9 @@ public class NotificationService extends Service{
 	}
 
 	public void newNotification1(Intent intent, int startId){
+		if(intent.getExtras() == null)
+			return;
+
 		String noti_title = intent.getExtras().getString("title");
 		String noti_message = intent.getExtras().getString("notes");
 		long reqCode = intent.getExtras().getLong("reqCode");
@@ -156,14 +159,17 @@ public class NotificationService extends Service{
 		Intent intentAlarm = new Intent(this, MainActivity.class);
 		intentAlarm.putExtra(Const.PARAM.ALARM_ID, alarmId);
 		intentAlarm.putExtra(Const.PARAM.MODE, Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG);
+		intentAlarm.putExtra(Const.REQ_CODE, reqCode);
+
 		//intentAlarm.putExtra(Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG)
 		intentAlarm.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		//intentAlarm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
 		PendingIntent pendingIntentAlarm = PendingIntent.getActivity(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.mipmap.ic_launcher, "연장하기", pendingIntentAlarm).build();
 
 		mCompatBuilder.addAction(action);
-
+		Log.d(Const.DEBUG_TAG, " noti reqCode="+reqCode);
 		nm.notify((int)reqCode, mCompatBuilder.build());
 
 		try {

@@ -569,7 +569,7 @@ public class AlarmDbManager extends DbHelper{
 
 		ArrayList<Calendar> arrCal;
 		ArrayList<Integer> arrRepeatDay;
-		ArrayList<Integer> alarmaCallList = new ArrayList<Integer>();
+		ArrayList<Integer> alarmCallList = new ArrayList<Integer>();
 		String alarmDate;
 		// TODO: 2015-08-30 date가 여럿일 경우는 고려하지 않았음, 일단 여러개일 경우를 대비하기 위해 테이블은 분리해 둠
 
@@ -608,12 +608,12 @@ public class AlarmDbManager extends DbHelper{
 
 				if (tempData != null && !"".equals(tempData)) {
 					arrTempString = derialize(tempData);
-					alarmaCallList = new ArrayList<Integer>();
+					alarmCallList = new ArrayList<Integer>();
 
 					for (String a : arrTempString) {
-						alarmaCallList.add(Integer.valueOf(a));
+						alarmCallList.add(Integer.valueOf(a));
 					}
-					vo.setAlarmCallList(alarmaCallList);
+					vo.setAlarmCallList(alarmCallList);
 				}
 				vo.setAlarmDateType((c.getInt(c.getColumnIndex(KEY_ALARM_DATE_TYPE))));
 				vo.setAlarmOption((c.getInt(c.getColumnIndex(KEY_ALARM_OPTION))));

@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +37,11 @@ import com.cyberocw.habittodosecretary.alaram.ui.TimerDialog;
 import com.cyberocw.habittodosecretary.calendar.CalendarManager;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Random;
+
+import static android.util.Log.d;
 
 
 /**
@@ -97,6 +102,7 @@ public class AlarmFragment extends Fragment{
 		if (getArguments() != null) {
 			mMode = getArguments().getInt(Const.PARAM.MODE);
 			mAlarmId = getArguments().getLong(Const.PARAM.ALARM_ID);
+            Log.d(Const.DEBUG_TAG, " alarm fragment mMode = get Arguments = " + mMode + " al id= " + mAlarmId);
 		}
 	}
 
@@ -110,6 +116,8 @@ public class AlarmFragment extends Fragment{
 	}
 
 	private void initActivity() {
+		Log.d(Const.DEBUG_TAG, "initActivity started");
+
 		bindEvent();
 		mCalendar = Calendar.getInstance();
 
@@ -139,14 +147,163 @@ public class AlarmFragment extends Fragment{
 
 		//Toast.makeText(mCtx, "mMode = " + mMode + " alarm id = "+ mAlarmId, Toast.LENGTH_LONG).show();
 
-
 		Log.d(Const.DEBUG_TAG, "mMode = " + mMode + " alarm id = "+ mAlarmId);
 
 		if(mMode == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG && mAlarmId > -1){
-			showNewAlarmDialog(mAlarmId);
+			showPostponeAlarmDialog(mAlarmId);
 			mMode = -1;
 			mAlarmId = -1;
 		}
+	}
+
+	private void showPostponeAlarmDialog(long id){
+
+		Log.d(Const.DEBUG_TAG, "makeAlarmPostpone");
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+		builder.setTitle("알림 연장");
+
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		View view = inflater.inflate(R.layout.dialog_postpone, null);
+
+		builder.setView(view);
+
+		final NumberPicker npHour = (NumberPicker) view.findViewById(R.id.addAlarmHourPicker);
+		final NumberPicker npMinute = (NumberPicker) view.findViewById(R.id.addAlarmMinutePicker);
+		npHour.setMaxValue(24);
+		npHour.setMinValue(0);
+		npMinute.setMaxValue(59);
+		npMinute.setMinValue(0);
+
+		Button btn10minute = (Button) view.findViewById(R.id.btn10minute);
+		Button btn20minute = (Button) view.findViewById(R.id.btn20minute);
+		Button btn30minute = (Button) view.findViewById(R.id.btn30minute);
+		Button btn12hour = (Button) view.findViewById(R.id.btn12hour);
+		Button btnReset = (Button) view.findViewById(R.id.btnResetTime);
+		Button btnRandomTime = (Button) view.findViewById(R.id.btnRandomTime);
+
+		btn10minute.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				npHour.setValue(0);
+				npMinute.setValue(10);
+			}
+		});
+		btn20minute.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				npHour.setValue(0);
+				npMinute.setValue(20);
+			}
+		});
+		btn30minute.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				npHour.setValue(0);
+				npMinute.setValue(30);
+			}
+		});
+		btn12hour.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				npHour.setValue(12);
+				npMinute.setValue(0);
+			}
+		});
+
+		btnReset.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				npHour.setValue(0);
+				npMinute.setValue(0);
+			}
+		});
+
+		btnRandomTime.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Random random = new Random();
+
+				npHour.setValue(random.nextInt(25));
+				npMinute.setValue(random.nextInt(60));
+			}
+		});
+
+		final AlarmVO alarmVO = mAlarmDataManager.getItemByIdInDB(id);
+
+		if(alarmVO == null){
+			Log.e(Const.DEBUG_TAG, "Alarm Id가 잘못되었습니다. 데이터를 가져올 수 없습니다 id=" + id);
+			Toast.makeText(mCtx, "Alarm Id가 잘못되었습니다. 데이터를 가져올 수 없습니다 id=" + id, Toast.LENGTH_LONG);
+			return;
+		}
+		alarmVO.setId(-1);
+
+		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+
+				//0분 하나만 지정, 모든 날짜에 울려야해서 공휴일 옵션 0
+				ArrayList<Integer> arrAlarmCall = new ArrayList<Integer>();
+				arrAlarmCall.add(0);
+				alarmVO.setAlarmCallList(arrAlarmCall);
+				alarmVO.setAlarmDateType(Const.ALARM_DATE_TYPE.POSTPONE_DATE);
+				alarmVO.setIsHolidayALL(0);
+				alarmVO.setIsHolidayNone(0);
+				alarmVO.setRepeatDay(null);
+
+				//알림 날짜 계산
+				ArrayList<Calendar> alarmDate = new ArrayList<Calendar>();
+				Calendar now = Calendar.getInstance();
+				now.add(Calendar.HOUR_OF_DAY, npHour.getValue());
+				now.add(Calendar.MINUTE, npMinute.getValue());
+				alarmDate.add(now);
+				alarmVO.setAlarmDateList(alarmDate);
+				alarmVO.setHour(now.get(Calendar.HOUR_OF_DAY));
+				alarmVO.setMinute(now.get(Calendar.MINUTE));
+
+				// 알람 추가
+				if(mAlarmDataManager.addItem(alarmVO) == true)
+					mAlarmAdapter.notifyDataSetChanged();
+				else
+					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+
+				mAlarmDataManager.resetMinAlarmCall();
+				refreshAlarmList();
+			}
+		});
+		builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				// User cancelled the dialog
+
+			}
+		});
+
+// 3. Get the AlertDialog from create()
+		AlertDialog dialog = builder.create();
+		dialog.show();
+
+		/*
+
+		FragmentManager fm;
+		fm = getFragmentManager();
+
+		AlarmDialogNew alarmDialogNew = new AlarmDialogNew();
+
+		if(id != -1) {
+			Bundle bundle = new Bundle();
+
+			bundle.putSerializable(Const.ALARM_VO, mAlarmDataManager.getItemByIdInList(id));
+
+
+			if(mMode == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG){
+				Log.d(Const.DEBUG_TAG, " put mode ok " ) ;
+				bundle.putInt(Const.PARAM.MODE, mMode);
+			}
+			alarmDialogNew.setArguments(bundle);
+		}
+
+		alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
+		alarmDialogNew.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE);
+		*/
 	}
 
 	private void initTimerUi(){
@@ -447,11 +604,6 @@ public class AlarmFragment extends Fragment{
 
 			bundle.putSerializable(Const.ALARM_VO, mAlarmDataManager.getItemByIdInList(id));
 
-
-			if(mMode == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG){
-				Log.d(Const.DEBUG_TAG, " put mode ok " ) ;
-				bundle.putInt(Const.PARAM.MODE, mMode);
-			}
 			alarmDialogNew.setArguments(bundle);
 		}
 
@@ -516,7 +668,6 @@ public class AlarmFragment extends Fragment{
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		mView = inflater.inflate(R.layout.fragment_main1, container, false);
-
 		return mView;
 	}
 

@@ -53,7 +53,8 @@ import static android.util.Log.*;
  * data colum 관련
  * alarm_title - 제목
  * alarm_date_type - 반복 0, 날짜 지정 1
- * alarm_option - 시간 지정알림, 미지정 알림(타이머) - 안씀
+ * alarm_type - 1회 알림 계속 알림
+  * alarm_option - tts 여부 -- 나중에 컬럼 명 변경하기
  * alaram_contents - 안씀
  * type - 안씀
  *
@@ -138,7 +139,7 @@ public class AlarmDialogNew extends DialogFragment{
 		init();
 
 		if(arguments != null && arguments.getInt(Const.PARAM.MODE) == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG){
-			makeAlarmPostpone();
+			//makeAlarmPostpone();
 		}
 
 		super.onActivityCreated(savedInstanceState);
@@ -161,6 +162,9 @@ public class AlarmDialogNew extends DialogFragment{
 			mAlarmDateType = mAlarmVO.getAlarmDateType();
 
 			//if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT)
+			if(mAlarmDateType == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
+				mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE;
+
 			mSpDateType.setSelection(mAlarmDateType, false);
 
 			int alarmType = mAlarmVO.getAlarmType();
@@ -247,13 +251,6 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 	}
 
 	private void returnData(){
-
-		/**
-		 *
-		 * alarmTitle, alarmType(진동,소리 등), alarmOption(타이머,시간지정), hour, minute, mArrAlarmCall(몇분전 알림 목록)
-		 * , mDataRepeatDay, mAlarmDateType, ArrayList<Calendar> alarmDate = null;
-		 */
-
 		String alarmTitle = mTxAlarmTitle.getText().toString();
 
 		if(alarmTitle.equals("")){
@@ -725,39 +722,6 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 		}
 	}
 
-	private void makeAlarmPostpone(){
-		Log.d(Const.DEBUG_TAG, "makeAlarmPostpone");
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
-		builder.setTitle("알림 연장");
-
-		LayoutInflater inflater = getActivity().getLayoutInflater();
-		View view = inflater.inflate(R.layout.dialog_postpone, null);
-
-		builder.setView(view);
-
-		NumberPicker npHour = (NumberPicker) view.findViewById(R.id.addAlarmHourPicker);
-		NumberPicker npMinute = (NumberPicker) view.findViewById(R.id.addAlarmHourPicker);
-
-
-		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				d(Const.DEBUG_TAG, "getTag = " + ((Button) mTemp).getTag());
-				int aa = Integer.parseInt(((Button) mTemp).getTag().toString());
-				//appendAlarmRow(np.getValue(), aa);
-			}
-		});
-		builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				// User cancelled the dialog
-			}
-		});
-
-// 3. Get the AlertDialog from create()
-		AlertDialog dialog = builder.create();
-		dialog.show();
-
-	}
 
 	public void makeBeforeTimer(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);

@@ -1,5 +1,7 @@
 package com.cyberocw.habittodosecretary;
 
+import android.app.NotificationManager;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -56,8 +58,17 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 		Fragment alarmFragment = new AlarmFragment();
 		Intent intent = getIntent();
-		alarmFragment.setArguments(intent.getExtras());
 
+		Bundle bundle = intent.getExtras();
+
+		if(bundle != null) {
+			alarmFragment.setArguments(intent.getExtras());
+
+			NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+			long reqCode = bundle.getLong(Const.REQ_CODE);
+			Log.d(Const.DEBUG_TAG, "reqCode="+reqCode);
+			manager.cancel((int) reqCode);
+		}
 	    fragmentManager.beginTransaction()
 			    .replace(R.id.main_container, alarmFragment).commit();
 
@@ -65,6 +76,42 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 
     }
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+
+		Log.d(Const.DEBUG_TAG, "onResume start");
+		Bundle bundle = intent.getExtras();
+
+		if(bundle != null){
+
+			NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+			long reqCode = bundle.getLong(Const.REQ_CODE);
+			Log.d(Const.DEBUG_TAG, "reqCode="+reqCode);
+			manager.cancel((int) reqCode);
+
+			FragmentManager fragmentManager = getSupportFragmentManager();
+
+			Fragment alarmFragment = new AlarmFragment();
+
+			alarmFragment.setArguments(intent.getExtras());
+
+			fragmentManager.beginTransaction()
+					.replace(R.id.main_container, alarmFragment).commit();
+
+			//afterUpdateVersion();
+		}else{
+			Log.d(Const.DEBUG_TAG, " on resume bundle is null");
+		}
+		setIntent(intent);
+	}
+
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		Log.d(Const.DEBUG_TAG, "onRestoreInstanceState started");
+//		this.onCreate(savedInstanceState);
+
+	}
 
 	private void afterUpdateVersion(){
 		Context ctx = getApplicationContext();
