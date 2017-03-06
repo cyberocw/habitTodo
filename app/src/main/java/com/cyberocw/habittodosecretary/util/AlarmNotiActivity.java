@@ -28,7 +28,10 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		setContentView(R.layout.timer_noti);
 
 		Intent intent = getIntent();
-		String title = intent.getExtras().getString("title");
+		Bundle bundle = intent.getExtras();
+		String title = "";
+		if(bundle != null)
+			title = intent.getExtras().getString("title");
 
 		mVibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		long[] pattern = {1000, 200, 1000, 2000, 1200};          // 진동, 무진동, 진동 무진동 숫으로 시간을 설정한다.
