@@ -133,29 +133,43 @@ public class AlarmBackgroudService extends Service {
         startTimer(mMillisRemainTime, mArrAlarmVOList.get(mMinRemainPosition));
     }
 
-    public void startTimer(long remainTime, AlarmTimeVO alarmTimeVO) {
-        if (mCountDownTimer != null)
-            return;
+    public void startTimer(long remainTime, AlarmTimeVO alarmTimeVO){
+
+        if(mCountDownTimer != null)
+            return ;
+
         int callTime = alarmTimeVO.getCallTime();
 
         mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : ""));
-        Notification notification = new Notification(R.drawable.ic_launcher, mAppTitle, System.currentTimeMillis());
-
-        mAlarmOption = alarmTimeVO.getAlarmOption();
-        mAlarmType = alarmTimeVO.getAlarmType();
 
         int second = (int) (remainTime / 1000) % 60;
         int minute = (int) ((remainTime / (1000 * 60)) % 60);
         int hour = (int) ((remainTime / (1000 * 60 * 60)));
 
+        mAlarmOption = alarmTimeVO.getAlarmOption();
+        mAlarmType = alarmTimeVO.getAlarmType();
+
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_TIMER_NOTI_ID, notificationIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_ALARM_NOTI_ID, notificationIntent, 0);
 
-        notification.setLatestEventInfo(this, mAppTitle,
-                mTitle + " 알림 예정 ", pendingIntent);
-        startForeground(Const.ONGOING_TIMER_NOTI_ID, notification);
+        android.support.v4.app.NotificationCompat.Builder mCompatBuilder = new android.support.v4.app.NotificationCompat.Builder(this);
+        mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
+        mCompatBuilder.setTicker("Habit Todo Timer");
+        mCompatBuilder.setWhen(System.currentTimeMillis());
+        //mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 300L, 300L, 400L, 400L });
+        mCompatBuilder.setContentTitle(mAppTitle);
+        mCompatBuilder.setContentText(mTitle + " 알림 예정 ");
+        //mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+        mCompatBuilder.setContentIntent(pendingIntent);
+        //mCompatBuilder.setAutoCancel(true);
 
+        startForeground(Const.ONGOING_TIMER_NOTI_ID, mCompatBuilder.build());
+
+        startCountDownTimer(remainTime);
+    }
+
+    private void startCountDownTimer(long remainTime){
         mCountDownTimer = new CountDownTimer(remainTime, 1000) {
             public void onTick(long millisUntilFinished) {
                 mMillisRemainTime = millisUntilFinished;
@@ -173,6 +187,32 @@ public class AlarmBackgroudService extends Service {
 
             }
         }.start();
+    }
+
+    public void start2Timer(long remainTime, AlarmTimeVO alarmTimeVO) {
+        if (mCountDownTimer != null)
+            return;
+        int callTime = alarmTimeVO.getCallTime();
+
+        mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : ""));
+        Notification notification = new Notification(R.drawable.ic_launcher, mAppTitle, System.currentTimeMillis());
+
+        mAlarmOption = alarmTimeVO.getAlarmOption();
+        mAlarmType = alarmTimeVO.getAlarmType();
+
+        int second = (int) (remainTime / 1000) % 60;
+        int minute = (int) ((remainTime / (1000 * 60)) % 60);
+        int hour = (int) ((remainTime / (1000 * 60 * 60)));
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_TIMER_NOTI_ID, notificationIntent, 0);
+        /*
+        notification.setLatestEventInfo(this, mAppTitle,
+                mTitle + " 알림 예정 ", pendingIntent);
+        startForeground(Const.ONGOING_TIMER_NOTI_ID, notification);
+        */
+
     }
 
     //단순 알림, 끌때까지 울리는 알림

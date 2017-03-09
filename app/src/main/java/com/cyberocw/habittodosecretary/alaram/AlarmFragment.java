@@ -260,6 +260,8 @@ public class AlarmFragment extends Fragment{
 				alarmVO.setHour(now.get(Calendar.HOUR_OF_DAY));
 				alarmVO.setMinute(now.get(Calendar.MINUTE));
 
+				alarmVO.setAlarmTitle(alarmVO.getAlarmTitle());
+
 				// 알람 추가
 				if(mAlarmDataManager.addItem(alarmVO) == true)
 					mAlarmAdapter.notifyDataSetChanged();

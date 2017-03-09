@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -98,6 +99,34 @@ public class TimerService extends Service {
 	}
 
 	public void startTimer(long remainTime){
+
+		if(mCountDownTimer != null)
+			return ;
+
+		int second = (int) (remainTime / 1000) % 60;
+		int minute = (int) ((remainTime / (1000 * 60)) % 60);
+		int hour = (int) ((remainTime / (1000 * 60 * 60)));
+
+		Intent notificationIntent = new Intent(this, MainActivity.class);
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_TIMER_NOTI_ID, notificationIntent, 0);
+
+		NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this);
+		mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
+		mCompatBuilder.setTicker("Habit Todo Timer");
+		mCompatBuilder.setWhen(System.currentTimeMillis());
+		//mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 300L, 300L, 400L, 400L });
+		mCompatBuilder.setContentTitle("Habit Todo timer is running");
+		mCompatBuilder.setContentText(mNumberFormat.format(hour) + ":" + mNumberFormat.format(minute) +
+				":" + mNumberFormat.format(second));
+		//mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+		mCompatBuilder.setContentIntent(pendingIntent);
+		//mCompatBuilder.setAutoCancel(true);
+		startForeground(Const.ONGOING_TIMER_NOTI_ID, mCompatBuilder.build());
+		startCaountDownTimer(remainTime);
+	}
+
+	public void startTimer2(long remainTime){
 		Log.d(Const.DEBUG_TAG, "startTimer remainTime=" + mMillisRemainTime);
 
 		if(mCountDownTimer != null)
@@ -112,12 +141,16 @@ public class TimerService extends Service {
 		Intent notificationIntent = new Intent(this, MainActivity.class);
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_TIMER_NOTI_ID, notificationIntent, 0);
-
+		/*
 		notification.setLatestEventInfo(this, "HbitTodo Timer is running",
 				mNumberFormat.format(hour) + ":" + mNumberFormat.format(minute) +
 						":" + mNumberFormat.format(second), pendingIntent);
 		startForeground(Const.ONGOING_TIMER_NOTI_ID, notification);
 
+		startCaountDownTimer(remainTime);
+		*/
+	}
+	private void startCaountDownTimer(long remainTime){
 		mCountDownTimer = new CountDownTimer(remainTime, 1000) {
 			public void onTick(long millisUntilFinished) {
 				mMillisRemainTime = millisUntilFinished;
@@ -143,7 +176,6 @@ public class TimerService extends Service {
 			}
 		}.start();
 	}
-
 	private void startAleart(){
 		Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
 		myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

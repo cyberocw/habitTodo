@@ -44,4 +44,6 @@
     <color name="blue_semi_transparent_pressed">#80738ffe</color>
     <color name="background_repeat">#80bfc6df</color>
     <color name="background_date">#80fcc8db</color>
+    <color name="background_postphone_date">#808eef6a</color>
+
 </resources>

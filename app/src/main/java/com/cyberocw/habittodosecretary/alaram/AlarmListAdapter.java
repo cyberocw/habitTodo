@@ -68,10 +68,14 @@ public class AlarmListAdapter extends BaseAdapter{
 			}
 		}
 
+		//Const.ALARM_DATE_TYPE.POSTPONE_DATE
+
 		if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT)
 			convertView.setBackgroundResource(R.color.background_repeat);
-		else
+		else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE)
 			convertView.setBackgroundResource(R.color.background_date);
+		else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
+			convertView.setBackgroundResource(R.color.background_postphone_date);
 
 		ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);
 		btnOption.setOnClickListener(new View.OnClickListener() {
@@ -89,8 +93,8 @@ public class AlarmListAdapter extends BaseAdapter{
 
 		ToggleButton dateToggleBtn = (ToggleButton) convertView.findViewById(R.id.timeText);
 		dateToggleBtn.setText(vo.getTimeText());
-		dateToggleBtn.setTextOn(vo.getTimeText());
-		dateToggleBtn.setTextOff(vo.getTimeText());
+		dateToggleBtn.setTextOn(vo.getTimeText() + " 연장");
+		dateToggleBtn.setTextOff(vo.getTimeText() + " 연장");
 
 		if(vo.getUseYn() == 1)
 			dateToggleBtn.setChecked(true);
@@ -103,6 +107,10 @@ public class AlarmListAdapter extends BaseAdapter{
 				AlarmVO vo = mManager.getItem(position);
 				ToggleButton btn = (ToggleButton) v;
 				boolean isChecked = btn.isChecked();
+
+				if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE){
+
+				}
 
 				if(isChecked == true)
 					vo.setUseYn(1);
@@ -117,8 +125,10 @@ public class AlarmListAdapter extends BaseAdapter{
 			}
 		});
 
+		String title = mManager.getItem(position).getAlarmTitle();
+
 		TextView tv = (TextView) convertView.findViewById(R.id.alarmTitle);
-			tv.setText(mManager.getItem(position).getAlarmTitle());
+			tv.setText(title);
 
 		return convertView;
 	}

@@ -19,6 +19,7 @@ public class Const {
 	public static final String TIMER_VO = "timerVo";
 	public static final String VIEW_TYPE = "viewType";
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
+	public static final int ONGOING_ALARM_NOTI_ID = 999999998;
 
 
 	public class PARAM{
