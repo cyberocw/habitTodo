@@ -59,15 +59,16 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		Fragment alarmFragment = new AlarmFragment();
 		Intent intent = getIntent();
 
-		Bundle bundle = intent.getExtras();
+		if(intent != null) {
+			Bundle bundle = intent.getExtras();
+			if (bundle != null) {
+				alarmFragment.setArguments(intent.getExtras());
 
-		if(bundle != null) {
-			alarmFragment.setArguments(intent.getExtras());
-
-			NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-			long reqCode = bundle.getLong(Const.REQ_CODE);
-			Log.d(Const.DEBUG_TAG, "reqCode="+reqCode);
-			manager.cancel((int) reqCode);
+				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+				long reqCode = bundle.getLong(Const.REQ_CODE);
+				Log.d(Const.DEBUG_TAG, "reqCode=" + reqCode);
+				manager.cancel((int) reqCode);
+			}
 		}
 	    fragmentManager.beginTransaction()
 			    .replace(R.id.main_container, alarmFragment).commit();
@@ -82,35 +83,32 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		super.onNewIntent(intent);
 
 		Log.d(Const.DEBUG_TAG, "onResume start");
-		Bundle bundle = intent.getExtras();
 
-		if(bundle != null){
+		if(intent != null) {
+			Bundle bundle = intent.getExtras();
 
-			NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-			long reqCode = bundle.getLong(Const.REQ_CODE);
-			Log.d(Const.DEBUG_TAG, "reqCode="+reqCode);
-			manager.cancel((int) reqCode);
+			if (bundle != null) {
 
-			FragmentManager fragmentManager = getSupportFragmentManager();
+				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+				long reqCode = bundle.getLong(Const.REQ_CODE);
+				Log.d(Const.DEBUG_TAG, "reqCode=" + reqCode);
+				manager.cancel((int) reqCode);
 
-			Fragment alarmFragment = new AlarmFragment();
+				FragmentManager fragmentManager = getSupportFragmentManager();
 
-			alarmFragment.setArguments(intent.getExtras());
+				Fragment alarmFragment = new AlarmFragment();
 
-			fragmentManager.beginTransaction()
-					.replace(R.id.main_container, alarmFragment).commit();
+				alarmFragment.setArguments(intent.getExtras());
 
-			//afterUpdateVersion();
-		}else{
-			Log.d(Const.DEBUG_TAG, " on resume bundle is null");
+				fragmentManager.beginTransaction()
+						.replace(R.id.main_container, alarmFragment).commit();
+
+				//afterUpdateVersion();
+			} else {
+				Log.d(Const.DEBUG_TAG, " on resume bundle is null");
+			}
+			setIntent(intent);
 		}
-		setIntent(intent);
-	}
-
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		Log.d(Const.DEBUG_TAG, "onRestoreInstanceState started");
-//		this.onCreate(savedInstanceState);
-
 	}
 
 	private void afterUpdateVersion(){

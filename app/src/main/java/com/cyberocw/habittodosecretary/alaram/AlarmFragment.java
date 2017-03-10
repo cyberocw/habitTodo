@@ -441,19 +441,12 @@ public class AlarmFragment extends Fragment{
 									refreshAlarmList();
 
 								}
-					}).setNeutralButton("오늘만 삭제",
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							//// TODO: 2015-08-30 오늘만 삭제 시 오늘 데이터 기준의 테이블에서 useYn을 no로 처리 하는 방식으로 작성 필요
-							Toast.makeText(mCtx, "아직 구현 안함", Toast.LENGTH_SHORT).show();
-							return;
-						}
 					}).setNegativeButton("취소",
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							// 'No'
+
 							return;
 						}
 					});

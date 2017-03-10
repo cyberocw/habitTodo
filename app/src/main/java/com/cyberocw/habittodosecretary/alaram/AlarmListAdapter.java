@@ -77,24 +77,42 @@ public class AlarmListAdapter extends BaseAdapter{
 		else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
 			convertView.setBackgroundResource(R.color.background_postphone_date);
 
+		ToggleButton dateToggleBtn = (ToggleButton) convertView.findViewById(R.id.timeText);
+		dateToggleBtn.setText(vo.getTimeText());
+
+		if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE) {
+			dateToggleBtn.setTextOn(vo.getTimeText() + " 연장 취소");
+			dateToggleBtn.setTextOff(vo.getTimeText() + " 연장 취소");
+		}
+		else{
+			dateToggleBtn.setTextOn(vo.getTimeText());
+			dateToggleBtn.setTextOff(vo.getTimeText());
+		}
+
 		ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);
 		btnOption.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mMainFragment.longClickPopup(0, mManager.getItem(position).getId());
+				AlarmVO vo = mManager.getItem(position);
+				if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE) {
+					mMainFragment.deleteItemAlertDialog(vo.getId());
+				}
+				else
+					mMainFragment.longClickPopup(0, mManager.getItem(position).getId());
 			}
 		});
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mMainFragment.showNewAlarmDialog(mManager.getItem(position).getId());
+				AlarmVO vo = mManager.getItem(position);
+
+				if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE){
+					mMainFragment.deleteItemAlertDialog(vo.getId());
+				}
+				else
+					mMainFragment.showNewAlarmDialog(vo.getId());
 			}
 		});
-
-		ToggleButton dateToggleBtn = (ToggleButton) convertView.findViewById(R.id.timeText);
-		dateToggleBtn.setText(vo.getTimeText());
-		dateToggleBtn.setTextOn(vo.getTimeText() + " 연장");
-		dateToggleBtn.setTextOff(vo.getTimeText() + " 연장");
 
 		if(vo.getUseYn() == 1)
 			dateToggleBtn.setChecked(true);
@@ -109,7 +127,9 @@ public class AlarmListAdapter extends BaseAdapter{
 				boolean isChecked = btn.isChecked();
 
 				if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE){
-
+					btn.setChecked(true);
+					mMainFragment.deleteItemAlertDialog(vo.getId());
+					return;
 				}
 
 				if(isChecked == true)
@@ -131,5 +151,9 @@ public class AlarmListAdapter extends BaseAdapter{
 			tv.setText(title);
 
 		return convertView;
+	}
+
+	private void showRemovePostPhoneDidalog(AlarmVO vo){
+
 	}
 }
