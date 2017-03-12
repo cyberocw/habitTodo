@@ -20,8 +20,10 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
 import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 /**
  * Created by cyberocw on 2015-08-16.
@@ -33,6 +35,14 @@ public class AlarmDataManager {
 
 	// 각각의 알람이 저장 됨
 	private ArrayList<AlarmVO> dataList = new ArrayList<>();
+
+	private ArrayList<AlarmVO> arrRepeat = new ArrayList<>();
+	private ArrayList<AlarmVO> arrSetTime = new ArrayList<>();
+	private ArrayList<AlarmVO> arrPostpone = new ArrayList<>();
+
+	private ArrayList<String> arrGroupList = new ArrayList();
+
+	HashMap<String, ArrayList> mGroupMap = new HashMap<String, ArrayList>();
 
 	public AlarmDataManager(Context ctx) {
 		this(ctx, Calendar.getInstance());
@@ -51,7 +61,40 @@ public class AlarmDataManager {
 
 	public void makeDataList(Calendar cal){
 		this.dataList = mDb.getAlarmList(cal);
+		makeGroupDataList();
 	}
+
+	private void makeGroupDataList(){
+		resetGroupData();
+
+		AlarmVO vo;
+
+		for(int i = 0 ; i < this.dataList.size(); i++){
+			vo = this.dataList.get(i);
+			if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT){
+				arrRepeat.add(vo);
+			}else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE){
+				arrSetTime.add(vo);
+			}else{
+				arrPostpone.add(vo);
+			}
+		}
+
+		if(arrRepeat.size() > 0) {
+			arrGroupList.add(String.valueOf(Const.ALARM_DATE_TYPE.REPEAT));
+			mGroupMap.put(String.valueOf(Const.ALARM_DATE_TYPE.REPEAT), arrRepeat);
+		}
+		if(arrSetTime.size() > 0) {
+			arrGroupList.add(String.valueOf(Const.ALARM_DATE_TYPE.SET_DATE));
+			mGroupMap.put(String.valueOf(Const.ALARM_DATE_TYPE.SET_DATE), arrSetTime);
+		}
+		if(arrPostpone.size() > 0) {
+			arrGroupList.add(String.valueOf(Const.ALARM_DATE_TYPE.POSTPONE_DATE));
+			mGroupMap.put(String.valueOf(Const.ALARM_DATE_TYPE.POSTPONE_DATE), arrPostpone);
+		}
+	}
+
+
 
 	public void setDataList(ArrayList<AlarmVO> dataList) {
 		this.dataList = dataList;
@@ -61,8 +104,37 @@ public class AlarmDataManager {
 		return this.dataList.size();
 	}
 
+	public int getGroupCount(){
+		int i = 0;
+		if(arrRepeat.size() > 0)
+			i++;
+		if(arrPostpone.size() > 0)
+			i++;
+		if(arrSetTime.size() > 0)
+			i++;
+		return i;
+	}
+
 	public AlarmVO getItem(int position){
 		return this.dataList.get(position);
+	}
+
+	public ArrayList getGroup(int groupPosition){
+		String groupCode = positionToGroupCode(groupPosition);
+
+		if(!mGroupMap.containsKey(groupCode))
+			return null;
+
+		return mGroupMap.get(groupCode);
+	}
+
+	public AlarmVO getGroupItem(int groupPosition, int position){
+		ArrayList arrList = this.getGroup(groupPosition);
+
+		if(arrList != null && arrList.size() < position + 1)
+			return null;
+
+		return (AlarmVO) arrList.get(position);
 	}
 
 	public AlarmVO getItemByIdInList(long id){
@@ -72,6 +144,32 @@ public class AlarmDataManager {
 			}
 		}
 		return null;
+	}
+
+	private String positionToGroupCode(int position){
+		return arrGroupList.get(position);
+		/*
+		if(position == 0)
+			return String.valueOf(Const.ALARM_DATE_TYPE.REPEAT);
+		if(position == 1)
+			return String.valueOf(Const.ALARM_DATE_TYPE.SET_DATE);
+		if(position == 2)
+			return String.valueOf(Const.ALARM_DATE_TYPE.POSTPONE_DATE);
+		else {
+			Toast.makeText(mCtx, "group position 이 잘못되었습니다", Toast.LENGTH_SHORT);
+			return "";
+		}
+		*/
+	}
+	public String getGroupTitle(int position){
+		int groupCode = Integer.parseInt(positionToGroupCode(position));
+		String result = "";
+		switch (groupCode){
+			case Const.ALARM_DATE_TYPE.REPEAT : result = "반복 알람"; break;
+			case Const.ALARM_DATE_TYPE.SET_DATE : result = "날짜 지정 알람"; break;
+			case Const.ALARM_DATE_TYPE.POSTPONE_DATE : result = "연기한 알람"; break;
+		}
+		return result;
 	}
 
 	public AlarmVO getItemByIdInDB(long id){
@@ -101,6 +199,17 @@ public class AlarmDataManager {
 		AlarmVO item = new AlarmVO(date, title, repeatDay);
 		this.dataList.add(item);
 		return item;
+	}
+
+	private void addGroupItem(String groupCode, AlarmVO vo){
+		mGroupMap.get(groupCode).add(vo);
+	}
+	private void resetGroupData(){
+		mGroupMap = new HashMap<>();
+		arrSetTime = new ArrayList<AlarmVO>();
+		arrRepeat = new ArrayList<AlarmVO>();
+		arrPostpone = new ArrayList<AlarmVO>();
+		arrGroupList = new ArrayList();
 	}
 
 	public boolean addItem(AlarmVO item){
@@ -248,7 +357,7 @@ public class AlarmDataManager {
 		Log.d(Const.DEBUG_TAG, "newReqCode=" + newReqCode);
 		//등록된 code 저장해둠
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.clear();
+		editor.remove(reqCode);
 		editor.putString(reqCode, newReqCode);
 		editor.commit();
 	}

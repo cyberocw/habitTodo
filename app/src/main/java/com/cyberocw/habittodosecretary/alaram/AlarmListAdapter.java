@@ -20,7 +20,7 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 /**
  * Created by cyberocw on 2015-08-16.
  */
-public class AlarmListAdapter extends BaseAdapter{
+public class AlarmListAdapter extends BaseAdapter implements AlarmListAdapterInterface{
 	private AlarmDataManager mManager;
 	private LayoutInflater inflater;
 	private Context mCtx;
@@ -81,8 +81,8 @@ public class AlarmListAdapter extends BaseAdapter{
 		dateToggleBtn.setText(vo.getTimeText());
 
 		if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE) {
-			dateToggleBtn.setTextOn(vo.getTimeText() + " 연장 취소");
-			dateToggleBtn.setTextOff(vo.getTimeText() + " 연장 취소");
+			dateToggleBtn.setTextOn(vo.getTimeText() + "");
+			dateToggleBtn.setTextOff(vo.getTimeText() + "");
 		}
 		else{
 			dateToggleBtn.setTextOn(vo.getTimeText());

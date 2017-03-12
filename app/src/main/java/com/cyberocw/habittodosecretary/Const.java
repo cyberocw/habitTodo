@@ -62,6 +62,12 @@ public class Const {
 		public static final int NO_DATE_TIMER = 1;
 	}
 
+	public class ALARM_LIST_VIEW_TYPE {
+        public static final String TAG = "alarmViewType";
+		public static final int LIST = 0;
+		public static final int EXPENDABLE_LIST = 1;
+	}
+
 	public class ALARM_TYPE{
 		public static final int NONE = 0;
 		public static final int VIB = 1;

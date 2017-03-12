@@ -1,7 +1,6 @@
 package com.cyberocw.habittodosecretary.alaram.service;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -9,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -19,7 +17,7 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
-import com.cyberocw.habittodosecretary.util.AlarmNotiActivity;
+import com.cyberocw.habittodosecretary.alaram.ui.AlarmNotiActivity;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
 
 import java.text.DecimalFormat;
@@ -217,20 +215,18 @@ public class AlarmBackgroudService extends Service {
 
     //단순 알림, 끌때까지 울리는 알림
     private void startAleart() {
-        Log.d(Const.DEBUG_TAG, "mAlarmType="+mAlarmType + " mAlarmOption= " + mAlarmOption);
         if(mAlarmType < 1) {
             Intent myIntent = new Intent(mCtx, NotificationService.class);
             myIntent.putExtra("title", mTitle);
             myIntent.putExtra("notes", "");
             myIntent.putExtra("reqCode", mArrAlarmVOList.get(mMinRemainPosition).getfId());
             myIntent.putExtra("alarmId", mArrAlarmVOList.get(mMinRemainPosition).getfId());
-            Log.d("Service", "start noti");
             mCtx.startService(myIntent);
         }else{
-
             Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
             myIntent.putExtra("title", mTitle);
-            myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            myIntent.putExtra("alarmId", mArrAlarmVOList.get(mMinRemainPosition).getfId());
+            myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             mCtx.startActivity(myIntent);
         }
 

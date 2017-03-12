@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,7 +20,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
@@ -64,13 +65,18 @@ public class AlarmFragment extends Fragment{
 	private String mParam1;
 	private String mParam2;
 	private Calendar mCalendar = null;
-	AlarmListAdapter mAlarmAdapter;
+
+
+	AlarmListAdapterInterface mAlarmAdapter;
+	//AlarmExListAdapter mAlarmAdapter;
 	TimerListAdapter mTimerAdapter;
 	CalendarManager mCalendarManager;
 	SharedPreferences mPrefs;
-	private int mViewType;
+	private int mViewType = Const.ALARM_OPTION.SET_DATE_TIMER;
+	private int mListViewType = Const.ALARM_LIST_VIEW_TYPE.EXPENDABLE_LIST; // 1: listview 2: expendable view
 	private int mMode = -1;
 	private long mAlarmId = -1;
+
 
 	private OnFragmentInteractionListener mListener;
 	private View mView;
@@ -118,11 +124,7 @@ public class AlarmFragment extends Fragment{
 	private void initActivity() {
 		Log.d(Const.DEBUG_TAG, "initActivity started");
 
-		bindEvent();
 		mCalendar = Calendar.getInstance();
-
-		//viewType 기본값 - 날짜지정 뷰
-		mViewType = mPrefs.getInt(Const.VIEW_TYPE, Const.ALARM_OPTION.SET_DATE_TIMER);
 
 		//선택된 날짜 텍스트 지정
 		setSelectedDateText(mCalendar);
@@ -134,9 +136,10 @@ public class AlarmFragment extends Fragment{
 		mCalendarManager.init();
 		mAlarmDataManager = new AlarmDataManager(mCtx, mCalendar);
 		mTimerDataManager = new TimerDataManager(mCtx);
-		//Calendar date, String title, String[] repeatDay, String type
-		mAlarmAdapter = new AlarmListAdapter(this, mCtx, mAlarmDataManager);
+
 		mTimerAdapter = new TimerListAdapter(this, mCtx, mTimerDataManager);
+
+		mListViewType = mPrefs.getInt(Const.ALARM_LIST_VIEW_TYPE.TAG, Const.ALARM_LIST_VIEW_TYPE.EXPENDABLE_LIST);
 
 		if(mViewType == Const.ALARM_OPTION.SET_DATE_TIMER)
 			initAlamUi();
@@ -145,15 +148,13 @@ public class AlarmFragment extends Fragment{
 
 		mAlarmDataManager.resetMinAlarmCall(Const.ALARM_DATE_TYPE.REPEAT);
 
-		//Toast.makeText(mCtx, "mMode = " + mMode + " alarm id = "+ mAlarmId, Toast.LENGTH_LONG).show();
-
-		Log.d(Const.DEBUG_TAG, "mMode = " + mMode + " alarm id = "+ mAlarmId);
-
 		if(mMode == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG && mAlarmId > -1){
 			showPostponeAlarmDialog(mAlarmId);
 			mMode = -1;
 			mAlarmId = -1;
 		}
+
+		bindEvent();
 	}
 
 	private void showPostponeAlarmDialog(long id){
@@ -309,7 +310,19 @@ public class AlarmFragment extends Fragment{
 	}
 
 	private void initTimerUi(){
+		if(mListViewType != Const.ALARM_LIST_VIEW_TYPE.LIST) {
+			LinearLayout ll = (LinearLayout) mView.findViewById(R.id.alarmListViewWrap);
+			ll.removeAllViews();
+			LayoutInflater inflater = getActivity().getLayoutInflater();
+			View v = inflater.inflate(R.layout.list_view, null);
+			ListView newLv = (ListView) v.findViewById(R.id.alramListView);
+			newLv.removeAllViewsInLayout();
+			((ViewGroup)newLv.getParent()).removeView(newLv);
+			ll.addView(newLv);
+		}
+
 		ListView lv = (ListView) mView.findViewById(R.id.alramListView);
+
 
 		lv.removeAllViewsInLayout();
 		lv.setAdapter(mTimerAdapter);
@@ -331,27 +344,81 @@ public class AlarmFragment extends Fragment{
 		});
 	}
 	private void initAlamUi(){
-		ListView lv = (ListView) mView.findViewById(R.id.alramListView);
-		lv.removeAllViewsInLayout();
-		lv.setAdapter(mAlarmAdapter);
+		LinearLayout ll = (LinearLayout) mView.findViewById(R.id.alarmListViewWrap);
+		ll.removeAllViews();
+		LayoutInflater inflater = getActivity().getLayoutInflater();
 
-		lv.setClickable(true);
-		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				showNewAlarmDialog(id);
-			}
-		});
+		Log.d(Const.DEBUG_TAG, "initAlamUi start");
 
-		lv.setLongClickable(true);
-		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				longClickPopup(position, id);
-				return true;
-			}
-		});
+		if(mListViewType == Const.ALARM_LIST_VIEW_TYPE.LIST){
+
+			mAlarmAdapter = new AlarmListAdapter(this, mCtx, mAlarmDataManager);
+
+			View v = inflater.inflate(R.layout.list_view, null);
+			ListView newLv = (ListView) v.findViewById(R.id.alramListView);
+			newLv.removeAllViewsInLayout();
+			((ViewGroup)newLv.getParent()).removeView(newLv);
+
+			newLv.setAdapter((ListAdapter) mAlarmAdapter);
+			ll.addView(newLv);
+
+
+			newLv.setClickable(true);
+			newLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					showNewAlarmDialog(id);
+				}
+			});
+
+			newLv.setLongClickable(true);
+			newLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+					longClickPopup(position, id);
+					return true;
+				}
+			});
+
+		}else{
+			mAlarmAdapter = new AlarmExListAdapter(this, mCtx, mAlarmDataManager);
+
+			View v = inflater.inflate(R.layout.expandable_list_view, null);
+			ExpandableListView newLv = (ExpandableListView) v.findViewById(R.id.alramListView);
+
+			newLv.removeAllViewsInLayout();
+			((ViewGroup)newLv.getParent()).removeView(newLv);
+
+			newLv.setAdapter((ExpandableListAdapter) mAlarmAdapter);
+			ll.addView(newLv);
+
+
+			newLv.setClickable(true);
+			newLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					showNewAlarmDialog(id);
+				}
+			});
+
+			newLv.setLongClickable(true);
+			newLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+					longClickPopup(position, id);
+					return true;
+				}
+			});
+		}
 
 		//mAlarmAdapter.notifyDataSetChanged();
+		refreshAlarmList();
+	}
+
+	public void expandGroupView(){
+		Log.d(Const.DEBUG_TAG, "((ExpandableListAdapter) mAlarmAdapter).getGroupCount()="+((ExpandableListAdapter) mAlarmAdapter).getGroupCount());
+		ExpandableListView newLv = (ExpandableListView) mView.findViewById(R.id.alramListView);
+
+		for(int i = 0 ; i < ((ExpandableListAdapter) mAlarmAdapter).getGroupCount(); i++)
+			newLv.expandGroup(i);
 	}
 
 	protected void longClickPopup(int position, final long _id){
@@ -560,6 +627,28 @@ public class AlarmFragment extends Fragment{
 			}
 		});
 
+		Button btnViewMode = (Button) mView.findViewById(R.id.btnViewMode);
+		btnViewMode.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(mListViewType == Const.ALARM_LIST_VIEW_TYPE.LIST) {
+					mListViewType = Const.ALARM_LIST_VIEW_TYPE.EXPENDABLE_LIST;
+					((Button) v).setText("시간순");
+				}
+				else {
+					mListViewType = Const.ALARM_LIST_VIEW_TYPE.LIST;
+					((Button) v).setText("종류별");
+				}
+				SharedPreferences.Editor editor = mPrefs.edit();
+				//editor.clear();
+				editor.putInt(Const.ALARM_LIST_VIEW_TYPE.TAG, mListViewType);
+				editor.commit();
+
+				//initActivity();
+				initAlamUi();
+			}
+		});
+
 	}
 
 	public void changeAlarmView(){
@@ -662,7 +751,7 @@ public class AlarmFragment extends Fragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		mView = inflater.inflate(R.layout.fragment_main1, container, false);
+		mView = inflater.inflate(R.layout.fragment_alarm_list, container, false);
 		return mView;
 	}
 

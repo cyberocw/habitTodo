@@ -26,7 +26,7 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name=".util.AlarmNotiActivity" android:label="AlarmNoti"/>
+        <activity android:name=".alaram.ui.AlarmNotiActivity" android:label="AlarmNoti"/>
         <receiver android:name=".alaram.receiver.AlarmReceiver"></receiver>
         <receiver android:name=".alaram.service.NotificationService$CloseButtonListener" />
         <service android:name=".alaram.service.NotificationService" />

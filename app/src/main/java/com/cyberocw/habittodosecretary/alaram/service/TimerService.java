@@ -1,7 +1,6 @@
 package com.cyberocw.habittodosecretary.alaram.service;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -21,7 +20,7 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.TimerListAdapter;
-import com.cyberocw.habittodosecretary.util.AlarmNotiActivity;
+import com.cyberocw.habittodosecretary.alaram.ui.AlarmNotiActivity;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -178,7 +177,7 @@ public class TimerService extends Service {
 	}
 	private void startAleart(){
 		Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
-		myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
 		mCtx.startActivity(myIntent);
 	}
 

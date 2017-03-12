@@ -31,4 +31,6 @@
     <dimen name="calendarDayNumPaddingBottom">10dp</dimen>
     <dimen name="calendarDayNameHeight">12dp</dimen>
 
+    <dimen name="listViewTopMargin">6dp</dimen>
+
 </resources>
