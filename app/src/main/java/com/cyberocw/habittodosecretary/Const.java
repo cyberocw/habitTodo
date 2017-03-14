@@ -64,6 +64,7 @@ public class Const {
 
 	public class ALARM_LIST_VIEW_TYPE {
         public static final String TAG = "alarmViewType";
+		public static final String TAG_REPEAT_EXPAND = "repeatExpand";
 		public static final int LIST = 0;
 		public static final int EXPENDABLE_LIST = 1;
 	}

@@ -391,7 +391,24 @@ public class AlarmFragment extends Fragment{
 			newLv.setAdapter((ExpandableListAdapter) mAlarmAdapter);
 			ll.addView(newLv);
 
+			newLv.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+				@Override
+				public boolean onGroupClick(ExpandableListView expandableListView, View view, int groupPosition, long id) {
+					if(groupPosition != 0)
+						return false;
 
+					SharedPreferences.Editor editor = mPrefs.edit();
+					//editor.clear();
+					int len = ((ExpandableListAdapter) mAlarmAdapter).getGroupCount();
+					if(len > 0 && mAlarmDataManager.positionToGroupCode(0).equals(String.valueOf(Const.ALARM_DATE_TYPE.REPEAT))){
+						Log.d(Const.DEBUG_TAG, " prefs get put boolean = " + !expandableListView.isGroupExpanded(0));
+						editor.putBoolean(Const.ALARM_LIST_VIEW_TYPE.TAG_REPEAT_EXPAND, !expandableListView.isGroupExpanded(0));
+					}
+
+					editor.commit();
+					return false;
+				}
+			});
 			newLv.setClickable(true);
 			newLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -414,11 +431,18 @@ public class AlarmFragment extends Fragment{
 	}
 
 	public void expandGroupView(){
-		Log.d(Const.DEBUG_TAG, "((ExpandableListAdapter) mAlarmAdapter).getGroupCount()="+((ExpandableListAdapter) mAlarmAdapter).getGroupCount());
 		ExpandableListView newLv = (ExpandableListView) mView.findViewById(R.id.alramListView);
 
-		for(int i = 0 ; i < ((ExpandableListAdapter) mAlarmAdapter).getGroupCount(); i++)
-			newLv.expandGroup(i);
+		boolean isExpandRepeat = mPrefs.getBoolean(Const.ALARM_LIST_VIEW_TYPE.TAG_REPEAT_EXPAND, true);
+
+		int cnt = ((ExpandableListAdapter) mAlarmAdapter).getGroupCount();
+
+		for(int i = 0 ; i < cnt; i++) {
+			if(i == 0 && cnt > 1 && mAlarmDataManager.positionToGroupCode(0).equals(String.valueOf(Const.ALARM_DATE_TYPE.REPEAT)) && isExpandRepeat == false)
+				newLv.collapseGroup(0);
+			else
+				newLv.expandGroup(i);
+		}
 	}
 
 	protected void longClickPopup(int position, final long _id){

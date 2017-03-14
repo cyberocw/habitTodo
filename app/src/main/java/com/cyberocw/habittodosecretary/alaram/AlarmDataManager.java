@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
 import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
 import com.cyberocw.habittodosecretary.alaram.service.AlarmBackgroudService;
@@ -146,7 +147,9 @@ public class AlarmDataManager {
 		return null;
 	}
 
-	private String positionToGroupCode(int position){
+	public String positionToGroupCode(int position){
+		if(arrGroupList.size() == 0)
+			return "-1";
 		return arrGroupList.get(position);
 		/*
 		if(position == 0)
@@ -165,9 +168,9 @@ public class AlarmDataManager {
 		int groupCode = Integer.parseInt(positionToGroupCode(position));
 		String result = "";
 		switch (groupCode){
-			case Const.ALARM_DATE_TYPE.REPEAT : result = "반복 알람"; break;
-			case Const.ALARM_DATE_TYPE.SET_DATE : result = "날짜 지정 알람"; break;
-			case Const.ALARM_DATE_TYPE.POSTPONE_DATE : result = "연기한 알람"; break;
+			case Const.ALARM_DATE_TYPE.REPEAT : result = mCtx.getResources().getString(R.string.group_title_repeat); break;
+			case Const.ALARM_DATE_TYPE.SET_DATE : result = mCtx.getResources().getString(R.string.group_title_set_date); break;
+			case Const.ALARM_DATE_TYPE.POSTPONE_DATE : result = mCtx.getResources().getString(R.string.group_title_postpone); break;
 		}
 		return result;
 	}

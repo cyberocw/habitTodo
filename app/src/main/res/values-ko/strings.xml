@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">HabitTodoSecretary</string>
+    <string name="group_title_repeat">반복 알람</string>
+    <string name="group_title_set_date">날짜 지정 알람</string>
+    <string name="group_title_postpone">미룬 알람</string>
+    <string name="group_title_tomorrow">내일</string>
+    <string name="group_title_after_day_tomorrow">모레</string>
 </resources>
