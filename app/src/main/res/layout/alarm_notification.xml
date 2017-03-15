@@ -1,76 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="10dp"
     android:clickable="true"
     android:longClickable="true"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:id="@+id/notiWrap"
+    >
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginRight="125dp"
-        android:orientation="vertical"
-        android:layout_gravity="center"
+        android:layout_height="wrap_content"
 
         >
+
+        <ImageView
+            android:id="@+id/ivNoti"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+
+            android:background="@drawable/ic_launcher"
+            android:elevation="0dp"
+            app:srcCompat="@mipmap/ic_launcher" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:padding="5dp"
+
+        android:layout_marginRight="120dp"
+
+
+        android:orientation="vertical">
+
         <TextView
             android:id="@+id/tvAlarmTitle"
-            android:layout_width="180dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="10dp"
-            android:text=" ㄴㅇㄹ sdf sdf asdv sdv sdv sdvvds dvd"
-            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
             android:elegantTextHeight="false"
             android:ellipsize="end"
-            android:maxLines="1"/>
-        <TextView
-            android:id="@+id/tvAlarmTitleSub"
-            android:layout_width="180dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="10dp"
+            android:maxLines="1"
             android:text=" ㄴㅇㄹ sdf sdf asdv sdv sdv sdvvds dvd"
-            android:textSize="12sp"
-            android:elegantTextHeight="false"
-            android:ellipsize="end"
-            android:maxLines="1"/>
-    </LinearLayout>
+            android:textAlignment="center"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
     <LinearLayout
-        android:layout_width="150dp"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="-120dp"
-        android:gravity="center"
-        android:layout_weight="0.59">
+        android:gravity="center">
 
         <Button
             android:id="@+id/btnPostpone"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:text="연장하기"
+            android:text="연장"
             android:textSize="13sp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
+
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/tvAlarmTime"
-                android:text="오전 12:14"
-                android:textSize="11sp"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="12:14"
+                android:textSize="10sp" />
+
             <Button
                 android:id="@+id/btnCloseNoti"
                 android:layout_width="45dp"
                 android:layout_height="40dp"
-                android:textAlignment="center"
-                android:padding="2dp"
+                android:padding="0dp"
                 android:text="X"
-                android:textSize="12sp" />
+                android:textAlignment="center"
+                android:textSize="11sp" />
         </LinearLayout>
 
     </LinearLayout>

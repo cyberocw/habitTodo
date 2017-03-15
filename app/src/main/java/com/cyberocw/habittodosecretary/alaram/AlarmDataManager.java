@@ -412,4 +412,7 @@ public class AlarmDataManager {
 			am.set(type, time, it);
 		}
 	}
+	public void close(){
+		mDb.closeDB();
+	}
 }

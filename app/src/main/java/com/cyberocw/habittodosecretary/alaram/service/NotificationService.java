@@ -19,6 +19,7 @@ import android.widget.RemoteViews;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.Calendar;
 
@@ -117,7 +118,7 @@ public class NotificationService extends Service{
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Intent intent1 = new Intent(this, MainActivity.class);
 		intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, -1, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this);
 		mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
@@ -127,22 +128,20 @@ public class NotificationService extends Service{
 		mCompatBuilder.setContentTitle(noti_title);
 		//mCompatBuilder.setContentText(noti_message);
 		mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-		mCompatBuilder.setContentIntent(pendingIntent);
-		mCompatBuilder.setAutoCancel(true);
 
         RemoteViews remoteView = new RemoteViews(this.getPackageName(), R.layout.alarm_notification);
+		remoteView.setOnClickPendingIntent(R.id.notiWrap, pendingIntent);
+
         remoteView.setTextViewText(R.id.tvAlarmTitle, noti_title);
+		//mCompatBuilder.setContentIntent(pendingIntent);
+		mCompatBuilder.setAutoCancel(true);
 
         Calendar now = Calendar.getInstance();
-        remoteView.setTextViewText(R.id.tvAlarmTime, now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE));
-
-        //set the button listeners
-        //setListeners(remoteView);
-		Log.d(Const.DEBUG_TAG, "SEt listeners close button");
+        remoteView.setTextViewText(R.id.tvAlarmTime, CommonUtils.numberDigit(2, now.get(Calendar.HOUR_OF_DAY)) + ":" + CommonUtils.numberDigit(2, now.get(Calendar.MINUTE)));
 
 		Intent closeButtonIntent = new Intent(this, CloseButtonListener.class);
 		closeButtonIntent.putExtra(Const.REQ_CODE, reqCode);
-		PendingIntent pendingCloseButtonIntent = PendingIntent.getBroadcast(this, 0, closeButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingCloseButtonIntent = PendingIntent.getBroadcast(this, (int) reqCode, closeButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		remoteView.setOnClickPendingIntent(R.id.btnCloseNoti, pendingCloseButtonIntent);
 
 		Intent intentAlarm = new Intent(this, MainActivity.class);

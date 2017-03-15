@@ -134,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			SharedPreferences.Editor editor = setPrefs.edit();
 			editor.putString(Const.SETTING.VERSION, versionName);
 			editor.apply();
-			editor.commit();
 		}
 	}
 
@@ -202,5 +201,11 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			Log.e("MainActivity", "Error in creating fragment");
 		}
 		return true;
+	}
+
+	@Override
+	protected void onDestroy() {
+
+		super.onDestroy();
 	}
 }
