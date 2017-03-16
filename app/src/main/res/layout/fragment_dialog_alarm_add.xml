@@ -194,19 +194,22 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:id="@+id/holidayLabel"
                     />
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="평일 중 휴일 포함"
-                        android:id="@+id/cbHolidayAll"
-                        android:layout_weight="1" />
 
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="평일 휴일인 경우 제외"
-                        android:id="@+id/cbHolidayNone"
-                        android:layout_weight="1" />
+                <CheckBox
+                    android:id="@+id/cbHolidayAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="평일 중 휴일 포함"
+                    android:textSize="12sp" />
+
+                <CheckBox
+                    android:id="@+id/cbHolidayNone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="평일 휴일인 경우 제외"
+                    android:textSize="12sp" />
 
             </LinearLayout>
             <LinearLayout

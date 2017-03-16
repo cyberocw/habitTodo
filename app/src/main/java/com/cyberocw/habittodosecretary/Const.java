@@ -55,6 +55,7 @@ public class Const {
 		public static final int TOMORROW = 2;
 		public static final int AFTER_DAY_TOMORROW = 3;
 		public static final int POSTPONE_DATE = 4;
+		public static final int REPEAT_MONTH = 5;
 	}
 
 	public class ALARM_OPTION{

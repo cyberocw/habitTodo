@@ -355,7 +355,7 @@ public class AlarmDbManager extends DbHelper{
 					}
 				}
 			}
-
+			//// TODO: 2017-03-17 repeat 테이블에 repeat day 컬럼 추가하여 or day = ?? 이것만 옵션 추가하면 됨
 			queryString += ") ORDER BY B." + KEY_HOUR + ", B." + KEY_MINUTE;
 
 
@@ -535,14 +535,14 @@ public class AlarmDbManager extends DbHelper{
 				if (values.size() > 0) {
 					selectQuery += "(SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE 1=1 ";
 					for (String key : values.keySet()) {
-						//and 인지 or인지 잘 구분 필요 아직까지는 dayName이 배열일 경우는 없어서 and던 or던 상관 없는듯...
+						//and 인지 or인지 잘 구분 필요, 아직까지는 dayName이 배열일 경우는 없어서 and던 or던 상관 없음...(목금을 동시에 가져올 일이 업다는 뜻)
 						selectQuery += " AND " + key + " = 1";
 					}
 					selectQuery += ")";
 				}
 			}
 			//////// 날짜 지정 알림에서 불러옴
-			//endDate가 null이 아닐때 (이때는 day 배열이 없는 상태 -1로 key_id in 무효화 시켜줌)
+			//endDate가 null이 아닐때 (이때는 day 배열이 없는 상태로 key_id in -1 로 만들어 무효화 시켜줌)
 			if (startDate != null && endDate != null) {
 				selectQuery += " (-1) OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
 						KEY_ALARM_DATE + " BETWEEN " + convertDateType(startDate) + " AND " + convertDateType(endDate) + ")";
@@ -552,6 +552,7 @@ public class AlarmDbManager extends DbHelper{
 				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
 						KEY_ALARM_DATE + " = " + convertDateType(startDate) + ")";
 			}
+			//매달 반복의 경우, 오늘 날짜의 연월을 합쳐서 가져오기 (날짜 지정알림인 것처럼)
 		}
 		else{
 			selectQuery += "("+id+")";

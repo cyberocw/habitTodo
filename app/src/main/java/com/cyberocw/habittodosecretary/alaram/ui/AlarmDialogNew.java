@@ -326,7 +326,7 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 
 		Toast.makeText(mCtx, " holiday is checked = "+ mCbHolidayAll.isChecked(), Toast.LENGTH_LONG);
 		Log.d(Const.DEBUG_TAG, "holiday start");
-		if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT){
+		if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT || mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
 
 			Log.d(Const.DEBUG_TAG, "mCbHolidayAll.isChecked() =" + mCbHolidayAll.isChecked());
 			vo.setIsHolidayALL(mCbHolidayAll.isChecked() ? 1 : 0);
@@ -421,10 +421,11 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 	public void makeSpinnerDateType(){
 		//mSpDateType;
 		ArrayList<String> arrayList = new ArrayList<String>();
-		arrayList.add("반복");
+		arrayList.add("반복-요일");
 		arrayList.add("날짜 지정");
 		arrayList.add("내일");
 		arrayList.add("모레");
+		arrayList.add("매달");
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,
 				android.R.layout.simple_spinner_item, arrayList);
@@ -545,6 +546,14 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 				alarmDateChange(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
 				mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE;
 				break;
+			case Const.ALARM_DATE_TYPE.REPEAT_MONTH :
+				//llRepeatDayWrap.setVisibility(View.VISIBLE);
+				llDatePicWrap.setVisibility(View.VISIBLE);
+				llRepeatDayWrap.setVisibility(View.GONE);
+				llAlertTimeWrap.setVisibility(View.VISIBLE);
+				llHolidayOptionWrap.setVisibility(View.VISIBLE);
+				mAlarmDateType = Const.ALARM_DATE_TYPE.REPEAT_MONTH;
+				break;
 		}
 	}
 
@@ -628,7 +637,7 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 			@Override
 			public void onClick(View v) {
 				Calendar calendar;
-				if(mModifyMode == 1 && mAlarmDateType == Const.ALARM_DATE_TYPE.SET_DATE){
+				if(mModifyMode == 1 && (mAlarmDateType == Const.ALARM_DATE_TYPE.SET_DATE || mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT_MONTH)){
 					calendar = mAlarmVO.getAlarmDateList().get(0);
 				}else{
 					calendar = Calendar.getInstance();
