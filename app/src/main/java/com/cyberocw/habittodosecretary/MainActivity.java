@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
@@ -204,6 +205,10 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			Log.e("MainActivity", "Error in creating fragment");
 		}
 		return true;
+	}
+
+	public void forceCrash(View view) {
+		throw new RuntimeException("This is a crash");
 	}
 
 	@Override

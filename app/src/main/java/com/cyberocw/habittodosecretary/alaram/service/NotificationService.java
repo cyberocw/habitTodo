@@ -16,12 +16,15 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.Calendar;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by cyberocw on 2015-08-31.
@@ -38,6 +41,7 @@ public class NotificationService extends Service{
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Fabric.with(this, new Crashlytics());
 	}
 
 	@SuppressWarnings({ "static-access", "deprecation" })
@@ -104,10 +108,10 @@ public class NotificationService extends Service{
 	}
 
 	public void newNotification1(Intent intent, int startId){
-		if(intent.getExtras() == null) {
-            stopSelf();
-            return;
-        }
+		if(intent == null || !intent.hasExtra("title") ) {
+			stopSelf();
+			return;
+		}
 
 		String noti_title = intent.getExtras().getString("title");
 		String noti_message = intent.getExtras().getString("notes");

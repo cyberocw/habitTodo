@@ -16,7 +16,6 @@
             </intent-filter>
 
         </activity>
-        ShareActivity
         <activity android:name=".ShareActivity" android:label="Alarm"
                   android:theme="@style/AppTheme"
             >

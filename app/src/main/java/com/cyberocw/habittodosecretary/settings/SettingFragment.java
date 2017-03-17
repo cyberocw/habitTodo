@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.category.CategoryDataManager;
@@ -25,6 +26,8 @@ import com.cyberocw.habittodosecretary.category.CategoryListAdapter;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by cyberocw on 2016-11-06.
@@ -69,6 +72,8 @@ public class SettingFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
 
     @Override
@@ -84,6 +89,7 @@ public class SettingFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mCtx = getActivity();
         initActivity();
+        Fabric.with(mCtx, new Crashlytics());
     }
 
     private void initActivity(){

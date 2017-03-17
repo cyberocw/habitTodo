@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
@@ -25,6 +26,8 @@ import com.cyberocw.habittodosecretary.alaram.ui.AlarmNotiActivity;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by cyberocw on 2015-11-16.
@@ -90,6 +93,7 @@ public class TimerService extends Service {
 	public void onCreate() {
 
 		super.onCreate();
+		Fabric.with(this, new Crashlytics());
 
 	}
 

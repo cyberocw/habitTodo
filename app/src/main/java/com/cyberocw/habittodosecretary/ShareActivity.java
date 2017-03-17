@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
@@ -31,7 +32,9 @@ import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.memo.ui.MemoDialogNew;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
-public class ShareActivity extends AppCompatActivity implements AlarmFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener{
+import io.fabric.sdk.android.Fabric;
+
+ public class ShareActivity extends AppCompatActivity implements AlarmFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener{
 	public AlarmFragment mMainFragment;
 	public static String TAG = "mainActivity";
 
@@ -43,7 +46,7 @@ public class ShareActivity extends AppCompatActivity implements AlarmFragment.On
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		Fabric.with(this, new Crashlytics());
 		setContentView(R.layout.activity_main);
 
 		//MemoDialogNew dialogNew = new MemoDialogNew();

@@ -288,6 +288,8 @@ public class AlarmDataManager {
 
 		alarmTimeList1 = mDb.getMinAlarmTime();
 
+		Log.d(this.toString(), "alarmTimeList1="+alarmTimeList1);
+
 		Calendar cal = Calendar.getInstance();
 		int dayNum = cal.get(Calendar.DAY_OF_WEEK); //sun 1 mon 2 ...
 		alarmTimeList2 = mDb.getMinRepeatAlarm(dayNum);
@@ -351,6 +353,7 @@ public class AlarmDataManager {
 
 		String[] arrReq = new String[alarmTimeList.size()];
 
+		Log.d(this.toString(), "alarmTimeList.size()="+alarmTimeList.size());
 		for(int i = 0; i < alarmTimeList.size(); i++){
 			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i), i));
 		}
@@ -380,6 +383,7 @@ public class AlarmDataManager {
 		if(ccc.getTimeInMillis() < nowCal.getTimeInMillis()){
 			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
 			myIntent.putExtra("alarmTimeVO", alarmVO);
+			Log.d(this.getClass().toString(), "timer background start service alarmVO id=" + alarmVO.getId() + " title =" + alarmVO.getAlarmTitle());
 			mCtx.startService(myIntent);
 			return reqCode;
 		}

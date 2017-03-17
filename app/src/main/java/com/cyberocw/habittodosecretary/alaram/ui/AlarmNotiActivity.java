@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
@@ -20,6 +21,7 @@ import org.w3c.dom.Text;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by cyberocw on 2015-11-16.
@@ -80,6 +82,8 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		if(mAlarmId == -1){
 			mBtnPostpone.setVisibility(View.INVISIBLE);
 		}
+
+		Fabric.with(this, new Crashlytics());
 	}
 
 	private void showPostPhone(){

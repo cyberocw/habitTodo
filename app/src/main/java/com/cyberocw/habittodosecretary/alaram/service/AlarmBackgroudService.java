@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
@@ -24,6 +25,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by cyberocw on 2016-09-19.
@@ -58,6 +61,7 @@ public class AlarmBackgroudService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
     }
 
     @Override
@@ -73,7 +77,7 @@ public class AlarmBackgroudService extends Service {
 
         // Get messager from the Activity
         if (extras != null) {
-            Log.d("service", "onBind with extra @@@@@@@@@@@@");
+            Log.d("service", "onBind with extra @@@@@@@@@@@@ mArrAlarmVOList size=" + mArrAlarmVOList.size());
             //mMillisRemainTime = (Long) extras.get("realTime");
 
             AlarmTimeVO alarmTimeVO = (AlarmTimeVO) intent.getSerializableExtra("alarmTimeVO");
@@ -168,14 +172,15 @@ public class AlarmBackgroudService extends Service {
     }
 
     private void startCountDownTimer(long remainTime){
+        // 음수면 바로 울림
         mCountDownTimer = new CountDownTimer(remainTime, 1000) {
             public void onTick(long millisUntilFinished) {
                 mMillisRemainTime = millisUntilFinished;
-                /*
+
                 int second = (int) (millisUntilFinished / 1000) % 60;
                 int minute = (int) ((millisUntilFinished / (1000 * 60)) % 60);
                 int hour = (int) ((millisUntilFinished / (1000 * 60 * 60)));
-                */
+
                 //Log.d(Const.DEBUG_TAG, "on tinck =" + second);
             }
             public void onFinish() {

@@ -149,6 +149,7 @@ public class AlarmDbManager extends DbHelper{
 			cal.set(Calendar.HOUR_OF_DAY, vo.getHour());
 			cal.set(Calendar.MINUTE, vo.getMinute());
 			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
 
 			for (int j = 0; j < callList.size(); j++) {
 				cal2 = (Calendar) cal.clone();
@@ -187,6 +188,8 @@ public class AlarmDbManager extends DbHelper{
 
 		ArrayList<AlarmTimeVO> alarmTimeVOList = new ArrayList<AlarmTimeVO>();
 		AlarmTimeVO vo;
+
+		Log.d(this.toString(), " min set time record count=" +  c.getCount());
 
 		if (c.moveToFirst()) {
 			do {
@@ -304,6 +307,7 @@ public class AlarmDbManager extends DbHelper{
 		ArrayList<AlarmTimeVO> arrList = new ArrayList<>();
 		Calendar cal = Calendar.getInstance(), nowCal = Calendar.getInstance(), cal2;
 		nowCal.set(Calendar.SECOND, 0);
+		nowCal.set(Calendar.MILLISECOND, 0);
 
 		long nowTimeInMil = nowCal.getTimeInMillis();
 

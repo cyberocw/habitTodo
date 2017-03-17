@@ -7,9 +7,12 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 
 import java.util.Locale;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by cyberocw on 2015-10-04.
@@ -22,6 +25,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener, Tex
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Fabric.with(this, new Crashlytics());
 	}
 
 	@SuppressWarnings({ "static-access", "deprecation" })
