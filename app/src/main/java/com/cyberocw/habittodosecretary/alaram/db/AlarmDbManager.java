@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
@@ -85,7 +86,13 @@ public class AlarmDbManager extends DbHelper{
 		vo.setId(id);
 
 		// 날짜 지정 알람
+
 		ArrayList<Calendar> dateList = vo.getAlarmDateList();
+
+		if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT_MONTH && dateList != null && !dateList.isEmpty()){
+			insertRepeatDay(id, dateList.get(0));
+			dateList = null;
+		}
 
 		if(dateList != null && !dateList.isEmpty()) {
 			insertDate(id, dateList);
@@ -101,13 +108,6 @@ public class AlarmDbManager extends DbHelper{
 		}
 		closeDB();
 		return true;
-	}
-
-	public boolean modifyAlarm(AlarmVO vo) {
-		//여차하면 다 삭제하고 새로 insert해도 됨
-		if(deleteAlarm(vo.getId()) == false)
-			return false;
-		return this.insertAlarm(vo);
 	}
 
 	public boolean modifyUse(AlarmVO vo){
@@ -218,10 +218,24 @@ public class AlarmDbManager extends DbHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
-		values.put(KEY_ALARM_DATE, convertDateType(cal));
+		values.put(KEY_ALARM_DATE, CommonUtils.convertDateType(cal));
 		values.put(KEY_F_ALARM_ID, id);
 
 		long _id = db.insert(TABLE_ALARM_DATE, null, values);
+
+		if(_id == -1){
+			Log.e(Const.DEBUG_TAG, "DB Date INSERT ERROR");
+			throw new Error("DB Date INSERT ERROR");
+		}
+	}
+
+	private void insertRepeatDay(long id, Calendar repeatDay){
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(KEY_REPEAT_DAY, repeatDay.get(Calendar.DAY_OF_MONTH));
+		values.put(KEY_F_ALARM_ID, id);
+
+		long _id = db.insert(TABLE_ALARM_REPEAT, null, values);
 
 		if(_id == -1){
 			Log.e(Const.DEBUG_TAG, "DB Date INSERT ERROR");
@@ -330,7 +344,7 @@ public class AlarmDbManager extends DbHelper{
 		holidayMap.put("20170219", tempArr);
 		*/
 
-		int dayofWeek;
+		int dayofWeek, day2;
 		Cursor c = null;
 
 		//오늘 기준 7번 반복하면서 최소값 찾으면 +1 일 더 찾아보고 중지
@@ -343,6 +357,11 @@ public class AlarmDbManager extends DbHelper{
 			cal = (Calendar) nowCal.clone();
 			cal.add(Calendar.DAY_OF_MONTH, i);
 			dayofWeek = cal.get(Calendar.DAY_OF_WEEK);
+			day2 = cal.get(Calendar.DAY_OF_MONTH);
+
+			//매달 반복 검사
+			queryString += " or A." + KEY_REPEAT_DAY + " = " + day2;
+
 			//평일일 경우에만 holiday 여부 체크
 			if(dayofWeek != 1 && dayofWeek != 7){
 				String strCal = String.valueOf(cal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
@@ -359,14 +378,8 @@ public class AlarmDbManager extends DbHelper{
 					}
 				}
 			}
-			//// TODO: 2017-03-17 repeat 테이블에 repeat day 컬럼 추가하여 or day = ?? 이것만 옵션 추가하면 됨
+
 			queryString += ") ORDER BY B." + KEY_HOUR + ", B." + KEY_MINUTE;
-
-
-			//// TODO: 2016-11-06 isholiday 체크해서 가져오는 로직
-			// or isHoliday = 1, 만약 내일이 공휴일일 경우도 고려해야함, 내일 공휴일 0:10 -20분전 알림 일 경우....
-			// -> 반복 돌때 날짜의 공휴일도 계속 가져와서 isHoliday 옵션 도 동적으로 변경해줘야함
-			//공휴일 포함시 -> 공휴일을 계속 가져와서 공휴일일 경우 조건 -> or (isHolidayAll = 1 and isHolidayNone <> 1)
 
 			c = db.rawQuery(queryString, null);
 
@@ -494,14 +507,14 @@ public class AlarmDbManager extends DbHelper{
 	}
 
 	/*
-	dayName은 요일을 받음
+	나중에 한번 싹 정리해야 할 필요가 있음
 	 */
 	private ArrayList<AlarmVO> getAlarmList(long id, Calendar startDate, Calendar endDate, int[] dayName) {
 
 
 		String selectQuery =
 				"SELECT  A.*, B." + KEY_ID + " as " + KEY_REPEAT_ID + ", C." + KEY_ID + " as " + KEY_DATE_ID + ", sun, mon, tue, wed, thu, fri, sat, C." +
-						KEY_ALARM_DATE +" FROM " + TABLE_ALARM + " AS A LEFT JOIN " +
+						KEY_ALARM_DATE +", B." + KEY_REPEAT_DAY + " FROM " + TABLE_ALARM + " AS A LEFT JOIN " +
 						TABLE_ALARM_REPEAT + " AS B ON A." + KEY_ID + " = B."+ KEY_F_ALARM_ID + " LEFT JOIN " +
 						TABLE_ALARM_DATE + " AS C ON A." + KEY_ID + " = C." + KEY_F_ALARM_ID +
 						" WHERE A." + KEY_ID + " IN ";
@@ -544,18 +557,28 @@ public class AlarmDbManager extends DbHelper{
 					}
 					selectQuery += ")";
 				}
+				//endDate가 null일때 -- 한개 날짜만 사용
+				if (startDate != null && endDate == null) {
+					selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
+							KEY_ALARM_DATE + " = " + CommonUtils.convertDateType(startDate) + ")";
+				}
+				//매달 반복 가져옴
+				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE " + KEY_REPEAT_DAY +
+						" = " + startDate.get(Calendar.DAY_OF_MONTH) + " ) ";
 			}
-			//////// 날짜 지정 알림에서 불러옴
-			//endDate가 null이 아닐때 (이때는 day 배열이 없는 상태로 key_id in -1 로 만들어 무효화 시켜줌)
-			if (startDate != null && endDate != null) {
-				selectQuery += " (-1) OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
-						KEY_ALARM_DATE + " BETWEEN " + convertDateType(startDate) + " AND " + convertDateType(endDate) + ")";
+			//////// 날짜 지정 알림에서 불러옴 - 주간 달력에 settime 유형 o 표시 위함
+			else if (startDate != null && endDate != null) {
+				selectQuery += " (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
+						KEY_ALARM_DATE + " BETWEEN " + CommonUtils.convertDateType(startDate) + " AND " + CommonUtils.convertDateType(endDate) + ")";
+				//매달 반복 가져옴
+				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE " + KEY_REPEAT_DAY +
+						" >= " + startDate.get(Calendar.DAY_OF_MONTH) + " AND " + KEY_REPEAT_DAY + " <= " + endDate.get(Calendar.DAY_OF_MONTH) + ") ";
 			}
-			//endDate가 null일때 -- 한개 날짜만 사용
-			if (startDate != null && endDate == null) {
-				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
-						KEY_ALARM_DATE + " = " + convertDateType(startDate) + ")";
+			else{
+				Toast.makeText(mCtx, "getAlarmList 인자가 잘못 전달됐습니다.", Toast.LENGTH_SHORT).show();
+				selectQuery += " (-1) ";
 			}
+
 			//매달 반복의 경우, 오늘 날짜의 연월을 합쳐서 가져오기 (날짜 지정알림인 것처럼)
 		}
 		else{
@@ -583,6 +606,18 @@ public class AlarmDbManager extends DbHelper{
 
 		AlarmVO vo;
 		Calendar cc = Calendar.getInstance();
+		Calendar repeatDayCal;
+		if(startDate != null)
+			repeatDayCal = (Calendar) startDate.clone();
+		else
+			repeatDayCal = Calendar.getInstance();
+
+		repeatDayCal.set(Calendar.HOUR, 0);
+		repeatDayCal.set(Calendar.MINUTE, 0);
+		repeatDayCal.set(Calendar.SECOND, 0);
+		repeatDayCal.set(Calendar.MILLISECOND, 0);
+
+		int repeatDay = 0;
 
 		if (c.moveToFirst()) {
 			do {
@@ -590,17 +625,26 @@ public class AlarmDbManager extends DbHelper{
 				vo.setId(c.getLong((c.getColumnIndex(KEY_ID))));
 				alarmDate = c.getString(c.getColumnIndex(KEY_ALARM_DATE));
 
-				//기존 ID 데이터가 있으면 date만 add하고 건너뜀
+				//기존 ID 데이터가 있으면 date만 add하고 건너뜀 - 일단 현재는 그럴 일 없음
 				if (voMap.containsKey(vo.getId())) {
 					if (alarmDate != null && !"".equals(alarmDate)) {
-						voMap.get(vo.getId()).getAlarmDateList().add(convertDateType(alarmDate));
+						voMap.get(vo.getId()).getAlarmDateList().add(CommonUtils.convertDateType(alarmDate));
 					}
 					continue;
+				}else {
+					//없으면 새로 생성
+					arrCal = new ArrayList<Calendar>();
+					repeatDay = c.getInt(c.getColumnIndex(KEY_REPEAT_DAY));
+					if(repeatDay > 0){
+						repeatDayCal.set(Calendar.DAY_OF_MONTH, repeatDay);
+						Log.d(this.toString(), "repeaday string = " + CommonUtils.convertDateType(repeatDayCal));
+						arrCal.add((Calendar) repeatDayCal.clone());
+					}
+					else if (alarmDate != null && !"".equals(alarmDate))
+						arrCal.add(CommonUtils.convertDateType(alarmDate));
+
+					vo.setAlarmDateList(arrCal);
 				}
-				arrCal = new ArrayList<Calendar>();
-				if (alarmDate != null && !"".equals(alarmDate))
-					arrCal.add(convertDateType(alarmDate));
-				vo.setAlarmDateList(arrCal);
 				vo.setAlarmTitle((c.getString(c.getColumnIndex(KEY_ALARM_TITLE))));
 				vo.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
 				vo.setHour(c.getInt(c.getColumnIndex(KEY_HOUR)));
@@ -636,7 +680,7 @@ public class AlarmDbManager extends DbHelper{
 				vo.setCreateDt((Calendar) cc.clone());
 
 				cc.setTimeInMillis(c.getInt(c.getColumnIndex(KEY_UPDATE_DATE)));
-				vo.setCreateDt((Calendar) cc.clone());
+				vo.setUpdateDt((Calendar) cc.clone());
 
 				alarmVOList.add(vo);
 				voMap.put(vo.getId(), vo);

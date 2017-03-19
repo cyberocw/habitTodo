@@ -49,6 +49,11 @@ public class CalendarManager {
 	private HashMap<String, ArrayList> mHolidayMap;
 
 
+	public CalendarManager(Context context) {
+		mAlarmDbManager = AlarmDbManager.getInstance(mCtx);
+		mSettingDbManager = SettingDbManager.getInstance(mCtx);
+	}
+
 	public CalendarManager(Context context, LinearLayout llWeekOfDayWrap, Calendar calendar, TextView fullDateView) {
 		mCtx = context;
 		mCalendar = calendar;
@@ -69,12 +74,45 @@ public class CalendarManager {
 		renderDayNum();
 	}
 
+	public ArrayList<AlarmVO> getAlarmMonthList(Calendar dateOri){
+		Calendar startDate = (Calendar) dateOri.clone();
+		Calendar endDate = (Calendar) dateOri.clone();
+
+		startDate.set(Calendar.DAY_OF_MONTH, 1);
+		endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+		return getAlarmList(startDate, endDate);
+	}
+
+	public ArrayList<AlarmVO> getAlarmList(Calendar startDate, Calendar endDate){
+		return mAlarmDbManager.getAlarmList(startDate, endDate);
+	}
+
+	public ArrayList<HolidayVO> getHolidayMonthList(Calendar dateOri){
+		Calendar date = (Calendar) dateOri.clone();
+
+		date.set(Calendar.DAY_OF_MONTH, 1);
+		String startDate = CommonUtils.convertDateType(date);
+		date.set(Calendar.DAY_OF_MONTH, date.getActualMaximum(Calendar.DAY_OF_MONTH));
+		String endDate = CommonUtils.convertDateType(date);
+
+		return getHolidayList(startDate, endDate);
+	}
+
+	public ArrayList<HolidayVO> getHolidayList(Calendar startDate, Calendar endDate){
+		return this.getHolidayList(CommonUtils.convertDateType(startDate), CommonUtils.convertDateType(endDate));
+	}
+
+	public ArrayList<HolidayVO> getHolidayList(String startDate, String endDate){
+		return mSettingDbManager.getHolidayList(startDate, endDate);
+	}
 	private void getAlarmList(){
-		ArrayList<AlarmVO> vo =  mAlarmDbManager.getAlarmList(mStartDate, mEndDate);
+		ArrayList<AlarmVO> arrVO =  mAlarmDbManager.getAlarmList(mStartDate, mEndDate);
 		mArrAlarmList = new ArrayList<>();
 
-		for(int i = 0; i < vo.size(); i++){
-			mArrAlarmList.add(vo.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
+		for(int i = 0; i < arrVO.size(); i++){
+			Log.d(getClass().toString(), " alarm day  = " + arrVO.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
+			mArrAlarmList.add(arrVO.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
 		}
 	}
 
@@ -224,6 +262,7 @@ public class CalendarManager {
 						arrTextDayName[i].setEllipsize(TextUtils.TruncateAt.END);
 						*/
 						if(mCalendar.getTimeInMillis() == cal2.getTimeInMillis()){
+							Log.d(this.toString(), "mFullDateView.getText()="+mFullDateView.getText());
 							mFullDateView.setText(mFullDateView.getText() + " - " + daytext);
 						}
 						break;
@@ -271,4 +310,7 @@ public class CalendarManager {
 		mListener = dayClickListener;
 	}
 
+	public ArrayList<AlarmVO> getAlarmList(Calendar mCalendar) {
+		return mAlarmDbManager.getAlarmList((Calendar) mCalendar.clone());
+	}
 }

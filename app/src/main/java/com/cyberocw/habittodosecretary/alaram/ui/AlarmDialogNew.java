@@ -161,11 +161,11 @@ public class AlarmDialogNew extends DialogFragment{
 			//날짜 지정, 반복
 			mAlarmDateType = mAlarmVO.getAlarmDateType();
 
-			//if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT)
+			//안쓸듯?
 			if(mAlarmDateType == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
 				mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE;
 
-			mSpDateType.setSelection(mAlarmDateType, false);
+			mSpDateType.setSelection(Const.ALARM_DATE_TYPE.getPositionByCode(mAlarmDateType), false);
 
 			int alarmType = mAlarmVO.getAlarmType();
 			mDataRepeatDay = mAlarmVO.getRepeatDay();
@@ -204,10 +204,8 @@ public class AlarmDialogNew extends DialogFragment{
 			mTxAlarmTitle.setText(mAlarmVO.getAlarmTitle());
 
 			mSpAlarmType.setSelection(alarmType);
-Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
+
 			mCbTTS.setChecked(mAlarmVO.getAlarmOption() == 1);
-
-
 
 			ArrayList<Integer> arrAlarmCall = mAlarmVO.getAlarmCallList();
 			int temp;
@@ -419,13 +417,13 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 	}
 
 	public void makeSpinnerDateType(){
+
 		//mSpDateType;
 		ArrayList<String> arrayList = new ArrayList<String>();
-		arrayList.add("반복-요일");
-		arrayList.add("날짜 지정");
-		arrayList.add("내일");
-		arrayList.add("모레");
-		arrayList.add("매달");
+		String[] arrDateTypeTitle = Const.ALARM_DATE_TYPE.getTextList();
+		for(int i = 0; i < arrDateTypeTitle.length; i++){
+			arrayList.add(arrDateTypeTitle[i]);
+		}
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,
 				android.R.layout.simple_spinner_item, arrayList);
@@ -433,11 +431,16 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 
 		//스피너 속성
 		//mSpDateType.setPrompt(""); // 스피너 제목
+
+		Log.d(this.toString(), "mSpDateType="+mSpDateType + " adapter="+adapter);
+
 		mSpDateType.setAdapter(adapter);
 		mSpDateType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				renderDateTypeUi(position, mCalendar);
+				int code = Const.ALARM_DATE_TYPE.getNumByPosition(position);
+
+				renderDateTypeUi(code, mCalendar);
 			}
 
 			@Override
@@ -445,7 +448,7 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 
 			}
 		});
-		mSpDateType.setSelection(1, false);
+		mSpDateType.setSelection(2, false);
 	}
 
 
@@ -508,6 +511,8 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 //		llRepeatDayWrap = (LinearLayout) getView().findViewById(R.id.llRepeatDayWrap);
 		llTimePickWrap.setVisibility(View.VISIBLE);
 
+		mAlarmDateType = alarmDateType;
+
 		if(c == null)
 			c = Calendar.getInstance();
 
@@ -517,21 +522,21 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 				llDatePicWrap.setVisibility(View.GONE);
 				llHolidayOptionWrap.setVisibility(View.VISIBLE);
 				llAlertTimeWrap.setVisibility(View.VISIBLE);
-				mAlarmDateType = Const.ALARM_DATE_TYPE.REPEAT;
 				break;
+			case Const.ALARM_DATE_TYPE.REPEAT_MONTH :
 			case Const.ALARM_DATE_TYPE.SET_DATE :
 				llDatePicWrap.setVisibility(View.VISIBLE);
 				llRepeatDayWrap.setVisibility(View.GONE);
 				llHolidayOptionWrap.setVisibility(View.GONE);
 				llAlertTimeWrap.setVisibility(View.VISIBLE);
 				alarmDateChange(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
-				mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE;
 				break;
 			case Const.ALARM_DATE_TYPE.TOMORROW :
 				llDatePicWrap.setVisibility(View.VISIBLE);
 				llRepeatDayWrap.setVisibility(View.GONE);
 				llAlertTimeWrap.setVisibility(View.VISIBLE);
 				llHolidayOptionWrap.setVisibility(View.GONE);
+
 				c.add(Calendar.DAY_OF_MONTH, 1);
 				alarmDateChange(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
 				mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE;
@@ -539,20 +544,12 @@ Log.d(Const.DEBUG_TAG, "mAlarmVO.getAlarmOption()="+mAlarmVO.getAlarmOption());
 			case Const.ALARM_DATE_TYPE.AFTER_DAY_TOMORROW :
 				llDatePicWrap.setVisibility(View.VISIBLE);
 				llRepeatDayWrap.setVisibility(View.GONE);
-				llHolidayOptionWrap.setVisibility(View.GONE);
 				llAlertTimeWrap.setVisibility(View.VISIBLE);
+				llHolidayOptionWrap.setVisibility(View.GONE);
 				c = Calendar.getInstance();
 				c.add(Calendar.DAY_OF_MONTH, 2);
 				alarmDateChange(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
 				mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE;
-				break;
-			case Const.ALARM_DATE_TYPE.REPEAT_MONTH :
-				//llRepeatDayWrap.setVisibility(View.VISIBLE);
-				llDatePicWrap.setVisibility(View.VISIBLE);
-				llRepeatDayWrap.setVisibility(View.GONE);
-				llAlertTimeWrap.setVisibility(View.VISIBLE);
-				llHolidayOptionWrap.setVisibility(View.VISIBLE);
-				mAlarmDateType = Const.ALARM_DATE_TYPE.REPEAT_MONTH;
 				break;
 		}
 	}

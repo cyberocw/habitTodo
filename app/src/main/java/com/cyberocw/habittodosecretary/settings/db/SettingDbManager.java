@@ -59,7 +59,7 @@ public class SettingDbManager extends DbHelper {
         return resultMap;
     }
 
-    public ArrayList getHolidayList(String startDate, String endDate){
+    public ArrayList<HolidayVO> getHolidayList(String startDate, String endDate){
         SQLiteDatabase db = this.getReadableDatabase();
 
         String holidayQuery = "select " + KEY_ID + ", " +

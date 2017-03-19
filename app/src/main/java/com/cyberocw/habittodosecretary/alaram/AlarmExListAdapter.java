@@ -105,18 +105,15 @@ public class AlarmExListAdapter extends BaseExpandableListAdapter implements Ala
             convertView.setBackgroundResource(R.color.background_date);
         else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
             convertView.setBackgroundResource(R.color.background_postphone_date);
+        else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT_MONTH)
+            convertView.setBackgroundResource(R.color.background_repeat_day);
+
 
         ToggleButton dateToggleBtn = (ToggleButton) convertView.findViewById(R.id.timeText);
         dateToggleBtn.setText(vo.getTimeText());
 
-        if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE) {
-            dateToggleBtn.setTextOn(vo.getTimeText() + "");
-            dateToggleBtn.setTextOff(vo.getTimeText() + "");
-        }
-        else{
-            dateToggleBtn.setTextOn(vo.getTimeText());
-            dateToggleBtn.setTextOff(vo.getTimeText());
-        }
+        dateToggleBtn.setTextOn(vo.getTimeText());
+        dateToggleBtn.setTextOff(vo.getTimeText());
 
         ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);
         btnOption.setOnClickListener(new View.OnClickListener() {

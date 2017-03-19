@@ -72,7 +72,7 @@ public class AlarmListAdapter extends BaseAdapter implements AlarmListAdapterInt
 
 		if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT)
 			convertView.setBackgroundResource(R.color.background_repeat);
-		else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE)
+		else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE || vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT_MONTH)
 			convertView.setBackgroundResource(R.color.background_date);
 		else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
 			convertView.setBackgroundResource(R.color.background_postphone_date);
@@ -80,14 +80,8 @@ public class AlarmListAdapter extends BaseAdapter implements AlarmListAdapterInt
 		ToggleButton dateToggleBtn = (ToggleButton) convertView.findViewById(R.id.timeText);
 		dateToggleBtn.setText(vo.getTimeText());
 
-		if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE) {
-			dateToggleBtn.setTextOn(vo.getTimeText() + "");
-			dateToggleBtn.setTextOff(vo.getTimeText() + "");
-		}
-		else{
-			dateToggleBtn.setTextOn(vo.getTimeText());
-			dateToggleBtn.setTextOff(vo.getTimeText());
-		}
+		dateToggleBtn.setTextOn(vo.getTimeText());
+		dateToggleBtn.setTextOff(vo.getTimeText());
 
 		ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);
 		btnOption.setOnClickListener(new View.OnClickListener() {
@@ -135,20 +129,20 @@ public class AlarmListAdapter extends BaseAdapter implements AlarmListAdapterInt
 				if(isChecked == true)
 					vo.setUseYn(1);
 				else
-					vo.setUseYn(0);
+		vo.setUseYn(0);
 
-				if(mManager.modifyUseYn(vo) == false)
-					Toast.makeText(mCtx, "useYn 변환에 실패했습니다", Toast.LENGTH_SHORT).show();
-				else {
-					mManager.resetMinAlarmCall(vo.getAlarmDateType());
-				}
-			}
-		});
+		if(mManager.modifyUseYn(vo) == false)
+			Toast.makeText(mCtx, "useYn 변환에 실패했습니다", Toast.LENGTH_SHORT).show();
+		else {
+			mManager.resetMinAlarmCall(vo.getAlarmDateType());
+		}
+	}
+});
 
 		String title = mManager.getItem(position).getAlarmTitle();
 
 		TextView tv = (TextView) convertView.findViewById(R.id.alarmTitle);
-			tv.setText(title);
+		tv.setText(title);
 
 		return convertView;
 	}

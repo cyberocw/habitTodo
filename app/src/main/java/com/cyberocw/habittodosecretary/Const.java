@@ -38,6 +38,9 @@ public class Const {
 		public static final int ADD_TIMER_CODE = 221;
 		public static final int ADD_TIMER_FINISH_CODE = 222;
 		public static final int ADD_TIMER_MODIFY_FINISH_CODE = 223;
+
+		public static final int SELECT_CALENDAR_DATE = 224;
+
 	}
 
 	public class KEY_FIELD{
@@ -49,13 +52,31 @@ public class Const {
 		public static final Integer[] ARR_CAL_DAY = {Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY, Calendar.SUNDAY};
 	}
 
-	public class ALARM_DATE_TYPE{
+	public static class ALARM_DATE_TYPE{
 		public static final int REPEAT = 0;
 		public static final int SET_DATE = 1;
 		public static final int TOMORROW = 2;
 		public static final int AFTER_DAY_TOMORROW = 3;
 		public static final int POSTPONE_DATE = 4;
 		public static final int REPEAT_MONTH = 5;
+		private static final String[] arrDayName = {"반복-요일", "반복-매달",  "날짜 지정", "내일", "모레"};
+		private static final int[] arrDayCode = {REPEAT, REPEAT_MONTH,  SET_DATE, TOMORROW, AFTER_DAY_TOMORROW};
+		public static int getNumByPosition(int i){
+			return arrDayCode[i];
+		}
+		public static int getPositionByCode(int code){
+			for(int i = 0 ; i < arrDayCode.length; i++){
+				if(arrDayCode[i] == code)
+					return i;
+			}
+			throw new NullPointerException();
+		}
+		public static String getText(int i){
+			return arrDayName[i];
+		}
+		public static String[] getTextList(){
+			return arrDayName;
+		}
 	}
 
 	public class ALARM_OPTION{
@@ -108,4 +129,6 @@ public class Const {
 		public static final String PREFS_ID = "settingPrefs";
 		public static final String VERSION = "version";
 	}
+
+
 }

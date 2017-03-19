@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,7 +36,9 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmDialogNew;
 import com.cyberocw.habittodosecretary.alaram.ui.TimerDialog;
+import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
 import com.cyberocw.habittodosecretary.calendar.CalendarManager;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -130,12 +133,12 @@ public class AlarmFragment extends Fragment{
 		setSelectedDateText(mCalendar);
 
 		llWeekOfDayWrap = (LinearLayout) mView.findViewById(R.id.weekOfDayWrap);
-
+		mAlarmDataManager = new AlarmDataManager(mCtx, mCalendar);
+		mTimerDataManager = new TimerDataManager(mCtx);
 		mCalendarManager = new CalendarManager(mCtx, llWeekOfDayWrap, mCalendar, mDateTv);
 		mCalendarManager.setDayClickListener(myDateSetListener);
 		mCalendarManager.init();
-		mAlarmDataManager = new AlarmDataManager(mCtx, mCalendar);
-		mTimerDataManager = new TimerDataManager(mCtx);
+
 
 		mTimerAdapter = new TimerListAdapter(this, mCtx, mTimerDataManager);
 
@@ -559,7 +562,7 @@ public class AlarmFragment extends Fragment{
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 			mCalendar.set(year, monthOfYear, dayOfMonth);
 			setSelectedDateText(year, monthOfYear, dayOfMonth);
-			mCalendarManager.renderDayNum();
+			//mCalendarManager.renderDayNum();
 			refreshAlarmList();
 		}
 	};
@@ -579,10 +582,11 @@ public class AlarmFragment extends Fragment{
 	public void refreshAlarmList(){
 		mAlarmDataManager.makeDataList(mCalendar);
 		mAlarmAdapter.notifyDataSetChanged();
+		mCalendarManager.renderDayNum();
 	}
 
 	public void bindEvent(){
-
+		final Fragment targetFragment = this;
 		mDateTv.setOnClickListener(new View.OnClickListener() {
 			                           @Override
 			                           public void onClick(View v) {
@@ -593,10 +597,22 @@ public class AlarmFragment extends Fragment{
 
 				                           //Dialog dlgDate = new DatePickerDialog(new ContextThemeWrapper(mCtx, android.R.style.Theme_Holo_Light_Dialog), myDateSetListener, myYear,
 				                           //myMonth, myDay);
+
+										   /*
 				                           Dialog dlgDate = new DatePickerDialog(mCtx, myDateSetListener, myYear,
 						                           myMonth, myDay);
 
 				                           dlgDate.show();
+				                           */
+
+										   CalendarDialog d = new CalendarDialog();
+										   Bundle bundle = new Bundle();
+										   bundle.putString("selectedDate", CommonUtils.convertDateType(mCalendar));
+										   d.setArguments(bundle);
+
+
+										   d.show(getFragmentManager(), "calendarDialog");
+										   d.setTargetFragment(targetFragment, Const.ALARM_INTERFACE_CODE.SELECT_CALENDAR_DATE);
 			                           }
 		                           }
 		);
@@ -715,8 +731,18 @@ public class AlarmFragment extends Fragment{
 			alarmDialogNew.setArguments(bundle);
 		}
 
-		alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
 		alarmDialogNew.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE);
+
+		/*
+		FragmentTransaction transaction = fm.beginTransaction();
+		// For a little polish, specify a transition animation
+		transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+		// To make it fullscreen, use the 'content' root view as the container
+		// for the fragment, which is always the root view for the activity
+		transaction.add(R.id.main_container, alarmDialogNew)
+				.addToBackStack(null).commit();
+		*/
+		alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
 	}
 
 	@Override
@@ -767,6 +793,9 @@ public class AlarmFragment extends Fragment{
 				else
 					Toast.makeText(mCtx, "DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
 				break;
+			case Const.ALARM_INTERFACE_CODE.SELECT_CALENDAR_DATE :
+				Calendar date = (Calendar) data.getExtras().getSerializable("selectedDate");
+				selectedDateChange(date);
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}

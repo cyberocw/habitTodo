@@ -9,6 +9,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.app.Fragment;
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				manager.cancel((int) reqCode);
 			}
 		}
-	    fragmentManager.beginTransaction()
+	    fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 			    .replace(R.id.main_container, alarmFragment).commit();
 
 		afterUpdateVersion();
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 				alarmFragment.setArguments(intent.getExtras());
 
-				fragmentManager.beginTransaction()
+				fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 						.replace(R.id.main_container, alarmFragment).commit();
 
 				//afterUpdateVersion();
@@ -195,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		}
 		if (fragment != null) {
 			FragmentManager fragmentManager = getSupportFragmentManager();
-			fragmentManager.beginTransaction()
+			fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 					.replace(R.id.main_container, fragment).commit();
 			// update selected item and title, then close the drawer
 

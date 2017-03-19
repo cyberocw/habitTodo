@@ -19,7 +19,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static DbHelper sInstance;
 
 	private static final String DB_NME = "habit_todo";
-	private static final int DB_VERSION = 12;
+	private static final int DB_VERSION = 13;
 
 	private static final String ARRAY_DIV = "_ho8c7wt_";
 
@@ -43,8 +43,11 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String KEY_HOUR = "hour";
 	public static final String KEY_MINUTE = "minute";
 	public static final String KEY_SECOND = "second";
+	public static final String KEY_REPEAT_DAY = "repeat_day";
 	public static final String KEY_ALARM_CALL_LIST = "alarm_call_list";
 	public static final String KEY_ALARM_CONTENTS = "alarm_Contents"; // key_type 이랑 동일하게 씀
+
+
 
 	public static final String KEY_HOLIDAY_ALL = "is_holiday_all";
 	public static final String KEY_HOLIDAY_NONE = "is_holiday_none";
@@ -138,6 +141,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				KEY_FRI + " integer, " +
 				KEY_SAT + " integer, " +
 				KEY_SUN + " integer, " +
+				KEY_REPEAT_DAY + " integer, " +
 				KEY_F_ALARM_ID + " integer" +
 				");";
 
@@ -230,9 +234,13 @@ public class DbHelper extends SQLiteOpenHelper {
 		if(oldVersion < 11){
 			db.execSQL(getCreateTableQuery(TABLE_HOLIDAY));
 		}
-		if(oldVersion == 11){
+		if(oldVersion < 12){
 			String sql = "ALTER TABLE " + TABLE_HOLIDAY + " ADD COLUMN " + KEY_FULL_DATE + " integer ; ";
 			sql += " CREATE INDEX " + TABLE_HOLIDAY + " holiday_create_full_day_idx ON " + TABLE_HOLIDAY + "(" + KEY_FULL_DATE + ");";
+			db.execSQL(sql);
+		}
+		if(oldVersion < 13){
+			String sql = "ALTER TABLE " + TABLE_ALARM_REPEAT + " ADD COLUMN " + KEY_REPEAT_DAY + " integer ; ";
 			db.execSQL(sql);
 		}
 	}
@@ -332,20 +340,4 @@ public class DbHelper extends SQLiteOpenHelper {
 		return content.split(ARRAY_DIV);
 	}
 
-	public String convertDateType(Calendar c){
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");// cal.get(Calendar.YEAR)
-		return sdf.format(c.getTime());//sdf.format(c);
-	}
-
-	public Calendar convertDateType(String s) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");// cal.get(Calendar.YEAR)
-		Calendar cal = Calendar.getInstance();
-
-		try {
-			cal.setTime(sdf.parse(s));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return cal;
-	}
 }

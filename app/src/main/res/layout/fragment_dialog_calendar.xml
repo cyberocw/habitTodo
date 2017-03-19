@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="0dp"
+    android:padding="5dp"
+    android:minWidth="1000dp"
+    android:minHeight="1000dp"
+    android:orientation="vertical"
+    android:theme="@style/Theme.AppCompat.Light">
+
+        <com.marcohc.robotocalendar.RobotoCalendarView
+            android:id="@+id/robotoCalendarPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/robotoCalendarPicker"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvSelectedDateInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="aa"
+            android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+            android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            />
+
+        <ListView
+            android:id="@id/alramListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            ></ListView>
+    </LinearLayout>
+
+
+</RelativeLayout>
