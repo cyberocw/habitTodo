@@ -556,8 +556,8 @@ public class AlarmDialogNew extends DialogFragment{
 
 	public void makeSpinnerAlarmType(){
 		ArrayList<String> arrayList = new ArrayList<String>();
-		arrayList.add("1회 알림");
-		arrayList.add("계속 알림");
+		arrayList.add("상태바 알림");
+		arrayList.add("끌때까지 알림");
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
 				android.R.layout.simple_spinner_item, arrayList);

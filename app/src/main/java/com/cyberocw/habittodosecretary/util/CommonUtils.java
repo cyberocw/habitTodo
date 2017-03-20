@@ -1,5 +1,10 @@
 package com.cyberocw.habittodosecretary.util;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.cyberocw.habittodosecretary.Const;
+
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,4 +40,18 @@ public class CommonUtils {
 		}
 		return cal;
 	}
+
+	public static boolean putSettingPreference(Context ctx, String key, int value){
+		SharedPreferences prefs = ctx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(key);
+		editor.putInt(key, value);
+		return editor.commit();
+	}
+
+	public static int getSettingPreference(Context ctx, String key){
+		SharedPreferences prefs = ctx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+		return prefs.getInt(key, 0);
+	}
+
 }

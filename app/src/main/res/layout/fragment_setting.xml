@@ -1,36 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <Button
-        android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:divider="?android:attr/dividerVertical"
+    android:showDividers="middle"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="공휴일 동기화"
-        android:id="@+id/btnHolidaySync"
-        android:layout_gravity="center_horizontal" />
-
-    <Button
-        android:layout_width="wrap_content"
+        >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="공휴일 동기화"
+            android:id="@+id/btnHolidaySync"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="데이터 백업"
-        android:id="@+id/btnDbBackup"
-        android:layout_gravity="center_horizontal" />
+        >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="데이터 백업"
+            android:id="@+id/btnDbBackup"
+            android:layout_gravity="center_horizontal" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="데이터 복구"
+            android:id="@+id/btnDbRestore"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="데이터 복구"
-        android:id="@+id/btnDbRestore"
-        android:layout_gravity="center_horizontal" />
-
-    <Button
-        android:layout_width="wrap_content"
+        >
+        <CheckBox
+            android:id="@+id/checkAllAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="상태바 알림 받기" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center_horizontal"
-        android:onClick="forceCrash"
-        android:text="Force Crash!" />
+        >
+        <CheckBox
+            android:id="@+id/checkBackgroundNoti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="백그라운드 서비스 알림 활성화" />
+    </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_tiny"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="@dimen/margin_tiny"
+            android:layout_gravity="center"
+            android:text="TTS VOlume " />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/ic_lock_silent_mode_off"
+            android:backgroundTint="@android:color/holo_orange_light" />
+
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/seekbarTTSVol"
+            />
+
+    </LinearLayout>
 </LinearLayout>

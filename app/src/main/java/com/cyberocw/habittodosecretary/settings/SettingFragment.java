@@ -1,11 +1,11 @@
 package com.cyberocw.habittodosecretary.settings;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -14,18 +14,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.CheckBox;
+import android.widget.SeekBar;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
-import com.cyberocw.habittodosecretary.category.CategoryDataManager;
-import com.cyberocw.habittodosecretary.category.CategoryListAdapter;
-
-import org.json.JSONObject;
-
-import java.util.Calendar;
+import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
+import com.cyberocw.habittodosecretary.util.TTSNoti;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -37,21 +33,15 @@ public class SettingFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    CheckBox mCbAllAlarm;
     private View mView;
     private Context mCtx;
     private SettingDataManager mSettingDataManager;
+    private AlarmDataManager mAlarmDataManager = null;
+    private SeekBar mSeekBar;
+    private AudioManager mAudioManager;
 
     SharedPreferences mPrefs;
-    CategoryDataManager mCateDataManager;
-    CategoryListAdapter mCateAdapter;
-    private OnFragmentInteractionListener mListener;
-    private AlertDialog mCatePopupBilder;
-    private EditText mEtCateTitle;
 
     public SettingFragment() {
         // Required empty public constructor
@@ -68,12 +58,6 @@ public class SettingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
-
     }
 
     @Override
@@ -88,19 +72,75 @@ public class SettingFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
         mCtx = getActivity();
+
         initActivity();
         Fabric.with(mCtx, new Crashlytics());
     }
 
     private void initActivity(){
         mSettingDataManager = new SettingDataManager(mCtx);
+
+        mPrefs = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+
         bindBtnEvent();
     }
 
     private void bindBtnEvent(){
-        Button btnHlidaySync = (Button) mView.findViewById(R.id.btnHolidaySync);
+        Button btnHolidaySync = (Button) mView.findViewById(R.id.btnHolidaySync);
         Button btnDbBackup = (Button) mView.findViewById(R.id.btnDbBackup);
-        Button btnDbRetore= (Button) mView.findViewById(R.id.btnDbRestore);
+        Button btnDbRestore= (Button) mView.findViewById(R.id.btnDbRestore);
+        mCbAllAlarm = (CheckBox) mView.findViewById(R.id.checkAllAlarm);
+        final CheckBox cbBackgroundNoti = (CheckBox) mView.findViewById(R.id.checkBackgroundNoti);
+
+        boolean isUseNotibar = mPrefs.getBoolean(Const.SETTING.IS_NOTIBAR_USE, true);
+        boolean isBackgNoti = mPrefs.getBoolean(Const.SETTING.IS_BACKGROUND_NOTI_USE, true);
+
+
+
+        if(isBackgNoti)
+            cbBackgroundNoti.setChecked(true);
+
+        if(isUseNotibar)
+            mCbAllAlarm.setChecked(true);
+
+        cbBackgroundNoti.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mAlarmDataManager == null)
+                    mAlarmDataManager = new AlarmDataManager(mCtx);
+
+                SharedPreferences.Editor editor = mPrefs.edit();
+                if(cbBackgroundNoti.isChecked()){
+                    editor.putBoolean(Const.SETTING.IS_BACKGROUND_NOTI_USE, true);
+
+                }else{
+                    editor.putBoolean(Const.SETTING.IS_BACKGROUND_NOTI_USE, false);
+                }
+                editor.commit();
+                mAlarmDataManager.resetMinAlarm();
+            }
+        });
+
+        mCbAllAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mAlarmDataManager == null)
+                    mAlarmDataManager = new AlarmDataManager(mCtx);
+
+                //editor.remove(Const.SETTING.IS_NOTIBAR_USE);
+
+                if(!mCbAllAlarm.isChecked()){
+                    showConfirmAlarm();
+                    //editor.putBoolean(Const.SETTING.IS_NOTIBAR_USE, false);
+                }else{
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(Const.SETTING.IS_NOTIBAR_USE, true);
+                    editor.commit();
+                    mAlarmDataManager.resetMinAlarm();
+                }
+
+            }
+        });
 
         btnDbBackup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,19 +150,83 @@ public class SettingFragment extends Fragment {
             }
         });
 
-        btnDbRetore.setOnClickListener(new View.OnClickListener() {
+        btnDbRestore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mSettingDataManager.importDB();
             }
         });
 
-        btnHlidaySync.setOnClickListener(new View.OnClickListener() {
+        btnHolidaySync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 holidaySync();
             }
         });
+
+        mSeekBar = (SeekBar) mView.findViewById(R.id.seekbarTTSVol);
+        bindSeekBarListener();
+    }
+
+    private void bindSeekBarListener(){
+        mAudioManager = (AudioManager) mCtx.getSystemService(Context.AUDIO_SERVICE);
+        int amStreamMusicMaxVol = mAudioManager.getStreamMaxVolume(mAudioManager.STREAM_MUSIC);
+        //am.setStreamVolume(am.STREAM_MUSIC, amStreamMusicMaxVol, 0);
+        mSeekBar.setMax(amStreamMusicMaxVol);
+        //int nowVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+        int ttsVol = mPrefs.getInt(Const.SETTING.TTS_VOLUME, amStreamMusicMaxVol/2);
+
+        mSeekBar.setProgress(ttsVol);
+        final Intent ttsIntent = new Intent(mCtx, TTSNoti.class);
+        ttsIntent.putExtra("alaramTitle", "test sounds");
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+                mCtx.startService(ttsIntent);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putInt(Const.SETTING.TTS_VOLUME, seekBar.getProgress());
+                editor.commit();
+            }
+        });
+    }
+
+    private void showConfirmAlarm(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+        builder.setTitle("알림 시간 추가");
+
+        builder.setMessage("주의! 정말로 상태바 알림 메세지를 받지 않겠습니까?");
+
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putBoolean(Const.SETTING.IS_NOTIBAR_USE, false);
+                editor.commit();
+                mAlarmDataManager.resetMinAlarm();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                mCbAllAlarm.setChecked(true);
+            }
+        });
+
+// 3. Get the AlertDialog from create()
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     //공휴일 데이터 동기화
@@ -134,22 +238,6 @@ public class SettingFragment extends Fragment {
     }
 
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
 
     /**
      * This interface must be implemented by activities that contain this

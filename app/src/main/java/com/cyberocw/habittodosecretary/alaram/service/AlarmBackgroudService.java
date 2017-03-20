@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
@@ -151,22 +152,27 @@ public class AlarmBackgroudService extends Service {
         mAlarmOption = alarmTimeVO.getAlarmOption();
         mAlarmType = alarmTimeVO.getAlarmType();
 
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_ALARM_NOTI_ID, notificationIntent, 0);
+        SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+        boolean isBackg = prefs.getBoolean(Const.SETTING.IS_BACKGROUND_NOTI_USE, true);
 
-        android.support.v4.app.NotificationCompat.Builder mCompatBuilder = new android.support.v4.app.NotificationCompat.Builder(this);
-        mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
-        mCompatBuilder.setTicker("Habit Todo Timer");
-        mCompatBuilder.setWhen(System.currentTimeMillis());
-        //mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 300L, 300L, 400L, 400L });
-        mCompatBuilder.setContentTitle(mAppTitle);
-        mCompatBuilder.setContentText(mTitle + " 알림 예정 ");
-        //mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-        mCompatBuilder.setContentIntent(pendingIntent);
-        //mCompatBuilder.setAutoCancel(true);
+        if(isBackg) {
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_ALARM_NOTI_ID, notificationIntent, 0);
 
-        startForeground(Const.ONGOING_TIMER_NOTI_ID, mCompatBuilder.build());
+            android.support.v4.app.NotificationCompat.Builder mCompatBuilder = new android.support.v4.app.NotificationCompat.Builder(this);
+            mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
+            mCompatBuilder.setTicker("Habit Todo Timer");
+            mCompatBuilder.setWhen(System.currentTimeMillis());
+            //mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 300L, 300L, 400L, 400L });
+            mCompatBuilder.setContentTitle(mAppTitle);
+            mCompatBuilder.setContentText(mTitle + " 알림 예정 ");
+            //mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+            mCompatBuilder.setContentIntent(pendingIntent);
+            //mCompatBuilder.setAutoCancel(true);
+
+            startForeground(Const.ONGOING_TIMER_NOTI_ID, mCompatBuilder.build());
+        }
 
         startCountDownTimer(remainTime);
     }
@@ -192,34 +198,12 @@ public class AlarmBackgroudService extends Service {
         }.start();
     }
 
-    public void start2Timer(long remainTime, AlarmTimeVO alarmTimeVO) {
-        if (mCountDownTimer != null)
-            return;
-        int callTime = alarmTimeVO.getCallTime();
-
-        mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : ""));
-        Notification notification = new Notification(R.drawable.ic_launcher, mAppTitle, System.currentTimeMillis());
-
-        mAlarmOption = alarmTimeVO.getAlarmOption();
-        mAlarmType = alarmTimeVO.getAlarmType();
-
-        int second = (int) (remainTime / 1000) % 60;
-        int minute = (int) ((remainTime / (1000 * 60)) % 60);
-        int hour = (int) ((remainTime / (1000 * 60 * 60)));
-
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_TIMER_NOTI_ID, notificationIntent, 0);
-        /*
-        notification.setLatestEventInfo(this, mAppTitle,
-                mTitle + " 알림 예정 ", pendingIntent);
-        startForeground(Const.ONGOING_TIMER_NOTI_ID, notification);
-        */
-
-    }
-
     //단순 알림, 끌때까지 울리는 알림
     private void startAleart() {
+
+        SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+        boolean isTTS = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
+
         if(mAlarmType < 1) {
             Intent myIntent = new Intent(mCtx, NotificationService.class);
             myIntent.putExtra("title", mTitle);
@@ -235,15 +219,15 @@ public class AlarmBackgroudService extends Service {
             mCtx.startActivity(myIntent);
         }
 
-
-        if(mAlarmOption == 1) {
-            startTTS(mTitle);
+        if(mAlarmOption == 1 && isTTS) {
+            startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
         }
     }
 
-    private void startTTS(String title){
+    private void startTTS(String title, long id){
         Intent ttsIntent = new Intent(mCtx, TTSNoti.class);
         ttsIntent.putExtra("alaramTitle", title);
+        ttsIntent.putExtra("alarmId", id);
         mCtx.startService(ttsIntent);
     }
 

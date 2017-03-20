@@ -315,9 +315,48 @@ public class AlarmDataManager {
 			alarmTimeList = alarmTimeList1;
 			alarmTimeList.addAll(alarmTimeList2);
 		}
-		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 
-		String text = prefs.getString(reqCode, null);
+		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+		stopAllAlarm(prefs);
+
+		SharedPreferences prefsSetting = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+		boolean isUseNotibar = prefsSetting.getBoolean(Const.SETTING.IS_NOTIBAR_USE, true);
+
+		Log.d(this.toString(), "isUseNotibar=="+isUseNotibar);
+
+		if(!isUseNotibar){
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.remove(reqCode);
+			editor.commit();
+			return;
+		}
+
+		//새로 등록
+		if(alarmTimeList == null)
+			return ;
+
+		String[] arrReq = new String[alarmTimeList.size()];
+
+		Log.d(this.toString(), "alarmTimeList.size()="+alarmTimeList.size());
+		for(int i = 0; i < alarmTimeList.size(); i++){
+			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i), i));
+		}
+
+		String newReqCode = TextUtils.join("," , arrReq);
+
+		Log.d(Const.DEBUG_TAG, "newReqCode=" + newReqCode);
+		//등록된 code 저장해둠
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(reqCode);
+		editor.putString(reqCode, newReqCode);
+		editor.commit();
+	}
+
+	public void stopAllAlarm(SharedPreferences prefs){
+		if(prefs == null)
+			prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+
+		String text = prefs.getString(Const.REQ_CODE, null);
 
 		AlarmManager alarmManager = (AlarmManager) mCtx
 				.getSystemService(Context.ALARM_SERVICE);
@@ -346,26 +385,6 @@ public class AlarmDataManager {
 			mCtx.stopService(intentAlarmbackground);
 
 		}
-
-		//새로 등록
-		if(alarmTimeList == null)
-			return ;
-
-		String[] arrReq = new String[alarmTimeList.size()];
-
-		Log.d(this.toString(), "alarmTimeList.size()="+alarmTimeList.size());
-		for(int i = 0; i < alarmTimeList.size(); i++){
-			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i), i));
-		}
-
-		String newReqCode = TextUtils.join("," , arrReq);
-
-		Log.d(Const.DEBUG_TAG, "newReqCode=" + newReqCode);
-		//등록된 code 저장해둠
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.remove(reqCode);
-		editor.putString(reqCode, newReqCode);
-		editor.commit();
 	}
 
 	public long setAlarm(AlarmTimeVO alarmVO, int index) {

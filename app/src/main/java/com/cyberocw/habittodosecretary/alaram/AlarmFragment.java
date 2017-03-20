@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -108,6 +109,7 @@ public class AlarmFragment extends Fragment{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		if (getArguments() != null) {
 			mMode = getArguments().getInt(Const.PARAM.MODE);
 			mAlarmId = getArguments().getLong(Const.PARAM.ALARM_ID);

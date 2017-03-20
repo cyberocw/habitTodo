@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
@@ -142,7 +143,24 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		}
 	}
 
-	@Override
+	protected boolean putAlarmPreference(String key, boolean value){
+		SharedPreferences prefs = getApplicationContext().getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(key);
+		editor.putBoolean(key, value);
+		return editor.commit();
+	}
+
+	private boolean getAlarmPreference(String key){
+		SharedPreferences prefs = getApplicationContext().getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+		return prefs.getBoolean(key, true);
+	}
+
+	private boolean toggleAlarmPreference(String key){
+		return putAlarmPreference(key, !getAlarmPreference(key));
+	}
+
+
 	public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -153,8 +171,24 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
             case android.R.id.home:
                 mDrawer.openDrawer(GravityCompat.START);
                 return true;
-            case R.id.action_settings:
-                return true;
+            case R.id.isAlarmNoti:
+				toggleAlarmPreference(Const.SETTING.IS_ALARM_NOTI);
+				if(getAlarmPreference(Const.SETTING.IS_ALARM_NOTI))
+					item.setChecked(true);
+				else
+					item.setChecked(false);
+				return true;
+			case R.id.ttsVolume:
+				return true;
+			case R.id.isTTSNoti:
+				toggleAlarmPreference(Const.SETTING.IS_TTS_NOTI);
+				if(getAlarmPreference(Const.SETTING.IS_TTS_NOTI))
+					item.setChecked(true);
+				else
+					item.setChecked(false);
+				return true;
+			case R.id.setting:
+				this.onNavigationItemSelected(R.id.nav_item_setting);
         }
 		return super.onOptionsItemSelected(item);
 	}
@@ -165,6 +199,14 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
         return true;
     }
 
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		if(getAlarmPreference(Const.SETTING.IS_ALARM_NOTI))
+			menu.findItem(R.id.isAlarmNoti).setChecked(true);
+		if(getAlarmPreference(Const.SETTING.IS_TTS_NOTI))
+			menu.findItem(R.id.isTTSNoti).setChecked(true);
+		return true;
+	}
+
 	@Override
     public void onFragmentInteraction(Uri uri) {
 
@@ -173,9 +215,12 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	@SuppressWarnings("StatementWithEmptyBody")
 	@Override
 	public boolean onNavigationItemSelected(MenuItem item){
+		return this.onNavigationItemSelected(item.getItemId());
+	}
+	public boolean onNavigationItemSelected(int id){
 		// update the main content by replacing fragments
 		Fragment fragment = null;
-		int id = item.getItemId();
+		//int id = item.getItemId();
 		switch (id) {
 			case R.id.nav_item_alaram:
 				fragment = new AlarmFragment();
