@@ -45,11 +45,12 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 			String Noti_title = intent.getExtras().getString("alaramTitle");
 			mAlarmId = intent.getExtras().getLong("alarmId", -1);
 			spokenText = Noti_title;
-			mTTS = new TextToSpeech(this, this);
+			mTTS = new TextToSpeech(getApplicationContext(), this);
 			mIsNUll = false;
 		}
 
-		return super.onStartCommand(intent, flags, startId);
+		return START_NOT_STICKY;
+		//return super.onStartCommand(intent, flags, startId);
 	}
 
 	@Override
@@ -82,7 +83,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 						if(mAlarmId > -1)
 							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
 
-						//stopSelf();
+						stopSelf();
 					}
 					@Override
 					public void onError(String utteranceId) {
@@ -90,7 +91,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 
 						if(mAlarmId > -1)
 							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
-						//stopSelf();
+						stopSelf();
 					}
 				});
 
@@ -118,11 +119,14 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 
 	@Override
 	public void onDestroy() {
+		super.onDestroy();
 		if (mTTS != null) {
 			mTTS.stop();
 			mTTS.shutdown();
 		}
-		super.onDestroy();
+		//unbindService();
+		Log.d(this.toString(), " tts service on destroy ");
+
 	}
 
 	@Override

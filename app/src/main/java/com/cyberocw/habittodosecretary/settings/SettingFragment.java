@@ -22,6 +22,7 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
+import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -178,8 +179,8 @@ public class SettingFragment extends Fragment {
         int ttsVol = mPrefs.getInt(Const.SETTING.TTS_VOLUME, mOriginalVolume);
 
         mSeekBar.setProgress(ttsVol);
-        final Intent ttsIntent = new Intent(mCtx, TTSNoti.class);
-        ttsIntent.putExtra("alaramTitle", "test sounds");
+        final Intent ttsIntent = new Intent(mCtx, TTSNotiActivity.class);
+        ttsIntent.putExtra("alaramTitle", "야야야");
 
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -191,7 +192,7 @@ public class SettingFragment extends Fragment {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                mCtx.startService(ttsIntent);
+                mCtx.startActivity(ttsIntent);
             }
 
             @Override
@@ -199,7 +200,7 @@ public class SettingFragment extends Fragment {
                 SharedPreferences.Editor editor = mPrefs.edit();
                 editor.putInt(Const.SETTING.TTS_VOLUME, seekBar.getProgress());
                 editor.commit();
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
+
             }
         });
     }
@@ -238,6 +239,12 @@ public class SettingFragment extends Fragment {
     }
 
 
+    @Override
+    public void onDestroy() {
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
+        super.onDestroy();
+
+    }
 
     /**
      * This interface must be implemented by activities that contain this

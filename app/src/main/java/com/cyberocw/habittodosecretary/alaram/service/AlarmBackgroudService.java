@@ -21,6 +21,7 @@ import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmNotiActivity;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
+import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -225,10 +226,11 @@ public class AlarmBackgroudService extends Service {
     }
 
     private void startTTS(String title, long id){
-        Intent ttsIntent = new Intent(mCtx, TTSNoti.class);
+        Intent ttsIntent = new Intent(mCtx, TTSNotiActivity.class);
+        ttsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         ttsIntent.putExtra("alaramTitle", title);
         ttsIntent.putExtra("alarmId", id);
-        mCtx.startService(ttsIntent);
+        mCtx.startActivity(ttsIntent);
     }
 
     public void cancelTimer() {

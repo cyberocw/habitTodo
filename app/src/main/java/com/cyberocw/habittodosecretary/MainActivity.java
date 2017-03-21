@@ -178,8 +178,6 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				else
 					item.setChecked(false);
 				return true;
-			case R.id.ttsVolume:
-				return true;
 			case R.id.isTTSNoti:
 				toggleAlarmPreference(Const.SETTING.IS_TTS_NOTI);
 				if(getAlarmPreference(Const.SETTING.IS_TTS_NOTI))
