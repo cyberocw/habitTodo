@@ -40,7 +40,7 @@ public class SettingFragment extends Fragment {
     private AlarmDataManager mAlarmDataManager = null;
     private SeekBar mSeekBar;
     private AudioManager mAudioManager;
-
+    private int mOriginalVolume;
     SharedPreferences mPrefs;
 
     public SettingFragment() {
@@ -173,9 +173,9 @@ public class SettingFragment extends Fragment {
         int amStreamMusicMaxVol = mAudioManager.getStreamMaxVolume(mAudioManager.STREAM_MUSIC);
         //am.setStreamVolume(am.STREAM_MUSIC, amStreamMusicMaxVol, 0);
         mSeekBar.setMax(amStreamMusicMaxVol);
-        //int nowVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        mOriginalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
-        int ttsVol = mPrefs.getInt(Const.SETTING.TTS_VOLUME, amStreamMusicMaxVol/2);
+        int ttsVol = mPrefs.getInt(Const.SETTING.TTS_VOLUME, mOriginalVolume);
 
         mSeekBar.setProgress(ttsVol);
         final Intent ttsIntent = new Intent(mCtx, TTSNoti.class);
@@ -191,7 +191,6 @@ public class SettingFragment extends Fragment {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
                 mCtx.startService(ttsIntent);
             }
 
@@ -200,6 +199,7 @@ public class SettingFragment extends Fragment {
                 SharedPreferences.Editor editor = mPrefs.edit();
                 editor.putInt(Const.SETTING.TTS_VOLUME, seekBar.getProgress());
                 editor.commit();
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
             }
         });
     }

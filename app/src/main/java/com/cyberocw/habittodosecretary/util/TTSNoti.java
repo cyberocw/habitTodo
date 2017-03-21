@@ -2,7 +2,10 @@ package com.cyberocw.habittodosecretary.util;
 
 import android.annotation.TargetApi;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
@@ -25,13 +28,14 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 	private TextToSpeech mTTS;
 	private String spokenText;
 	private boolean mIsNUll = true;
-	private long alarmId = -1;
+	private long mAlarmId = -1;
+	private  AudioManager mAudioManager;
+	private int mOriginalVolume, mPrefsTTSVol;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		Fabric.with(this, new Crashlytics());
-
 	}
 
 	@Override
@@ -39,7 +43,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 		Log.d(this.toString(), "intent="+intent + " extras="+intent.getExtras());
 		if(intent != null && intent.getExtras() != null) {
 			String Noti_title = intent.getExtras().getString("alaramTitle");
-			alarmId = intent.getExtras().getLong("alarmId", 0);
+			mAlarmId = intent.getExtras().getLong("alarmId", -1);
 			spokenText = Noti_title;
 			mTTS = new TextToSpeech(this, this);
 			mIsNUll = false;
@@ -57,27 +61,43 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 				Toast.makeText(this, "tts start" + spokenText, Toast.LENGTH_SHORT).show();
 				Log.d(Const.DEBUG_TAG, "tts start");
 
+				if(mAlarmId > -1) {
+					mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+					mOriginalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+					SharedPreferences mPrefs = getApplicationContext().getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+					mPrefsTTSVol = mPrefs.getInt(Const.SETTING.TTS_VOLUME, mOriginalVolume);
+				}
+
 				mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
 					@Override
 					public void onStart(String utteranceId) {
 						Log.d(this.toString(), "start utteranceId="+utteranceId);
+						if(mAlarmId > -1)
+							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mPrefsTTSVol, 0);
 					}
 					@Override
 					public void onDone(String utteranceId) {
 						Log.d(this.toString(), " done utteranceId="+utteranceId);
+
+						if(mAlarmId > -1)
+							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
+
 						//stopSelf();
 					}
 					@Override
 					public void onError(String utteranceId) {
 						Log.d(this.toString(), " error utteranceId="+utteranceId);
+
+						if(mAlarmId > -1)
+							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
 						//stopSelf();
 					}
 				});
 
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-					ttsGreater21(spokenText, alarmId);
+					ttsGreater21(spokenText, mAlarmId);
 				} else {
-					ttsUnder20(spokenText, alarmId);
+					ttsUnder20(spokenText, mAlarmId);
 				}
 			}
 		}

@@ -6,17 +6,13 @@
         android:title="알람 소리/진동 켜기"
         android:orderInCategory="100"
         android:checkable="true"
-        app:actionLayout="@layout/switch_item" />
+        />
     <item
         android:title="TTS 켜기"
         android:id="@+id/isTTSNoti"
         android:orderInCategory="100"
         android:checkable="true"
         />
-    <item android:id="@+id/ttsVolume"
-        android:title="TTS 볼륨 조절"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
     <item android:id="@+id/setting"
         android:title="설정"
         android:orderInCategory="100"
