@@ -180,19 +180,26 @@ public class SettingFragment extends Fragment {
 
         mSeekBar.setProgress(ttsVol);
         final Intent ttsIntent = new Intent(mCtx, TTSNotiActivity.class);
-        ttsIntent.putExtra("alaramTitle", "야야야");
+        ttsIntent.putExtra("alaramTitle", "sound test");
 
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                //mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                /*SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putInt(Const.SETTING.TTS_VOLUME, progress);
+                editor.commit();*/
 
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                mCtx.startActivity(ttsIntent);
+                /*SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putInt(Const.SETTING.TTS_VOLUME, seekBar.getProgress());
+                editor.commit();*/
+
+
             }
 
             @Override
@@ -200,6 +207,7 @@ public class SettingFragment extends Fragment {
                 SharedPreferences.Editor editor = mPrefs.edit();
                 editor.putInt(Const.SETTING.TTS_VOLUME, seekBar.getProgress());
                 editor.commit();
+                mCtx.startActivity(ttsIntent);
 
             }
         });
