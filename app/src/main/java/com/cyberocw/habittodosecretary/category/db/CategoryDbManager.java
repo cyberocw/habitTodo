@@ -75,7 +75,7 @@ public class CategoryDbManager extends DbHelper{
 		values.put(KEY_TITLE, item.getTitle());
 		values.put(KEY_TYPE, item.getType());
 		values.put(KEY_USE_YN, 1);
-		values.put(KEY_SORT, 0);
+		values.put(KEY_SORT, 1);
 
 		long _id = db.insert(TABLE_CATEGORY, null, values);
 

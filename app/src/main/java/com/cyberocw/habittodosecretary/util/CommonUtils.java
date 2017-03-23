@@ -1,7 +1,15 @@
 package com.cyberocw.habittodosecretary.util;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import com.cyberocw.habittodosecretary.Const;
 
@@ -54,4 +62,52 @@ public class CommonUtils {
 		return prefs.getInt(key, 0);
 	}
 
+	public static void setupUI(View view, final Activity activity) {
+
+		// Set up touch listener for non-text box views to hide keyboard.
+		if (!(view instanceof EditText)) {
+			view.setOnTouchListener(new View.OnTouchListener() {
+				public boolean onTouch(View v, MotionEvent event) {
+					Log.d(Const.DEBUG_TAG, "on thuch");
+					InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+					inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+					Log.d(Const.DEBUG_TAG, "hideSoftKeyboard");
+					return false;
+				}
+			});
+		}
+
+		//If a layout container, iterate over children and seed recursion.
+		if (view instanceof ViewGroup) {
+			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+				View innerView = ((ViewGroup) view).getChildAt(i);
+				setupUI(innerView, activity);
+			}
+		}
+	}
+
+	public static void setupUI(View view, final Activity activity, final Dialog dialog) {
+		// Set up touch listener for non-text box views to hide keyboard.
+		if (!(view instanceof EditText)) {
+			view.setOnTouchListener(new View.OnTouchListener() {
+				public boolean onTouch(View v, MotionEvent event) {
+					Log.d(Const.DEBUG_TAG, "on thuch");
+					InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+					inputManager.hideSoftInputFromWindow(dialog.getWindow().getCurrentFocus().getWindowToken(), 0);
+					Log.d(Const.DEBUG_TAG, "hideSoftKeyboard");
+					return false;
+				}
+			});
+		}
+
+		//If a layout container, iterate over children and seed recursion.
+		if (view instanceof ViewGroup) {
+			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+				View innerView = ((ViewGroup) view).getChildAt(i);
+				setupUI(innerView, activity, dialog);
+			}
+		}
+	}
 }

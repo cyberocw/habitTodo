@@ -33,6 +33,7 @@ import com.cyberocw.habittodosecretary.category.CategoryDataManager;
 import com.cyberocw.habittodosecretary.category.CategoryListAdapter;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.ArrayList;
 
@@ -235,6 +236,8 @@ public class MemoDialogNew extends Fragment{
 				}
 			});
 		}
+
+		CommonUtils.setupUI(mView, getActivity());
 	}
 
 	private void bindEvent(){

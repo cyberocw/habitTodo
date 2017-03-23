@@ -1,5 +1,6 @@
 package com.cyberocw.habittodosecretary.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -19,7 +20,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static DbHelper sInstance;
 
 	private static final String DB_NME = "habit_todo";
-	private static final int DB_VERSION = 13;
+	private static final int DB_VERSION = 14;
 
 	private static final String ARRAY_DIV = "_ho8c7wt_";
 
@@ -178,6 +179,13 @@ public class DbHelper extends SQLiteOpenHelper {
 
 			db.execSQL(getCreateTableQuery(TABLE_MEMO));
 			db.execSQL(getCreateTableQuery(TABLE_CATEGORY));
+			ContentValues values = new ContentValues();
+			values.put(KEY_TITLE, "미지정");
+			values.put(KEY_TYPE, "category");
+			values.put(KEY_USE_YN, 1);
+			values.put(KEY_SORT, 0);
+			db.insert(TABLE_CATEGORY, null, values);
+
 			db.execSQL(getCreateTableQuery(TABLE_ALARAM_RELATION));
 			db.execSQL(getCreateTableQuery(TABLE_HOLIDAY));
 
@@ -242,6 +250,16 @@ public class DbHelper extends SQLiteOpenHelper {
 		if(oldVersion < 13){
 			String sql = "ALTER TABLE " + TABLE_ALARM_REPEAT + " ADD COLUMN " + KEY_REPEAT_DAY + " integer ; ";
 			db.execSQL(sql);
+		}
+		if(oldVersion < 14){
+			String sql = "UPDATE " + TABLE_CATEGORY + " SET " + KEY_SORT + " = 1 ; ";
+			db.execSQL(sql);
+			ContentValues values = new ContentValues();
+			values.put(KEY_TITLE, "미지정");
+			values.put(KEY_TYPE, "category");
+			values.put(KEY_USE_YN, 1);
+			values.put(KEY_SORT, 0);
+			db.insert(TABLE_CATEGORY, null, values);
 		}
 	}
 

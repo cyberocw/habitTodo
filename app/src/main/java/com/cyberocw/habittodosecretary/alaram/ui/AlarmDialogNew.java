@@ -15,9 +15,11 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -38,6 +40,7 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +65,8 @@ import static android.util.Log.*;
  */
 
 public class AlarmDialogNew extends DialogFragment{
+	private View mView;
+	private Dialog mDialog;
 	private AlarmVO mAlarmVO;
 	private MemoVO mMemoVO;
 
@@ -97,6 +102,69 @@ public class AlarmDialogNew extends DialogFragment{
 	//private String[] mArrDayBtn = {"btnRepeatMon", "btnRepeatThue", "btnRepeat"}
 
 	public AlarmDialogNew() {
+	}
+
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		AlertDialog.Builder b=  new  AlertDialog.Builder(getActivity())
+				.setTitle("알림 추가")
+				.setPositiveButton("OK",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								returnData();
+							}
+						}
+				)
+				.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								dialog.dismiss();
+							}
+						}
+				);
+
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		View view = inflater.inflate(R.layout.fragment_dialog_alarm_add, null);
+		mView = view;
+		mSpAlarmType = (Spinner) view.findViewById(R.id.spAlarmType);
+		mBtnAddAlarm = (Button) view.findViewById(R.id.btnAddAlarm);
+		mAlarmList = (LinearLayout) view.findViewById(R.id.alarmList);
+		mSpAppList = (Spinner) view.findViewById(R.id.spAppList);
+		mSpDateType = (Spinner) view.findViewById(R.id.spDateType);
+		mTxAlarmTitle = (EditText) view.findViewById(R.id.txAlarmTitle);
+		//mAddAlarmTimePicker = (TimePicker) view.findViewById(R.id.addAlarmTimePicker);
+		//mRgAlarmOption = (RadioGroup) view.findViewById(R.id.rgAlarmOption);
+
+		mNpHour = (NumberPicker) view.findViewById(R.id.addAlarmHourPicker);
+		mNpMinute = (NumberPicker) view.findViewById(R.id.addAlarmMinutePicker);
+		mNpSecond = (NumberPicker) view.findViewById(R.id.addAlarmSecondPicker);
+
+		mTvAlarmDate = (TextView) view.findViewById(R.id.tvAlarmDate);
+		mTvAlarmTime = (TextView) view.findViewById(R.id.tvAlarmTime);
+
+		mCbHolidayAll = (CheckBox) view.findViewById(R.id.cbHolidayAll);
+		mCbHolidayNone = (CheckBox) view.findViewById(R.id.cbHolidayNone);
+
+		//mTimePickerWrap = (LinearLayout) view.findViewById(R.id.timePickerWrap);
+
+		bindVarLayoutView(view);
+
+		mScvAddAlarm = (ScrollView) view.findViewById(R.id.scvAddAlarm);
+
+		mCbTTS = (CheckBox) view.findViewById(R.id.cbTTS);
+
+		for(int i = 0; i < mArrDayId.length; i++) {
+			mMapDay.put(mArrDayString[i], (Button) view.findViewById(mArrDayId[i]));
+		}
+
+		b.setView(view);
+		Dialog dialog = b.create();
+		dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+		mDialog = dialog;
+
+
+		return dialog;
+
 	}
 
 	@Override
@@ -141,6 +209,8 @@ public class AlarmDialogNew extends DialogFragment{
 		if(arguments != null && arguments.getInt(Const.PARAM.MODE) == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG){
 			//makeAlarmPostpone();
 		}
+
+		CommonUtils.setupUI(mView, getActivity(), mDialog);
 
 		super.onActivityCreated(savedInstanceState);
 	}
@@ -340,66 +410,6 @@ public class AlarmDialogNew extends DialogFragment{
 		getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
 	}
 
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		AlertDialog.Builder b=  new  AlertDialog.Builder(getActivity())
-				.setTitle("알림 추가")
-				.setPositiveButton("OK",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								returnData();
-							}
-						}
-				)
-				.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								dialog.dismiss();
-							}
-						}
-				);
-
-		LayoutInflater inflater = getActivity().getLayoutInflater();
-		View view = inflater.inflate(R.layout.fragment_dialog_alarm_add, null);
-
-		mSpAlarmType = (Spinner) view.findViewById(R.id.spAlarmType);
-		mBtnAddAlarm = (Button) view.findViewById(R.id.btnAddAlarm);
-		mAlarmList = (LinearLayout) view.findViewById(R.id.alarmList);
-		mSpAppList = (Spinner) view.findViewById(R.id.spAppList);
-		mSpDateType = (Spinner) view.findViewById(R.id.spDateType);
-		mTxAlarmTitle = (EditText) view.findViewById(R.id.txAlarmTitle);
-		//mAddAlarmTimePicker = (TimePicker) view.findViewById(R.id.addAlarmTimePicker);
-		//mRgAlarmOption = (RadioGroup) view.findViewById(R.id.rgAlarmOption);
-
-		mNpHour = (NumberPicker) view.findViewById(R.id.addAlarmHourPicker);
-		mNpMinute = (NumberPicker) view.findViewById(R.id.addAlarmMinutePicker);
-		mNpSecond = (NumberPicker) view.findViewById(R.id.addAlarmSecondPicker);
-
-		mTvAlarmDate = (TextView) view.findViewById(R.id.tvAlarmDate);
-		mTvAlarmTime = (TextView) view.findViewById(R.id.tvAlarmTime);
-
-		mCbHolidayAll = (CheckBox) view.findViewById(R.id.cbHolidayAll);
-		mCbHolidayNone = (CheckBox) view.findViewById(R.id.cbHolidayNone);
-
-		//mTimePickerWrap = (LinearLayout) view.findViewById(R.id.timePickerWrap);
-
-		bindVarLayoutView(view);
-
-		mScvAddAlarm = (ScrollView) view.findViewById(R.id.scvAddAlarm);
-
-		mCbTTS = (CheckBox) view.findViewById(R.id.cbTTS);
-
-		for(int i = 0; i < mArrDayId.length; i++) {
-			mMapDay.put(mArrDayString[i], (Button) view.findViewById(mArrDayId[i]));
-		}
-
-		b.setView(view);
-		Dialog dialog = b.create();
-		dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-
-		return dialog;
-
-	}
 
 	private void bindVarLayoutView(View v) {
 		llTimerWrap = (LinearLayout) v.findViewById(R.id.llTimerWrap);
@@ -688,6 +698,7 @@ public class AlarmDialogNew extends DialogFragment{
 				}
 			}
 		});
+
 	}
 
 	private void txTimeSet(int hourOfDay, int minute){
@@ -844,4 +855,30 @@ public class AlarmDialogNew extends DialogFragment{
 		mScvAddAlarm.refreshDrawableState();
 
 	}
+
+	/*public void setupUI(View view) {
+
+		// Set up touch listener for non-text box views to hide keyboard.
+		if (!(view instanceof EditText)) {
+			view.setOnTouchListener(new View.OnTouchListener() {
+				public boolean onTouch(View v, MotionEvent event) {
+					Log.d(Const.DEBUG_TAG, "on thuch");
+					InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+					inputManager.hideSoftInputFromWindow(mDialog.getWindow().getCurrentFocus().getWindowToken(), 0);
+					Log.d(Const.DEBUG_TAG, "hideSoftKeyboard");
+					return false;
+				}
+			});
+		}
+
+		//If a layout container, iterate over children and seed recursion.
+		if (view instanceof ViewGroup) {
+			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+				View innerView = ((ViewGroup) view).getChildAt(i);
+				setupUI(innerView);
+			}
+		}
+	}*/
+
 }
