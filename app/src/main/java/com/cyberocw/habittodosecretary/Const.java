@@ -14,9 +14,9 @@ public class Const {
 	public static final String TIMER_RUNNING_ID = "runningTimerId";
 	public static final String REQ_CODE = "reqCode";
 	public static final String REQ_CODE_REPEAT = "reqCodeRepeat";
-	public static final String ALARM_VO = "alarmVo";
-	public static final String MEMO_VO = "memoVo";
-	public static final String TIMER_VO = "timerVo";
+	public static final String ALARM_VO = "alarmVO";
+	public static final String MEMO_VO = "memoVO";
+	public static final String TIMER_VO = "timerVO";
 	public static final String VIEW_TYPE = "viewType";
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
 	public static final int ONGOING_ALARM_NOTI_ID = 999999998;
@@ -113,6 +113,8 @@ public class Const {
 			public static final int ADD_MEMO_CODE = 1111;
 			public static final int ADD_MEMO_FINISH_CODE = 1112;
 			public static final int ADD_MEMO_MODIFY_FINISH_CODE = 1113;
+			public static final int ADD_MEMO_ETC_CODE = 1114;
+			public static final String ADD_MEMO_ETC_KEY = "memoEtc";
 			public static final String SHARE_MEMO_MODE = "MEMO_MODE";
 
 		}

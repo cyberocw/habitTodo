@@ -1,6 +1,5 @@
 package com.cyberocw.habittodosecretary.alaram.ui;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -11,15 +10,15 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,7 +28,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,15 +37,17 @@ import android.widget.Toast;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.category.CategoryFragment;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
+import butterknife.ButterKnife;
 
 import static android.util.Log.*;
 
@@ -67,14 +67,14 @@ import static android.util.Log.*;
 public class AlarmDialogNew extends DialogFragment{
 	private View mView;
 	private Dialog mDialog;
-	private AlarmVO mAlarmVO;
-	private MemoVO mMemoVO;
+	private AlarmVO mAlarmVO = null;
+	private MemoVO mMemoVO = null;
 
 	private LinkedHashMap mEtcMap;
 	private int mModifyMode = 0;
 	private Boolean mMemoMode = false;
 	private Spinner mSpAlarmType, mSpAppList, mSpDateType;
-	private Button mBtnAddAlarm = null;
+	private Button mBtnAddAlarm = null, mBtnClose, mBtnSave;
 	private EditText mTxAlarmTitle;
 	private Context mCtx = null;
 	private TimePicker mAddAlarmTimePicker;
@@ -82,7 +82,7 @@ public class AlarmDialogNew extends DialogFragment{
 	private ScrollView mScvAddAlarm;
 	private int mAlarmOption = 1;
 	private int mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE; //날짜지정 or repeat
-	private TextView mTvAlarmDate, mTvAlarmTime = null;
+	private TextView mTvAlarmDate, mTvAlarmTime = null, mTvEtcTitle;
 	private CheckBox mCbHolidayAll = null;
 	private CheckBox mCbHolidayNone = null;
 	private CheckBox mCbTTS = null;
@@ -105,27 +105,17 @@ public class AlarmDialogNew extends DialogFragment{
 	}
 
 	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		AlertDialog.Builder b=  new  AlertDialog.Builder(getActivity())
-				.setTitle("알림 추가")
-				.setPositiveButton("OK",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								returnData();
-							}
-						}
-				)
-				.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								dialog.dismiss();
-							}
-						}
-				);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
 
-		LayoutInflater inflater = getActivity().getLayoutInflater();
-		View view = inflater.inflate(R.layout.fragment_dialog_alarm_add, null);
+		Log.d(this.toString(), " onCreateView ");
+		// Inflate the layout for this fragment
+		View view = inflater.inflate(R.layout.fragment_dialog_alarm_add, container, false);
 		mView = view;
+
+		mBtnClose = ButterKnife.findById(mView, R.id.btnClose);
+		mBtnSave = ButterKnife.findById(mView, R.id.btnSave);
+
 		mSpAlarmType = (Spinner) view.findViewById(R.id.spAlarmType);
 		mBtnAddAlarm = (Button) view.findViewById(R.id.btnAddAlarm);
 		mAlarmList = (LinearLayout) view.findViewById(R.id.alarmList);
@@ -153,9 +143,40 @@ public class AlarmDialogNew extends DialogFragment{
 
 		mCbTTS = (CheckBox) view.findViewById(R.id.cbTTS);
 
+		mTvEtcTitle = (TextView) view.findViewById(R.id.etcTitle);
+
 		for(int i = 0; i < mArrDayId.length; i++) {
 			mMapDay.put(mArrDayString[i], (Button) view.findViewById(mArrDayId[i]));
 		}
+
+		return mView;
+	}
+/*
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		Log.d(this.toString(), " onCreateDialog ");
+
+		AlertDialog.Builder b=  new  AlertDialog.Builder(getActivity())
+				.setTitle("알림 추가")
+				.setPositiveButton("OK",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								returnData();
+							}
+						}
+				)
+				.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								dialog.dismiss();
+							}
+						}
+				);
+
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		View view = inflater.inflate(R.layout.fragment_dialog_alarm_add, null);
+		mView = view;
+
 
 		b.setView(view);
 		Dialog dialog = b.create();
@@ -165,21 +186,29 @@ public class AlarmDialogNew extends DialogFragment{
 
 		return dialog;
 
-	}
+	}*/
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		Log.d(this.toString(), " onActivityCreated ");
+
+		if(savedInstanceState != null){
+		//	return;
+		}
+
 		mCtx = getActivity();
-		Log.d(Const.DEBUG_TAG, "ddd");
 		Bundle arguments = getArguments();
 
 		if(arguments != null) {
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.ALARM_VO);
 
+			Log.d(this.toString(), "mAlarmVO="+mAlarmVO);
+
 			if(mAlarmVO != null)
 				mModifyMode = 1;
 
-			mMemoVO = (MemoVO) arguments.getSerializable(Const.MEMO_VO);
+            if(arguments.containsKey(Const.MEMO_VO))
+			    mMemoVO = (MemoVO) arguments.getSerializable(Const.MEMO_VO);
 
 			if(mMemoVO != null)
 				mMemoMode = true;
@@ -210,7 +239,7 @@ public class AlarmDialogNew extends DialogFragment{
 			//makeAlarmPostpone();
 		}
 
-		CommonUtils.setupUI(mView, getActivity(), mDialog);
+		CommonUtils.setupUI(mView, getActivity());
 
 		super.onActivityCreated(savedInstanceState);
 	}
@@ -285,7 +314,7 @@ public class AlarmDialogNew extends DialogFragment{
 				appendAlarmRow(Math.abs(temp), (temp < 0 ? -1 : 1));
 			}
 
-			mEtcType = mAlarmVO.getType();
+			mEtcType = mAlarmVO.getEtcType();
 
 			restoreEtcType();
 
@@ -331,7 +360,7 @@ public class AlarmDialogNew extends DialogFragment{
 		// 반복이 아닐 경우 날짜 지정 데이터 삽입
 		if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT){
 			if(mDataRepeatDay.size() == 0){
-				Toast.makeText(mCtx, "반복할 요일을 선택하세요", Toast.LENGTH_LONG);
+				Toast.makeText(mCtx, "반복할 요일을 선택하세요", Toast.LENGTH_LONG).show();
 				return ;
 			}
 
@@ -348,6 +377,10 @@ public class AlarmDialogNew extends DialogFragment{
 			alarmDate.add(c);
 		}
 
+		if(mEtcType.equals(Const.ETC_TYPE.MEMO) && mMemoVO == null){
+			Toast.makeText(mCtx, "메모를 선택해 주세요", Toast.LENGTH_LONG).show();
+			return;
+		}
 
 		int hour, minute;
 
@@ -369,9 +402,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 		//mArrAlarmCall
 
-		int etcType = mSpAppList.getSelectedItemPosition();
-
-//alarmTitle, alarmType(진동,소리 등), alarmOption(타이머,시간지정), hour, minute, mArrAlarmCall(몇분전 알림 목록), mDataRepeatDay, mAlarmDateType
+		//int etcType = mSpAppList.getSelectedItemPosition();
 
 		AlarmVO vo;
 
@@ -389,25 +420,31 @@ public class AlarmDialogNew extends DialogFragment{
 		vo.setRepeatDay(mDataRepeatDay);
 		vo.setAlarmDateType(mAlarmDateType);
 		vo.setAlarmDateList(alarmDate);
-		vo.setType(mEtcType);
+		vo.setEtcType(mEtcType);
 
 
-		Toast.makeText(mCtx, " holiday is checked = "+ mCbHolidayAll.isChecked(), Toast.LENGTH_LONG);
-		Log.d(Const.DEBUG_TAG, "holiday start");
+
 		if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT || mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
-
 			Log.d(Const.DEBUG_TAG, "mCbHolidayAll.isChecked() =" + mCbHolidayAll.isChecked());
 			vo.setIsHolidayALL(mCbHolidayAll.isChecked() ? 1 : 0);
 			vo.setIsHolidayNone(mCbHolidayNone.isChecked() ? 1 : 0);
 		}
 
 		Bundle bundle = new Bundle();
-		bundle.putSerializable("alarmVO", vo);
+		bundle.putSerializable(Const.ALARM_VO, vo);
+
+        if(mMemoVO != null)
+        	vo.setRfid(mMemoVO.getId());
+            //bundle.putSerializable(Const.MEMO_VO, mMemoVO);
 		Intent intent = new Intent();
 		intent.putExtras(bundle);
 
+
 		int returnCode = mModifyMode == 1 ? Const.ALARM_INTERFACE_CODE.ADD_ALARM_MODIFY_FINISH_CODE : Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE;
 		getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
+
+		getActivity().getSupportFragmentManager().popBackStackImmediate();
+
 	}
 
 
@@ -441,9 +478,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 		//스피너 속성
 		//mSpDateType.setPrompt(""); // 스피너 제목
-
-		Log.d(this.toString(), "mSpDateType="+mSpDateType + " adapter="+adapter);
-
+		mSpDateType.setPrompt("알림 옵션");
 		mSpDateType.setAdapter(adapter);
 		mSpDateType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
@@ -458,7 +493,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 			}
 		});
-		mSpDateType.setSelection(2, false);
+		mSpDateType.setSelection(2);
 	}
 
 
@@ -609,6 +644,13 @@ public class AlarmDialogNew extends DialogFragment{
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				mEtcType = (String) values[position];
+				if(mEtcType.equals(Const.ETC_TYPE.MEMO)){
+					if(mMemoMode == false)
+						showCategory();
+				}else{
+					mMemoVO = null;
+					mTvEtcTitle.setVisibility(View.GONE);
+				}
 
 			}
 
@@ -617,6 +659,22 @@ public class AlarmDialogNew extends DialogFragment{
 
 			}
 		});
+	}
+
+	private void showCategory(){
+		Log.d(this.toString(), "showCategory start");
+		//mTvEtcTitle
+		Fragment fragment = new CategoryFragment();
+
+		Bundle args = new Bundle();
+		args.putBoolean(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY, true);
+		fragment.setArguments(args);
+
+		fragment.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE);
+
+		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+		fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+				.add(R.id.main_container, fragment).addToBackStack(null).commit();
 	}
 
 	public void bindEvent(){
@@ -696,6 +754,20 @@ public class AlarmDialogNew extends DialogFragment{
 				if(isChecked && mCbHolidayAll.isChecked()){
 					mCbHolidayAll.setChecked(false);
 				}
+			}
+		});
+
+		mBtnClose.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getActivity().onBackPressed();
+			}
+		});
+
+		mBtnSave.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				returnData();
 			}
 		});
 
@@ -881,4 +953,24 @@ public class AlarmDialogNew extends DialogFragment{
 		}
 	}*/
 
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		//outState.put
+
+
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		switch (resultCode) {
+			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE:
+				MemoVO memoVO = (MemoVO) data.getExtras().getSerializable(Const.MEMO_VO);
+				Toast.makeText(mCtx, "memo title="+memoVO.getTitle(), Toast.LENGTH_LONG).show();
+				mMemoVO = memoVO;
+				mTvEtcTitle.setText(memoVO.getTitle());
+				mTvEtcTitle.setVisibility(View.VISIBLE);
+		}
+	}
 }

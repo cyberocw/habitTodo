@@ -98,12 +98,6 @@ public class MemoListAdapter extends BaseAdapter {
 			}
 		});
 
-		convertView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				mFragment.showNewMemoDialog(mManager.getItem(position).getId());
-			}
-		});
 		return convertView;
 	}
 

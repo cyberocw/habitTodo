@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -332,7 +333,18 @@ public class MemoDialogNew extends Fragment{
 		bundle.putSerializable(Const.ALARM_VO, mAlarmVO);
 		alarmDialogNew.setArguments(bundle);
 		alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
+
+		FragmentTransaction transaction = fm.beginTransaction();
+		// For a little polish, specify a transition animation
+		transaction.setTransition(FragmentTransaction.TRANSIT_ENTER_MASK);
+		// To make it fullscreen, use the 'content' root view as the container
+		// for the fragment, which is always the root view for the activity
 		alarmDialogNew.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE);
+
+		transaction.replace(R.id.main_container, alarmDialogNew, "fragment_dialog_alarm_add")
+				.addToBackStack(null).commit();
+
+
 	}
 
 	private void dataBind(){
@@ -375,7 +387,7 @@ public class MemoDialogNew extends Fragment{
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		isModifyAlarm = true;
-		mAlarmVO = (AlarmVO) data.getExtras().getSerializable("alarmVO");
+		mAlarmVO = (AlarmVO) data.getExtras().getSerializable(Const.ALARM_VO);
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 }

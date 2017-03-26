@@ -58,6 +58,7 @@ public class AlarmDbManager extends DbHelper{
 		values.put(KEY_MINUTE, vo.getMinute());
 		values.put(KEY_HOLIDAY_ALL, vo.getIsHolidayALL());
 		values.put(KEY_HOLIDAY_NONE, vo.getIsHolidayNone());
+		values.put(KEY_TYPE, vo.getEtcType());
 
 		Calendar c = vo.getCreateDt();
 
@@ -339,7 +340,7 @@ public class AlarmDbManager extends DbHelper{
 		/*
 		ArrayList<HolidayVO> tempArr = new ArrayList<HolidayVO>();
 		HolidayVO tempVO = new HolidayVO();
-		tempVO.setType("i");
+		tempVO.setEtcType("i");
 		tempArr.add(tempVO);
 		holidayMap.put("20170219", tempArr);
 		*/
@@ -514,9 +515,11 @@ public class AlarmDbManager extends DbHelper{
 
 		String selectQuery =
 				"SELECT  A.*, B." + KEY_ID + " as " + KEY_REPEAT_ID + ", C." + KEY_ID + " as " + KEY_DATE_ID + ", sun, mon, tue, wed, thu, fri, sat, C." +
-						KEY_ALARM_DATE +", B." + KEY_REPEAT_DAY + " FROM " + TABLE_ALARM + " AS A LEFT JOIN " +
+						KEY_ALARM_DATE +", B." + KEY_REPEAT_DAY + ", D." + KEY_F_ID + ", A." + KEY_TYPE + " FROM " + TABLE_ALARM + " AS A LEFT JOIN " +
 						TABLE_ALARM_REPEAT + " AS B ON A." + KEY_ID + " = B."+ KEY_F_ALARM_ID + " LEFT JOIN " +
-						TABLE_ALARM_DATE + " AS C ON A." + KEY_ID + " = C." + KEY_F_ALARM_ID +
+						TABLE_ALARM_DATE + " AS C ON A." + KEY_ID + " = C." + KEY_F_ALARM_ID + " LEFT JOIN " +
+						TABLE_ALARAM_RELATION + " AS D ON A." + KEY_ID + " = D." + KEY_F_ALARM_ID +
+
 						" WHERE A." + KEY_ID + " IN ";
 		if(id == -1) {
 			ContentValues values = new ContentValues();
@@ -652,6 +655,7 @@ public class AlarmDbManager extends DbHelper{
 
 				vo.setIsHolidayALL((c.getInt(c.getColumnIndex(KEY_HOLIDAY_ALL))));
 				vo.setIsHolidayNone((c.getInt(c.getColumnIndex(KEY_HOLIDAY_NONE))));
+				vo.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
 
 				tempData = c.getString(c.getColumnIndex(KEY_ALARM_CALL_LIST));
 
@@ -673,6 +677,9 @@ public class AlarmDbManager extends DbHelper{
 					if (c.getInt(c.getColumnIndex(arrDateColumn[i])) == 1)
 						arrRepeatDay.add(Const.DAY.ARR_CAL_DAY[i]);
 				}
+
+				vo.setRfid(c.getLong(c.getColumnIndex(KEY_F_ID)));
+
 				vo.setRepeatDay(arrRepeatDay);
 				vo.setUseYn(c.getInt(c.getColumnIndex(KEY_USE_YN)));
 

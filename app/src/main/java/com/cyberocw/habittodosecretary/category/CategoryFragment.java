@@ -3,6 +3,7 @@ package com.cyberocw.habittodosecretary.category;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -23,8 +25,10 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
+import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
 /**
  * Created by cyberocw on 2015-12-06.
@@ -44,6 +48,7 @@ public class CategoryFragment extends Fragment {
 	SharedPreferences mPrefs;
 	CategoryDataManager mCateDataManager;
 	CategoryListAdapter mCateAdapter;
+	private boolean isEtcMode;
 	private OnFragmentInteractionListener mListener;
 	private AlertDialog mCatePopupBilder;
 	private EditText mEtCateTitle;
@@ -56,7 +61,7 @@ public class CategoryFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			mParam1 = getArguments().getString(ARG_PARAM1);
+			isEtcMode = getArguments().getBoolean(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY, false);
 			mParam2 = getArguments().getString(ARG_PARAM2);
 		}
 	}
@@ -83,8 +88,15 @@ public class CategoryFragment extends Fragment {
 
 		ListView lv = (ListView) mView.findViewById(R.id.categoryListView);
 		lv.setAdapter(mCateAdapter);
-
+		lv.setOnItemClickListener(new CategoryClickListener());
 		binBtnEvent();
+	}
+
+	private class CategoryClickListener implements AdapterView.OnItemClickListener{
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			showMemoList(mCateDataManager.getItem(position).getId());
+		}
 	}
 
 	private void binBtnEvent(){
@@ -166,7 +178,7 @@ public class CategoryFragment extends Fragment {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
+	public void onAttach(Context activity) {
 		super.onAttach(activity);
 		try {
 			mListener = (OnFragmentInteractionListener) activity;
@@ -184,13 +196,27 @@ public class CategoryFragment extends Fragment {
 
 	public void showMemoList(long id) {
 		Fragment f = new MemoFragment();
-		Bundle b = new Bundle();
+		//Bundle b = new Bundle();
+		Bundle b = getArguments();
 		b.putLong(Const.CATEGORY.CATEGORY_ID, id);
+
+		f.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE);
+
 		f.setArguments(b);
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 		fragmentManager.beginTransaction()
 				.addToBackStack(null)
-				.replace(R.id.main_container, f).commit();
+				.add(R.id.main_container, f).commit();
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch(resultCode) {
+			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE:
+				getTargetFragment().onActivityResult(requestCode, resultCode, data);
+				getActivity().getSupportFragmentManager().popBackStackImmediate();
+				break;
+		}
 	}
 
 	/**

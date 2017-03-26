@@ -1,7 +1,6 @@
 package com.cyberocw.habittodosecretary.alaram.vo;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -12,6 +11,7 @@ import java.util.Calendar;
 public class AlarmVO implements Serializable {
 
 	private long id = -1;
+	private long rfid = -1;
 
 	private ArrayList<Integer> repeatDay = null;
 	private String alarmTitle;
@@ -24,7 +24,7 @@ public class AlarmVO implements Serializable {
 	private int minute;
 	private int alarmType;
 	private int useYn;
-	private String type;
+	private String etcType;
 	private ArrayList<Integer> alarmCallList = null;
 
 	private int isHolidayALL = 0;
@@ -38,16 +38,22 @@ public class AlarmVO implements Serializable {
 	public String toString() {
 		return "AlarmVO{" +
 				"id=" + id +
+				", rfid=" + rfid +
 				", repeatDay=" + repeatDay +
-				", alarmTitle='" + alarmTitle +
+				", alarmTitle='" + alarmTitle + '\'' +
 				", alarmDateType=" + alarmDateType +
-				", alarmDateList=" + (alarmDateList != null ? Arrays.toString(alarmDateList.toArray()) : "") +
+				", alarmDateList=" + alarmDateList +
 				", alarmOption=" + alarmOption +
-				", type=" + type +
 				", hour=" + hour +
 				", minute=" + minute +
 				", alarmType=" + alarmType +
-				", alarmCallList=" + (alarmCallList != null ? Arrays.toString(alarmCallList.toArray()) : "") +
+				", useYn=" + useYn +
+				", etcType='" + etcType + '\'' +
+				", alarmCallList=" + alarmCallList +
+				", isHolidayALL=" + isHolidayALL +
+				", isHolidayNone=" + isHolidayNone +
+				", createDt=" + createDt +
+				", updateDt=" + updateDt +
 				'}';
 	}
 
@@ -145,12 +151,12 @@ public class AlarmVO implements Serializable {
 		this.alarmCallList = alarmCallList;
 	}
 
-	public String getType() {
-		return type;
+	public String getEtcType() {
+		return etcType;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setEtcType(String etcType) {
+		this.etcType = etcType;
 	}
 	public int getUseYn() {
 		return useYn;
@@ -190,5 +196,13 @@ public class AlarmVO implements Serializable {
 
 	public void setIsHolidayNone(int isHolidayNone) {
 		this.isHolidayNone = isHolidayNone;
+	}
+
+	public long getRfid() {
+		return rfid;
+	}
+
+	public void setRfid(long rfid) {
+		this.rfid = rfid;
 	}
 }

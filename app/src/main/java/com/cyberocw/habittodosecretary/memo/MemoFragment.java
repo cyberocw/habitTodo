@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ public class MemoFragment extends Fragment {
 	private String mParam2;
 
 	boolean mIsShareMode = false;
+	boolean mIsEtcMode = false;
 
 	private View mView;
 	private Context mCtx;
@@ -94,6 +96,9 @@ public class MemoFragment extends Fragment {
 				mCateId = arguments.getLong(Const.CATEGORY.CATEGORY_ID);
 			if(arguments.containsKey(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE))
 				mIsShareMode = (boolean) arguments.get(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE);
+			if(arguments.containsKey(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY)){
+				mIsEtcMode = arguments.getBoolean(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY);
+			}
 		}
 	}
 
@@ -130,11 +135,11 @@ public class MemoFragment extends Fragment {
 
 		ListView lv = (ListView) mView.findViewById(R.id.memoListView);
 		lv.setAdapter(mMemoAdapter);
+		lv.setOnItemClickListener(new ListViewItemClickListener());
 
 		mCommonRelationDBManager = CommonRelationDBManager.getInstance(mCtx);
 
 		bindEvent();
-
 
 		if(mIsShareMode){
 			showNewMemoDialog();
@@ -153,6 +158,33 @@ public class MemoFragment extends Fragment {
 		});
 	}
 
+	private class ListViewItemClickListener implements AdapterView.OnItemClickListener
+	{
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+		{
+			Log.d(Const.DEBUG_TAG, " aa click");
+			if(mIsEtcMode == false)
+				showNewMemoDialog(mMemoDataManager.getItem(position).getId());
+			else{
+				//showNewMemoDialog();
+				MemoVO memoVO = mMemoDataManager.getItem(position);
+				Bundle bundle = new Bundle();
+				bundle.putSerializable(Const.MEMO_VO, memoVO);
+				Intent intent = new Intent();
+				intent.putExtras(bundle);
+
+				//int returnCode = mModifyMode == 1 ? Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE : Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE;
+
+				getActivity().getSupportFragmentManager().popBackStackImmediate();
+				getTargetFragment().onActivityResult(getTargetRequestCode(), Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE, intent);
+			}
+
+		}
+	}
+
+
+
 	public void showNewMemoDialog(){
 		showNewMemoDialog(-1);
 	}
@@ -166,7 +198,7 @@ public class MemoFragment extends Fragment {
 			// relation이 있으면 가져옴
 			RelationVO relationVO = mCommonRelationDBManager.getByTypeId(Const.ETC_TYPE.MEMO, id);
 
-			if(relationVO.getAlarmId() != -1) {
+			if(relationVO != null && relationVO.getAlarmId() != -1) {
 				AlarmVO alarmVO = mAlarmDataManager.getItemByIdInDB(relationVO.getAlarmId());
 				if(alarmVO != null) {
 					bundle.putSerializable(Const.ALARM_VO, alarmVO);
@@ -185,7 +217,7 @@ public class MemoFragment extends Fragment {
 		dialogNew.setArguments(bundle);
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction ft = fragmentManager.beginTransaction();
-		ft.replace(R.id.main_container, dialogNew);
+		ft.add(R.id.main_container, dialogNew);
 		ft.addToBackStack(null).commit();
 		dialogNew.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
 	}

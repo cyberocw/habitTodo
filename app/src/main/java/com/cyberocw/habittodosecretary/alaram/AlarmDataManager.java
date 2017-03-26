@@ -226,6 +226,16 @@ public class AlarmDataManager {
 			return false;
 		}
 
+		if(item.getRfid() > -1){
+			CommonRelationDBManager relationDBManager = CommonRelationDBManager.getInstance(mCtx);
+			RelationVO rvo = new RelationVO();
+			rvo.setAlarmId(item.getId());
+			rvo.setType(item.getEtcType());
+			rvo.setfId(item.getRfid());
+			relationDBManager.insert(rvo);
+
+		}
+
 		this.dataList.add(item);
 
 		return true;
@@ -252,10 +262,28 @@ public class AlarmDataManager {
 
 		addItem(item);
 
-		rvo.setAlarmId(item.getId());
-		relationDBManager.insert(rvo);
+		/*
+		//변경 된 내용으로 새롭게 등록
+		if(item.getRfid() > -1 ){
+			rvo.setAlarmId(item.getId());
+			rvo.setType(item.getEtcType());
+			rvo.setfId(item.getRfid());
+			relationDBManager.insert(rvo);
+		}
+		//기존 정보 재등록
+		else if(rvo.getAlarmId() > -1){
+			rvo.setAlarmId(item.getId());
+			relationDBManager.insert(rvo);
+		}
+		*/
+		//기존 ETC 연계가 있었다면 재등록
+		/*
+		if(item.getRfid() rvo.getAlarmId() > -1) {
+			rvo.setAlarmId(item.getId());
+			relationDBManager.insert(rvo);
+		}
+		*/
 
-		//알람 인던트 등록
 		if(item.getId() == -1){
 			Log.e(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
 			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG);

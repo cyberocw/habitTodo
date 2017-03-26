@@ -64,12 +64,12 @@ public class CategoryListAdapter extends BaseAdapter {
 
 		tvCnt.setText(Integer.toString(vo.getCnt()));
 
-		convertView.setOnClickListener(new View.OnClickListener() {
+		/*convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				mCategoryFragment.showMemoList(mManager.getItem(position).getId());
 			}
-		});
+		});*/
 		return convertView;
 	}
 }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.ExpandableListView;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
@@ -112,14 +113,12 @@ public class CommonRelationDBManager extends DbHelper {
 		values.put(KEY_F_ID, vo.getfId());
 
 		long _id = db.insert(TABLE_ALARAM_RELATION, null, values);
-
-		if(_id == -1){
+		closeDB();
+		if (_id == -1) {
 			Log.e(Const.DEBUG_TAG, "DB Relation INSERT ERROR");
-
 			throw new Error("DB Relation INSERT ERROR");
 			//return false;
-		}
-		else{
+		} else {
 			return true;
 		}
 	}

@@ -118,6 +118,14 @@ public class AlarmFragment extends Fragment{
 	}
 
 	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		mView = inflater.inflate(R.layout.fragment_alarm_list, container, false);
+		return mView;
+	}
+
+	@Override
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
 		mDateTv = (TextView) mView.findViewById(R.id.dateView);
@@ -727,24 +735,20 @@ public class AlarmFragment extends Fragment{
 
 		if(id != -1) {
 			Bundle bundle = new Bundle();
-
 			bundle.putSerializable(Const.ALARM_VO, mAlarmDataManager.getItemByIdInList(id));
-
 			alarmDialogNew.setArguments(bundle);
 		}
 
 		alarmDialogNew.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE);
 
-		/*
 		FragmentTransaction transaction = fm.beginTransaction();
 		// For a little polish, specify a transition animation
-		transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+		transaction.setTransition(FragmentTransaction.TRANSIT_ENTER_MASK);
 		// To make it fullscreen, use the 'content' root view as the container
 		// for the fragment, which is always the root view for the activity
-		transaction.add(R.id.main_container, alarmDialogNew)
+		transaction.replace(R.id.main_container, alarmDialogNew, "alarmDialog")
 				.addToBackStack(null).commit();
-		*/
-		alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
+		//alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
 	}
 
 	@Override
@@ -754,7 +758,7 @@ public class AlarmFragment extends Fragment{
 
 		switch(resultCode) {
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE :
-				vo = (AlarmVO) data.getExtras().getSerializable("alarmVO");
+				vo = (AlarmVO) data.getExtras().getSerializable(Const.ALARM_VO);
 
 				// 알람 추가
 				if(mAlarmDataManager.addItem(vo) == true)
@@ -768,7 +772,7 @@ public class AlarmFragment extends Fragment{
 				break;
 
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_MODIFY_FINISH_CODE :
-				vo = (AlarmVO) data.getExtras().getSerializable("alarmVO");
+				vo = (AlarmVO) data.getExtras().getSerializable(Const.ALARM_VO);
 				// 알람 추가
 				if(mAlarmDataManager.modifyItem(vo) == true)
 					mAlarmAdapter.notifyDataSetChanged();
@@ -802,13 +806,7 @@ public class AlarmFragment extends Fragment{
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                         Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		mView = inflater.inflate(R.layout.fragment_alarm_list, container, false);
-		return mView;
-	}
+
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -829,7 +827,8 @@ public class AlarmFragment extends Fragment{
 
 	@Override
 	public void onDestroy() {
-		mAlarmDataManager.close();
+		if(mAlarmDataManager != null)
+			mAlarmDataManager.close();
 		super.onDestroy();
 	}
 

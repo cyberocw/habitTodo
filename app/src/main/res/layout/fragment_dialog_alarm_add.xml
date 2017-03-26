@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
-
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:layout_margin="0dp"
-             android:padding="5dp"
-             android:minWidth="1000dp"
-             android:minHeight="1000dp"
-               android:orientation="vertical"
-               android:theme="@style/Theme.AppCompat.Light">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp"
+    android:orientation="vertical"
+    android:theme="@style/Theme.AppCompat.Light">
 
     <ScrollView
                   android:orientation="vertical"
@@ -19,7 +16,7 @@
         >
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             >
 
@@ -54,11 +51,29 @@
                         />
                 </RadioGroup>
             </LinearLayout-->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="X"
+                    android:id="@+id/btnClose"
+                    />
+
+                <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:text="V" />
+            </RelativeLayout>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="15dp"
                 android:id="@+id/llDateTypeWrap"
                 >
                 <TextView
@@ -67,11 +82,11 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="날짜 타입"
                     />
+
                 <Spinner
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:id="@+id/spDateType"
-                    ></Spinner>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <LinearLayout
@@ -293,6 +308,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
+
                 <TextView
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
@@ -305,6 +321,14 @@
                     android:id="@+id/spAppList"
                     >
                 </Spinner>
+
+                <TextView
+                    android:id="@+id/etcTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    android:text="TextView" />
 
             </LinearLayout>
         </LinearLayout>
