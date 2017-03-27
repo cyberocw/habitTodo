@@ -106,7 +106,7 @@ public class CommonRelationDBManager extends DbHelper {
 
 	public boolean insert(RelationVO vo) {
 		SQLiteDatabase db = this.getWritableDatabase();
-
+		deleteByAlarmId(vo.getAlarmId(), db);
 		ContentValues values = new ContentValues();
 		values.put(KEY_TYPE, vo.getType());
 		values.put(KEY_F_ALARM_ID, vo.getAlarmId());

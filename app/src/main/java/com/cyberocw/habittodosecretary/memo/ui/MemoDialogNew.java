@@ -332,7 +332,7 @@ public class MemoDialogNew extends Fragment{
 		bundle.putSerializable(Const.MEMO_VO, mMemoVO);
 		bundle.putSerializable(Const.ALARM_VO, mAlarmVO);
 		alarmDialogNew.setArguments(bundle);
-		alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
+		//alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
 
 		FragmentTransaction transaction = fm.beginTransaction();
 		// For a little polish, specify a transition animation
@@ -341,7 +341,7 @@ public class MemoDialogNew extends Fragment{
 		// for the fragment, which is always the root view for the activity
 		alarmDialogNew.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE);
 
-		transaction.replace(R.id.main_container, alarmDialogNew, "fragment_dialog_alarm_add")
+		transaction.add(R.id.main_container, alarmDialogNew, "fragment_dialog_alarm_add")
 				.addToBackStack(null).commit();
 
 

@@ -69,7 +69,6 @@ public class AlarmDialogNew extends DialogFragment{
 	private Dialog mDialog;
 	private AlarmVO mAlarmVO = null;
 	private MemoVO mMemoVO = null;
-
 	private LinkedHashMap mEtcMap;
 	private int mModifyMode = 0;
 	private Boolean mMemoMode = false;
@@ -202,8 +201,6 @@ public class AlarmDialogNew extends DialogFragment{
 		if(arguments != null) {
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.ALARM_VO);
 
-			Log.d(this.toString(), "mAlarmVO="+mAlarmVO);
-
 			if(mAlarmVO != null)
 				mModifyMode = 1;
 
@@ -232,8 +229,8 @@ public class AlarmDialogNew extends DialogFragment{
 		makeSpinnerDateType();
 		makeSpinnerAlarmType();
 		makeSpinnerAppList();
-		bindEvent();
 		init();
+		bindEvent();
 
 		if(arguments != null && arguments.getInt(Const.PARAM.MODE) == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG){
 			//makeAlarmPostpone();
@@ -315,8 +312,12 @@ public class AlarmDialogNew extends DialogFragment{
 			}
 
 			mEtcType = mAlarmVO.getEtcType();
-
 			restoreEtcType();
+
+			if(mMemoMode) {
+				mTvEtcTitle.setText(mMemoVO.getTitle());
+				mTvEtcTitle.setVisibility(View.VISIBLE);
+			}
 
 		}
 		else {
@@ -325,8 +326,10 @@ public class AlarmDialogNew extends DialogFragment{
 			mCbTTS.setChecked(true);
 		}
 
-		if(mMemoMode)
+		if(mMemoMode && mAlarmVO.getId() == -1) {
 			initMemoMode();
+		}
+
 
 	}
 
@@ -334,7 +337,7 @@ public class AlarmDialogNew extends DialogFragment{
 		Object[] arrkeys = mEtcMap.keySet().toArray();
 		for(int i = 0 ; i < arrkeys.length; i++){
 			if(arrkeys[i].equals(mEtcType)){
-				mSpAppList.setSelection(i);
+				mSpAppList.setSelection(i, false);
 				break;
 			}
 		}
@@ -632,33 +635,13 @@ public class AlarmDialogNew extends DialogFragment{
 			arraylist.add((String) mEtcMap.get(key));
 		}
 
-		final Object[] values = mEtcMap.keySet().toArray();
-
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
 				android.R.layout.simple_spinner_item, arraylist);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		//스피너 속성
 		mSpAppList.setPrompt("알람 종류"); // 스피너 제목
 		mSpAppList.setAdapter(adapter);
-		mSpAppList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				mEtcType = (String) values[position];
-				if(mEtcType.equals(Const.ETC_TYPE.MEMO)){
-					if(mMemoMode == false)
-						showCategory();
-				}else{
-					mMemoVO = null;
-					mTvEtcTitle.setVisibility(View.GONE);
-				}
 
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-
-			}
-		});
 	}
 
 	private void showCategory(){
@@ -678,6 +661,30 @@ public class AlarmDialogNew extends DialogFragment{
 	}
 
 	public void bindEvent(){
+		final Object[] values = mEtcMap.keySet().toArray();
+		mSpAppList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				mEtcType = (String) values[position];
+				if(mEtcType.equals(Const.ETC_TYPE.MEMO)){
+					Log.d(Const.DEBUG_TAG, " onitem selected ");
+					//if(mMemoMode == false)
+						showCategory();
+				}else{
+					mMemoVO = null;
+					mTvEtcTitle.setVisibility(View.GONE);
+				}
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
+
+		Log.d(Const.DEBUG_TAG, " onitem selected listener end ");
+
 		mBtnAddAlarm.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -770,7 +777,6 @@ public class AlarmDialogNew extends DialogFragment{
 				returnData();
 			}
 		});
-
 	}
 
 	private void txTimeSet(int hourOfDay, int minute){

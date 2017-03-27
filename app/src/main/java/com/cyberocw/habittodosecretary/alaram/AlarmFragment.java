@@ -39,6 +39,7 @@ import com.cyberocw.habittodosecretary.alaram.ui.AlarmDialogNew;
 import com.cyberocw.habittodosecretary.alaram.ui.TimerDialog;
 import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
 import com.cyberocw.habittodosecretary.calendar.CalendarManager;
+import com.cyberocw.habittodosecretary.memo.MemoDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
@@ -69,7 +70,7 @@ public class AlarmFragment extends Fragment{
 	private String mParam1;
 	private String mParam2;
 	private Calendar mCalendar = null;
-
+	MemoDataManager mMemoDataManager;
 
 	AlarmListAdapterInterface mAlarmAdapter;
 	//AlarmExListAdapter mAlarmAdapter;
@@ -145,6 +146,7 @@ public class AlarmFragment extends Fragment{
 		llWeekOfDayWrap = (LinearLayout) mView.findViewById(R.id.weekOfDayWrap);
 		mAlarmDataManager = new AlarmDataManager(mCtx, mCalendar);
 		mTimerDataManager = new TimerDataManager(mCtx);
+		mMemoDataManager = new MemoDataManager(mCtx, -1l);
 		mCalendarManager = new CalendarManager(mCtx, llWeekOfDayWrap, mCalendar, mDateTv);
 		mCalendarManager.setDayClickListener(myDateSetListener);
 		mCalendarManager.init();
@@ -735,7 +737,11 @@ public class AlarmFragment extends Fragment{
 
 		if(id != -1) {
 			Bundle bundle = new Bundle();
-			bundle.putSerializable(Const.ALARM_VO, mAlarmDataManager.getItemByIdInList(id));
+			AlarmVO alarmVO = mAlarmDataManager.getItemByIdInList(id);
+			if(alarmVO.getEtcType() != null && alarmVO.getEtcType().equals(Const.ETC_TYPE.MEMO)){
+				bundle.putSerializable(Const.MEMO_VO, mMemoDataManager.getItemById(alarmVO.getRfid()));
+			}
+			bundle.putSerializable(Const.ALARM_VO, alarmVO);
 			alarmDialogNew.setArguments(bundle);
 		}
 
