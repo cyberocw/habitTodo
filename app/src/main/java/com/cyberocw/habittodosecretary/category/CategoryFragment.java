@@ -198,6 +198,9 @@ public class CategoryFragment extends Fragment {
 		Fragment f = new MemoFragment();
 		//Bundle b = new Bundle();
 		Bundle b = getArguments();
+		if(b == null)
+			b = new Bundle();
+
 		b.putLong(Const.CATEGORY.CATEGORY_ID, id);
 
 		f.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE);
@@ -206,7 +209,7 @@ public class CategoryFragment extends Fragment {
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 		fragmentManager.beginTransaction()
 				.addToBackStack(null)
-				.add(R.id.main_container, f).commit();
+				.replace(R.id.main_container, f).commit();
 	}
 
 	@Override

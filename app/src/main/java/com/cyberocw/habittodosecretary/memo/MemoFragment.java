@@ -217,17 +217,22 @@ public class MemoFragment extends Fragment {
 		dialogNew.setArguments(bundle);
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction ft = fragmentManager.beginTransaction();
-		ft.add(R.id.main_container, dialogNew);
+		ft.replace(R.id.main_container, dialogNew);
 		ft.addToBackStack(null).commit();
 		dialogNew.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
 	}
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		MemoVO memoVO;
-		AlarmVO alarmVO;
-		memoVO = (MemoVO) data.getExtras().getSerializable(Const.MEMO_VO);
-		alarmVO = (AlarmVO) data.getExtras().getSerializable(Const.ALARM_VO);
+		MemoVO memoVO = null;
+		AlarmVO alarmVO = null;
+		Bundle bundle = data.getExtras();
+		if(bundle == null)
+			return ;
+		if(bundle.containsKey(Const.MEMO_VO))
+			memoVO = (MemoVO) bundle.getSerializable(Const.MEMO_VO);
+		if(bundle.containsKey(Const.ALARM_VO))
+			alarmVO = (AlarmVO) bundle.getSerializable(Const.ALARM_VO);
 
 
 		switch(resultCode) {
@@ -268,6 +273,9 @@ public class MemoFragment extends Fragment {
 							Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
 							break;
 						}else {
+							if(bundle.containsKey(Const.MEMO.ORIGINAL_ALARM_ID_KEY))
+								mAlarmDataManager.deleteItemById(bundle.getLong(Const.MEMO.ORIGINAL_ALARM_ID_KEY));
+
 							insertRelation(alarmVO, memoVO);
 						}
 					}
@@ -291,6 +299,11 @@ public class MemoFragment extends Fragment {
 						}
 					}
 
+					mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
+				}
+				//기존 알람이 있는데, 알람을 신규 드록했다가 다시 제거했을 경우
+				else if(bundle.containsKey(Const.MEMO.ORIGINAL_ALARM_ID_KEY)){
+					mAlarmDataManager.deleteItemById(bundle.getLong(Const.MEMO.ORIGINAL_ALARM_ID_KEY));
 					mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
 				}
 				break;

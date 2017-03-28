@@ -109,6 +109,9 @@ public class Const {
 	}
 
 	public class MEMO{
+		public static final String IS_INIT_MEMO_MODE = "isInitMemoMode";
+		public static final String ORIGINAL_ALARM_ID_KEY = "originalAlarmId";
+
 		public class MEMO_INTERFACE_CODE{
 			public static final int ADD_MEMO_CODE = 1111;
 			public static final int ADD_MEMO_FINISH_CODE = 1112;
@@ -116,7 +119,6 @@ public class Const {
 			public static final int ADD_MEMO_ETC_CODE = 1114;
 			public static final String ADD_MEMO_ETC_KEY = "memoEtc";
 			public static final String SHARE_MEMO_MODE = "MEMO_MODE";
-
 		}
 	}
 

@@ -71,7 +71,7 @@ public class AlarmDialogNew extends DialogFragment{
 	private MemoVO mMemoVO = null;
 	private LinkedHashMap mEtcMap;
 	private int mModifyMode = 0;
-	private Boolean mMemoMode = false;
+	private Boolean mIsInitMemoMode = false;
 	private Spinner mSpAlarmType, mSpAppList, mSpDateType;
 	private Button mBtnAddAlarm = null, mBtnClose, mBtnSave;
 	private EditText mTxAlarmTitle;
@@ -207,8 +207,8 @@ public class AlarmDialogNew extends DialogFragment{
             if(arguments.containsKey(Const.MEMO_VO))
 			    mMemoVO = (MemoVO) arguments.getSerializable(Const.MEMO_VO);
 
-			if(mMemoVO != null)
-				mMemoMode = true;
+			if(arguments.getBoolean(Const.MEMO.IS_INIT_MEMO_MODE, false))
+				mIsInitMemoMode = true;
 
 		}
 		if(mAlarmVO == null){
@@ -314,11 +314,10 @@ public class AlarmDialogNew extends DialogFragment{
 			mEtcType = mAlarmVO.getEtcType();
 			restoreEtcType();
 
-			if(mMemoMode) {
+			if(mMemoVO != null) {
 				mTvEtcTitle.setText(mMemoVO.getTitle());
 				mTvEtcTitle.setVisibility(View.VISIBLE);
 			}
-
 		}
 		else {
 			txTimeSet(mCalendar.get(Calendar.HOUR_OF_DAY), mCalendar.get(Calendar.MINUTE));
@@ -326,7 +325,7 @@ public class AlarmDialogNew extends DialogFragment{
 			mCbTTS.setChecked(true);
 		}
 
-		if(mMemoMode && mAlarmVO.getId() == -1) {
+		if(mIsInitMemoMode) {
 			initMemoMode();
 		}
 
@@ -347,7 +346,8 @@ public class AlarmDialogNew extends DialogFragment{
 		mEtcType = Const.ETC_TYPE.MEMO;
 		restoreEtcType();
 		mSpAppList.setEnabled(false);
-		mTxAlarmTitle.setText(mMemoVO.getTitle());
+		if(mAlarmVO.getAlarmTitle() == null)
+			mTxAlarmTitle.setText(mMemoVO.getTitle());
 	}
 
 	private void returnData(){
@@ -668,7 +668,7 @@ public class AlarmDialogNew extends DialogFragment{
 				mEtcType = (String) values[position];
 				if(mEtcType.equals(Const.ETC_TYPE.MEMO)){
 					Log.d(Const.DEBUG_TAG, " onitem selected ");
-					//if(mMemoMode == false)
+					//if(mIsInitMemoMode == false)
 						showCategory();
 				}else{
 					mMemoVO = null;

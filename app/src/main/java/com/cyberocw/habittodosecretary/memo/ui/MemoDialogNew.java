@@ -52,7 +52,7 @@ public class MemoDialogNew extends Fragment{
 	Button mBtnSave;
 	ImageButton mBtnAddAlarm;
 	MemoVO mMemoVO;
-	AlarmVO mAlarmVO;
+	AlarmVO mAlarmVO, mAlarmOriginalVO = null;
 	CategoryDataManager mCateDataManager;
 	CategoryListAdapter mCateAdapter;
 	ArrayList<CategoryVO> mArrayCategoryVOList = null;
@@ -62,6 +62,7 @@ public class MemoDialogNew extends Fragment{
 	boolean isMemoEditable = true;
 	boolean isModifyAlarm = false;
 	int mModifyMode = 0;
+	long mInitAlarmId = -1;
 
 	public MemoDialogNew() {
 	}
@@ -95,6 +96,10 @@ public class MemoDialogNew extends Fragment{
 		if(arguments != null) {
 			mMemoVO = (MemoVO) arguments.getSerializable(Const.MEMO_VO);
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.ALARM_VO);
+			if(mAlarmVO != null){
+				mInitAlarmId = mAlarmVO.getId();
+				mAlarmOriginalVO = mAlarmVO;
+			}
 			mSelectedCateId = (long) arguments.getSerializable(Const.CATEGORY.CATEGORY_ID);
 
 			if(arguments.containsKey(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE))
@@ -278,7 +283,7 @@ public class MemoDialogNew extends Fragment{
 	}
 
 	private void btnAddAlarmPopup(){
-		if(mAlarmVO == null) {
+		if(mAlarmVO == null || mAlarmVO.getId() == -2) {
 			showAlarmPopup();
 		}else{
 			String names[] ={"편집","삭제"};
@@ -313,8 +318,9 @@ public class MemoDialogNew extends Fragment{
 	}
 
 	private void deleteAlarm(){
-		if(mModifyMode == 1) {
+		if(mModifyMode == 1 && mAlarmVO.getId() > -1) {
 			mAlarmVO.setId(-2);
+			//mInitAlarmId = -1;
 		}
 		else {
 			mAlarmVO = null;
@@ -330,7 +336,12 @@ public class MemoDialogNew extends Fragment{
 		Bundle bundle = new Bundle();
 		dataBind();
 		bundle.putSerializable(Const.MEMO_VO, mMemoVO);
+
+		if(mAlarmVO != null && mAlarmVO.getId() > -2)
 		bundle.putSerializable(Const.ALARM_VO, mAlarmVO);
+
+		bundle.putBoolean(Const.MEMO.IS_INIT_MEMO_MODE, true);
+
 		alarmDialogNew.setArguments(bundle);
 		//alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
 
@@ -371,6 +382,10 @@ public class MemoDialogNew extends Fragment{
 		}
 		Bundle bundle = new Bundle();
 		bundle.putSerializable(Const.MEMO_VO, mMemoVO);
+
+		if(mInitAlarmId > -1){
+			bundle.putLong(Const.MEMO.ORIGINAL_ALARM_ID_KEY, mInitAlarmId);
+		}
 
 		if(isModifyAlarm && mAlarmVO != null)
 			bundle.putSerializable(Const.ALARM_VO, mAlarmVO);

@@ -106,7 +106,10 @@ public class CommonRelationDBManager extends DbHelper {
 
 	public boolean insert(RelationVO vo) {
 		SQLiteDatabase db = this.getWritableDatabase();
+		//기존에 null로 등록된것들이 있어서 삭제
 		deleteByAlarmId(vo.getAlarmId(), db);
+		//신규 등록시 혹시 모를 이전 중복 자료 제거, 현재는 알람과 etc는 1:1 이기 때문
+		deleteByTypeAndId(vo.getType(), vo.getfId(), db);
 		ContentValues values = new ContentValues();
 		values.put(KEY_TYPE, vo.getType());
 		values.put(KEY_F_ALARM_ID, vo.getAlarmId());
