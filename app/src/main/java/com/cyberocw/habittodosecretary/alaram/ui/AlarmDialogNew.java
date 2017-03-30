@@ -329,14 +329,16 @@ public class AlarmDialogNew extends DialogFragment{
 			initMemoMode();
 		}
 
-
 	}
 
 	private void restoreEtcType(){
 		Object[] arrkeys = mEtcMap.keySet().toArray();
 		for(int i = 0 ; i < arrkeys.length; i++){
 			if(arrkeys[i].equals(mEtcType)){
+				Log.d(this.toString(), "selected start");
+				mSpAppList.setTag(R.id.spAppList, i);
 				mSpAppList.setSelection(i, false);
+
 				break;
 			}
 		}
@@ -669,11 +671,15 @@ public class AlarmDialogNew extends DialogFragment{
 				if(mEtcType.equals(Const.ETC_TYPE.MEMO)){
 					Log.d(Const.DEBUG_TAG, " onitem selected ");
 					//if(mIsInitMemoMode == false)
+					//Log.d(Const.DEBUG_TAG, "(int) mSpAppList.getTag(R.id.spAppList) = "+(int) mSpAppList.getTag(R.id.spAppList) + " posi = " +position);
+
+					if(mSpAppList.getTag(R.id.spAppList) != null && (Integer) mSpAppList.getTag(R.id.spAppList) != position)
 						showCategory();
 				}else{
 					mMemoVO = null;
 					mTvEtcTitle.setVisibility(View.GONE);
 				}
+				mSpAppList.setTag(R.id.spAppList, position);
 
 			}
 

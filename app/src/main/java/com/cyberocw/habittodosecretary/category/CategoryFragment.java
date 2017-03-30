@@ -209,7 +209,7 @@ public class CategoryFragment extends Fragment {
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 		fragmentManager.beginTransaction()
 				.addToBackStack(null)
-				.replace(R.id.main_container, f).commit();
+				.add(R.id.main_container, f).commit();
 	}
 
 	@Override

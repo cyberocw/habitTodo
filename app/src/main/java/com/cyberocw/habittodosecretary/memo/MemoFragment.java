@@ -167,8 +167,12 @@ public class MemoFragment extends Fragment {
 			if(mIsEtcMode == false)
 				showNewMemoDialog(mMemoDataManager.getItem(position).getId());
 			else{
-				//showNewMemoDialog();
 				MemoVO memoVO = mMemoDataManager.getItem(position);
+				if(memoVO.getAlarmId() > -1){
+					Toast.makeText(mCtx, "이미 알림이 할당되어 있습니다", Toast.LENGTH_LONG).show();
+					return;
+				}
+
 				Bundle bundle = new Bundle();
 				bundle.putSerializable(Const.MEMO_VO, memoVO);
 				Intent intent = new Intent();
