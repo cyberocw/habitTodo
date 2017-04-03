@@ -40,7 +40,7 @@ import io.fabric.sdk.android.Fabric;
 
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawer;
-
+	private Fragment mFragment;
 	private ActionBar actionBar;
 
 	@Override
@@ -59,21 +59,28 @@ import io.fabric.sdk.android.Fabric;
 		String type = intent.getType();
 		if ("text/plain".equals(type)) {
 			memoVO.setContents(intent.getStringExtra(Intent.EXTRA_TEXT));    // 가져온 인텐트의 텍스트 정보
-			memoVO.setTitle(intent.getStringExtra(Intent.EXTRA_TITLE));
+			//memoVO.setTitle(intent.getStringExtra(Intent.EXTRA_TITLE));
+			memoVO.setTitle(intent.getStringExtra(Intent.EXTRA_SUBJECT));
 		}
-		Fragment fragment = new MemoFragment();
+		mFragment = new MemoFragment();
 
 		bundle.putSerializable(Const.MEMO_VO, memoVO);
 		bundle.putSerializable(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE, true);
 
-		fragment.setArguments(bundle);
+		mFragment.setArguments(bundle);
 
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction ft = fragmentManager.beginTransaction();
-		ft.replace(R.id.main_container, fragment).commit();
+		ft.replace(R.id.main_container, mFragment).commit();
 		//ft.addToBackStack(null).commit();
 		//fragment.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
+	}
+
+	public void finishActivity4(){
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		fragmentManager.beginTransaction().remove(mFragment);
+		finish();
 	}
 
 	@Override

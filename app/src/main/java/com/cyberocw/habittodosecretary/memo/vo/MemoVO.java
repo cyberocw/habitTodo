@@ -15,6 +15,7 @@ public class MemoVO implements Serializable {
 	private long updateDt;
 	private int viewCnt;
 	private int rank;
+	private int useYn;
 	private long alarmId = -1;
 
 	public long getAlarmId() {
@@ -95,6 +96,14 @@ public class MemoVO implements Serializable {
 
 	public void setRank(int rank) {
 		this.rank = rank;
+	}
+
+	public int getUseYn() {
+		return useYn;
+	}
+
+	public void setUseYn(int useYn) {
+		this.useYn = useYn;
 	}
 
 	@Override

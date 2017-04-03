@@ -4,128 +4,161 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:weightSum="1"
-              android:padding="10dp"
-
+                android:background="@color/background"
     >
-    <RelativeLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/txMemoTitle"
-            android:layout_marginRight="50dp"
-            android:singleLine="true"/>
+        >
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="저장"
             android:id="@+id/btnMemoSave"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"/>
-    </RelativeLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="27dp"
-        android:orientation="horizontal"
-        android:layout_weight="0.04">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="중요도"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginRight="15dp"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_vertical"/>
-        <RatingBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/ratingBar"
-            android:layout_alignParentTop="true"
-            style="?android:attr/ratingBarStyleIndicator"
-            android:numStars="5"
-            android:stepSize="1"
-            android:rating="2"/>
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        >
-        <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/spCategory"
-            android:layout_toLeftOf="@+id/btnAddAlarm"
-            android:layout_toStartOf="@+id/btnAddAlarm"
-            android:layout_alignBottom="@+id/btnAddAlarm"/>
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="T"
-            android:id="@+id/btnAddAlarm"
-            android:src="@drawable/ic_action_alarms"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/btnAttachFile"
-            android:layout_toStartOf="@+id/btnAttachFile"/>
-
-        <ImageButton
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="F"
-            android:id="@+id/btnAttachFile"
-            android:src="@drawable/ic_action_attachment"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/btnInfo"
-            android:layout_toStartOf="@+id/btnInfo"
-        />
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="I"
-            android:id="@+id/btnInfo"
-            android:src="@drawable/ic_action_about"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"/>
-    </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:visibility="visible"
-                  android:id="@+id/tvMemoEditor"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:scrollbars="vertical"
-                  android:gravity="top"
-                  android:textSize="16sp"
-                  android:capitalize="sentences"
-                  android:layout_alignParentTop="true"
-                  android:autoLink="all"
-                  android:clickable="true"
-                  android:linksClickable="true"
-                  android:paddingTop="25dp"
-                  android:paddingBottom="25dp"
-                  android:paddingLeft="15dp"
-                  android:paddingRight="15dp"
+            android:layout_gravity="right"
             />
-        <EditText xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:visibility="gone"
-                  android:id="@+id/etMemoEditor"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:padding="15dip"
-                  android:scrollbars="vertical"
-                  android:gravity="top"
-                  android:textSize="16sp"
-                  android:capitalize="sentences"
-                  android:layout_alignParentTop="true"/>
-    </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="10dp"
+            >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txMemoTitle"
+                    android:layout_marginRight="50dp"
+                    android:singleLine="true"/>
+
+            </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_weight="0.04">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="중요도"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_marginRight="15dp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"/>
+                <RatingBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ratingBar"
+                    android:layout_alignParentTop="true"
+                    style="?android:attr/ratingBarStyleIndicator"
+                    android:numStars="5"
+                    android:stepSize="1"
+                    android:rating="2"/>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                >
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spCategory"
+                    android:layout_toLeftOf="@+id/btnAddAlarm"
+                    android:layout_toStartOf="@+id/btnAddAlarm"
+                    android:layout_alignBottom="@+id/btnAddAlarm"/>
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="T"
+                    android:id="@+id/btnAddAlarm"
+                    android:src="@drawable/ic_action_alarms"
+                    android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/btnAttachFile"
+                    android:layout_toStartOf="@+id/btnAttachFile"/>
+
+                <ImageButton
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="F"
+                    android:id="@+id/btnAttachFile"
+                    android:src="@drawable/ic_action_attachment"
+                    android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/btnInfo"
+                    android:layout_toStartOf="@+id/btnInfo"
+                />
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="I"
+                    android:id="@+id/btnInfo"
+                    android:src="@drawable/ic_action_about"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true">
+
+                    <Button
+                        android:id="@+id/btnEdit"
+                        style="@style/Widget.AppCompat.Button.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="3dp"
+                        android:padding="10dp"
+                        android:text="편집" />
+
+                </LinearLayout>
+
+
+            </RelativeLayout>
+            <EditText xmlns:android="http://schemas.android.com/apk/res/android"
+                android:visibility="gone"
+                android:id="@+id/etMemoEditor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dip"
+                android:scrollbars="vertical"
+                android:gravity="top"
+                android:textSize="16sp"
+                android:capitalize="sentences"
+                android:layout_alignParentTop="true"/>
+            <TextView
+                android:id="@+id/tvMemoEditor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:autoLink="all"
+                android:capitalize="sentences"
+                android:clickable="true"
+                android:gravity="top"
+                android:linksClickable="true"
+                android:padding="15dip"
+                android:scrollbars="vertical"
+                android:textSize="16sp"
+                android:visibility="visible" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

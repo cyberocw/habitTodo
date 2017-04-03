@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -107,6 +108,27 @@ public class MemoFragment extends Fragment {
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		mView = inflater.inflate(R.layout.fragment_memo, container, false);
+
+		Bundle args = getArguments();
+		boolean showToolbar = false;
+		if(args != null){
+			showToolbar = args.getBoolean(Const.MEMO.SHOW_TOOLBAR, false);
+		}
+
+		if(showToolbar) {
+			Toolbar toolbar = (Toolbar) mView.findViewById(R.id.toolbar);
+			toolbar.setVisibility(View.VISIBLE);
+			toolbar.setTitle(R.string.app_name);
+			toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
+			toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					getActivity().onBackPressed();
+				}
+			});
+			if(args.containsKey(Const.CATEGORY.CATEGORY_TITLE_KEY))
+				toolbar.setTitle(args.getString(Const.CATEGORY.CATEGORY_TITLE_KEY));
+		}
 		return mView;
 	}
 
@@ -143,7 +165,6 @@ public class MemoFragment extends Fragment {
 
 		if(mIsShareMode){
 			showNewMemoDialog();
-			mIsShareMode = false;
 		}
 
 	}
@@ -221,7 +242,7 @@ public class MemoFragment extends Fragment {
 		dialogNew.setArguments(bundle);
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction ft = fragmentManager.beginTransaction();
-		ft.replace(R.id.main_container, dialogNew);
+		ft.add(R.id.warpContainer, dialogNew);
 		ft.addToBackStack(null).commit();
 		dialogNew.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
 	}
@@ -251,11 +272,10 @@ public class MemoFragment extends Fragment {
 				// 알람 추가
 				if(alarmVO != null) {
 					if (mAlarmDataManager.addItem(alarmVO) == true) {
-						mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
-
 						if (!insertRelation(alarmVO, memoVO)){
 							Toast.makeText(mCtx, "Relation 수정 등록 실패", Toast.LENGTH_LONG).show();
 						}
+						mAlarmDataManager.resetMinAlarmCall();
 					}
 					else {
 						Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
@@ -295,24 +315,26 @@ public class MemoFragment extends Fragment {
 						}
 					}
 					else{
-						Log.d(Const.DEBUG_TAG, "elselese");
 						//alarm modify시 delete 후 insert 과정에서 delete하면서 relation도 함께 지워짐
 						if (mAlarmDataManager.modifyItem(alarmVO) == false) {
 							Toast.makeText(mCtx, "Alarm DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
 							break;
 						}
 					}
-
-					mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
+					mAlarmDataManager.resetMinAlarmCall();
 				}
 				//기존 알람이 있는데, 알람을 신규 드록했다가 다시 제거했을 경우
 				else if(bundle.containsKey(Const.MEMO.ORIGINAL_ALARM_ID_KEY)){
 					mAlarmDataManager.deleteItemById(bundle.getLong(Const.MEMO.ORIGINAL_ALARM_ID_KEY));
-					mAlarmDataManager.resetMinAlarmCall(alarmVO.getAlarmDateType());
+					mAlarmDataManager.resetMinAlarmCall();
 				}
 				break;
 		}
 		super.onActivityResult(requestCode, resultCode, data);
+
+		if(mIsShareMode){
+			getActivity().finish();
+		}
 	}
 
 	public void deleteItemAlertDialog(final long id){

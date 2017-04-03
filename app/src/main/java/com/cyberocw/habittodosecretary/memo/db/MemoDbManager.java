@@ -42,12 +42,15 @@ public class MemoDbManager extends DbHelper{
 	public ArrayList<MemoVO> getListByCate(long cateId){
 		String selectQuery = " SELECT TM.*, AR." + KEY_F_ALARM_ID + " FROM " + TABLE_MEMO + " TM LEFT JOIN " + TABLE_ALARAM_RELATION + " AR " +
 				" ON TM." + KEY_ID + "= AR." + KEY_F_ID + " AND AR." + KEY_TYPE + " = '"+ Const.ETC_TYPE.MEMO + "'";
+			selectQuery += " where TM." + KEY_USE_YN + " = 1 ";
 				if(cateId > -1)
-					selectQuery += " WHERE " + KEY_CATEGORY_ID + " = " + cateId;
+					selectQuery += " AND " + KEY_CATEGORY_ID + " = " + cateId;
+			selectQuery += " order by " + KEY_CREATE_DATE + " desc";
+
 		return getQuery(selectQuery);
 	}
 	public ArrayList<MemoVO> getList(){
-		String selectQuery = " SELECT * FROM " + TABLE_MEMO;
+		String selectQuery = " SELECT * FROM " + TABLE_MEMO + " where " + KEY_USE_YN + " = 1 order by " + KEY_CREATE_DATE + " desc";
 		return getQuery(selectQuery);
 	}
 	public ArrayList<MemoVO> getQuery(String selectQuery) {
@@ -70,6 +73,7 @@ public class MemoDbManager extends DbHelper{
 				vo.setUpdateDt(c.getLong(c.getColumnIndex(KEY_UPDATE_DATE)));
 				vo.setViewCnt(c.getInt(c.getColumnIndex(KEY_VIEW_CNT)));
 				vo.setRank(c.getInt(c.getColumnIndex(KEY_RANK)));
+				vo.setUseYn(c.getInt(c.getColumnIndex(KEY_USE_YN)));
 
 				if(!c.isNull(c.getColumnIndex(KEY_F_ALARM_ID)))
 					vo.setAlarmId(c.getLong(c.getColumnIndex(KEY_F_ALARM_ID)));
@@ -87,7 +91,8 @@ public class MemoDbManager extends DbHelper{
 		values.put(KEY_CONTENTS, item.getContents());
 		values.put(KEY_TYPE, "MEMO");
 		values.put(KEY_VIEW_CNT, 0);
-		values.put(KEY_URL, item.getUrl());
+		values.put(KEY_USE_YN, item.getUseYn());
+		values.put(KEY_URL, item.getUseYn());
 		values.put(KEY_RANK, item.getRank());
 		values.put(KEY_CATEGORY_ID, item.getCategoryId());
 
@@ -117,7 +122,10 @@ public class MemoDbManager extends DbHelper{
 				alarmDbManager.deleteAlarm(alarmId, db);
 				commonRelationDbManager.deleteByTypeAndId(Const.ETC_TYPE.MEMO, id, db);
 			}
-			db.delete(TABLE_MEMO, KEY_ID + "=?", new String[]{String.valueOf(id)});
+			//db.delete(TABLE_MEMO, KEY_ID + "=?", new String[]{String.valueOf(id)});
+			ContentValues values = new ContentValues();
+			values.put(KEY_USE_YN, 0);
+			db.update(TABLE_MEMO, values, KEY_ID + " =?", new String[]{String.valueOf(id)});
 			db.setTransactionSuccessful();
 		}
 		catch (Exception e){
@@ -140,6 +148,7 @@ public class MemoDbManager extends DbHelper{
 		values.put(KEY_TITLE, item.getTitle());
 		values.put(KEY_CONTENTS, item.getContents());
 		values.put(KEY_TYPE, "MEMO");
+		values.put(KEY_USE_YN, 1);
 		values.put(KEY_VIEW_CNT, 0);
 		values.put(KEY_URL, item.getUrl());
 		values.put(KEY_RANK, item.getRank());

@@ -21,4 +21,9 @@
     <string name="nav_item_info">Info</string>
     <string name="nav_item_cate">Category</string>
     <string name="nav_item_setting">Settings</string>
+    <string name="group_title_repeat">반복 알람</string>
+    <string name="group_title_set_date">날짜 지정 알람</string>
+    <string name="group_title_postpone">미룬 알람</string>
+    <string name="group_title_tomorrow">내일</string>
+    <string name="group_title_after_day_tomorrow">모레</string>
 </resources>

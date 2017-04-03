@@ -20,7 +20,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static DbHelper sInstance;
 
 	private static final String DB_NME = "habit_todo";
-	private static final int DB_VERSION = 14;
+	private static final int DB_VERSION = 16;
 
 	private static final String ARRAY_DIV = "_ho8c7wt_";
 
@@ -261,6 +261,20 @@ public class DbHelper extends SQLiteOpenHelper {
 			values.put(KEY_SORT, 0);
 			db.insert(TABLE_CATEGORY, null, values);
 		}
+		if(oldVersion < 15){
+			String sql = "ALTER TABLE " + TABLE_MEMO + " ADD COLUMN " + KEY_USE_YN + " integer ; ";
+			db.execSQL(sql);
+			String sql2 = "UPDATE " + TABLE_MEMO + " SET " + KEY_USE_YN + " = 1 ; ";
+			db.execSQL(sql2);
+		}
+		if(oldVersion == 15){
+			ContentValues values = new ContentValues();
+			values.put(KEY_TITLE, "미지정");
+			values.put(KEY_TYPE, "category");
+			values.put(KEY_USE_YN, 1);
+			values.put(KEY_SORT, 0);
+			db.insert(TABLE_CATEGORY, null, values);
+		}
 	}
 
 	private String getCreateTableQuery(String tableName){
@@ -286,6 +300,7 @@ public class DbHelper extends SQLiteOpenHelper {
 					KEY_VIEW_CNT + " integer, " +
 					KEY_RANK + " integer, " +
 					KEY_CATEGORY_ID + " integer, " +
+					KEY_USE_YN + " integer, " +
 					KEY_CREATE_DATE + " integer, " +
 					KEY_UPDATE_DATE + " integer " +
 					");CREATE INDEX if not exists " + TABLE_MEMO + " memo_create_date_idx ON " + TABLE_MEMO + "(" + KEY_CREATE_DATE + ");";

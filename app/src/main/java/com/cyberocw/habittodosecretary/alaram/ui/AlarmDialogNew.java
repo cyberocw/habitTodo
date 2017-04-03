@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -112,7 +113,7 @@ public class AlarmDialogNew extends DialogFragment{
 		View view = inflater.inflate(R.layout.fragment_dialog_alarm_add, container, false);
 		mView = view;
 
-		mBtnClose = ButterKnife.findById(mView, R.id.btnClose);
+		//mBtnClose = ButterKnife.findById(mView, R.id.btnClose);
 		mBtnSave = ButterKnife.findById(mView, R.id.btnSave);
 
 		mSpAlarmType = (Spinner) view.findViewById(R.id.spAlarmType);
@@ -147,7 +148,16 @@ public class AlarmDialogNew extends DialogFragment{
 		for(int i = 0; i < mArrDayId.length; i++) {
 			mMapDay.put(mArrDayString[i], (Button) view.findViewById(mArrDayId[i]));
 		}
-
+		Toolbar toolbar = (Toolbar) mView.findViewById(R.id.toolbar);
+		toolbar.setVisibility(View.VISIBLE);
+		toolbar.setTitle(R.string.app_name);
+		toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
+		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getActivity().onBackPressed();
+			}
+		});
 		return mView;
 	}
 /*
@@ -217,7 +227,7 @@ public class AlarmDialogNew extends DialogFragment{
 		mEtcMap = new LinkedHashMap();
 
 		mEtcMap.put(Const.ETC_TYPE.NONE, "없음");
-		mEtcMap.put(Const.ETC_TYPE.WEATHER, "날씨");
+		//mEtcMap.put(Const.ETC_TYPE.WEATHER, "날씨");
 		mEtcMap.put(Const.ETC_TYPE.MEMO, "메모");
 
 //		arraylist.add("날씨");
@@ -643,6 +653,7 @@ public class AlarmDialogNew extends DialogFragment{
 		//스피너 속성
 		mSpAppList.setPrompt("알람 종류"); // 스피너 제목
 		mSpAppList.setAdapter(adapter);
+		mSpAppList.setEnabled(false);
 
 	}
 
@@ -770,13 +781,14 @@ public class AlarmDialogNew extends DialogFragment{
 			}
 		});
 
+		/*
 		mBtnClose.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				getActivity().onBackPressed();
 			}
 		});
-
+		*/
 		mBtnSave.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

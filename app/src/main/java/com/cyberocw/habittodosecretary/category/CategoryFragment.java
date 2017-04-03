@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -89,7 +90,16 @@ public class CategoryFragment extends Fragment {
 		ListView lv = (ListView) mView.findViewById(R.id.categoryListView);
 		lv.setAdapter(mCateAdapter);
 		lv.setOnItemClickListener(new CategoryClickListener());
-		binBtnEvent();
+		lv.setLongClickable(true);
+
+		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				longClickPopup(position, id);
+				return true;
+			}
+		});
+		bindBtnEvent();
 	}
 
 	private class CategoryClickListener implements AdapterView.OnItemClickListener{
@@ -99,7 +109,7 @@ public class CategoryFragment extends Fragment {
 		}
 	}
 
-	private void binBtnEvent(){
+	private void bindBtnEvent(){
 		Button btnAddCate = (Button) mView.findViewById(R.id.btnAddCate);
 		btnAddCate.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -112,9 +122,15 @@ public class CategoryFragment extends Fragment {
 	private void showCatePopup(){
 		showCatePopup(-1);
 	}
-	private void showCatePopup(long _id){
-		if(_id == -1){
-
+	private void showCatePopup(long cateId){
+		final CategoryVO categoryVO;
+		String dialogTitle = "";
+		if(cateId > -1){
+			categoryVO = mCateDataManager.getItemById(cateId);
+			dialogTitle = "카테고리 수정";
+		}else{
+			categoryVO = new CategoryVO();
+			dialogTitle = "카테고리 등록";
 		}
 
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -123,6 +139,7 @@ public class CategoryFragment extends Fragment {
 		LinearLayout ll = new LinearLayout(mCtx);
 		mEtCateTitle = new EditText(mCtx);
 		mEtCateTitle.setLayoutParams(params);
+		mEtCateTitle.setText(categoryVO.getTitle());
 
 		ll.setLayoutParams(params);
 		int padding = (int) getResources().getDimension(R.dimen.catePopupPadding);
@@ -131,10 +148,10 @@ public class CategoryFragment extends Fragment {
 		ll.addView(mEtCateTitle);
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setView(ll);
-		builder.setTitle("Add Category");
+		builder.setTitle(dialogTitle);
 		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							addCateListener(dialog);
+							addCateListener(dialog, categoryVO);
 
 						}
 				})
@@ -147,7 +164,8 @@ public class CategoryFragment extends Fragment {
 		builder.create().show();
 	}
 
-	public void addCateListener(DialogInterface dialog){
+	public void addCateListener(DialogInterface dialog, CategoryVO categoryVO){
+
 		String title = mEtCateTitle.getText().toString();
 
 		if(title.equals("")){
@@ -155,18 +173,89 @@ public class CategoryFragment extends Fragment {
 			return;
 		}
 
-		CategoryVO vo = new CategoryVO();
-		vo.setTitle(title);
-		vo.setType(Const.CATEGORY.TYPE);
+		categoryVO.setTitle(title);
+		categoryVO.setType(Const.CATEGORY.TYPE);
 		//vo.setSortOrder(mCateDataManager.getCount());
+		Log.d(this.toString(), "categoryVO.getId()="+categoryVO.getId());
+		if(categoryVO.getId() == -1){
+			if(mCateDataManager.addItem(categoryVO))
+				Toast.makeText(mCtx, "추가 되었습니다", Toast.LENGTH_SHORT).show();
+			else
+				Toast.makeText(mCtx, "오류 : CATEGORY ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
 
-		if(mCateDataManager.addItem(vo)){
-			Toast.makeText(mCtx, "추가 되었습니다", Toast.LENGTH_SHORT).show();
-			dialog.dismiss();
-			mCateAdapter.notifyDataSetChanged();
+		}else{
+			if(mCateDataManager.modifyItem(categoryVO))
+				Toast.makeText(mCtx, "수정 되었습니다", Toast.LENGTH_SHORT).show();
+			else
+				Toast.makeText(mCtx, "오류 : 수정에 실패했습니다.", Toast.LENGTH_LONG).show();
 		}
-		else{
-			Toast.makeText(mCtx, "등록에 실패했습니다", Toast.LENGTH_SHORT).show();
+		dialog.dismiss();
+		mCateAdapter.notifyDataSetChanged();
+
+	}
+	protected void longClickPopup(int position, final long _id){
+		String names[] ={"편집","삭제"};
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
+
+		ListView lv = new ListView(mCtx);
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		alertDialog.setView(lv);
+		alertDialog.setTitle("옵션");
+
+		lv.setLayoutParams(params);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,android.R.layout.simple_list_item_1,names);
+		lv.setAdapter(adapter);
+
+		final DialogInterface dialogInterface = alertDialog.show();
+
+		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				switch (position) {
+					case 0:
+						showCatePopup(_id);
+						//showNewTimerDialog(_id);
+
+						break;
+					case 1:
+						deleteItemAlertDialog(_id);
+				}
+				dialogInterface.dismiss();
+			}
+		});
+
+
+	}
+	public void deleteItemAlertDialog(final long id){
+		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
+		alert_confirm.setMessage("해당 카테고리와 하위 메모를 모두 삭제하시겠습니까?").setCancelable(false).setPositiveButton("확인",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+
+						deleteCategory(id);
+
+						dialog.dismiss();
+					}
+				}).setNegativeButton("취소",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// 'No'
+						dialog.dismiss();
+					}
+				});
+		AlertDialog alert = alert_confirm.create();
+		alert.show();
+
+	}
+
+	private void deleteCategory(long id){
+		if(mCateDataManager.deleteItemById(id)){
+			Toast.makeText(mCtx, "삭제되었습니다", Toast.LENGTH_LONG).show();
+			mCateAdapter.notifyDataSetChanged();
+		}else{
+			Toast.makeText(mCtx, "실패했습니다", Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -202,14 +291,15 @@ public class CategoryFragment extends Fragment {
 			b = new Bundle();
 
 		b.putLong(Const.CATEGORY.CATEGORY_ID, id);
-
+		b.putString(Const.CATEGORY.CATEGORY_TITLE_KEY, mCateDataManager.getItemById(id).getTitle());
+		b.putBoolean(Const.MEMO.SHOW_TOOLBAR, true);
 		f.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE);
 
 		f.setArguments(b);
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 		fragmentManager.beginTransaction()
 				.addToBackStack(null)
-				.add(R.id.main_container, f).commit();
+				.add(R.id.warpContainer, f).commit();
 	}
 
 	@Override

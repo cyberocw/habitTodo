@@ -7,7 +7,7 @@ import java.util.Calendar;
  */
 public class CategoryVO {
 	private long id = -1;
-	private String title;
+	private String title = "";
 	private String type;
 	private int sortOrder;
 	private int useYn;

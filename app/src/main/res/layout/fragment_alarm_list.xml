@@ -235,6 +235,7 @@
                     android:id="@+id/alramListView"
                     android:longClickable="true"
                     android:clickable="true"
+                    tools:listitem="@layout/alarm_view"
                     />
             </LinearLayout>
 

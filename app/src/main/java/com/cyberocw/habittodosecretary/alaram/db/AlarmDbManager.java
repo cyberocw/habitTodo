@@ -471,7 +471,6 @@ public class AlarmDbManager extends DbHelper{
 	}
 
 	public SQLiteDatabase deleteAlarm(long id, SQLiteDatabase db) {
-		// TODO: 2015-08-30 알림 반복인데 오늘만 삭제 때 어떻게 할지 구현 해야 함
 		db.delete(TABLE_ALARM, KEY_ID + "=?", new String[]{String.valueOf(id)});
 		db.delete(TABLE_ALARM_REPEAT, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
 		db.delete(TABLE_ALARM_DATE, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
@@ -812,7 +811,6 @@ public class AlarmDbManager extends DbHelper{
 	}
 
 	public boolean deleteTimer(long id) {
-		// TODO: 2015-08-30 알림 반복인데 오늘만 삭제 때 어떻게 할지 구현 해야 함
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		db.beginTransaction();

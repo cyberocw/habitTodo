@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.util.Linkify;
@@ -49,7 +50,7 @@ public class MemoDialogNew extends Fragment{
 	EditText mEtMemoEditor;
 	TextView mTvMemoEditor;
 	RatingBar mRatingBar;
-	Button mBtnSave;
+	Button mBtnSave, mBtnEdit;
 	ImageButton mBtnAddAlarm;
 	MemoVO mMemoVO;
 	AlarmVO mAlarmVO, mAlarmOriginalVO = null;
@@ -79,6 +80,16 @@ public class MemoDialogNew extends Fragment{
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		mView = inflater.inflate(R.layout.fragment_dialog_memo, container, false);
+		Toolbar toolbar = (Toolbar) mView.findViewById(R.id.toolbar);
+		toolbar.setVisibility(View.VISIBLE);
+		toolbar.setTitle(R.string.app_name);
+		toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
+		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getActivity().onBackPressed();
+			}
+		});
 		return mView;
 	}
 
@@ -140,6 +151,7 @@ public class MemoDialogNew extends Fragment{
 		mTvMemoEditor = (TextView) mView.findViewById(R.id.tvMemoEditor);
 		mRatingBar = (RatingBar) mView.findViewById(R.id.ratingBar);
 		mBtnSave = (Button) mView.findViewById(R.id.btnMemoSave);
+		mBtnEdit = (Button) mView.findViewById(R.id.btnEdit);
 		mBtnAddAlarm = (ImageButton) mView.findViewById(R.id.btnAddAlarm);
 		makeCategoryList();
 		bindEvent();
@@ -200,47 +212,29 @@ public class MemoDialogNew extends Fragment{
 	}
 
 	private void bindEventSaveAndEdit(){
-		if(isMemoEditable){
-			mBtnSave.setText("SAVE");
-			mTvMemoEditor.setVisibility(View.INVISIBLE);
+		if(mMemoVO.getId() == -1){
+			mBtnEdit.setVisibility(View.GONE);
+		}
+		else if(isMemoEditable){
+			mBtnEdit.setText("완료");
+
+			mTvMemoEditor.setVisibility(View.GONE);
 			mEtMemoEditor.setVisibility(View.VISIBLE);
-			mTvMemoEditor.setOnClickListener(null);
-			mBtnSave.setOnClickListener(null);
-			mBtnSave.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					returnData();
-				}
-			});
+			//mTvMemoEditor.setOnClickListener(null);
+			//mBtnEdit.setOnClickListener(null);
+
 		}
 		else{
-			mBtnSave.setText("EDIT");
-
+			mBtnEdit.setText("수정");
+			mTvMemoEditor.setText(mEtMemoEditor.getText());
 			mTvMemoEditor.setVisibility(View.VISIBLE);
-			mTvMemoEditor.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					isMemoEditable = true;
-					bindEventSaveAndEdit();
-				}
-			});
-			mEtMemoEditor.setVisibility(View.INVISIBLE);
+			mEtMemoEditor.setVisibility(View.GONE);
 
 			//mEtMemoEditor.setLinksClickable(true);
 			mTvMemoEditor.setAutoLinkMask(Linkify.WEB_URLS);
 			//mEtMemoEditor.setMovementMethod(MyMovementMethod.getInstance());
 			//If the edit text contains previous text with potential links
 			Linkify.addLinks(mTvMemoEditor, Linkify.WEB_URLS);
-
-			//mEtMemoEditor.setClickable(false);
-			mBtnSave.setOnClickListener(null);
-			mBtnSave.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					isMemoEditable = true;
-					bindEventSaveAndEdit();
-				}
-			});
 		}
 
 		CommonUtils.setupUI(mView, getActivity());
@@ -271,6 +265,12 @@ public class MemoDialogNew extends Fragment{
 			}
 		});
 
+		mBtnSave.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				returnData();
+			}
+		});
 
 		mRatingBar.setIsIndicator(false);
 
@@ -278,6 +278,23 @@ public class MemoDialogNew extends Fragment{
 			@Override
 			public void onClick(View v) {
 				btnAddAlarmPopup();
+			}
+		});
+
+		mBtnEdit.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//returnData();
+				isMemoEditable = !isMemoEditable;
+				bindEventSaveAndEdit();
+			}
+		});
+
+		mTvMemoEditor.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				isMemoEditable = !isMemoEditable;
+				bindEventSaveAndEdit();
 			}
 		});
 	}
@@ -352,7 +369,7 @@ public class MemoDialogNew extends Fragment{
 		// for the fragment, which is always the root view for the activity
 		alarmDialogNew.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE);
 
-		transaction.add(R.id.main_container, alarmDialogNew, "fragment_dialog_alarm_add")
+		transaction.add(R.id.warpContainer, alarmDialogNew, "fragment_dialog_alarm_add")
 				.addToBackStack(null).commit();
 
 
@@ -369,6 +386,11 @@ public class MemoDialogNew extends Fragment{
 	private boolean validate(){
 		if(mSelectedCateId == -1){
 			Toast.makeText(mCtx, "카테고리를 선택해 주세요", Toast.LENGTH_SHORT).show();
+			return false;
+		}
+
+		if(mTvTitle.getText().equals("")){
+			Toast.makeText(mCtx, "제목을 입력해 주세요", Toast.LENGTH_SHORT).show();
 			return false;
 		}
 

@@ -536,7 +536,7 @@ public class AlarmFragment extends Fragment{
 		}
 
 		final int options = vo.getAlarmDateType();
-		if(options == Const.ALARM_DATE_TYPE.REPEAT){
+		if(options == 55500){//Const.ALARM_DATE_TYPE.REPEAT){
 			AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
 			alert_confirm.setMessage("반복되는 알림을 모두 삭제하시겠습니까?").setCancelable(false)
 					.setPositiveButton("모두 삭제",
@@ -562,7 +562,9 @@ public class AlarmFragment extends Fragment{
 		//오늘 날짜만 삭제 (dateList가 여러개일때 로직 바꿔야 함
 		else{
 			mAlarmDataManager.deleteItemById(id);
+			mAlarmDataManager.resetMinAlarmCall();
 			refreshAlarmList();
+
 		}
 	}
 
@@ -752,7 +754,7 @@ public class AlarmFragment extends Fragment{
 		transaction.setTransition(FragmentTransaction.TRANSIT_ENTER_MASK);
 		// To make it fullscreen, use the 'content' root view as the container
 		// for the fragment, which is always the root view for the activity
-		transaction.replace(R.id.main_container, alarmDialogNew, "alarmDialog")
+		transaction.replace(R.id.warpContainer, alarmDialogNew, "alarmDialog")
 				.addToBackStack(null).commit();
 		//alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
 	}

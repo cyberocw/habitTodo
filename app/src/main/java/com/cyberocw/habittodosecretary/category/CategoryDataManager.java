@@ -83,7 +83,6 @@ public class CategoryDataManager {
 		//알람 인던트 등록
 		if(item.getId() == -1){
 			Log.e(Const.DEBUG_TAG, "오류 : CATEGORY ID가 생성되지 않았습니다");
-			Toast.makeText(mCtx, "오류 : CATEGORY ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
 			return false;
 		}
 
@@ -96,7 +95,6 @@ public class CategoryDataManager {
 		int nAffRow = mDb.updateCategory(item);
 
 		if (nAffRow < 1){
-			Toast.makeText(mCtx, "오류 : 수정에 실패했습니다.", Toast.LENGTH_LONG).show();
 			return false;
 		}
 		else {

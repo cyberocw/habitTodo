@@ -106,11 +106,13 @@ public class Const {
 	public class CATEGORY{
 		public static final String TYPE = "category";
 		public static final String CATEGORY_ID = "cateId";
+		public static final String CATEGORY_TITLE_KEY = "cateTitle";
 	}
 
 	public class MEMO{
 		public static final String IS_INIT_MEMO_MODE = "isInitMemoMode";
 		public static final String ORIGINAL_ALARM_ID_KEY = "originalAlarmId";
+		public static final String SHOW_TOOLBAR = "showToolbar";
 
 		public class MEMO_INTERFACE_CODE{
 			public static final int ADD_MEMO_CODE = 1111;

@@ -34,7 +34,8 @@ public class CategoryDbManager extends DbHelper{
 	public ArrayList<CategoryVO> getCategoryList() {
 
 		String selectQuery = " SELECT *, (SELECT COUNT(*) FROM " + TABLE_MEMO +
-				" WHERE " + KEY_CATEGORY_ID + "= CATE." + KEY_ID + ") AS cnt FROM " + TABLE_CATEGORY + " CATE WHERE " + KEY_TYPE + "=\"" + Const.CATEGORY.TYPE + "\"";
+				" WHERE " + KEY_CATEGORY_ID + "= CATE." + KEY_ID + " AND " + KEY_USE_YN + " = 1) AS cnt " +
+				"FROM " + TABLE_CATEGORY + " CATE WHERE " + KEY_TYPE + "=\"" + Const.CATEGORY.TYPE + "\" AND " + KEY_USE_YN + " = 1";
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);
@@ -61,11 +62,48 @@ public class CategoryDbManager extends DbHelper{
 	}
 
 	public int updateCategory(CategoryVO item) {
-		return 0;
+		//return 0;
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(KEY_TITLE, item.getTitle());
+
+		int result = db.update(TABLE_CATEGORY, values, KEY_ID + "=?", new String[]{Long.toString(item.getId())});
+		closeDB();
+		return result;
 	}
 
 	public boolean deleteCategory(long id) {
-		return false;
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.beginTransaction();
+		boolean result = true;
+
+		String sqlAlarm = "delete from " + TABLE_ALARM + " where " + KEY_ID + " in " +
+				"( select " + KEY_F_ALARM_ID + " from " + TABLE_ALARAM_RELATION + " where " +
+				KEY_TYPE + " = '" + Const.ETC_TYPE.MEMO + "' and " + KEY_F_ID + " in " +
+				"( select " + KEY_ID + " from " + TABLE_MEMO + " where " + KEY_CATEGORY_ID + " = " + id +"))";
+
+		String sqlRelation = " delete from " + TABLE_ALARAM_RELATION + " where " +
+				KEY_TYPE + " = '" + Const.ETC_TYPE.MEMO + "' and " + KEY_F_ID + " in " +
+				"( select " + KEY_ID + " from " + TABLE_MEMO + " where " + KEY_CATEGORY_ID + " = " + id +")";
+
+		try {
+			db.execSQL(sqlAlarm);
+			db.execSQL(sqlRelation);
+			ContentValues values = new ContentValues();
+			values.put(KEY_USE_YN, 0);
+			db.update(TABLE_CATEGORY, values, KEY_ID + "=?", new String[]{String.valueOf(id)});
+			db.update(TABLE_MEMO, values, KEY_CATEGORY_ID + "=?", new String[]{String.valueOf(id)});
+			db.setTransactionSuccessful();
+		}
+		catch (Exception e){
+			result = false;
+		}
+		finally{
+			db.endTransaction();
+			closeDB();
+		}
+
+		return result;
 	}
 
 	public void insertCategory(CategoryVO item) {
