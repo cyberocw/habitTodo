@@ -62,32 +62,31 @@ public class NotificationService extends Service{
 		boolean isAlarmNoti = prefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
 
 		String noti_title = intent.getExtras().getString("title");
-		String noti_message = intent.getExtras().getString("notes");
+		String etcType = intent.getExtras().getString("etcType");
+		//String noti_message = intent.getExtras().getString("notes");
 		long reqCode = intent.getExtras().getLong("reqCode");
 		//나중에 reqCode 가 int 범위를 넘어설것 같을때 별도 처리해주기 noti id는 int만 가능해서
 		long alarmId = intent.getExtras().getLong("alarmId");
 
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Intent intent1 = new Intent(this, MainActivity.class);
+		intent1.putExtra("etcType", etcType);
 		intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, -1, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this);
+		/*
 		mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
 		mCompatBuilder.setTicker("Habit Todo");
 		mCompatBuilder.setWhen(System.currentTimeMillis());
 
 		mCompatBuilder.setContentTitle(noti_title);
-
-
-
+		*/
 		//mCompatBuilder.setContentText(noti_message);
 		if(isAlarmNoti) {
 			mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND);
 			mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 100L, 100L, 100L, 100L, 100L, 100L});
 		}
-
-		//
 
         RemoteViews remoteView = new RemoteViews(this.getPackageName(), R.layout.alarm_notification);
 		remoteView.setOnClickPendingIntent(R.id.notiWrap, pendingIntent);

@@ -62,22 +62,32 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 	    FragmentManager fragmentManager = getSupportFragmentManager();
 
-		Fragment alarmFragment = new AlarmFragment();
+		Fragment fragment;
 		Intent intent = getIntent();
 
 		if(intent != null) {
 			Bundle bundle = intent.getExtras();
-			if (bundle != null) {
-				alarmFragment.setArguments(intent.getExtras());
+			if (bundle != null && bundle.containsKey(Const.REQ_CODE)) {
+				fragment = new AlarmFragment();
+				fragment.setArguments(intent.getExtras());
 
 				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
 				long reqCode = bundle.getLong(Const.REQ_CODE);
 				Log.d(Const.DEBUG_TAG, "reqCode=" + reqCode);
 				manager.cancel((int) reqCode);
+			}else if(bundle != null && bundle.containsKey("etcType")){
+				fragment = new MemoFragment();
+				fragment.setArguments(intent.getExtras());
+
+			}else{
+				fragment = new AlarmFragment();
 			}
-		}
+
+		}else
+			fragment = new AlarmFragment();
+
 	    fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-			    .replace(R.id.main_container, alarmFragment).commit();
+			    .replace(R.id.main_container, fragment).commit();
 
 		afterUpdateVersion();
 

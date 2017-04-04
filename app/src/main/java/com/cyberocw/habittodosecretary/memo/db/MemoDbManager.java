@@ -45,12 +45,12 @@ public class MemoDbManager extends DbHelper{
 			selectQuery += " where TM." + KEY_USE_YN + " = 1 ";
 				if(cateId > -1)
 					selectQuery += " AND " + KEY_CATEGORY_ID + " = " + cateId;
-			selectQuery += " order by " + KEY_CREATE_DATE + " desc";
+			selectQuery += " order by " + KEY_UPDATE_DATE + " desc";
 
 		return getQuery(selectQuery);
 	}
 	public ArrayList<MemoVO> getList(){
-		String selectQuery = " SELECT * FROM " + TABLE_MEMO + " where " + KEY_USE_YN + " = 1 order by " + KEY_CREATE_DATE + " desc";
+		String selectQuery = " SELECT * FROM " + TABLE_MEMO + " where " + KEY_USE_YN + " = 1 order by " + KEY_UPDATE_DATE + " desc";
 		return getQuery(selectQuery);
 	}
 	public ArrayList<MemoVO> getQuery(String selectQuery) {

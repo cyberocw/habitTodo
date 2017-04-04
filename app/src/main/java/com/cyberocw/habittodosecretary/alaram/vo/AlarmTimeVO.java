@@ -15,6 +15,8 @@ public class AlarmTimeVO implements Serializable{
 	private String alarmTitle;
 	private int alarmOption;
 	private int alarmType;
+	private String etcType;
+
 	private static final long serialVersionUID = 1L;
 
 	public String getAlarmTitle() {
@@ -79,6 +81,14 @@ public class AlarmTimeVO implements Serializable{
 
 	public void setAlarmType(int alarmType) {
 		this.alarmType = alarmType;
+	}
+
+	public String getEtcType() {
+		return etcType;
+	}
+
+	public void setEtcType(String etcType) {
+		this.etcType = etcType;
 	}
 
 	@Override

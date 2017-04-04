@@ -208,13 +208,14 @@ public class AlarmBackgroudService extends Service {
         if(mAlarmType < 1) {
             Intent myIntent = new Intent(mCtx, NotificationService.class);
             myIntent.putExtra("title", mTitle);
-            myIntent.putExtra("notes", "");
+            myIntent.putExtra("etcType", mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
             myIntent.putExtra("reqCode", mArrAlarmVOList.get(mMinRemainPosition).getfId());
             myIntent.putExtra("alarmId", mArrAlarmVOList.get(mMinRemainPosition).getfId());
             mCtx.startService(myIntent);
         }else{
             Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
             myIntent.putExtra("title", mTitle);
+            myIntent.putExtra("etcType", mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
             myIntent.putExtra("alarmId", mArrAlarmVOList.get(mMinRemainPosition).getfId());
             myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             mCtx.startActivity(myIntent);
