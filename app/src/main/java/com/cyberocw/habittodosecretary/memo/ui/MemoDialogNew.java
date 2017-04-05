@@ -105,8 +105,8 @@ public class MemoDialogNew extends Fragment{
 		Bundle arguments = getArguments();
 
 		if(arguments != null) {
-			mMemoVO = (MemoVO) arguments.getSerializable(Const.MEMO_VO);
-			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.ALARM_VO);
+			mMemoVO = (MemoVO) arguments.getSerializable(Const.PARAM.MEMO_VO);
+			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.PARAM.ALARM_VO);
 			if(mAlarmVO != null){
 				mInitAlarmId = mAlarmVO.getId();
 				mAlarmOriginalVO = mAlarmVO;
@@ -352,10 +352,10 @@ public class MemoDialogNew extends Fragment{
 		AlarmDialogNew alarmDialogNew = new AlarmDialogNew();
 		Bundle bundle = new Bundle();
 		dataBind();
-		bundle.putSerializable(Const.MEMO_VO, mMemoVO);
+		bundle.putSerializable(Const.PARAM.MEMO_VO, mMemoVO);
 
 		if(mAlarmVO != null && mAlarmVO.getId() > -2)
-		bundle.putSerializable(Const.ALARM_VO, mAlarmVO);
+		bundle.putSerializable(Const.PARAM.ALARM_VO, mAlarmVO);
 
 		bundle.putBoolean(Const.MEMO.IS_INIT_MEMO_MODE, true);
 
@@ -403,14 +403,14 @@ public class MemoDialogNew extends Fragment{
 			return ;
 		}
 		Bundle bundle = new Bundle();
-		bundle.putSerializable(Const.MEMO_VO, mMemoVO);
+		bundle.putSerializable(Const.PARAM.MEMO_VO, mMemoVO);
 
 		if(mInitAlarmId > -1){
 			bundle.putLong(Const.MEMO.ORIGINAL_ALARM_ID_KEY, mInitAlarmId);
 		}
 
 		if(isModifyAlarm && mAlarmVO != null)
-			bundle.putSerializable(Const.ALARM_VO, mAlarmVO);
+			bundle.putSerializable(Const.PARAM.ALARM_VO, mAlarmVO);
 
 		Intent intent = new Intent();
 		intent.putExtras(bundle);
@@ -424,7 +424,7 @@ public class MemoDialogNew extends Fragment{
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		isModifyAlarm = true;
-		mAlarmVO = (AlarmVO) data.getExtras().getSerializable(Const.ALARM_VO);
+		mAlarmVO = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 }

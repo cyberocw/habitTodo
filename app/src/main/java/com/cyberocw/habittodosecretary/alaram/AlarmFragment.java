@@ -2,7 +2,6 @@ package com.cyberocw.habittodosecretary.alaram;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -723,7 +721,7 @@ public class AlarmFragment extends Fragment{
 
 		if(id != -1) {
 			Bundle bundle = new Bundle();
-			bundle.putSerializable(Const.TIMER_VO, mTimerDataManager.getItemById(id));
+			bundle.putSerializable(Const.PARAM.TIMER_VO, mTimerDataManager.getItemById(id));
 			timerDialog.setArguments(bundle);
 		}
 		timerDialog.show(fm, "fragment_dialog_timer");
@@ -741,9 +739,9 @@ public class AlarmFragment extends Fragment{
 			Bundle bundle = new Bundle();
 			AlarmVO alarmVO = mAlarmDataManager.getItemByIdInList(id);
 			if(alarmVO.getEtcType() != null && alarmVO.getEtcType().equals(Const.ETC_TYPE.MEMO)){
-				bundle.putSerializable(Const.MEMO_VO, mMemoDataManager.getItemById(alarmVO.getRfid()));
+				bundle.putSerializable(Const.PARAM.MEMO_VO, mMemoDataManager.getItemById(alarmVO.getRfid()));
 			}
-			bundle.putSerializable(Const.ALARM_VO, alarmVO);
+			bundle.putSerializable(Const.PARAM.ALARM_VO, alarmVO);
 			alarmDialogNew.setArguments(bundle);
 		}
 
@@ -766,7 +764,7 @@ public class AlarmFragment extends Fragment{
 
 		switch(resultCode) {
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE :
-				vo = (AlarmVO) data.getExtras().getSerializable(Const.ALARM_VO);
+				vo = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
 
 				// 알람 추가
 				if(mAlarmDataManager.addItem(vo) == true)
@@ -780,7 +778,7 @@ public class AlarmFragment extends Fragment{
 				break;
 
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_MODIFY_FINISH_CODE :
-				vo = (AlarmVO) data.getExtras().getSerializable(Const.ALARM_VO);
+				vo = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
 				// 알람 추가
 				if(mAlarmDataManager.modifyItem(vo) == true)
 					mAlarmAdapter.notifyDataSetChanged();

@@ -1,35 +1,20 @@
  package com.cyberocw.habittodosecretary;
 
-import java.util.Locale;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
-import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
-import com.cyberocw.habittodosecretary.common.vo.RelationVO;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
-import com.cyberocw.habittodosecretary.memo.ui.MemoDialogNew;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
 import io.fabric.sdk.android.Fabric;
@@ -64,7 +49,7 @@ import io.fabric.sdk.android.Fabric;
 		}
 		mFragment = new MemoFragment();
 
-		bundle.putSerializable(Const.MEMO_VO, memoVO);
+		bundle.putSerializable(Const.PARAM.MEMO_VO, memoVO);
 		bundle.putSerializable(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE, true);
 
 		mFragment.setArguments(bundle);

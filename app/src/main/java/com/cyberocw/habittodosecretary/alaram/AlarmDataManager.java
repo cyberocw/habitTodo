@@ -21,7 +21,6 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
 import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -312,7 +311,7 @@ public class AlarmDataManager {
 		ArrayList<AlarmTimeVO> alarmTimeList1 = null;
 		ArrayList<AlarmTimeVO> alarmTimeList2 = null;
 		ArrayList<AlarmTimeVO> alarmTimeList = null;
-		String reqCode = Const.REQ_CODE;
+		String reqCode = Const.PARAM.REQ_CODE;
 
 		alarmTimeList1 = mDb.getMinAlarmTime();
 
@@ -367,7 +366,7 @@ public class AlarmDataManager {
 
 		Log.d(this.toString(), "alarmTimeList.size()="+alarmTimeList.size());
 		for(int i = 0; i < alarmTimeList.size(); i++){
-			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i), i));
+			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i)));
 		}
 
 		String newReqCode = TextUtils.join("," , arrReq);
@@ -384,7 +383,7 @@ public class AlarmDataManager {
 		if(prefs == null)
 			prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 
-		String text = prefs.getString(Const.REQ_CODE, null);
+		String text = prefs.getString(Const.PARAM.REQ_CODE, null);
 
 		AlarmManager alarmManager = (AlarmManager) mCtx
 				.getSystemService(Context.ALARM_SERVICE);
@@ -415,22 +414,26 @@ public class AlarmDataManager {
 		}
 	}
 
-	public long setAlarm(AlarmTimeVO alarmVO, int index) {
-		int callTime = alarmVO.getCallTime();
+	public long setAlarm(AlarmTimeVO alarmTimeVO) {
+		int callTime = alarmTimeVO.getCallTime();
 		Calendar ccc = Calendar.getInstance();
 		Calendar nowCal = Calendar.getInstance();
-		int reqCode = index + 1;
+		long reqResult = (alarmTimeVO.getId() + nowCal.get(Calendar.MILLISECOND));
+		if(reqResult >= Integer.MAX_VALUE)
+			reqResult = reqResult / 10000;
+		int reqCode = (int) reqResult;
 		Log.d(Const.DEBUG_TAG, "reqCode=" + reqCode);
 		//myIntent.removeExtra("title");
-		long timeStamp = alarmVO.getTimeStamp();
+		long timeStamp = alarmTimeVO.getTimeStamp();
 		ccc.setTimeInMillis(timeStamp);
 		ccc.add(Calendar.MINUTE, -10);
 
 		//10분 이내일 경우 바로 서비스 실행
 		if(ccc.getTimeInMillis() < nowCal.getTimeInMillis()){
 			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
-			myIntent.putExtra("alarmTimeVO", alarmVO);
-			Log.d(this.getClass().toString(), "timer background start service alarmVO id=" + alarmVO.getId() + " title =" + alarmVO.getAlarmTitle());
+			alarmTimeVO.setReqCode(reqCode);
+			myIntent.putExtra("alarmTimeVO", alarmTimeVO);
+			Log.d(this.getClass().toString(), "timer background start service alarmVO id=" + alarmTimeVO.getId() + " title =" + alarmTimeVO.getAlarmTitle());
 			mCtx.startService(myIntent);
 			return reqCode;
 		}
@@ -438,8 +441,9 @@ public class AlarmDataManager {
 		AlarmManager alarmDataManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
 		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
 
-		myIntent.putExtra("alarmTimeVO", alarmVO);
-		myIntent.putExtra("title", alarmVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
+		myIntent.putExtra("alarmTimeVO", alarmTimeVO);
+		alarmTimeVO.setReqCode(reqCode);
+		//myIntent.putExtra("title", alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, reqCode, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		setAlarmExact(alarmDataManager, AlarmManager.RTC_WAKEUP, ccc.getTimeInMillis(), pendingIntent);

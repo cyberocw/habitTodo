@@ -57,11 +57,12 @@ public class MemoFragment extends Fragment {
 
 	boolean mIsShareMode = false;
 	boolean mIsEtcMode = false;
+	boolean mIsEtcViewMode = false;
 
 	private View mView;
 	private Context mCtx;
 	SharedPreferences mPrefs;
-	private long mCateId = -1;
+	private long mCateId = -1, mMemoId = -1;
 
 	private OnFragmentInteractionListener mListener;
 
@@ -100,6 +101,10 @@ public class MemoFragment extends Fragment {
 			if(arguments.containsKey(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY)){
 				mIsEtcMode = arguments.getBoolean(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY);
 			}
+			if(arguments.containsKey(Const.PARAM.ETC_TYPE_KEY)){
+				mIsEtcViewMode = true;
+			}
+
 		}
 	}
 
@@ -163,8 +168,19 @@ public class MemoFragment extends Fragment {
 
 		bindEvent();
 
+		// 각 보드별 UI 구성
 		if(mIsShareMode){
 			showNewMemoDialog();
+		}
+		else if(mIsEtcViewMode){
+			long alarmId = getArguments().getLong(Const.PARAM.ALARM_ID);
+			RelationVO rVO = mCommonRelationDBManager.getByAlarmId(alarmId);
+			if(rVO.getfId() == -1){
+				Toast.makeText(mCtx, "Relation 정보를 가져올 수 없습니다", Toast.LENGTH_LONG).show();
+				Log.e(this.toString(), "error! Relation 정보를 가져올 수 없습니다");
+			}
+			else
+				showNewMemoDialog(rVO.getfId());
 		}
 
 	}
@@ -195,7 +211,7 @@ public class MemoFragment extends Fragment {
 				}
 
 				Bundle bundle = new Bundle();
-				bundle.putSerializable(Const.MEMO_VO, memoVO);
+				bundle.putSerializable(Const.PARAM.MEMO_VO, memoVO);
 				Intent intent = new Intent();
 				intent.putExtras(bundle);
 
@@ -226,14 +242,14 @@ public class MemoFragment extends Fragment {
 			if(relationVO != null && relationVO.getAlarmId() != -1) {
 				AlarmVO alarmVO = mAlarmDataManager.getItemByIdInDB(relationVO.getAlarmId());
 				if(alarmVO != null) {
-					bundle.putSerializable(Const.ALARM_VO, alarmVO);
+					bundle.putSerializable(Const.PARAM.ALARM_VO, alarmVO);
 				}
 			}
 
-			bundle.putSerializable(Const.MEMO_VO, mMemoDataManager.getItemById(id));
+			bundle.putSerializable(Const.PARAM.MEMO_VO, mMemoDataManager.getItemById(id));
 		}
 		else if(mIsShareMode){
-			bundle.putSerializable(Const.MEMO_VO, (MemoVO) getArguments().get(Const.MEMO_VO));
+			bundle.putSerializable(Const.PARAM.MEMO_VO, (MemoVO) getArguments().get(Const.PARAM.MEMO_VO));
 			bundle.putSerializable(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE, mIsShareMode);
 		}
 
@@ -254,10 +270,10 @@ public class MemoFragment extends Fragment {
 		Bundle bundle = data.getExtras();
 		if(bundle == null)
 			return ;
-		if(bundle.containsKey(Const.MEMO_VO))
-			memoVO = (MemoVO) bundle.getSerializable(Const.MEMO_VO);
-		if(bundle.containsKey(Const.ALARM_VO))
-			alarmVO = (AlarmVO) bundle.getSerializable(Const.ALARM_VO);
+		if(bundle.containsKey(Const.PARAM.MEMO_VO))
+			memoVO = (MemoVO) bundle.getSerializable(Const.PARAM.MEMO_VO);
+		if(bundle.containsKey(Const.PARAM.ALARM_VO))
+			alarmVO = (AlarmVO) bundle.getSerializable(Const.PARAM.ALARM_VO);
 
 
 		switch(resultCode) {

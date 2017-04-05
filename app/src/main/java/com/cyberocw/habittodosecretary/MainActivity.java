@@ -65,26 +65,31 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		Fragment fragment;
 		Intent intent = getIntent();
 
-		if(intent != null) {
+		if(intent != null && intent.getExtras() != null) {
 			Bundle bundle = intent.getExtras();
-			if (bundle != null && bundle.containsKey(Const.REQ_CODE)) {
-				fragment = new AlarmFragment();
-				fragment.setArguments(intent.getExtras());
-
+			if (bundle.containsKey(Const.PARAM.REQ_CODE)) {
 				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-				long reqCode = bundle.getLong(Const.REQ_CODE);
+				int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
 				Log.d(Const.DEBUG_TAG, "reqCode=" + reqCode);
-				manager.cancel((int) reqCode);
-			}else if(bundle != null && bundle.containsKey("etcType")){
-				fragment = new MemoFragment();
-				fragment.setArguments(intent.getExtras());
-
+				manager.cancel(reqCode);
+			}
+			if(!bundle.getString(Const.PARAM.ETC_TYPE_KEY, "").equals("")){
+				Log.d(this.toString(), "bundle.getString(Const.PARAM.ETC_TYPE_KEY)="+bundle.getString(Const.PARAM.ETC_TYPE_KEY));
+				if(bundle.getString(Const.PARAM.ETC_TYPE_KEY).equals(Const.ETC_TYPE.MEMO)){
+					fragment = new MemoFragment();
+				}else{
+					Toast.makeText(getApplicationContext(), "etcType이 잘못 되었습니다", Toast.LENGTH_LONG).show();
+					Log.e(this.toString(), "버그! etcType이 잘못 되었습니다 etcType="+ bundle.getString("etcType"));
+					fragment = new AlarmFragment();
+				}
 			}else{
 				fragment = new AlarmFragment();
 			}
-
+			fragment.setArguments(bundle);
 		}else
 			fragment = new AlarmFragment();
+
+
 
 	    fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 			    .replace(R.id.main_container, fragment).commit();
@@ -106,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			if (bundle != null) {
 
 				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-				long reqCode = bundle.getLong(Const.REQ_CODE);
+				long reqCode = bundle.getLong(Const.PARAM.REQ_CODE);
 				Log.d(Const.DEBUG_TAG, "reqCode=" + reqCode);
 				manager.cancel((int) reqCode);
 

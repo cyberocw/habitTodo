@@ -4,7 +4,7 @@ package com.cyberocw.habittodosecretary.common.vo;
  * Created by cyberocw on 2015-12-26.
  */
 public class RelationVO {
-	private long fId;
+	private long fId = -1;
 	private long alarmId = -1;
 	private String type;
 

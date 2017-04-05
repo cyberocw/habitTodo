@@ -209,13 +209,13 @@ public class AlarmDialogNew extends DialogFragment{
 		Bundle arguments = getArguments();
 
 		if(arguments != null) {
-			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.ALARM_VO);
+			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.PARAM.ALARM_VO);
 
 			if(mAlarmVO != null)
 				mModifyMode = 1;
 
-            if(arguments.containsKey(Const.MEMO_VO))
-			    mMemoVO = (MemoVO) arguments.getSerializable(Const.MEMO_VO);
+            if(arguments.containsKey(Const.PARAM.MEMO_VO))
+			    mMemoVO = (MemoVO) arguments.getSerializable(Const.PARAM.MEMO_VO);
 
 			if(arguments.getBoolean(Const.MEMO.IS_INIT_MEMO_MODE, false))
 				mIsInitMemoMode = true;
@@ -446,7 +446,7 @@ public class AlarmDialogNew extends DialogFragment{
 		}
 
 		Bundle bundle = new Bundle();
-		bundle.putSerializable(Const.ALARM_VO, vo);
+		bundle.putSerializable(Const.PARAM.ALARM_VO, vo);
 
         if(mMemoVO != null)
         	vo.setRfid(mMemoVO.getId());
@@ -990,7 +990,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 		switch (resultCode) {
 			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE:
-				MemoVO memoVO = (MemoVO) data.getExtras().getSerializable(Const.MEMO_VO);
+				MemoVO memoVO = (MemoVO) data.getExtras().getSerializable(Const.PARAM.MEMO_VO);
 				Toast.makeText(mCtx, "memo title="+memoVO.getTitle(), Toast.LENGTH_LONG).show();
 				mMemoVO = memoVO;
 				mTvEtcTitle.setText(memoVO.getTitle());

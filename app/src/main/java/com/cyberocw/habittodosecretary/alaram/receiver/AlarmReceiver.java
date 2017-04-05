@@ -16,10 +16,6 @@ public class AlarmReceiver extends BroadcastReceiver{
 	private boolean mBound;
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		String Noti_title = intent.getExtras().getString("title");
-		String Noti_message = intent.getExtras().getString("notes");
-
-		Log.d("AlarmReciever", Noti_title + " " + Noti_message );
 		Intent myIntent = new Intent(context, AlarmBackgroudService.class);
 		myIntent.putExtras(intent.getExtras());
 

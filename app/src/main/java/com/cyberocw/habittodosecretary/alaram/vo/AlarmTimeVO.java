@@ -9,6 +9,7 @@ import java.io.Serializable;
 public class AlarmTimeVO implements Serializable{
 	private long timeStamp;
 	private long id;
+	private int reqCode;
 	private int callTime;
 	private int useYn;
 	private long fId;
@@ -89,6 +90,14 @@ public class AlarmTimeVO implements Serializable{
 
 	public void setEtcType(String etcType) {
 		this.etcType = etcType;
+	}
+
+	public int getReqCode() {
+		return reqCode;
+	}
+
+	public void setReqCode(int reqCode) {
+		this.reqCode = reqCode;
 	}
 
 	@Override

@@ -8,9 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -62,26 +59,29 @@ public class NotificationService extends Service{
 		boolean isAlarmNoti = prefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
 
 		String noti_title = intent.getExtras().getString("title");
-		String etcType = intent.getExtras().getString("etcType");
+		String etcType = intent.getExtras().getString(Const.PARAM.ETC_TYPE_KEY);
 		//String noti_message = intent.getExtras().getString("notes");
-		long reqCode = intent.getExtras().getLong("reqCode");
+		int reqCode = intent.getExtras().getInt(Const.PARAM.REQ_CODE);
 		//나중에 reqCode 가 int 범위를 넘어설것 같을때 별도 처리해주기 noti id는 int만 가능해서
-		long alarmId = intent.getExtras().getLong("alarmId");
+		long alarmId = intent.getExtras().getLong(Const.PARAM.ALARM_ID);
 
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Intent intent1 = new Intent(this, MainActivity.class);
-		intent1.putExtra("etcType", etcType);
+		intent1.putExtra(Const.PARAM.ETC_TYPE_KEY, etcType);
+		intent1.putExtra(Const.PARAM.ALARM_ID, alarmId);
+		intent1.putExtra(Const.PARAM.REQ_CODE, reqCode);
+
 		intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, -1, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this);
-		/*
+
 		mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
 		mCompatBuilder.setTicker("Habit Todo");
 		mCompatBuilder.setWhen(System.currentTimeMillis());
 
-		mCompatBuilder.setContentTitle(noti_title);
-		*/
+		//mCompatBuilder.setContentTitle(noti_title);
+
 		//mCompatBuilder.setContentText(noti_message);
 		if(isAlarmNoti) {
 			mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND);
@@ -99,14 +99,14 @@ public class NotificationService extends Service{
         remoteView.setTextViewText(R.id.tvAlarmTime, CommonUtils.numberDigit(2, now.get(Calendar.HOUR_OF_DAY)) + ":" + CommonUtils.numberDigit(2, now.get(Calendar.MINUTE)));
 
 		Intent closeButtonIntent = new Intent(this, CloseButtonListener.class);
-		closeButtonIntent.putExtra(Const.REQ_CODE, reqCode);
+		closeButtonIntent.putExtra(Const.PARAM.REQ_CODE, reqCode);
 		PendingIntent pendingCloseButtonIntent = PendingIntent.getBroadcast(this, (int) reqCode, closeButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		remoteView.setOnClickPendingIntent(R.id.btnCloseNoti, pendingCloseButtonIntent);
 
 		Intent intentAlarm = new Intent(this, MainActivity.class);
 		intentAlarm.putExtra(Const.PARAM.ALARM_ID, alarmId);
 		intentAlarm.putExtra(Const.PARAM.MODE, Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG);
-		intentAlarm.putExtra(Const.REQ_CODE, reqCode);
+		intentAlarm.putExtra(Const.PARAM.REQ_CODE, reqCode);
 
 		intentAlarm.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		PendingIntent pendingIntentAlarm = PendingIntent.getActivity(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -146,7 +146,7 @@ public class NotificationService extends Service{
 
             if(bundle != null) {
                 NotificationManager manager = (NotificationManager) context.getSystemService(Service.NOTIFICATION_SERVICE);
-                long reqCode = bundle.getLong(Const.REQ_CODE);
+                long reqCode = bundle.getLong(Const.PARAM.REQ_CODE);
                 Log.d(Const.DEBUG_TAG, "reqCode="+reqCode);
                 manager.cancel((int) reqCode);
             }

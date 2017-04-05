@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -48,7 +47,7 @@ public class TimerDialog extends DialogFragment {
 		Bundle arguments = getArguments();
 
 		if(arguments != null) {
-			mTimerVO = (TimerVO) arguments.getSerializable(Const.TIMER_VO);
+			mTimerVO = (TimerVO) arguments.getSerializable(Const.PARAM.TIMER_VO);
 			mModifyMode = 1;
 		}
 		else{

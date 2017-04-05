@@ -12,12 +12,7 @@ public class Const {
 	public static final String ERROR_TAG = "HabitToDo Error";
 	public static final String ALARM_SERVICE_ID = "alarmServiceList";
 	public static final String TIMER_RUNNING_ID = "runningTimerId";
-	public static final String REQ_CODE = "reqCode";
 	public static final String REQ_CODE_REPEAT = "reqCodeRepeat";
-	public static final String ALARM_VO = "alarmVO";
-	public static final String MEMO_VO = "memoVO";
-	public static final String TIMER_VO = "timerVO";
-	public static final String VIEW_TYPE = "viewType";
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
 	public static final int ONGOING_ALARM_NOTI_ID = 999999998;
 
@@ -26,6 +21,12 @@ public class Const {
 		public static final String MODE = "mode";
 		public static final String ALARM_ID = "alarmId";
 
+		public static final String REQ_CODE = "reqCode";
+		public static final String ETC_TYPE_KEY = "etcType";
+		public static final String TIMER_VO = "timerVO";
+		public static final String VIEW_TYPE = "viewType";
+		public static final String MEMO_VO = "memoVO";
+		public static final String ALARM_VO = "alarmVO";
 	}
 
 	public class ALARM_INTERFACE_CODE{

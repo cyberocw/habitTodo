@@ -1,6 +1,5 @@
 package com.cyberocw.habittodosecretary.alaram.service;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -20,7 +19,6 @@ import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmNotiActivity;
-import com.cyberocw.habittodosecretary.util.TTSNoti;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
 import java.text.DecimalFormat;
@@ -208,15 +206,16 @@ public class AlarmBackgroudService extends Service {
         if(mAlarmType < 1) {
             Intent myIntent = new Intent(mCtx, NotificationService.class);
             myIntent.putExtra("title", mTitle);
-            myIntent.putExtra("etcType", mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
-            myIntent.putExtra("reqCode", mArrAlarmVOList.get(mMinRemainPosition).getfId());
-            myIntent.putExtra("alarmId", mArrAlarmVOList.get(mMinRemainPosition).getfId());
+            myIntent.putExtra(Const.PARAM.ETC_TYPE_KEY, mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
+            myIntent.putExtra(Const.PARAM.REQ_CODE, mArrAlarmVOList.get(mMinRemainPosition).getReqCode());
+            myIntent.putExtra(Const.PARAM.ALARM_ID, mArrAlarmVOList.get(mMinRemainPosition).getfId());
             mCtx.startService(myIntent);
+
         }else{
             Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
             myIntent.putExtra("title", mTitle);
-            myIntent.putExtra("etcType", mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
-            myIntent.putExtra("alarmId", mArrAlarmVOList.get(mMinRemainPosition).getfId());
+            myIntent.putExtra(Const.PARAM.ETC_TYPE_KEY, mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
+            myIntent.putExtra(Const.PARAM.ALARM_ID, mArrAlarmVOList.get(mMinRemainPosition).getfId());
             myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             mCtx.startActivity(myIntent);
         }
