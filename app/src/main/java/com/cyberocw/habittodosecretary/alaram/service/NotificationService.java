@@ -95,6 +95,11 @@ public class NotificationService extends Service{
 		//mCompatBuilder.setContentIntent(pendingIntent);
 		mCompatBuilder.setAutoCancel(true);
 
+		if(etcType.equals(Const.ETC_TYPE.MEMO)) {
+			remoteView.setTextViewText(R.id.tvAlarmSubTitle, "메모를 보려면 터치해주세요");
+		}else{
+
+		}
         Calendar now = Calendar.getInstance();
         remoteView.setTextViewText(R.id.tvAlarmTime, CommonUtils.numberDigit(2, now.get(Calendar.HOUR_OF_DAY)) + ":" + CommonUtils.numberDigit(2, now.get(Calendar.MINUTE)));
 

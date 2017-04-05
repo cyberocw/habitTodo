@@ -9,6 +9,7 @@ import android.os.PowerManager;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -70,6 +71,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 			mVibe.vibrate(pattern, 0);                                         // 패턴을 지정하고 반복횟수를 지정
 			//mVibe.vibrate(30000);                                                   //1초 동안 진동이 울린다.
 		}
+/*
 
 		PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
 		PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
@@ -78,6 +80,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
 		KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("TAG");
 		keyguardLock.disableKeyguard();
+*/
 
 		//TextView tvTitle = (TextView) findViewById(R.id.tvAlarmTitle);
 
@@ -87,6 +90,18 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		if(mAlarmId == -1){
 			mBtnPostpone.setVisibility(View.INVISIBLE);
 		}
+
+		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN |
+						WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+						WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+						WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+						WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN |
+						WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+						WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+						WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+						WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		Fabric.with(this, new Crashlytics());
 	}
