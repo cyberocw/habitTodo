@@ -30,10 +30,14 @@ import io.fabric.sdk.android.Fabric;
  */
 public class AlarmNotiActivity extends AppCompatActivity {
 	Vibrator mVibe = null;
-	String mTitle = "";
+	String mTitle = "", mEtcType = "";
 	long mAlarmId = -1;
+	Bundle mBundle;
+
+
 
 	@BindView(R.id.tvAlarmTitle) TextView mTvTitle;
+	@BindView(R.id.btnEtcView) Button mBtnEtcView;
 	@BindView(R.id.btnPostpone) Button mBtnPostpone;
 	//@BindView(R.id.btnTimerStop) Button mBtnStop;
 
@@ -46,22 +50,33 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		showPostPhone();
 		finish();
 	}
-
+	@OnClick(R.id.btnEtcView) void clickEtcView(){
+		mVibe.cancel();
+		showEtcView();
+		finish();
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.timer_noti);
+		ButterKnife.bind(this);
 
 		Intent intent = getIntent();
-		Bundle bundle = intent.getExtras();
+		mBundle = intent.getExtras();
 		String title = "";
-		if(bundle != null) {
-			title = bundle.getString("title");
-			mAlarmId = bundle.getLong("alarmId");
+		if(mBundle != null) {
+			title = mBundle.getString("title");
+			mAlarmId = mBundle.getLong("alarmId");
+			mEtcType = mBundle.getString(Const.PARAM.ETC_TYPE_KEY, "");
+			if(mEtcType.equals(Const.ETC_TYPE.MEMO)){
+				mBtnEtcView.setText("메모 보기");
+				mBtnEtcView.setVisibility(View.VISIBLE);
+			}
+
 		}
 
-		ButterKnife.bind(this);
+
 
 		SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 		boolean isAlarmNoti = prefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
@@ -104,6 +119,17 @@ public class AlarmNotiActivity extends AppCompatActivity {
 						WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		Fabric.with(this, new Crashlytics());
+	}
+
+	private void showEtcView(){
+		if(mEtcType.equals(Const.ETC_TYPE.MEMO)){
+			Intent intent1 = new Intent(this, MainActivity.class);
+			intent1.putExtra(Const.PARAM.ETC_TYPE_KEY, mEtcType);
+			intent1.putExtra(Const.PARAM.ALARM_ID, mAlarmId);
+			//intent1.putExtra(Const.PARAM.REQ_CODE, reqCode);
+			intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+			getApplicationContext().startActivity(intent1);
+		}
 	}
 
 	private void showPostPhone(){

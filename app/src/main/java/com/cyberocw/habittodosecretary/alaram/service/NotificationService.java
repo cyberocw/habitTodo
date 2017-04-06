@@ -59,7 +59,7 @@ public class NotificationService extends Service{
 		boolean isAlarmNoti = prefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
 
 		String noti_title = intent.getExtras().getString("title");
-		String etcType = intent.getExtras().getString(Const.PARAM.ETC_TYPE_KEY);
+		String etcType = intent.getExtras().getString(Const.PARAM.ETC_TYPE_KEY, "");
 		//String noti_message = intent.getExtras().getString("notes");
 		int reqCode = intent.getExtras().getInt(Const.PARAM.REQ_CODE);
 		//나중에 reqCode 가 int 범위를 넘어설것 같을때 별도 처리해주기 noti id는 int만 가능해서
@@ -124,7 +124,7 @@ public class NotificationService extends Service{
 		//mCompatBuilder.addAction(action);
 
 		Log.d(Const.DEBUG_TAG, " noti reqCode="+reqCode);
-		nm.notify((int)reqCode, mCompatBuilder.build());
+		nm.notify(reqCode, mCompatBuilder.build());
 
 		/*
 		try {

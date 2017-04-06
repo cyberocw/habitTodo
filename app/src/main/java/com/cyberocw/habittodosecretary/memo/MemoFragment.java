@@ -12,11 +12,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,6 +32,11 @@ import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
 import com.cyberocw.habittodosecretary.memo.ui.MemoDialogNew;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+
+import java.util.Locale;
+
+import butterknife.ButterKnife;
+import butterknife.OnTextChanged;
 
 
 /**
@@ -60,6 +68,7 @@ public class MemoFragment extends Fragment {
 	boolean mIsEtcViewMode = false;
 
 	private View mView;
+	private EditText mEtSearchKeyword;
 	private Context mCtx;
 	SharedPreferences mPrefs;
 	private long mCateId = -1, mMemoId = -1;
@@ -134,6 +143,9 @@ public class MemoFragment extends Fragment {
 			if(args.containsKey(Const.CATEGORY.CATEGORY_TITLE_KEY))
 				toolbar.setTitle(args.getString(Const.CATEGORY.CATEGORY_TITLE_KEY));
 		}
+
+		mEtSearchKeyword = ButterKnife.findById(mView, R.id.etSearchKeyword);
+
 		return mView;
 	}
 
@@ -191,6 +203,26 @@ public class MemoFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				showNewMemoDialog();
+			}
+		});
+
+		mEtSearchKeyword.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				String text = mEtSearchKeyword.getText().toString()
+						.toLowerCase(Locale.getDefault());
+				mMemoAdapter.filter(text);
+
 			}
 		});
 	}

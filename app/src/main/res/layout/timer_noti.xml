@@ -10,45 +10,58 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal">
 
-        <TextView
-            android:id="@+id/tvAlarmTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/linearLayout2"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="16dp"
-            android:text="TextView"
-            android:textAlignment="center"
-            android:textSize="24sp" />
-
         <LinearLayout
-            android:id="@+id/linearLayout2"
+            android:id="@+id/linearLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:orientation="vertical">
-
+            android:orientation="horizontal"
+            android:layout_marginTop="22dp"
+            android:layout_below="@+id/tvAlarmTitle"
+            >
             <Button
-                android:id="@+id/btnTimerStop"
+                android:id="@+id/btnEtcView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@+id/tvAlarmTitle"
                 android:layout_alignRight="@+id/tvAlarmTitle"
                 android:layout_below="@+id/tvAlarmTitle"
-                android:text="STOP" />
-
-            <Button
-                android:id="@+id/btnPostpone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/tvAlarmTitle"
-                android:layout_alignRight="@+id/tvAlarmTitle"
-                android:layout_below="@+id/btnTimerStop"
-                android:layout_marginTop="15dp"
-                android:text="연장하기" />
+                android:visibility="gone"
+                android:text="메모 보기" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/tvAlarmTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="164dp"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <Button
+            android:id="@+id/btnTimerStop"
+            android:layout_width="183dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="11dp"
+            android:text="STOP"
+            android:layout_below="@+id/linearLayout"
+            android:layout_centerHorizontal="true" />
+
+        <Button
+            android:id="@+id/btnPostpone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_below="@+id/btnTimerStop"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="연장하기" />
 
     </RelativeLayout>
+
 </LinearLayout>

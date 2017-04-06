@@ -426,7 +426,7 @@ public class AlarmDataManager {
 		//myIntent.removeExtra("title");
 		long timeStamp = alarmTimeVO.getTimeStamp();
 		ccc.setTimeInMillis(timeStamp);
-		ccc.add(Calendar.MINUTE, -10);
+		ccc.add(Calendar.MINUTE, -15);
 
 		//10분 이내일 경우 바로 서비스 실행
 		if(ccc.getTimeInMillis() < nowCal.getTimeInMillis()){

@@ -225,7 +225,7 @@ public class MemoDialogNew extends Fragment{
 
 		}
 		else{
-			mBtnEdit.setText("수정");
+			mBtnEdit.setText(getResources().getText(R.string.btn_memo_modify));
 			mTvMemoEditor.setText(mEtMemoEditor.getText());
 			mTvMemoEditor.setVisibility(View.VISIBLE);
 			mEtMemoEditor.setVisibility(View.GONE);

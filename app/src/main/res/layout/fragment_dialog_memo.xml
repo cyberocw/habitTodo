@@ -87,13 +87,14 @@
                     android:id="@+id/btnAddAlarm"
                     android:src="@drawable/ic_action_alarms"
                     android:layout_alignParentTop="true"
-                    android:layout_toLeftOf="@+id/btnAttachFile"
-                    android:layout_toStartOf="@+id/btnAttachFile"/>
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
 
                 <ImageButton
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:text="F"
                     android:id="@+id/btnAttachFile"
                     android:src="@drawable/ic_action_attachment"
@@ -104,36 +105,26 @@
                 <ImageButton
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:text="I"
                     android:id="@+id/btnInfo"
                     android:src="@drawable/ic_action_about"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"/>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <LinearLayout
-                    android:layout_width="match_parent"
+
+                <Button
+                    android:id="@+id/btnEdit"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
+                    android:layout_alignParentBottom="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true">
-
-                    <Button
-                        android:id="@+id/btnEdit"
-                        style="@style/Widget.AppCompat.Button.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="3dp"
-                        android:padding="10dp"
-                        android:text="편집" />
-
-                </LinearLayout>
-
-
+                    android:layout_alignParentStart="true"
+                    android:padding="10dp"
+                    android:text="@string/btn_memo_modify" />
             </RelativeLayout>
+
             <EditText xmlns:android="http://schemas.android.com/apk/res/android"
                 android:visibility="gone"
                 android:id="@+id/etMemoEditor"
