@@ -1,6 +1,8 @@
 package com.cyberocw.habittodosecretary.memo;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.Preference;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 public class MemoDataManager {
 	Context mCtx = null;
 	MemoDbManager mDb;
+	ArrayList<MemoVO> cachedDataList = null;
 	ArrayList<MemoVO> dataList = null;
 
 	public MemoDataManager(Context ctx) {
@@ -27,7 +30,9 @@ public class MemoDataManager {
 	public MemoDataManager(Context ctx, Long cateId) {
 		mCtx = ctx;
 		mDb = MemoDbManager.getInstance(ctx);
-		makeDataList(cateId);
+		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+		String sortOption = prefs.getString(Const.MEMO.SORT_KEY, Const.MEMO.SORT_REG_DATE_DESC);
+		makeDataList(cateId, sortOption);
 	}
 
 	public ArrayList<MemoVO> getDataList() {
@@ -38,8 +43,9 @@ public class MemoDataManager {
 		this.dataList = mDb.getList();
 	}
 
-	public void makeDataList(Long cateId){
-		this.dataList = mDb.getListByCate(cateId);
+	public void makeDataList(Long cateId, String sortOption){
+		dataList = mDb.getListByCate(cateId, sortOption);
+		cachedDataList = (ArrayList) dataList.clone();
 	}
 
 	public void setDataList(ArrayList<MemoVO> dataList) {
@@ -113,5 +119,19 @@ public class MemoDataManager {
 			this.dataList.set(posi, item);
 			return true;
 		}
+	}
+
+	public void filter(String text){
+		ArrayList<MemoVO> newDataList = new ArrayList<>();
+		for(int i = 0 ; i < this.cachedDataList.size(); i++){
+			if (cachedDataList.get(i).getTitle().contains(text) || cachedDataList.get(i).getContents().contains(text)) {
+				newDataList.add(cachedDataList.get(i));
+			}
+		}
+		this.dataList = newDataList;
+	}
+
+	public void resetFilter() {
+		this.dataList = cachedDataList;
 	}
 }

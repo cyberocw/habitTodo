@@ -39,12 +39,20 @@ public class MemoDbManager extends DbHelper{
 		return sInstance;
 	}
 
-	public ArrayList<MemoVO> getListByCate(long cateId){
+	public ArrayList<MemoVO> getListByCate(long cateId, String sortOption){
 		String selectQuery = " SELECT TM.*, AR." + KEY_F_ALARM_ID + " FROM " + TABLE_MEMO + " TM LEFT JOIN " + TABLE_ALARAM_RELATION + " AR " +
 				" ON TM." + KEY_ID + "= AR." + KEY_F_ID + " AND AR." + KEY_TYPE + " = '"+ Const.ETC_TYPE.MEMO + "'";
 			selectQuery += " where TM." + KEY_USE_YN + " = 1 ";
-				if(cateId > -1)
-					selectQuery += " AND " + KEY_CATEGORY_ID + " = " + cateId;
+			if(cateId > -1)
+				selectQuery += " AND " + KEY_CATEGORY_ID + " = " + cateId;
+
+		if(sortOption.equals(Const.MEMO.SORT_REG_DATE_ASC))
+			selectQuery += " order by " + KEY_UPDATE_DATE + " asc";
+		else if(sortOption.equals(Const.MEMO.SORT_STAR_DESC))
+			selectQuery += " order by " + KEY_RANK + " desc";
+		else if(sortOption.equals(Const.MEMO.SORT_STAR_ASC))
+			selectQuery += " order by " + KEY_RANK + " asc";
+		else
 			selectQuery += " order by " + KEY_UPDATE_DATE + " desc";
 
 		return getQuery(selectQuery);

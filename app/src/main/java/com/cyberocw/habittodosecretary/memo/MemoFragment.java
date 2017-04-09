@@ -19,7 +19,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -69,6 +72,7 @@ public class MemoFragment extends Fragment {
 
 	private View mView;
 	private EditText mEtSearchKeyword;
+	private Button btnSortMemo;
 	private Context mCtx;
 	SharedPreferences mPrefs;
 	private long mCateId = -1, mMemoId = -1;
@@ -145,7 +149,7 @@ public class MemoFragment extends Fragment {
 		}
 
 		mEtSearchKeyword = ButterKnife.findById(mView, R.id.etSearchKeyword);
-
+		btnSortMemo = ButterKnife.findById(mView, R.id.btnSortMemo);
 		return mView;
 	}
 
@@ -223,6 +227,54 @@ public class MemoFragment extends Fragment {
 						.toLowerCase(Locale.getDefault());
 				mMemoAdapter.filter(text);
 
+			}
+		});
+		btnSortMemo.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String names[] ={"작성일 내림차순","작성일 오름차순", "중요도 내림차순", "중요도 올림차순"};
+				AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
+
+				ListView lv = new ListView(mCtx);
+				LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+				alertDialog.setView(lv);
+				alertDialog.setTitle("정렬 옵션");
+
+				lv.setLayoutParams(params);
+				ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,android.R.layout.simple_list_item_1,names);
+				lv.setAdapter(adapter);
+
+				final DialogInterface dialogInterface = alertDialog.show();
+
+
+
+				lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+						String sortOption = Const.MEMO.SORT_REG_DATE_DESC;
+						switch (position) {
+							case 0:
+								sortOption = Const.MEMO.SORT_REG_DATE_DESC;
+								break;
+							case 1:
+								sortOption = Const.MEMO.SORT_REG_DATE_ASC;
+								break;
+							case 2:
+								sortOption = Const.MEMO.SORT_STAR_DESC;
+								break;
+							case 3:
+								sortOption = Const.MEMO.SORT_STAR_ASC;
+								break;
+						}
+						SharedPreferences.Editor editor = mPrefs.edit();
+						editor.remove(Const.MEMO.SORT_KEY);
+						editor.putString(Const.MEMO.SORT_KEY, sortOption);
+						editor.commit();
+						mMemoDataManager.makeDataList(mCateId, sortOption);
+						mMemoAdapter.notifyDataSetChanged();
+						dialogInterface.dismiss();
+					}
+				});
 			}
 		});
 	}

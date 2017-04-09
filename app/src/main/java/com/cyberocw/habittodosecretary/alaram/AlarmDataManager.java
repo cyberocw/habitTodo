@@ -426,10 +426,11 @@ public class AlarmDataManager {
 		//myIntent.removeExtra("title");
 		long timeStamp = alarmTimeVO.getTimeStamp();
 		ccc.setTimeInMillis(timeStamp);
-		ccc.add(Calendar.MINUTE, -15);
 
-		//10분 이내일 경우 바로 서비스 실행
-		if(ccc.getTimeInMillis() < nowCal.getTimeInMillis()){
+		// ----------------------- Doze 모드 때문에 제공되는 API만 사용
+		ccc.add(Calendar.MINUTE, -15);
+		//15분 이내일 경우 바로 서비스 실행
+		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
 			alarmTimeVO.setReqCode(reqCode);
 			myIntent.putExtra("alarmTimeVO", alarmTimeVO);
@@ -437,7 +438,7 @@ public class AlarmDataManager {
 			mCtx.startService(myIntent);
 			return reqCode;
 		}
-		//10분 이상일 경우 setTime 시킴
+		//15분 이상일 경우 setTime 시킴
 		AlarmManager alarmDataManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
 		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
 
@@ -454,11 +455,11 @@ public class AlarmDataManager {
 	@SuppressLint("NewApi")
 	private void setAlarmExact(AlarmManager am, int type, long time, PendingIntent it){
 		final int sdkVersion = Build.VERSION.SDK_INT;
-		/*
+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			am.setExactAndAllowWhileIdle(type, time, it);
 		}
-		else*/ if(sdkVersion >= Build.VERSION_CODES.KITKAT) {
+		else if(sdkVersion >= Build.VERSION_CODES.KITKAT) {
 			Log.d(Const.DEBUG_TAG, "kitkat set alarmExact");
 			am.setExact(type, time, it);
 		}

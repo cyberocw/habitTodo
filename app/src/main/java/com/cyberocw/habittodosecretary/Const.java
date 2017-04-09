@@ -114,6 +114,11 @@ public class Const {
 		public static final String IS_INIT_MEMO_MODE = "isInitMemoMode";
 		public static final String ORIGINAL_ALARM_ID_KEY = "originalAlarmId";
 		public static final String SHOW_TOOLBAR = "showToolbar";
+		public static final String SORT_KEY = "sortKey";
+		public static final String SORT_REG_DATE_DESC = "regDateDesc";
+		public static final String SORT_REG_DATE_ASC = "regDateAsc";
+		public static final String SORT_STAR_DESC = "starDesc";
+		public static final String SORT_STAR_ASC = "starAsc";
 
 		public class MEMO_INTERFACE_CODE{
 			public static final int ADD_MEMO_CODE = 1111;

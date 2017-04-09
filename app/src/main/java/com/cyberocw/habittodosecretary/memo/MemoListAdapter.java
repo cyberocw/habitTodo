@@ -135,13 +135,12 @@ public class MemoListAdapter extends BaseAdapter {
 	}
 
     public void filter(String text) {
-		/*
 		if(text == null || text.length() == 0){
-
+			mManager.resetFilter();
 		}
-		if (name.toLowerCase().contains(text)) {
-			potionList.add(potion);
-		}*/
-
+		else{
+			mManager.filter(text);
+		}
+		notifyDataSetChanged();
     }
 }

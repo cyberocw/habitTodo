@@ -34,7 +34,7 @@
 
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/btnSortMemo"
                 android:layout_width="50dp"
                 android:layout_marginLeft="-55dp"
                 android:layout_height="wrap_content"
