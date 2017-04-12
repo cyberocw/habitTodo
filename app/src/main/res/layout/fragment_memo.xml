@@ -24,14 +24,15 @@
             android:orientation="horizontal"
             android:id="@+id/wrapSearch"
             >
-
-            <EditText
+            <com.cyberocw.habittodosecretary.util.ui.EditTextClear
                 android:id="@+id/etSearchKeyword"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginRight="60dp"
-                android:text="" />
+                android:text=""
+                >
 
+            </com.cyberocw.habittodosecretary.util.ui.EditTextClear>
 
             <Button
                 android:id="@+id/btnSortMemo"
