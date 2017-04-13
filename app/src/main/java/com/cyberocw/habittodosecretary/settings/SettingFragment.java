@@ -91,18 +91,17 @@ public class SettingFragment extends Fragment {
         Button btnHolidaySync = (Button) mView.findViewById(R.id.btnHolidaySync);
         Button btnDbBackup = (Button) mView.findViewById(R.id.btnDbBackup);
         Button btnDbRestore= (Button) mView.findViewById(R.id.btnDbRestore);
+        /*
         TextView tvReqCode = (TextView) mView.findViewById(R.id.tvReqCode);
 
         SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
         tvReqCode.setText(prefs.getString(Const.PARAM.REQ_CODE, "없음"));
-
+        */
         mCbAllAlarm = (CheckBox) mView.findViewById(R.id.checkAllAlarm);
         final CheckBox cbBackgroundNoti = (CheckBox) mView.findViewById(R.id.checkBackgroundNoti);
 
         boolean isUseNotibar = mPrefs.getBoolean(Const.SETTING.IS_NOTIBAR_USE, true);
         boolean isBackgNoti = mPrefs.getBoolean(Const.SETTING.IS_BACKGROUND_NOTI_USE, true);
-
-
 
         if(isBackgNoti)
             cbBackgroundNoti.setChecked(true);

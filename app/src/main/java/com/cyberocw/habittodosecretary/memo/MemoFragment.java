@@ -34,6 +34,7 @@ import com.cyberocw.habittodosecretary.common.vo.RelationVO;
 import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
 import com.cyberocw.habittodosecretary.memo.ui.MemoDialogNew;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import java.util.Locale;
@@ -71,6 +72,7 @@ public class MemoFragment extends Fragment {
 	boolean mIsEtcViewMode = false;
 
 	private View mView;
+	ListView mListView;
 	private EditText mEtSearchKeyword;
 	private Button btnSortMemo;
 	private Context mCtx;
@@ -176,9 +178,9 @@ public class MemoFragment extends Fragment {
 		mMemoAdapter = new MemoListAdapter(this, mCtx, mMemoDataManager);
 		mAlarmDataManager = new AlarmDataManager(mCtx);
 
-		ListView lv = (ListView) mView.findViewById(R.id.memoListView);
-		lv.setAdapter(mMemoAdapter);
-		lv.setOnItemClickListener(new ListViewItemClickListener());
+		mListView = (ListView) mView.findViewById(R.id.memoListView);
+		mListView.setAdapter(mMemoAdapter);
+		mListView.setOnItemClickListener(new ListViewItemClickListener());
 
 		mCommonRelationDBManager = CommonRelationDBManager.getInstance(mCtx);
 
@@ -272,11 +274,14 @@ public class MemoFragment extends Fragment {
 						editor.commit();
 						mMemoDataManager.makeDataList(mCateId, sortOption);
 						mMemoAdapter.notifyDataSetChanged();
+						mListView.setSelection(0);
 						dialogInterface.dismiss();
 					}
 				});
 			}
 		});
+
+		CommonUtils.setupUI(mView, getActivity());
 	}
 
 	private class ListViewItemClickListener implements AdapterView.OnItemClickListener
