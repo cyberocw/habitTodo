@@ -13,6 +13,7 @@ import android.widget.ToggleButton;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
+import com.cyberocw.habittodosecretary.alaram.ui.RenderAlarmView;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 
 import butterknife.ButterKnife;
@@ -25,6 +26,7 @@ public class AlarmExListAdapter extends BaseExpandableListAdapter implements Ala
     private AlarmDataManager mManager;
     private LayoutInflater inflater;
     private Context mCtx;
+
     private AlarmFragment mMainFragment;
 
     public AlarmExListAdapter(AlarmFragment mainFragment, Context ctx, AlarmDataManager mManager) {
@@ -82,99 +84,19 @@ public class AlarmExListAdapter extends BaseExpandableListAdapter implements Ala
 
         return convertView;
     }
-
+    @Override
+    public boolean areAllItemsEnabled() {
+        return true;
+    }
     @Override
     public View getChildView(final int groupPosition, final int position, boolean b, View convertView, ViewGroup parent) {
         final AlarmVO vo = mManager.getGroupItem(groupPosition, position);
 
         if(convertView == null){
             convertView = inflater.inflate(R.layout.alarm_view, parent, false);
-            switch (vo.getAlarmOption()){
-                case Const.ALARM_OPTION.SET_DATE_TIMER :
-                    break;
-                case Const.ALARM_OPTION.NO_DATE_TIMER :
-                    break;
-            }
         }
 
-        //Const.ALARM_DATE_TYPE.POSTPONE_DATE
-
-        if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT)
-            convertView.setBackgroundResource(R.color.background_repeat);
-        else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE)
-            convertView.setBackgroundResource(R.color.background_date);
-        else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
-            convertView.setBackgroundResource(R.color.background_postphone_date);
-        else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT_MONTH)
-            convertView.setBackgroundResource(R.color.background_repeat_day);
-
-
-        ToggleButton dateToggleBtn = (ToggleButton) convertView.findViewById(R.id.timeText);
-        dateToggleBtn.setText(vo.getTimeText());
-
-        dateToggleBtn.setTextOn(vo.getTimeText());
-        dateToggleBtn.setTextOff(vo.getTimeText());
-
-        ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);
-        btnOption.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //AlarmVO vo = mManager.getItem(position);
-                if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE) {
-                    mMainFragment.deleteItemAlertDialog(vo.getId());
-                }
-                else
-                    mMainFragment.longClickPopup(0, vo.getId());
-            }
-        });
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //AlarmVO vo = mManager.getItem(position);
-
-                if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE){
-                    mMainFragment.deleteItemAlertDialog(vo.getId());
-                }
-                else
-                    mMainFragment.showNewAlarmDialog(vo.getId());
-            }
-        });
-
-        if(vo.getUseYn() == 1)
-            dateToggleBtn.setChecked(true);
-        else
-            dateToggleBtn.setChecked(false);
-
-        dateToggleBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //AlarmVO vo = mManager.getItem(position);
-                ToggleButton btn = (ToggleButton) v;
-                boolean isChecked = btn.isChecked();
-
-                if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE){
-                    btn.setChecked(true);
-                    mMainFragment.deleteItemAlertDialog(vo.getId());
-                    return;
-                }
-
-                if(isChecked == true)
-                    vo.setUseYn(1);
-                else
-                    vo.setUseYn(0);
-
-                if(mManager.modifyUseYn(vo) == false)
-                    Toast.makeText(mCtx, "useYn 변환에 실패했습니다", Toast.LENGTH_SHORT).show();
-                else {
-                    mManager.resetMinAlarmCall(vo.getAlarmDateType());
-                }
-            }
-        });
-
-        String title = vo.getAlarmTitle();
-
-        TextView tv = (TextView) convertView.findViewById(R.id.alarmTitle);
-        tv.setText(title);
+        RenderAlarmView.RenderAlarmView(mCtx, mMainFragment, mManager, vo, convertView);
 
         return convertView;
     }
@@ -188,5 +110,9 @@ public class AlarmExListAdapter extends BaseExpandableListAdapter implements Ala
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
         mMainFragment.expandGroupView();
+    }
+
+    public void setRenderView(){
+
     }
 }

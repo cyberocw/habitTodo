@@ -1,41 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/background"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+        android:background="@color/background"
     >
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark"
-        >
+        android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
         <Button
             android:id="@+id/btnSave"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_gravity="right"
-            android:text="V" />
+            android:layout_marginRight="@dimen/margin_small"
+            android:background="@drawable/ic_check_black_24dp"
+            android:elevation="0dp"
+            android:text="" />
     </android.support.v7.widget.Toolbar>
+
     <ScrollView
-          android:orientation="vertical"
-          android:layout_gravity="center"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:id="@+id/scvAddAlarm"
-          android:padding="15dp"
-        >
+        android:id="@+id/scvAddAlarm"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:padding="15dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
             <!--LinearLayout
                 android:layout_width="match_parent"
@@ -80,16 +83,15 @@
                     />
             </RelativeLayout-->
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/llDateTypeWrap"
-                >
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
                 <TextView
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="날짜 타입"
-                    />
+                    android:text="날짜 옵션"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                 <Spinner
                     android:id="@+id/spDateType"
@@ -98,132 +100,123 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/llDatePicWrap"
-                android:layout_marginTop="15dp"
-                >
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp">
+
                 <TextView
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="날짜 설정"
-                    />
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:id="@+id/tvAlarmDate"
-                    android:layout_marginLeft="15dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="2015-08-23"
-                    />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:id="@+id/llTimePickWrap"
-                >
-                <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="시간 설정"
-                    />
-                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tvAlarmTime"
                     android:layout_marginLeft="15dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="pm 05:44"
-                    />
-            </LinearLayout>
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/llRepeatDayWrap"
-                android:layout_marginTop="15dp"
-                >
-                <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="반복"
-                    />
-                <Button
-                    android:id="@+id/btnRepeatSun"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="일"
-                    android:layout_weight="1"
-                    />
-                <Button
-                    android:id="@+id/btnRepeatMon"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="월"
-                    android:layout_weight="1"
-                    />
-                <Button
-                    android:id="@+id/btnRepeatTue"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="화"
-                    android:layout_weight="1"
-                    />
-                <Button
-                    android:id="@+id/btnRepeatWed"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="수"
-                    android:layout_weight="1"
-                    />
-                <Button
-                    android:id="@+id/btnRepeatThur"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="목"
-                    android:layout_weight="1"
-                    />
-                <Button
-                    android:id="@+id/btnRepeatFri"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="금"
-                    android:layout_weight="1"
-                    />
-                <Button
-                    android:id="@+id/btnRepeatSat"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="토"
-                    android:layout_weight="1"
-                    />
+                    android:text="2015-08-23"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="horizontal"
-                android:id="@+id/holidayOptionWrap"
+                android:id="@+id/llTimePickWrap"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="visible"
-                >
+                android:layout_marginTop="15dp">
+
                 <TextView
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:text="휴일 추가"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="시간 설정"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <TextView
+                    android:id="@+id/tvAlarmTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="pm 05:44"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llRepeatDayWrap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="반복 요일"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <Button
+                    android:id="@+id/btnRepeatSun"
+                    style="@style/button_repeat_day_unselected"
+                    android:layout_weight="1"
+                    android:text="일" />
+
+                <Button
+                    android:id="@+id/btnRepeatMon"
+                    style="@style/button_repeat_day_unselected"
+                    android:layout_weight="1"
+                    android:text="월" />
+
+                <Button
+                    android:id="@+id/btnRepeatTue"
+                    style="@style/button_repeat_day_unselected"
+                    android:layout_weight="1"
+                    android:text="화" />
+
+                <Button
+                    android:id="@+id/btnRepeatWed"
+                    style="@style/button_repeat_day_unselected"
+                    android:layout_weight="1"
+                    android:text="수" />
+
+                <Button
+                    android:id="@+id/btnRepeatThur"
+                    style="@style/button_repeat_day_unselected"
+                    android:layout_weight="1"
+                    android:text="목" />
+
+                <Button
+                    android:id="@+id/btnRepeatFri"
+                    style="@style/button_repeat_day_unselected"
+                    android:layout_weight="1"
+                    android:text="금" />
+
+                <Button
+                    android:id="@+id/btnRepeatSat"
+                    style="@style/button_repeat_day_unselected"
+                    android:layout_weight="1"
+                    android:text="토" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/holidayOptionWrap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <TextView
                     android:id="@+id/holidayLabel"
-                    />
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="휴일 옵션"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                 <CheckBox
                     android:id="@+id/cbHolidayAll"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="평일 중 휴일 포함"
+                    android:text="평일 휴일 포함"
                     android:textSize="12sp" />
 
                 <CheckBox
@@ -231,87 +224,93 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="평일 휴일인 경우 제외"
+                    android:text="평일 휴일 제외"
                     android:textSize="12sp" />
 
             </LinearLayout>
+
             <LinearLayout
-                android:orientation="horizontal"
+                android:id="@+id/addAlaramTimePicker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/addAlaramTimePicker"
-                android:longClickable="false">
+                android:longClickable="false"
+                android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="알람 제목"
-                    />
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                 <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:id="@+id/txAlarmTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:linksClickable="false"
                     android:longClickable="false"
-                    android:singleLine="true"/>
+                    android:maxLines="1" />
             </LinearLayout>
+
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
 
                 >
+
                 <TextView
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="알람 옵션"
-                    />
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
                 <Spinner
+                    android:id="@+id/spAlarmType"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/spAlarmType"/>
+                    android:layout_height="wrap_content" />
 
                 <CheckBox
+                    android:id="@+id/cbTTS"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TTS 읽기"
-                    android:id="@+id/cbTTS" />
+                    android:text="TTS 재생" />
             </LinearLayout>
+
             <LinearLayout
-                android:orientation="horizontal"
                 android:id="@+id/alertTimeWrap"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                >
+                android:orientation="horizontal">
+
                 <TextView
+                    android:id="@+id/timeListLabel"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:text="알람 시간"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/timeListLabel"
-                    />
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
                 <Button
                     android:id="@+id/btnAddAlarm"
-                    android:layout_width="wrap_content"
+                    style="@style/button_primary"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:text="추가"
-                    android:layout_marginLeft="50dp"
                     android:layout_gravity="center_horizontal"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:padding="5dp"
+                    android:layout_marginLeft="15dp"
+                    android:text="추가"
                     />
             </LinearLayout>
+
             <LinearLayout
-                android:orientation="vertical"
+                android:id="@+id/alarmList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="90dp"
                 android:layout_toRightOf="@id/timeListLabel"
-                android:layout_marginRight="80dp"
-                android:id="@+id/alarmList">
-            </LinearLayout>
+                android:orientation="vertical"></LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -320,23 +319,21 @@
                 <TextView
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="연동 내용"
-                    />
+                    android:text="연동 기능"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
                 <Spinner
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
                     android:id="@+id/spAppList"
-                    >
-                </Spinner>
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"></Spinner>
 
                 <TextView
                     android:id="@+id/etcTitle"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:text="TextView 2222 "
-                    android:layout_marginLeft="10dp"
                     android:visibility="gone" />
 
             </LinearLayout>

@@ -5,7 +5,9 @@
               android:layout_height="wrap_content"
               android:padding="10dp"
               android:clickable="true"
-              android:longClickable="true">
+              android:longClickable="true"
+            android:background="@drawable/border_set"
+    >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,13 +15,19 @@
         android:orientation="horizontal"
         android:layout_gravity="center"
         >
+
         <ToggleButton
             android:id="@+id/timeText"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="11:10:44"
-            android:textSize="15sp"
-            android:padding="5dp"/>
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:checked="false"
+            android:drawableLeft="@drawable/toggle_timer"
+            android:padding="5dp"
+            android:textColor="@color/toggle_text"
+            android:text=""
+            android:textOff=""
+            android:textOn="" />
 
         <TextView
             android:id="@+id/alarmTitle"

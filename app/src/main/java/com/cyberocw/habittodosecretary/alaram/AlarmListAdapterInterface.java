@@ -6,4 +6,5 @@ package com.cyberocw.habittodosecretary.alaram;
 
 public interface AlarmListAdapterInterface {
     public void notifyDataSetChanged();
+
 }

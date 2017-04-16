@@ -9,5 +9,8 @@
         android:id="@+id/alramListView"
         android:longClickable="true"
         android:clickable="true"
-        android:layout_marginTop="6dp"/>
+        android:layout_marginTop="6dp"
+        android:dividerHeight="0dp"
+        android:divider="@color/background"
+        />
 </LinearLayout>

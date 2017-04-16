@@ -1,18 +1,23 @@
 package com.cyberocw.habittodosecretary.alaram.ui;
 
+import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -27,6 +32,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.ScrollView;
@@ -285,7 +291,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 			if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT) {
 				int value = 0;
-				View view;
+				Button view;
 				int index;
 
 				ArrayList<Integer> temp = new ArrayList<>();
@@ -717,7 +723,10 @@ public class AlarmDialogNew extends DialogFragment{
 					//mDataRepeatDay.contains(mArrDayString[i]);
 					int index = Arrays.binarySearch(mArrDayId, v.getId());
 					int index2 = mDataRepeatDay.indexOf(mArrDayString[index]);
-					toggleBtnRepeatDay(v, index, index2, true);
+
+					//Toast.makeText(mCtx, index, Toast.LENGTH_SHORT).show();
+					Button view = mMapDay.get(mArrDayString[index]);
+					toggleBtnRepeatDay(view, index, index2, true);
 				}
 			});
 		}
@@ -818,24 +827,51 @@ public class AlarmDialogNew extends DialogFragment{
 		mTvAlarmDate.setText(year + "-" + monthOfYear + "-" + dayOfMonth);
 	}
 
-	private void toggleBtnRepeatDay(View v, int index){
+	private void toggleBtnRepeatDay(Button v, int index){
 		toggleBtnRepeatDay(v, index, -1, false);
 	}
 	//index2 가 -1 이상이면 비활성, toggle 이 true 면 데이터 추가 삭제 동작
-	private void toggleBtnRepeatDay(View v, int index, int index2, boolean isToggle){
+	private void toggleBtnRepeatDay(Button v, int index, int index2, boolean isToggle){
 		if(index2 > -1) {
-			if(isToggle)
+			if (isToggle)
 				mDataRepeatDay.remove(index2);
-			v.setBackgroundResource(R.color.background);
+
+			v.setBackgroundResource(R.drawable.button_repeat_day);
+
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+				setTextAppearence(v, false);
+			else
+				setTextAppearenceNew(v, false);
+			v.setBackgroundResource(R.drawable.button_repeat_day_unselect);
 		}
 		else{
 			if(isToggle)
 				mDataRepeatDay.add(mArrDayString[index]);
-			v.setBackgroundResource(R.color.blue_semi_transparent_pressed);
+			//v.setBackgroundResource(R.color.primary_header);
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+				setTextAppearence(v, true);
+			else
+				setTextAppearenceNew(v, true);
+			//v.setBackgroundResource(R.drawable.button_repeat_day);
+			v.setBackgroundResource(R.drawable.button_repeat_day );
 		}
 	}
 
+	private void setTextAppearence(Button v, boolean isSelected){
+		Log.d(this.toString(), "isSelected = " + isSelected);
 
+		if(isSelected)
+			v.setTextAppearance(mCtx, R.style.button_repeat_day);
+		else
+			v.setTextAppearance(mCtx, R.style.button_repeat_day_unselected);
+	}
+	@TargetApi(Build.VERSION_CODES.M)
+	private void setTextAppearenceNew(Button v, boolean isSelected){
+		if(isSelected)
+			v.setTextAppearance(R.style.button_repeat_day);
+		else
+			v.setTextAppearance(R.style.button_repeat_day_unselected);
+	}
 	public void makeBeforeTimer(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
 		builder.setTitle("알림 시간 추가");
@@ -861,6 +897,7 @@ public class AlarmDialogNew extends DialogFragment{
 		btn.setText("분 이전");
 		params.gravity = Gravity.CENTER_VERTICAL;
 		btn.setLayoutParams(params);
+
 		mTemp = btn;
 		btn.setTag(-1);
 		btn.setOnClickListener(new View.OnClickListener() {
@@ -911,42 +948,29 @@ public class AlarmDialogNew extends DialogFragment{
 
 		mArrAlarmCall.add(val * flag);
 
-		LinearLayout ll = new LinearLayout(mCtx);
-		ll.setOrientation(LinearLayout.HORIZONTAL);
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		View beforeView = inflater.inflate(R.layout.alaram_before, null);
 
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-		LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-		ll.setLayoutParams(params);
+		TextView tv = ButterKnife.findById(beforeView, R.id.tvBeforeTime);
 
-		TextView tv = new TextView(mCtx);
-		tv.setLayoutParams(params2);
 		if(flag == -1)
 			tv.setText(val + " 분 전");
 		else
 			tv.setText(val + " 분 후");
 
-		ll.addView(tv);
-
-		Button bt = new Button(mCtx);
-		bt.setText("-");
+		ImageButton bt = ButterKnife.findById(beforeView, R.id.btnRemoveTime);
+		//bt.setText("-");
 		bt.setTag(val * flag);
-		bt.setLayoutParams(params2);
-		bt.setPadding(2, 2, 2, 2);
-		bt.setBackgroundColor(Color.TRANSPARENT);
 		bt.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				int index = mArrAlarmCall.indexOf(v.getTag());
-				d(Const.DEBUG_TAG, "removeIndex = " + index);
 
 				mArrAlarmCall.remove(index);
-				((ViewGroup) v.getParent()).removeAllViews();
+				((ViewGroup) v.getParent().getParent()).removeView((ViewGroup) v.getParent());
 			}
 		});
-
-		ll.addView(bt);
-
-		mAlarmList.addView(ll);
+		mAlarmList.addView(beforeView);
 
 		mScvAddAlarm.refreshDrawableState();
 

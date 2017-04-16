@@ -369,7 +369,7 @@ public class AlarmFragment extends Fragment{
 
 			View v = inflater.inflate(R.layout.list_view, null);
 			ListView newLv = (ListView) v.findViewById(R.id.alramListView);
-			newLv.removeAllViewsInLayout();
+			/*newLv.removeAllViewsInLayout();*/
 			((ViewGroup)newLv.getParent()).removeView(newLv);
 
 			newLv.setAdapter((ListAdapter) mAlarmAdapter);
@@ -397,8 +397,9 @@ public class AlarmFragment extends Fragment{
 
 			View v = inflater.inflate(R.layout.expandable_list_view, null);
 			ExpandableListView newLv = (ExpandableListView) v.findViewById(R.id.alramListView);
-
+/*
 			newLv.removeAllViewsInLayout();
+*/
 			((ViewGroup)newLv.getParent()).removeView(newLv);
 
 			newLv.setAdapter((ExpandableListAdapter) mAlarmAdapter);
@@ -458,7 +459,7 @@ public class AlarmFragment extends Fragment{
 		}
 	}
 
-	protected void longClickPopup(int position, final long _id){
+	public void longClickPopup(int position, final long _id){
 		String names[] ={"편집","삭제"};
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
 

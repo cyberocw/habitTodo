@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme.Widget.Button" parent="android:Widget.Button">
+        <!-- button background, touch feed back -->
+        <item name="android:background">@drawable/button_gray_round</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <!-- button text style -->
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/btn_gray_font_color</item>
+    </style>
+    <style name="button_repeat_day" parent="android:Widget.Button">
+        <!-- button background, touch feed back -->
+        <item name="android:background">@drawable/button_repeat_day</item>
+        <!-- button text style -->
+        <item name="android:layout_height">35dp</item>
+        <item name="android:layout_width">35dp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:layout_marginRight">2dp</item>
+    </style>
+    <style name="button_repeat_day_unselected" parent="android:Widget.Button">
+        <!-- button background, touch feed back -->
+        <item name="android:background">@drawable/button_repeat_day_unselect</item>
+        <!-- button text style -->
+        <item name="android:layout_height">35dp</item>
+        <item name="android:layout_width">35dp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primary_dark</item>
+        <item name="android:layout_marginRight">2dp</item>
+    </style>
+    <style name="button_primary" parent="android:Widget.Button">
+        <!-- button background, touch feed back -->
+        <item name="android:background">@drawable/button_header_round</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <!-- button text style -->
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>

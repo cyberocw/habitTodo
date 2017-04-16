@@ -6,8 +6,10 @@
         <item name="colorAccent">@color/fab_color_1</item>
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
-
-
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:buttonStyle">@style/AppTheme.Widget.Button</item>
+        <item name="android:textColor">@color/primary_dark</item>
     </style>
 
     <!-- Activity themes -->
