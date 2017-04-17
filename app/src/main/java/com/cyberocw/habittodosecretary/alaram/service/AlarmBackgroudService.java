@@ -205,6 +205,7 @@ public class AlarmBackgroudService extends Service {
 
         if(mAlarmType < 1) {
             Intent myIntent = new Intent(mCtx, NotificationService.class);
+            Log.d(this.toString(), " background mArrAlarmVOList.get(mMinRemainPosition).getReqCode() = " + mArrAlarmVOList.get(mMinRemainPosition).getReqCode());
             myIntent.putExtra("title", mTitle);
             myIntent.putExtra(Const.PARAM.ETC_TYPE_KEY, mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
             myIntent.putExtra(Const.PARAM.REQ_CODE, mArrAlarmVOList.get(mMinRemainPosition).getReqCode());

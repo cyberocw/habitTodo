@@ -33,9 +33,6 @@ public class AlarmNotiActivity extends AppCompatActivity {
 	String mTitle = "", mEtcType = "";
 	long mAlarmId = -1;
 	Bundle mBundle;
-
-
-
 	@BindView(R.id.tvAlarmTitle) TextView mTvTitle;
 	@BindView(R.id.btnEtcView) Button mBtnEtcView;
 	@BindView(R.id.btnPostpone) Button mBtnPostpone;
@@ -137,7 +134,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		intentAlarm.putExtra(Const.PARAM.ALARM_ID, mAlarmId);
 		intentAlarm.putExtra(Const.PARAM.MODE, Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG);
 
-		intentAlarm.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		intentAlarm.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 		getApplicationContext().startActivity(intentAlarm);
 
 	}

@@ -278,12 +278,21 @@ public class AlarmFragment extends Fragment{
 
 				// 알람 추가
 				if(mAlarmDataManager.addItem(alarmVO) == true)
-					mAlarmAdapter.notifyDataSetChanged();
+					Toast.makeText(mCtx, "연기했습니다", Toast.LENGTH_LONG).show();
 				else
 					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
 
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}finally {
+					getActivity().finish();
+				}
+
 				mAlarmDataManager.resetMinAlarmCall();
 				refreshAlarmList();
+
 			}
 		});
 		builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

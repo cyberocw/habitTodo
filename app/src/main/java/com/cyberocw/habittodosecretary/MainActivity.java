@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			if (bundle.containsKey(Const.PARAM.REQ_CODE)) {
 				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
 				int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
-				Log.d(Const.DEBUG_TAG, "reqCode=" + reqCode);
+				Log.d(this.toString(), "cancel reqCode=" + reqCode);
 				manager.cancel(reqCode);
 			}
 			if(!bundle.getString(Const.PARAM.ETC_TYPE_KEY, "").equals("")){
@@ -111,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			if (bundle != null) {
 
 				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-				long reqCode = bundle.getLong(Const.PARAM.REQ_CODE);
+				int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
 				Log.d(Const.DEBUG_TAG, "reqCode=" + reqCode);
-				manager.cancel((int) reqCode);
+				manager.cancel(reqCode);
 
 				FragmentManager fragmentManager = getSupportFragmentManager();
 
