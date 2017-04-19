@@ -123,7 +123,7 @@ public class NotificationService extends Service{
 		//NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.mipmap.ic_launcher, "연장하기", pendingIntentAlarm).build();
 		//mCompatBuilder.addAction(action);
 
-		Log.d(Const.DEBUG_TAG, " noti reqCode="+reqCode);
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " noti reqCode="+reqCode);
 		nm.notify(reqCode, mCompatBuilder.build());
 
 		/*
@@ -144,7 +144,7 @@ public class NotificationService extends Service{
     public static class CloseButtonListener extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(Const.DEBUG_TAG, "close button on receive bundle=" + intent.getExtras());
+            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "close button on receive bundle=" + intent.getExtras());
 
             Bundle bundle = intent.getExtras();
 
@@ -152,7 +152,7 @@ public class NotificationService extends Service{
             if(bundle != null) {
                 NotificationManager manager = (NotificationManager) context.getSystemService(Service.NOTIFICATION_SERVICE);
                 long reqCode = bundle.getLong(Const.PARAM.REQ_CODE);
-                Log.d(Const.DEBUG_TAG, "reqCode="+reqCode);
+                Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "reqCode="+reqCode);
                 manager.cancel((int) reqCode);
             }
         }

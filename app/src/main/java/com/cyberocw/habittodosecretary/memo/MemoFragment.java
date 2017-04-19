@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
@@ -40,7 +41,6 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import java.util.Locale;
 
 import butterknife.ButterKnife;
-import butterknife.OnTextChanged;
 
 
 /**
@@ -289,7 +289,7 @@ public class MemoFragment extends Fragment {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 		{
-			Log.d(Const.DEBUG_TAG, " aa click");
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " aa click");
 			if(mIsEtcMode == false)
 				showNewMemoDialog(mMemoDataManager.getItem(position).getId());
 			else{

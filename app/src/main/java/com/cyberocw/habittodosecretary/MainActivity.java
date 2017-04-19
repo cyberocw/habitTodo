@@ -8,13 +8,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +30,7 @@ import com.cyberocw.habittodosecretary.category.CategoryFragment;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.settings.InitializeSetting;
 import com.cyberocw.habittodosecretary.settings.SettingFragment;
+
 import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity implements AlarmFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener,
@@ -70,11 +71,11 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			if (bundle.containsKey(Const.PARAM.REQ_CODE)) {
 				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
 				int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
-				Log.d(this.toString(), "cancel reqCode=" + reqCode);
+				Crashlytics.log(Log.DEBUG, this.toString(), "cancel reqCode=" + reqCode);
 				manager.cancel(reqCode);
 			}
 			if(!bundle.getString(Const.PARAM.ETC_TYPE_KEY, "").equals("")){
-				Log.d(this.toString(), "bundle.getString(Const.PARAM.ETC_TYPE_KEY)="+bundle.getString(Const.PARAM.ETC_TYPE_KEY));
+				Crashlytics.log(Log.DEBUG, this.toString(), "bundle.getString(Const.PARAM.ETC_TYPE_KEY)="+bundle.getString(Const.PARAM.ETC_TYPE_KEY));
 				if(bundle.getString(Const.PARAM.ETC_TYPE_KEY).equals(Const.ETC_TYPE.MEMO)){
 					fragment = new MemoFragment();
 				}else{
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 
-		Log.d(Const.DEBUG_TAG, "onResume start");
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onResume start");
 
 		if(intent != null) {
 			Bundle bundle = intent.getExtras();
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
 				int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
-				Log.d(Const.DEBUG_TAG, "reqCode=" + reqCode);
+				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "reqCode=" + reqCode);
 				manager.cancel(reqCode);
 
 				FragmentManager fragmentManager = getSupportFragmentManager();
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 				//afterUpdateVersion();
 			} else {
-				Log.d(Const.DEBUG_TAG, " on resume bundle is null");
+				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " on resume bundle is null");
 			}
 			setIntent(intent);
 		}
@@ -147,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 		}
 
-		Log.d(Const.DEBUG_TAG, "versionName = " + versionName + " , prefsSavedVersion= " + prefsSavedVersion);
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "versionName = " + versionName + " , prefsSavedVersion= " + prefsSavedVersion);
 
 		if(prefsSavedVersion.equals("0") || !prefsSavedVersion.equals(versionName)){
 			InitializeSetting initializeSetting = new InitializeSetting(getApplication());

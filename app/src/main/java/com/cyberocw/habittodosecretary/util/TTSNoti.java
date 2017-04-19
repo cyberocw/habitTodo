@@ -45,7 +45,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d(this.toString(), "intent="+intent + " extras="+intent.getExtras());
+		Crashlytics.log(Log.DEBUG, this.toString(), "intent="+intent + " extras="+intent.getExtras());
 		if(intent != null && intent.getExtras() != null) {
 			String Noti_title = intent.getExtras().getString("alaramTitle");
 			mAlarmId = intent.getExtras().getLong("alarmId", -1);
@@ -53,11 +53,11 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 			//음악과 동시에 재생할때 재생바 조절에 따른 볼륨 조절을 위해 알람 아이디를 강제 지정하여 if alarmId> -1 조건이 무조건 실행되도록 일단 해둠
 			mAlarmId = 1;
 
-			Log.d(this.toString(), "mTTS == null=" + (mTTS == null));
+			Crashlytics.log(Log.DEBUG, this.toString(), "mTTS == null=" + (mTTS == null));
 			if(mTTS == null)
 				mTTS = new TextToSpeech(getApplicationContext(), this);
 
-			Log.d(this.toString(), " add  ");
+			Crashlytics.log(Log.DEBUG, this.toString(), " add  ");
 			mArrText.add(Noti_title);
 
 			mIsNUll = false;
@@ -69,11 +69,11 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 
 	@Override
 	public void onInit(int status) {
-		Log.d(this.toString(), "oninit start  status="+ status);
+		Crashlytics.log(Log.DEBUG, this.toString(), "oninit start  status="+ status);
 		if (status == TextToSpeech.SUCCESS && mIsNUll == false) {
 			int result = mTTS.setLanguage(Locale.getDefault());
 			if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
-				Log.d(Const.DEBUG_TAG, "tts start");
+				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "tts start");
 
 
 
@@ -85,7 +85,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 						// Request permanent focus.
 						AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
-				Log.d(this.toString(), "mAlarmId="+mAlarmId);
+				Crashlytics.log(Log.DEBUG, this.toString(), "mAlarmId="+mAlarmId);
 
 				if(mAlarmId > -1) {
 
@@ -99,7 +99,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 				mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
 					@Override
 					public void onStart(String utteranceId) {
-						Log.d(this.toString(), "start utteranceId="+utteranceId);
+						Crashlytics.log(Log.DEBUG, this.toString(), "start utteranceId="+utteranceId);
 						if(mAlarmId > -1) {
 							SharedPreferences mPrefs = getApplicationContext().getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 							mPrefsTTSVol = mPrefs.getInt(Const.SETTING.TTS_VOLUME, mOriginalVolume);
@@ -108,7 +108,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 					}
 					@Override
 					public void onDone(String utteranceId) {
-						Log.d(this.toString(), " done utteranceId="+utteranceId);
+						Crashlytics.log(Log.DEBUG, this.toString(), " done utteranceId="+utteranceId);
 
 						if(mAlarmId > -1){
 							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
@@ -119,7 +119,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 					}
 					@Override
 					public void onError(String utteranceId) {
-						Log.d(this.toString(), " error utteranceId="+utteranceId);
+						Crashlytics.log(Log.DEBUG, this.toString(), " error utteranceId="+utteranceId);
 
 						if(mAlarmId > -1)
 							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
@@ -127,7 +127,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 					}
 				});
 
-				Log.d(this.toString(), "focusResult = AUDIOFOCUS_REQUEST_GRANTED = " +  (focusResult == AudioManager.AUDIOFOCUS_REQUEST_GRANTED));
+				Crashlytics.log(Log.DEBUG, this.toString(), "focusResult = AUDIOFOCUS_REQUEST_GRANTED = " +  (focusResult == AudioManager.AUDIOFOCUS_REQUEST_GRANTED));
 				if (focusResult == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 					// Start playback
 					speakText();
@@ -200,7 +200,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 		if(mAudioManager != null)
 			mAudioManager.abandonAudioFocus(afChangeListener);
 		//unbindService();
-		Log.d(this.toString(), " tts service on destroy ");
+		Crashlytics.log(Log.DEBUG, this.toString(), " tts service on destroy ");
 
 	}
 

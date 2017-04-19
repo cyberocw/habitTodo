@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.cyberocw.habittodosecretary.Const;
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
@@ -111,7 +111,7 @@ public class CalendarManager {
 		mArrAlarmList = new ArrayList<>();
 
 		for(int i = 0; i < arrVO.size(); i++){
-			Log.d(getClass().toString(), " alarm day  = " + arrVO.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
+			Crashlytics.log(Log.DEBUG, getClass().toString(), " alarm day  = " + arrVO.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
 			mArrAlarmList.add(arrVO.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
 		}
 	}
@@ -262,7 +262,7 @@ public class CalendarManager {
 						arrTextDayName[i].setEllipsize(TextUtils.TruncateAt.END);
 						*/
 						if(mCalendar.getTimeInMillis() == cal2.getTimeInMillis()){
-							Log.d(this.toString(), "mFullDateView.getText()="+mFullDateView.getText());
+							Crashlytics.log(Log.DEBUG, this.toString(), "mFullDateView.getText()="+mFullDateView.getText());
 							mFullDateView.setText(mFullDateView.getText() + " - " + daytext);
 						}
 						break;

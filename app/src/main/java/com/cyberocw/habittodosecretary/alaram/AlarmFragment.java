@@ -29,12 +29,13 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
-import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
-import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmDialogNew;
 import com.cyberocw.habittodosecretary.alaram.ui.TimerDialog;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
 import com.cyberocw.habittodosecretary.calendar.CalendarManager;
 import com.cyberocw.habittodosecretary.memo.MemoDataManager;
@@ -44,8 +45,6 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
-
-import static android.util.Log.d;
 
 
 /**
@@ -112,7 +111,7 @@ public class AlarmFragment extends Fragment{
 		if (getArguments() != null) {
 			mMode = getArguments().getInt(Const.PARAM.MODE);
 			mAlarmId = getArguments().getLong(Const.PARAM.ALARM_ID);
-            Log.d(Const.DEBUG_TAG, " alarm fragment mMode = get Arguments = " + mMode + " al id= " + mAlarmId);
+            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " alarm fragment mMode = get Arguments = " + mMode + " al id= " + mAlarmId);
 		}
 	}
 
@@ -134,7 +133,7 @@ public class AlarmFragment extends Fragment{
 	}
 
 	private void initActivity() {
-		Log.d(Const.DEBUG_TAG, "initActivity started");
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "initActivity started");
 
 		mCalendar = Calendar.getInstance();
 
@@ -172,7 +171,7 @@ public class AlarmFragment extends Fragment{
 
 	private void showPostponeAlarmDialog(long id){
 
-		Log.d(Const.DEBUG_TAG, "makeAlarmPostpone");
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "makeAlarmPostpone");
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
 		builder.setTitle("알림 연장");
@@ -320,7 +319,7 @@ public class AlarmFragment extends Fragment{
 
 
 			if(mMode == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG){
-				Log.d(Const.DEBUG_TAG, " put mode ok " ) ;
+				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " put mode ok " ) ;
 				bundle.putInt(Const.PARAM.MODE, mMode);
 			}
 			alarmDialogNew.setArguments(bundle);
@@ -370,7 +369,7 @@ public class AlarmFragment extends Fragment{
 		ll.removeAllViews();
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 
-		Log.d(Const.DEBUG_TAG, "initAlamUi start");
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "initAlamUi start");
 
 		if(mListViewType == Const.ALARM_LIST_VIEW_TYPE.LIST){
 
@@ -424,7 +423,7 @@ public class AlarmFragment extends Fragment{
 					//editor.clear();
 					int len = ((ExpandableListAdapter) mAlarmAdapter).getGroupCount();
 					if(len > 0 && mAlarmDataManager.positionToGroupCode(0).equals(String.valueOf(Const.ALARM_DATE_TYPE.REPEAT))){
-						Log.d(Const.DEBUG_TAG, " prefs get put boolean = " + !expandableListView.isGroupExpanded(0));
+						Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " prefs get put boolean = " + !expandableListView.isGroupExpanded(0));
 						editor.putBoolean(Const.ALARM_LIST_VIEW_TYPE.TAG_REPEAT_EXPAND, !expandableListView.isGroupExpanded(0));
 					}
 

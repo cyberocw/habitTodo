@@ -3,9 +3,15 @@ package com.cyberocw.habittodosecretary.alaram.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.service.AlarmBackgroudService;
+
+import java.util.Calendar;
+import java.util.Set;
 
 /**
  * Created by cyberocw on 2015-08-31.
@@ -16,10 +22,25 @@ public class AlarmReceiver extends BroadcastReceiver{
 	private boolean mBound;
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
+		mAlarmDataManager.resetMinAlarmCall();
+
+		/*
 		Intent myIntent = new Intent(context, AlarmBackgroudService.class);
 		myIntent.putExtras(intent.getExtras());
 
-		context.startService(myIntent);
+		Bundle bundle = intent.getExtras();
+
+		Set<String> keySet = bundle.keySet();
+		StringBuilder sb = new StringBuilder();
+		for (String key: keySet
+			 ) {
+			sb.append(key + "\n");
+		}
+		Crashlytics.log(Log.DEBUG, this.toString(), " extara keys = " + sb.toString());
+		context.startService(myIntent);*/
+
+
 		//context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
 		//AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
@@ -33,7 +54,7 @@ public class AlarmReceiver extends BroadcastReceiver{
 		int alarmDateType = intent.getExtras().getInt("alarmDateType");
 		long realTime = intent.getExtras().getLong("realTime");
 
-		Log.d("AlarmReciever", Noti_title + " " + Noti_message + " type= " + alarmDateType);
+		Crashlytics.log(Log.DEBUG, "AlarmReciever", Noti_title + " " + Noti_message + " type= " + alarmDateType);
 		Intent myIntent = new Intent(context, NotificationService.class);
 		myIntent.putExtra("title", Noti_title);
 		myIntent.putExtra("notes", Noti_message);

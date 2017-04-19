@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 
 import java.text.DecimalFormat;
@@ -68,11 +69,11 @@ public class CommonUtils {
 		if (!(view instanceof EditText)) {
 			view.setOnTouchListener(new View.OnTouchListener() {
 				public boolean onTouch(View v, MotionEvent event) {
-					Log.d(Const.DEBUG_TAG, "on thuch");
+					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on thuch");
 					InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 
 					inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-					Log.d(Const.DEBUG_TAG, "hideSoftKeyboard");
+					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "hideSoftKeyboard");
 					return false;
 				}
 			});
@@ -92,11 +93,11 @@ public class CommonUtils {
 		if (!(view instanceof EditText)) {
 			view.setOnTouchListener(new View.OnTouchListener() {
 				public boolean onTouch(View v, MotionEvent event) {
-					Log.d(Const.DEBUG_TAG, "on thuch");
+					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on thuch");
 					InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 
 					inputManager.hideSoftInputFromWindow(dialog.getWindow().getCurrentFocus().getWindowToken(), 0);
-					Log.d(Const.DEBUG_TAG, "hideSoftKeyboard");
+					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "hideSoftKeyboard");
 					return false;
 				}
 			});

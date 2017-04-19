@@ -17,14 +17,15 @@ import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
-import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmNotiActivity;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Set;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -66,21 +67,31 @@ public class AlarmBackgroudService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(Const.DEBUG_TAG, "onStartCommand" + " mCountdownTimer is null=" + (mCountDownTimer == null));
+        Crashlytics.log(Log.DEBUG, this.toString(), "onStartCommand" + " mCountdownTimer is null=" + (mCountDownTimer == null));
         //if(mCountDownTimer != null)
         //	mTimerListAdapter.showRunningAlert();
         Bundle extras = intent.getExtras();
 
         if(extras == null){
-            Log.d("service", " extras null!!!!");
+            Crashlytics.log(Log.DEBUG, this.toString(), "extras null!!!");
         }
 
         // Get messager from the Activity
         if (extras != null) {
-            Log.d("service", "onBind with extra @@@@@@@@@@@@ mArrAlarmVOList size=" + mArrAlarmVOList.size());
+            Crashlytics.log(Log.DEBUG, "service", "onBind with extra @@@@@@@@@@@@ mArrAlarmVOList size=" + mArrAlarmVOList.size());
             //mMillisRemainTime = (Long) extras.get("realTime");
 
+            Set<String> keySet = extras.keySet();
+            StringBuilder sb = new StringBuilder();
+            for (String key: keySet
+                    ) {
+                sb.append(key + "\n");
+            }
+            Crashlytics.log(Log.DEBUG, this.toString(), " extara keys = " + sb.toString());
+
             AlarmTimeVO alarmTimeVO = (AlarmTimeVO) intent.getSerializableExtra("alarmTimeVO");
+
+            Crashlytics.log(Log.DEBUG, this.toString(), "alarmTimeVO = "+alarmTimeVO);
 
             int index = findAlarmIndex(alarmTimeVO);
 
@@ -186,10 +197,10 @@ public class AlarmBackgroudService extends Service {
                 int minute = (int) ((millisUntilFinished / (1000 * 60)) % 60);
                 int hour = (int) ((millisUntilFinished / (1000 * 60 * 60)));
 
-                //Log.d(Const.DEBUG_TAG, "on tinck =" + second);
+                //Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on tinck =" + second);
             }
             public void onFinish() {
-                Log.d("Service", "on tinck finish");
+                Crashlytics.log(Log.DEBUG, "Service", "on tinck finish");
                 startAleart();
                 cancelTimer();
 
@@ -205,7 +216,7 @@ public class AlarmBackgroudService extends Service {
 
         if(mAlarmType < 1) {
             Intent myIntent = new Intent(mCtx, NotificationService.class);
-            Log.d(this.toString(), " background mArrAlarmVOList.get(mMinRemainPosition).getReqCode() = " + mArrAlarmVOList.get(mMinRemainPosition).getReqCode());
+            Crashlytics.log(Log.DEBUG, this.toString(), " background mArrAlarmVOList.get(mMinRemainPosition).getReqCode() = " + mArrAlarmVOList.get(mMinRemainPosition).getReqCode());
             myIntent.putExtra("title", mTitle);
             myIntent.putExtra(Const.PARAM.ETC_TYPE_KEY, mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
             myIntent.putExtra(Const.PARAM.REQ_CODE, mArrAlarmVOList.get(mMinRemainPosition).getReqCode());
@@ -241,7 +252,7 @@ public class AlarmBackgroudService extends Service {
         mArrAlarmVOList.remove(mMinRemainPosition);
         mCountDownTimer = null;
 
-        Log.d("Service", "remove and mArrAlarmVOList.size() == " + mArrAlarmVOList.size());
+        Crashlytics.log(Log.DEBUG, "Service", "remove and mArrAlarmVOList.size() == " + mArrAlarmVOList.size());
         if(mArrAlarmVOList.size() > 0){
             setMinReaminTime();
             startTimer();
@@ -256,13 +267,13 @@ public class AlarmBackgroudService extends Service {
     }
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        Log.d(Const.DEBUG_TAG, "onTaskRemoved Service");
+        Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onTaskRemoved Service");
         super.onTaskRemoved(rootIntent);
     }
 
     @Override
     public void onDestroy() {
-        Log.d(Const.DEBUG_TAG, "onDestroy Service");
+        Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onDestroy Service");
         if(mCountDownTimer != null)
             mCountDownTimer.cancel();
         stopForeground(true);

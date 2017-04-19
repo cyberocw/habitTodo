@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
@@ -315,7 +316,7 @@ public class AlarmDataManager {
 
 		alarmTimeList1 = mDb.getMinAlarmTime();
 
-		Log.d(this.toString(), "alarmTimeList1="+alarmTimeList1);
+		Crashlytics.log(Log.DEBUG, this.toString(), "alarmTimeList1="+alarmTimeList1);
 
 		Calendar cal = Calendar.getInstance();
 		int dayNum = cal.get(Calendar.DAY_OF_WEEK); //sun 1 mon 2 ...
@@ -349,7 +350,7 @@ public class AlarmDataManager {
 		SharedPreferences prefsSetting = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 		boolean isUseNotibar = prefsSetting.getBoolean(Const.SETTING.IS_NOTIBAR_USE, true);
 
-		Log.d(this.toString(), "isUseNotibar=="+isUseNotibar);
+		Crashlytics.log(Log.DEBUG, this.toString(), "isUseNotibar=="+isUseNotibar);
 
 		if(!isUseNotibar){
 			SharedPreferences.Editor editor = prefs.edit();
@@ -364,14 +365,14 @@ public class AlarmDataManager {
 
 		String[] arrReq = new String[alarmTimeList.size()];
 
-		Log.d(this.toString(), "alarmTimeList.size()="+alarmTimeList.size());
+		Crashlytics.log(Log.DEBUG, this.toString(), "alarmTimeList.size()="+alarmTimeList.size());
 		for(int i = 0; i < alarmTimeList.size(); i++){
 			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i)));
 		}
 
 		String newReqCode = TextUtils.join("," , arrReq);
 
-		Log.d(Const.DEBUG_TAG, "newReqCode=" + newReqCode);
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "newReqCode=" + newReqCode);
 		//등록된 code 저장해둠
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(reqCode);
@@ -389,7 +390,7 @@ public class AlarmDataManager {
 				.getSystemService(Context.ALARM_SERVICE);
 		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
 
-		Log.d(Const.DEBUG_TAG, " get text = " + text);
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " get text = " + text);
 		//기존것 취소
 		if(text != null && !"".equals(text)){
 			String[] arrReq = text.split(",");
@@ -408,7 +409,7 @@ public class AlarmDataManager {
 
 			//background 서비스 취소
 			Intent intentAlarmbackground = new Intent(mCtx, AlarmBackgroudService.class);
-			Log.d(Const.DEBUG_TAG, "background Service stop");
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "background Service stop");
 			mCtx.stopService(intentAlarmbackground);
 
 		}
@@ -422,7 +423,7 @@ public class AlarmDataManager {
 		if(reqResult >= Integer.MAX_VALUE)
 			reqResult = reqResult / 10000;
 		int reqCode = (int) reqResult;
-		Log.d(Const.DEBUG_TAG, "reqCode=" + reqCode);
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "reqCode=" + reqCode + " alarmTimeVO= getTimeStamp = " + alarmTimeVO.getTimeStamp());
 		//myIntent.removeExtra("title");
 		long timeStamp = alarmTimeVO.getTimeStamp();
 		ccc.setTimeInMillis(timeStamp);
@@ -434,7 +435,7 @@ public class AlarmDataManager {
 			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
 			alarmTimeVO.setReqCode(reqCode);
 			myIntent.putExtra("alarmTimeVO", alarmTimeVO);
-			Log.d(this.getClass().toString(), "timer background start service alarmVO id=" + alarmTimeVO.getId() + " title =" + alarmTimeVO.getAlarmTitle());
+			Crashlytics.log(Log.DEBUG, this.getClass().toString(), "timer background start service alarmVO id=" + alarmTimeVO.getId() + " title =" + alarmTimeVO.getAlarmTitle());
 			mCtx.startService(myIntent);
 			return reqCode;
 		}
@@ -460,11 +461,11 @@ public class AlarmDataManager {
 			am.setExactAndAllowWhileIdle(type, time, it);
 		}
 		else if(sdkVersion >= Build.VERSION_CODES.KITKAT) {
-			Log.d(Const.DEBUG_TAG, "kitkat set alarmExact");
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "kitkat set alarmExact");
 			am.setExact(type, time, it);
 		}
 		else {
-			Log.d(Const.DEBUG_TAG, "low version set alarm");
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "low version set alarm");
 			am.set(type, time, it);
 		}
 	}

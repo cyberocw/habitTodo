@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
@@ -137,7 +138,7 @@ public class MemoDbManager extends DbHelper{
 			db.setTransactionSuccessful();
 		}
 		catch (Exception e){
-			Log.d(Const.DEBUG_TAG, "error msg="+e.getMessage());
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "error msg="+e.getMessage());
 			result = false;
 		}
 		finally{

@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.vo.HolidayVO;
 import com.cyberocw.habittodosecretary.db.DbHelper;
@@ -49,7 +50,7 @@ public class SettingDbManager extends DbHelper {
         ArrayList<HolidayVO> list = getHolidayList(startDate, endDate);
         HashMap<String, ArrayList<HolidayVO>> resultMap = new HashMap<>();
 
-        Log.d(Const.DEBUG_DB_TAG, "holiday list cnt = " + list.size());
+        Crashlytics.log(Log.DEBUG, Const.DEBUG_DB_TAG, "holiday list cnt = " + list.size());
 
         for(int i = 0 ; i < list.size(); i++){
             if(!resultMap.containsKey(list.get(i).getFullDate()))
@@ -71,7 +72,7 @@ public class SettingDbManager extends DbHelper {
                 KEY_FULL_DATE +" " +
                 " from " + TABLE_HOLIDAY + " where " + KEY_FULL_DATE + " >= " + startDate + " and " + KEY_FULL_DATE + " <= " + endDate;
 
-        Log.d(Const.DEBUG_DB_TAG, "holidayQuery="+holidayQuery);
+        Crashlytics.log(Log.DEBUG, Const.DEBUG_DB_TAG, "holidayQuery="+holidayQuery);
 
         Cursor c = db.rawQuery(holidayQuery, null);
 
@@ -97,11 +98,11 @@ public class SettingDbManager extends DbHelper {
             if(year < 0)
                 year = jsonArray.getJSONObject(0).getInt("year");
 
-            Log.d(Const.DEBUG_TAG, " delete year = " + year);
+            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " delete year = " + year);
 
             db.delete(TABLE_HOLIDAY, KEY_YEAR + "=?", new String[]{String.valueOf(year)});
 
-            //Log.d(Const.DEBUG_TAG, "jsonArray.length();="+jsonArray.length());
+            //Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "jsonArray.length();="+jsonArray.length());
 
             JSONObject jsonObject;
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -152,7 +153,7 @@ public class SettingDbManager extends DbHelper {
         if (c.moveToFirst()) {
             do{
                 HolidayVO vo;
-                Log.d(Const.DEBUG_DB_TAG, " holiday cnt = " + c.getCount());
+                Crashlytics.log(Log.DEBUG, Const.DEBUG_DB_TAG, " holiday cnt = " + c.getCount());
 
                 if (c.moveToFirst()) {
                     do {
@@ -167,7 +168,7 @@ public class SettingDbManager extends DbHelper {
 
                         //vo.setCreateDt(c.getInt(c.getColumnIndex(KEY_CREATE_DATE)));
                         //vo.setUpdateDt(c.getInt(c.getColumnIndex(KEY_UPDATE_DATE)));
-                        Log.d(Const.DEBUG_DB_TAG, "holiday=" + vo.toString());
+                        Crashlytics.log(Log.DEBUG, Const.DEBUG_DB_TAG, "holiday=" + vo.toString());
                         list.add(vo);
                     } while (c.moveToNext());
                 }

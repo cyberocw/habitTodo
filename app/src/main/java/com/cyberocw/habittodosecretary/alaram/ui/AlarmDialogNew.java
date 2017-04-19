@@ -7,8 +7,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,8 +14,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -41,6 +37,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
@@ -56,7 +53,7 @@ import java.util.LinkedHashMap;
 
 import butterknife.ButterKnife;
 
-import static android.util.Log.*;
+import static android.util.Log.d;
 
 /**
  * Created by cyberocw on 2015-08-19.
@@ -114,7 +111,7 @@ public class AlarmDialogNew extends DialogFragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 
-		Log.d(this.toString(), " onCreateView ");
+		Crashlytics.log(Log.DEBUG, this.toString(), " onCreateView ");
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_dialog_alarm_add, container, false);
 		mView = view;
@@ -169,7 +166,7 @@ public class AlarmDialogNew extends DialogFragment{
 /*
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		Log.d(this.toString(), " onCreateDialog ");
+		Crashlytics.log(Log.DEBUG, this.toString(), " onCreateDialog ");
 
 		AlertDialog.Builder b=  new  AlertDialog.Builder(getActivity())
 				.setTitle("알림 추가")
@@ -205,7 +202,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		Log.d(this.toString(), " onActivityCreated ");
+		Crashlytics.log(Log.DEBUG, this.toString(), " onActivityCreated ");
 
 		if(savedInstanceState != null){
 		//	return;
@@ -304,7 +301,7 @@ public class AlarmDialogNew extends DialogFragment{
 					toggleBtnRepeatDay(view, index);
 				}
 
-				Log.d(Const.DEBUG_TAG, "mAlarmVO.getIsHolidayALL() " + mAlarmVO.getIsHolidayALL()  + " true = " + (mAlarmVO.getIsHolidayALL() == 1));
+				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "mAlarmVO.getIsHolidayALL() " + mAlarmVO.getIsHolidayALL()  + " true = " + (mAlarmVO.getIsHolidayALL() == 1));
 				if(mAlarmVO.getIsHolidayALL() == 1)
 					mCbHolidayAll.setChecked(true);
 				if(mAlarmVO.getIsHolidayNone() == 1)
@@ -351,7 +348,7 @@ public class AlarmDialogNew extends DialogFragment{
 		Object[] arrkeys = mEtcMap.keySet().toArray();
 		for(int i = 0 ; i < arrkeys.length; i++){
 			if(arrkeys[i].equals(mEtcType)){
-				Log.d(this.toString(), "selected start");
+				Crashlytics.log(Log.DEBUG, this.toString(), "selected start");
 				mSpAppList.setTag(R.id.spAppList, i);
 				mSpAppList.setSelection(i, false);
 
@@ -446,7 +443,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 
 		if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT || mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
-			Log.d(Const.DEBUG_TAG, "mCbHolidayAll.isChecked() =" + mCbHolidayAll.isChecked());
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "mCbHolidayAll.isChecked() =" + mCbHolidayAll.isChecked());
 			vo.setIsHolidayALL(mCbHolidayAll.isChecked() ? 1 : 0);
 			vo.setIsHolidayNone(mCbHolidayNone.isChecked() ? 1 : 0);
 		}
@@ -664,7 +661,7 @@ public class AlarmDialogNew extends DialogFragment{
 	}
 
 	private void showCategory(){
-		Log.d(this.toString(), "showCategory start");
+		Crashlytics.log(Log.DEBUG, this.toString(), "showCategory start");
 		//mTvEtcTitle
 		Fragment fragment = new CategoryFragment();
 
@@ -686,9 +683,9 @@ public class AlarmDialogNew extends DialogFragment{
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				mEtcType = (String) values[position];
 				if(mEtcType.equals(Const.ETC_TYPE.MEMO)){
-					Log.d(Const.DEBUG_TAG, " onitem selected ");
+					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " onitem selected ");
 					//if(mIsInitMemoMode == false)
-					//Log.d(Const.DEBUG_TAG, "(int) mSpAppList.getTag(R.id.spAppList) = "+(int) mSpAppList.getTag(R.id.spAppList) + " posi = " +position);
+					//Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "(int) mSpAppList.getTag(R.id.spAppList) = "+(int) mSpAppList.getTag(R.id.spAppList) + " posi = " +position);
 
 					if(mSpAppList.getTag(R.id.spAppList) != null && (Integer) mSpAppList.getTag(R.id.spAppList) != position)
 						showCategory();
@@ -706,7 +703,7 @@ public class AlarmDialogNew extends DialogFragment{
 			}
 		});
 
-		Log.d(Const.DEBUG_TAG, " onitem selected listener end ");
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " onitem selected listener end ");
 
 		mBtnAddAlarm.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -858,7 +855,7 @@ public class AlarmDialogNew extends DialogFragment{
 	}
 
 	private void setTextAppearence(Button v, boolean isSelected){
-		Log.d(this.toString(), "isSelected = " + isSelected);
+		Crashlytics.log(Log.DEBUG, this.toString(), "isSelected = " + isSelected);
 
 		if(isSelected)
 			v.setTextAppearance(mCtx, R.style.button_repeat_day);
@@ -982,11 +979,11 @@ public class AlarmDialogNew extends DialogFragment{
 		if (!(view instanceof EditText)) {
 			view.setOnTouchListener(new View.OnTouchListener() {
 				public boolean onTouch(View v, MotionEvent event) {
-					Log.d(Const.DEBUG_TAG, "on thuch");
+					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on thuch");
 					InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
 					inputManager.hideSoftInputFromWindow(mDialog.getWindow().getCurrentFocus().getWindowToken(), 0);
-					Log.d(Const.DEBUG_TAG, "hideSoftKeyboard");
+					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "hideSoftKeyboard");
 					return false;
 				}
 			});

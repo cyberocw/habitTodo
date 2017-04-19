@@ -1,6 +1,5 @@
 package com.cyberocw.habittodosecretary.category;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,14 +21,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
-import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
-import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
-import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
-import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
 /**
  * Created by cyberocw on 2015-12-06.
@@ -176,7 +172,7 @@ public class CategoryFragment extends Fragment {
 		categoryVO.setTitle(title);
 		categoryVO.setType(Const.CATEGORY.TYPE);
 		//vo.setSortOrder(mCateDataManager.getCount());
-		Log.d(this.toString(), "categoryVO.getId()="+categoryVO.getId());
+		Crashlytics.log(Log.DEBUG, this.toString(), "categoryVO.getId()="+categoryVO.getId());
 		if(categoryVO.getId() == -1){
 			if(mCateDataManager.addItem(categoryVO))
 				Toast.makeText(mCtx, "추가 되었습니다", Toast.LENGTH_SHORT).show();

@@ -7,11 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 /**
  * Created by cyberocw on 2015-08-23.
@@ -190,14 +187,14 @@ public class DbHelper extends SQLiteOpenHelper {
 			db.execSQL(getCreateTableQuery(TABLE_HOLIDAY));
 
 			db.setTransactionSuccessful();
-			Log.d(Const.DEBUG_DB_TAG, "DB CREATE SUCCESS OCW");
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_DB_TAG, "DB CREATE SUCCESS OCW");
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.d(Const.DEBUG_DB_TAG, "DB CREATE Exception " + e.getMessage() + " clause=" + e.getCause());
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_DB_TAG, "DB CREATE Exception " + e.getMessage() + " clause=" + e.getCause());
 		} finally {
 
 			db.endTransaction();
-			Log.d(Const.DEBUG_DB_TAG, "DB END Transaction OCW");
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_DB_TAG, "DB END Transaction OCW");
 		}
 	}
 
@@ -215,7 +212,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		//dropTable(db);
 		//onCreate(db); // 테이블을 지웠으므로 다시 테이블을 만들어주는 과정
 
-		Log.d(Const.DEBUG_TAG, "db version old=" + oldVersion + " new=" + newVersion);
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "db version old=" + oldVersion + " new=" + newVersion);
 
 		if(oldVersion == 1)
 			onCreate(db);

@@ -2,7 +2,6 @@ package com.cyberocw.habittodosecretary.category;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.category.db.CategoryDbManager;

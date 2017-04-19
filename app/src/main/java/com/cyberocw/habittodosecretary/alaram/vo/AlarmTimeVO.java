@@ -105,12 +105,14 @@ public class AlarmTimeVO implements Serializable{
 		return "AlarmTimeVO{" +
 				"timeStamp=" + timeStamp +
 				", id=" + id +
+				", reqCode=" + reqCode +
 				", callTime=" + callTime +
 				", useYn=" + useYn +
 				", fId=" + fId +
 				", alarmTitle='" + alarmTitle + '\'' +
 				", alarmOption=" + alarmOption +
 				", alarmType=" + alarmType +
+				", etcType='" + etcType + '\'' +
 				'}';
 	}
 }

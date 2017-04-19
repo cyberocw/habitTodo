@@ -1,7 +1,6 @@
 package com.cyberocw.habittodosecretary.util;
 
 import android.content.Intent;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
@@ -55,7 +54,7 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
 
     @Override
     public void onInit(int status) {
-        Log.d(this.toString(), "oninit start  status="+ status);
+        Crashlytics.log(Log.DEBUG, this.toString(), "oninit start  status="+ status);
         if (status == TextToSpeech.SUCCESS) {
             int result = mTTS.setLanguage(Locale.getDefault());
 
@@ -78,7 +77,7 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case MY_DATA_CHECK_CODE: {
-                Log.d(this.toString(), "resultCode="+resultCode);
+                Crashlytics.log(Log.DEBUG, this.toString(), "resultCode="+resultCode);
                 if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                     // the user has the necessary data - create the TTS
                     //myTTS = new TextToSpeech(this, this);

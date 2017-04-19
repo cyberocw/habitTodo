@@ -2,18 +2,12 @@ package com.cyberocw.habittodosecretary.settings;
 
 import android.util.Log;
 
-import com.cyberocw.habittodosecretary.Const;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 import javax.net.ssl.HostnameVerifier;
@@ -71,7 +65,7 @@ public class HolidaySync {
         catch (Exception ex) {
             Log.i("error",ex.getMessage());
         }
-        //Log.d(Const.DEBUG_TAG, "year = " + year + ", result="+html.toString());
+        //Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "year = " + year + ", result="+html.toString());
 
         JSONObject jObject = null;
         try {

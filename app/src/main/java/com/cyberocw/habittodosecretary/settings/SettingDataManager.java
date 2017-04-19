@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.vo.HolidayVO;
 import com.cyberocw.habittodosecretary.settings.db.SettingDbManager;
@@ -56,7 +57,7 @@ public class SettingDataManager {
 
 
     public void getList(int year) {
-        Log.d(Const.DEBUG_TAG, "getHolidayList start");
+        Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "getHolidayList start");
         mDb.getHolidayList(year);
 
     }
@@ -88,14 +89,14 @@ public class SettingDataManager {
                 src.close();
                 dst.close();
 
-                Log.d(Const.DEBUG_TAG, "Backup Successful!");
+                Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "Backup Successful!");
 
                 Toast.makeText(mCtx, "Backup Successful!",
                         Toast.LENGTH_SHORT).show();
 
 
         } catch (Exception e) {
-            Log.d(Const.DEBUG_TAG, "Backup Failed!" + e.getCause() + " " + e.getMessage());
+            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "Backup Failed!" + e.getCause() + " " + e.getMessage());
             Toast.makeText(mCtx, "Backup Failed!", Toast.LENGTH_SHORT)
                     .show();
             e.printStackTrace();
@@ -125,14 +126,14 @@ public class SettingDataManager {
                 src.close();
                 dst.close();
 
-                Log.d(Const.DEBUG_TAG, "Import Successful!");
+                Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "Import Successful!");
 
                 Toast.makeText(mCtx, "Import Successful!",
                         Toast.LENGTH_SHORT).show();
 
 
         } catch (Exception e) {
-            Log.d(Const.DEBUG_TAG, "Import Failed!" + e.getCause() + " " + e.getMessage());
+            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "Import Failed!" + e.getCause() + " " + e.getMessage());
             Toast.makeText(mCtx, "Import Failed!", Toast.LENGTH_SHORT)
                     .show();
 

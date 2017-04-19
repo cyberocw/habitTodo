@@ -5,13 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.ExpandableListView;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
-import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
-
-import java.util.Calendar;
 
 /**
  * Created by cyberocw on 2015-12-26.

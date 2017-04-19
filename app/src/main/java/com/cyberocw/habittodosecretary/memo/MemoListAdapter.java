@@ -2,9 +2,7 @@ package com.cyberocw.habittodosecretary.memo;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.media.Rating;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +15,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
-import com.cyberocw.habittodosecretary.memo.MemoDataManager;
-import com.cyberocw.habittodosecretary.memo.MemoFragment;
 
 import java.util.Calendar;
 

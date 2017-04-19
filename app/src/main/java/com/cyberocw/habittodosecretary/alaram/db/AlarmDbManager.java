@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
@@ -190,7 +191,7 @@ public class AlarmDbManager extends DbHelper{
 		ArrayList<AlarmTimeVO> alarmTimeVOList = new ArrayList<AlarmTimeVO>();
 		AlarmTimeVO vo;
 
-		Log.d(this.toString(), " min set time record count=" +  c.getCount());
+		Crashlytics.log(Log.DEBUG, this.toString(), " min set time record count=" +  c.getCount());
 
 		if (c.moveToFirst()) {
 			do {
@@ -327,7 +328,7 @@ public class AlarmDbManager extends DbHelper{
 
 		long nowTimeInMil = nowCal.getTimeInMillis();
 
-		Log.d(Const.DEBUG_TAG, " today month = " + nowCal.get(Calendar.MONTH));
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " today month = " + nowCal.get(Calendar.MONTH));
 
 		// get holiday list for week
 
@@ -367,12 +368,12 @@ public class AlarmDbManager extends DbHelper{
 			//평일일 경우에만 holiday 여부 체크
 			if(dayofWeek != 1 && dayofWeek != 7){
 				String strCal = String.valueOf(cal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
-				Log.d(Const.DEBUG_TAG, "strCal = " + strCal);
+				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "strCal = " + strCal);
 				if (holidayMap.containsKey(strCal)) {
 					ArrayList<HolidayVO> arrHoliday = holidayMap.get(strCal);
 					for (int m = 0; m < arrHoliday.size(); m++) {
 						HolidayVO hVO = arrHoliday.get(m);
-						Log.d(Const.DEBUG_TAG, "hVO type = " + hVO.getType());
+						Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "hVO type = " + hVO.getType());
 						if (hVO.getType().equals("h") || hVO.getType().equals("i")) {
 							queryString += " or B." + KEY_HOLIDAY_ALL + " = 1 ) and (B." + KEY_HOLIDAY_NONE + " <> 1";
 							break;
@@ -488,17 +489,17 @@ public class AlarmDbManager extends DbHelper{
 		c.setTime(date.getTime());
 		c.add(Calendar.DAY_OF_MONTH, 1);
 
-		Log.d(Const.DEBUG_TAG, "getAlarmList only startDate");
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "getAlarmList only startDate");
 
 		return getAlarmList(-1, date, null, day);
 	}
 	public ArrayList<AlarmVO> getAlarmList(Calendar startDate, Calendar endDate){
 		//1주일치 불러와서 아래 o 아이콘 삽입을 위한 용도
-		Log.d(Const.DEBUG_TAG, "getAlarmList start, end date is not null");
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "getAlarmList start, end date is not null");
 		return getAlarmList(-1, startDate, endDate, null);
 	}
 	public AlarmVO getAlarmById(long id){
-		Log.d(Const.DEBUG_TAG, "getAlarmList getAlarmById");
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "getAlarmList getAlarmById");
 		ArrayList<AlarmVO> arrayList = getAlarmList(id, null, null, null);
 		if(arrayList.size() == 0){
 			return null;
@@ -640,7 +641,7 @@ public class AlarmDbManager extends DbHelper{
 					repeatDay = c.getInt(c.getColumnIndex(KEY_REPEAT_DAY));
 					if(repeatDay > 0){
 						repeatDayCal.set(Calendar.DAY_OF_MONTH, repeatDay);
-						Log.d(this.toString(), "repeaday string = " + CommonUtils.convertDateType(repeatDayCal));
+						Crashlytics.log(Log.DEBUG, this.toString(), "repeaday string = " + CommonUtils.convertDateType(repeatDayCal));
 						arrCal.add((Calendar) repeatDayCal.clone());
 					}
 					else if (alarmDate != null && !"".equals(alarmDate))

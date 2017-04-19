@@ -16,13 +16,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
-import com.cyberocw.habittodosecretary.util.TTSNoti;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
 import io.fabric.sdk.android.Fabric;
@@ -151,7 +149,7 @@ public class SettingFragment extends Fragment {
         btnDbBackup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(Const.DEBUG_TAG, "onclick backup");
+                Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onclick backup");
                 mSettingDataManager.exportDB();
             }
         });

@@ -2,8 +2,6 @@ package com.cyberocw.habittodosecretary.memo;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.Preference;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;

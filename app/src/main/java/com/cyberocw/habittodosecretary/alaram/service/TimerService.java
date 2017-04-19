@@ -56,10 +56,10 @@ public class TimerService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		Bundle extras = intent.getExtras();
-		Log.d("service", "onBind");
+		Crashlytics.log(Log.DEBUG, "service", "onBind");
 		// Get messager from the Activity
 		if (extras != null) {
-			Log.d("service", "onBind with extra");
+			Crashlytics.log(Log.DEBUG, "service", "onBind with extra");
 			mPosition = (Integer) extras.get("position");
 			mMillisRemainTime = (Long) extras.get("remainTime");
 		}
@@ -70,7 +70,7 @@ public class TimerService extends Service {
 	public void onRebind(Intent intent) {
 		Toast.makeText(TimerService.this, "on rebind", Toast.LENGTH_SHORT).show();
 
-		Log.d(Const.DEBUG_TAG, "on rebind" + " mCountdownTimer is null=" + (mCountDownTimer == null));
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on rebind" + " mCountdownTimer is null=" + (mCountDownTimer == null));
 
 		super.onRebind(intent);
 
@@ -130,7 +130,7 @@ public class TimerService extends Service {
 	}
 
 	public void startTimer2(long remainTime){
-		Log.d(Const.DEBUG_TAG, "startTimer remainTime=" + mMillisRemainTime);
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "startTimer remainTime=" + mMillisRemainTime);
 
 		if(mCountDownTimer != null)
 			return ;
@@ -161,7 +161,7 @@ public class TimerService extends Service {
 				int minute = (int) ((millisUntilFinished / (1000 * 60)) % 60);
 				int hour = (int) ((millisUntilFinished / (1000 * 60 * 60)));
 
-				Log.d(Const.DEBUG_TAG, "on tinck =" + second);
+				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on tinck =" + second);
 
 				if(mTv != null) {
 					mTv.setText(mNumberFormat.format(hour) + ":" + mNumberFormat.format(minute) +
@@ -204,25 +204,25 @@ public class TimerService extends Service {
 
 	@Override
 	public boolean onUnbind(Intent intent) {
-		Log.d(Const.DEBUG_TAG, "onUnBind Service");
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onUnBind Service");
 		return super.onUnbind(intent);
 	}
 
 	@Override
 	public void onTaskRemoved(Intent rootIntent) {
-		Log.d(Const.DEBUG_TAG, "onTaskRemoved Service");
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onTaskRemoved Service");
 		super.onTaskRemoved(rootIntent);
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.d(Const.DEBUG_TAG, "onDestroy Service");
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onDestroy Service");
 		super.onDestroy();
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d(Const.DEBUG_TAG, "onStartCommand" + " mCountdownTimer is null=" + (mCountDownTimer == null));
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onStartCommand" + " mCountdownTimer is null=" + (mCountDownTimer == null));
 		//if(mCountDownTimer != null)
 		//	mTimerListAdapter.showRunningAlert();
 		return super.onStartCommand(intent, flags, startId);

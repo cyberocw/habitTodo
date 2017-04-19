@@ -1,23 +1,23 @@
  package com.cyberocw.habittodosecretary;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+ import android.content.Intent;
+ import android.net.Uri;
+ import android.os.Bundle;
+ import android.support.design.widget.NavigationView;
+ import android.support.v4.app.Fragment;
+ import android.support.v4.app.FragmentManager;
+ import android.support.v4.app.FragmentTransaction;
+ import android.support.v4.widget.DrawerLayout;
+ import android.support.v7.app.ActionBar;
+ import android.support.v7.app.AppCompatActivity;
 
-import com.crashlytics.android.Crashlytics;
-import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
-import com.cyberocw.habittodosecretary.category.CategoryFragment;
-import com.cyberocw.habittodosecretary.memo.MemoFragment;
-import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
+ import com.crashlytics.android.Crashlytics;
+ import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
+ import com.cyberocw.habittodosecretary.category.CategoryFragment;
+ import com.cyberocw.habittodosecretary.memo.MemoFragment;
+ import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
-import io.fabric.sdk.android.Fabric;
+ import io.fabric.sdk.android.Fabric;
 
  public class ShareActivity extends AppCompatActivity implements AlarmFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, MemoFragment.OnFragmentInteractionListener{
 	public AlarmFragment mMainFragment;

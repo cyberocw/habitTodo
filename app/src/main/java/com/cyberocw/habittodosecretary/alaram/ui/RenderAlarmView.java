@@ -2,7 +2,6 @@ package com.cyberocw.habittodosecretary.alaram.ui;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,8 +12,6 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
-
-import butterknife.ButterKnife;
 
 /**
  * Created by cyber on 2017-04-15.

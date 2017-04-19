@@ -1,18 +1,14 @@
 package com.cyberocw.habittodosecretary.category;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
-import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 
 /**

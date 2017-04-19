@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.cyberocw.habittodosecretary.Const;
-import com.cyberocw.habittodosecretary.db.DbHelper;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
+import com.cyberocw.habittodosecretary.db.DbHelper;
 
 import java.util.ArrayList;
 

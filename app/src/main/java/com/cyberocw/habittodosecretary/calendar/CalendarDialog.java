@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
@@ -184,7 +185,7 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
 
     }
     private void setCalendarIcon(){
-        Log.d(this.toString(), "setCalendarIcon start");
+        Crashlytics.log(Log.DEBUG, this.toString(), "setCalendarIcon start");
 
         Calendar tempCal = (Calendar)mCalendar.clone();
 
@@ -201,7 +202,7 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
 
         for(int i = 0 ; i < mArrAlarmList.size(); i++){
             //tempCal.set(Calendar.DAY_OF_MONTH, );
-            Log.d(Const.DEBUG_TAG, "arrAlarmList.get(i).getAlarmDateList().get(0))="+CommonUtils.convertDateType(mArrAlarmList.get(i).getAlarmDateList().get(0)));
+            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "arrAlarmList.get(i).getAlarmDateList().get(0))="+CommonUtils.convertDateType(mArrAlarmList.get(i).getAlarmDateList().get(0)));
             day = mArrAlarmList.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH);
             if(!arrAlarmDay.contains(day)) {
                 robotoCalendarView.markCircleImage2(mArrAlarmList.get(i).getAlarmDateList().get(0));
