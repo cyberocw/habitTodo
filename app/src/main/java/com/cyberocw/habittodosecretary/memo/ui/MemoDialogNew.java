@@ -15,6 +15,7 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -154,8 +155,11 @@ public class MemoDialogNew extends Fragment{
 		mBtnEdit = (Button) mView.findViewById(R.id.btnEdit);
 		mBtnAddAlarm = (ImageButton) mView.findViewById(R.id.btnAddAlarm);
 		makeCategoryList();
+
 		bindEvent();
 		init();
+
+
 	}
 
 	private void init(){
@@ -178,6 +182,7 @@ public class MemoDialogNew extends Fragment{
 		}
 
 		bindEventSaveAndEdit();
+
 	}
 
 	private void makeCategoryList(){
@@ -405,7 +410,7 @@ public class MemoDialogNew extends Fragment{
 		Bundle bundle = new Bundle();
 		bundle.putSerializable(Const.PARAM.MEMO_VO, mMemoVO);
 
-		if(mInitAlarmId > -1){
+		if(mInitAlarmId > -1 && isModifyAlarm){
 			bundle.putLong(Const.MEMO.ORIGINAL_ALARM_ID_KEY, mInitAlarmId);
 		}
 

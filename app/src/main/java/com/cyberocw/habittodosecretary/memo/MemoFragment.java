@@ -328,6 +328,8 @@ public class MemoFragment extends Fragment {
 			// relation이 있으면 가져옴
 			RelationVO relationVO = mCommonRelationDBManager.getByTypeId(Const.ETC_TYPE.MEMO, id);
 
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " relationVO = " + relationVO != null ? relationVO.toString() : "null");
+
 			if(relationVO != null && relationVO.getAlarmId() != -1) {
 				AlarmVO alarmVO = mAlarmDataManager.getItemByIdInDB(relationVO.getAlarmId());
 				if(alarmVO != null) {
@@ -435,11 +437,16 @@ public class MemoFragment extends Fragment {
 				}
 				break;
 		}
-		super.onActivityResult(requestCode, resultCode, data);
+
 
 		if(mIsShareMode){
 			getActivity().finish();
+		}else{
+			mListView.removeAllViewsInLayout();
+			mMemoDataManager.refreshData();
+			mMemoAdapter.notifyDataSetChanged();
 		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	public void deleteItemAlertDialog(final long id){

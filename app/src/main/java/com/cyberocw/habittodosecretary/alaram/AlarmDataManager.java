@@ -21,6 +21,7 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
 import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -316,8 +317,6 @@ public class AlarmDataManager {
 
 		alarmTimeList1 = mDb.getMinAlarmTime();
 
-		Crashlytics.log(Log.DEBUG, this.toString(), "alarmTimeList1="+alarmTimeList1);
-
 		Calendar cal = Calendar.getInstance();
 		int dayNum = cal.get(Calendar.DAY_OF_WEEK); //sun 1 mon 2 ...
 		alarmTimeList2 = mDb.getMinRepeatAlarm(dayNum);
@@ -366,8 +365,19 @@ public class AlarmDataManager {
 		String[] arrReq = new String[alarmTimeList.size()];
 
 		Crashlytics.log(Log.DEBUG, this.toString(), "alarmTimeList.size()="+alarmTimeList.size());
+		Calendar tempCal =  Calendar.getInstance();
+		long alarmTimeInMils = 0;
 		for(int i = 0; i < alarmTimeList.size(); i++){
+			tempCal.setTimeInMillis(alarmTimeList.get(i).getTimeStamp());
 			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i)));
+
+			String aa = "alarmDataManager set 알람은 " + alarmTimeList.get(i).getAlarmTitle()
+					+ " 알람 시간:" + CommonUtils.convertFullDateType(tempCal) + " ocwocw\n";
+
+			CommonUtils.putLogPreference(mCtx, aa);
+			Crashlytics.log(Log.DEBUG, this.toString(), aa);
+			Toast.makeText(mCtx, aa, Toast.LENGTH_LONG).show();
+
 		}
 
 		String newReqCode = TextUtils.join("," , arrReq);
@@ -458,6 +468,7 @@ public class AlarmDataManager {
 		final int sdkVersion = Build.VERSION.SDK_INT;
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "high version set alarmExact");
 			am.setExactAndAllowWhileIdle(type, time, it);
 		}
 		else if(sdkVersion >= Build.VERSION_CODES.KITKAT) {

@@ -25,6 +25,8 @@
             android:layout_below="@+id/toolbar"
             android:id="@+id/wrapSearch"
             android:background="#ffffff"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             >
             <com.cyberocw.habittodosecretary.util.ui.EditTextClear
                 android:id="@+id/etSearchKeyword"

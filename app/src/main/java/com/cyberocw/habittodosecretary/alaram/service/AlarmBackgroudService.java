@@ -19,6 +19,7 @@ import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmNotiActivity;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
 import java.text.DecimalFormat;
@@ -72,6 +73,8 @@ public class AlarmBackgroudService extends Service {
         //	mTimerListAdapter.showRunningAlert();
         Bundle extras = intent.getExtras();
 
+        CommonUtils.putLogPreference(mCtx, this.toString() + "background service start");
+
         if(extras == null){
             Crashlytics.log(Log.DEBUG, this.toString(), "extras null!!!");
         }
@@ -92,6 +95,8 @@ public class AlarmBackgroudService extends Service {
             AlarmTimeVO alarmTimeVO = (AlarmTimeVO) intent.getSerializableExtra("alarmTimeVO");
 
             Crashlytics.log(Log.DEBUG, this.toString(), "alarmTimeVO = "+alarmTimeVO);
+
+            CommonUtils.putLogPreference(mCtx, this.toString() + "alarmTimeVO = "+alarmTimeVO);
 
             int index = findAlarmIndex(alarmTimeVO);
 
@@ -197,10 +202,14 @@ public class AlarmBackgroudService extends Service {
                 int minute = (int) ((millisUntilFinished / (1000 * 60)) % 60);
                 int hour = (int) ((millisUntilFinished / (1000 * 60 * 60)));
 
-                //Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on tinck =" + second);
+                if(second % 30 == 0) {
+                    Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on tinck =" + hour + " hour " + minute + " minute " + second + " second");
+                    CommonUtils.putLogPreference(mCtx, this.toString() + "on tinck =" + hour + " hour " + minute + " minute " + second + " second");
+                }
             }
             public void onFinish() {
                 Crashlytics.log(Log.DEBUG, "Service", "on tinck finish");
+                CommonUtils.putLogPreference(mCtx, this.toString() + "on tinck finish");
                 startAleart();
                 cancelTimer();
 

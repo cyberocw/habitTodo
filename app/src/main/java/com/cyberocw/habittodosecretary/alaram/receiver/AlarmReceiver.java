@@ -3,12 +3,18 @@ package com.cyberocw.habittodosecretary.alaram.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.service.AlarmBackgroudService;
+import com.cyberocw.habittodosecretary.alaram.service.NotificationService;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.Calendar;
 import java.util.Set;
@@ -23,7 +29,16 @@ public class AlarmReceiver extends BroadcastReceiver{
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
+
+		try { Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		mAlarmDataManager.resetMinAlarmCall();
+
+		onReceiveOri(context, intent);
+
+
 
 		/*
 		Intent myIntent = new Intent(context, AlarmBackgroudService.class);
@@ -46,27 +61,16 @@ public class AlarmReceiver extends BroadcastReceiver{
 		//AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
 		//mAlarmDataManager.resetMinAlarmCall();
 	}
-	/*
+
 	public void onReceiveOri(Context context, Intent intent) {
-		String Noti_title = intent.getExtras().getString("title");
-		String Noti_message = intent.getExtras().getString("notes");
-		long reqCode = intent.getExtras().getLong("reqCode");
-		int alarmDateType = intent.getExtras().getInt("alarmDateType");
-		long realTime = intent.getExtras().getLong("realTime");
+		AlarmTimeVO alarmTimeVO = (AlarmTimeVO) intent.getSerializableExtra("alarmTimeVO");
 
-		Crashlytics.log(Log.DEBUG, "AlarmReciever", Noti_title + " " + Noti_message + " type= " + alarmDateType);
-		Intent myIntent = new Intent(context, NotificationService.class);
-		myIntent.putExtra("title", Noti_title);
-		myIntent.putExtra("notes", Noti_message);
-		myIntent.putExtra("reqCode", reqCode);
-		context.startService(myIntent);
+		Calendar tempCal = Calendar.getInstance();
+		tempCal.setTimeInMillis(alarmTimeVO.getTimeStamp());
 
-		AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
-		mAlarmDataManager.resetMinAlarmCall(alarmDateType);
+		String aa = "alarmReceiver 다음 알람은 " + alarmTimeVO.getAlarmTitle() + " 알람 시간:" + CommonUtils.convertFullDateType(tempCal) + " ocwocw\n";
 
-		Intent ttsIntent = new Intent(context, TTSNoti.class);
-		ttsIntent.putExtra("alaramTitle", Noti_title);
-		context.startService(ttsIntent);
+		CommonUtils.putLogPreference(context, aa);
 	}
-	*/
+
 }

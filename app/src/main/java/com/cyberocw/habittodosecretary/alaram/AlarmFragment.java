@@ -776,9 +776,7 @@ public class AlarmFragment extends Fragment{
 				vo = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
 
 				// 알람 추가
-				if(mAlarmDataManager.addItem(vo) == true)
-					mAlarmAdapter.notifyDataSetChanged();
-				else
+				if(!mAlarmDataManager.addItem(vo) == true)
 					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
 
 				mAlarmDataManager.resetMinAlarmCall(vo.getAlarmDateType());
@@ -789,14 +787,12 @@ public class AlarmFragment extends Fragment{
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_MODIFY_FINISH_CODE :
 				vo = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
 				// 알람 추가
-				if(mAlarmDataManager.modifyItem(vo) == true)
-					mAlarmAdapter.notifyDataSetChanged();
-				else
+				if(!mAlarmDataManager.modifyItem(vo) == true)
 					Toast.makeText(mCtx, "DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
 
 				// 수정일 경우 date type이 변경 될 수도 있기 때문에 두개 모두 갱신
-				refreshAlarmList();
 				mAlarmDataManager.resetMinAlarmCall();
+				refreshAlarmList();
 				break;
 
 			case Const.ALARM_INTERFACE_CODE.ADD_TIMER_FINISH_CODE :

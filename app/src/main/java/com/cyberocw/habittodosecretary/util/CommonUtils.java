@@ -50,17 +50,23 @@ public class CommonUtils {
 		return cal;
 	}
 
-	public static boolean putSettingPreference(Context ctx, String key, int value){
-		SharedPreferences prefs = ctx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+	public static String convertFullDateType(Calendar c){
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// cal.get(Calendar.YEAR)
+		return sdf.format(c.getTime());//sdf.format(c);
+	}
+
+	public static boolean putLogPreference(Context ctx, String value){
+		SharedPreferences prefs = ctx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+		String data = prefs.getString(Const.DEBUG_TAG, "");
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.remove(key);
-		editor.putInt(key, value);
+		editor.remove(Const.DEBUG_TAG);
+		editor.putString(Const.DEBUG_TAG, data + CommonUtils.convertFullDateType(Calendar.getInstance()) + " : " + value);
 		return editor.commit();
 	}
 
-	public static int getSettingPreference(Context ctx, String key){
-		SharedPreferences prefs = ctx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
-		return prefs.getInt(key, 0);
+	public static String getLogPreference(Context ctx){
+		SharedPreferences prefs = ctx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+		return prefs.getString(Const.DEBUG_TAG, "");
 	}
 
 	public static void setupUI(View view, final Activity activity) {
@@ -110,5 +116,12 @@ public class CommonUtils {
 				setupUI(innerView, activity, dialog);
 			}
 		}
+	}
+
+	public static void clearLogPreference(Context ctx) {
+		SharedPreferences prefs = ctx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(Const.DEBUG_TAG);
+		editor.commit();
 	}
 }

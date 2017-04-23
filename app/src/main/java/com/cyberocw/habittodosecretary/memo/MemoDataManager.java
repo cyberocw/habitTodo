@@ -18,6 +18,8 @@ public class MemoDataManager {
 	MemoDbManager mDb;
 	ArrayList<MemoVO> cachedDataList = null;
 	ArrayList<MemoVO> dataList = null;
+	String mSortOption = "";
+	long mCateId = -1;
 
 	public MemoDataManager(Context ctx) {
 		mCtx = ctx;
@@ -28,9 +30,14 @@ public class MemoDataManager {
 	public MemoDataManager(Context ctx, Long cateId) {
 		mCtx = ctx;
 		mDb = MemoDbManager.getInstance(ctx);
+		mCateId = cateId;
 		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
-		String sortOption = prefs.getString(Const.MEMO.SORT_KEY, Const.MEMO.SORT_REG_DATE_DESC);
-		makeDataList(cateId, sortOption);
+		mSortOption = prefs.getString(Const.MEMO.SORT_KEY, Const.MEMO.SORT_REG_DATE_DESC);
+		makeDataList(mCateId, mSortOption);
+	}
+
+	public void refreshData(){
+		makeDataList(mCateId, mSortOption);
 	}
 
 	public ArrayList<MemoVO> getDataList() {

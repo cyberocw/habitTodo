@@ -16,13 +16,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
+import butterknife.ButterKnife;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -89,6 +92,9 @@ public class SettingFragment extends Fragment {
         Button btnHolidaySync = (Button) mView.findViewById(R.id.btnHolidaySync);
         Button btnDbBackup = (Button) mView.findViewById(R.id.btnDbBackup);
         Button btnDbRestore= (Button) mView.findViewById(R.id.btnDbRestore);
+        Button btnShowLog = ButterKnife.findById(mView, R.id.btnShowLog);
+        Button btnClearLog = ButterKnife.findById(mView, R.id.btnClearLog);
+        final TextView tvLog = ButterKnife.findById(mView, R.id.tvLog);
         /*
         TextView tvReqCode = (TextView) mView.findViewById(R.id.tvReqCode);
 
@@ -170,6 +176,21 @@ public class SettingFragment extends Fragment {
 
         mSeekBar = (SeekBar) mView.findViewById(R.id.seekbarTTSVol);
         bindSeekBarListener();
+
+        btnShowLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tvLog.setText(CommonUtils.getLogPreference(mCtx));
+            }
+        });
+
+        btnClearLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CommonUtils.clearLogPreference(mCtx);
+                tvLog.setText("");
+            }
+        });
     }
 
     private void bindSeekBarListener(){

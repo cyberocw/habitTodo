@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
@@ -112,6 +113,8 @@ public class CalendarManager {
 
 		for(int i = 0; i < arrVO.size(); i++){
 			Crashlytics.log(Log.DEBUG, getClass().toString(), " alarm day  = " + arrVO.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
+			if(arrVO.get(i).getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
+				continue;
 			mArrAlarmList.add(arrVO.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
 		}
 	}
