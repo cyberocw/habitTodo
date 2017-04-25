@@ -35,11 +35,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:text=" ㄴㅇㄹ sdf sdf asdv sdv sdv sdvvds dvd sd s ds s sdsd"
-            android:textSize="15sp"
-            android:elegantTextHeight="false"
+            android:textSize="14sp"
             android:ellipsize="marquee"
-            android:singleLine="false"
-            android:maxLines="3"/>
+            android:maxLines="1"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="40dp"

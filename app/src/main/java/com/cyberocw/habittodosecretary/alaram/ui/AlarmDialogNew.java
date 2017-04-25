@@ -875,25 +875,35 @@ public class AlarmDialogNew extends DialogFragment{
 
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+		/*
 		LinearLayout ll = new LinearLayout(mCtx);
 		ll.setLayoutParams(params2);
 		ll.setOrientation(LinearLayout.HORIZONTAL);
-
-		final NumberPicker np = new NumberPicker(mCtx);
 		ll.setGravity(Gravity.CENTER);
+		*/
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		View container = inflater.inflate(R.layout.fragment_dialog_alram_before, null);
+
+
+
+
+		final NumberPicker np = ButterKnife.findById(container, R.id.numberPicker);// new NumberPicker(mCtx);
+
 		np.setMinValue(0);
 		np.setMaxValue(59);
 		np.setValue(5);
 		np.setWrapSelectorWheel(true);
+		/*
 		params.gravity = Gravity.CENTER;
 		np.setLayoutParams(params);
+		*/
+		//ll.addView(np);
 
-		ll.addView(np);
-
-		Button btn = new Button(mCtx);
+		Button btn = ButterKnife.findById(container, R.id.button);//new Button(mCtx);
 		btn.setText("분 이전");
-		params.gravity = Gravity.CENTER_VERTICAL;
-		btn.setLayoutParams(params);
+		//params.gravity = Gravity.CENTER_VERTICAL;
+		//btn.setLayoutParams(params);
 
 		mTemp = btn;
 		btn.setTag(-1);
@@ -915,9 +925,7 @@ public class AlarmDialogNew extends DialogFragment{
 			}
 		});
 
-		ll.addView(btn);
-
-		builder.setView(ll);
+		builder.setView(container);
 
 		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {

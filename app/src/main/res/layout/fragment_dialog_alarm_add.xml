@@ -245,8 +245,12 @@
                 <EditText
                     android:id="@+id/txAlarmTitle"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_weight="1"
+                    android:lines="1"
+                    android:maxLength="32"
+                    android:scrollHorizontally="false"
+                    android:ellipsize="end"
                     android:linksClickable="false"
                     android:longClickable="false"
                     android:maxLines="1" />

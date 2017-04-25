@@ -46,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
+import butterknife.ButterKnife;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -83,7 +85,7 @@ public class AlarmFragment extends Fragment{
 	private OnFragmentInteractionListener mListener;
 	private View mView;
 	TextView mDateTv = null;
-
+	TextView mTvListTitle = null;
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -152,6 +154,14 @@ public class AlarmFragment extends Fragment{
 		mTimerAdapter = new TimerListAdapter(this, mCtx, mTimerDataManager);
 
 		mListViewType = mPrefs.getInt(Const.ALARM_LIST_VIEW_TYPE.TAG, Const.ALARM_LIST_VIEW_TYPE.EXPENDABLE_LIST);
+		mTvListTitle = ButterKnife.findById(mView, R.id.tvListTitle);
+
+		Button btnViewMode = ButterKnife.findById(mView, R.id.btnViewMode);
+		if(mListViewType == Const.ALARM_LIST_VIEW_TYPE.LIST) {
+			btnViewMode.setText("종류별");
+		}
+		else
+			btnViewMode.setText("시간순");
 
 		if(mViewType == Const.ALARM_OPTION.SET_DATE_TIMER)
 			initAlamUi();
@@ -332,6 +342,7 @@ public class AlarmFragment extends Fragment{
 
 	private void initTimerUi(){
 		if(mListViewType != Const.ALARM_LIST_VIEW_TYPE.LIST) {
+			mTvListTitle.setText("Timer List");
 			LinearLayout ll = (LinearLayout) mView.findViewById(R.id.alarmListViewWrap);
 			ll.removeAllViews();
 			LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -365,6 +376,8 @@ public class AlarmFragment extends Fragment{
 		});
 	}
 	private void initAlamUi(){
+		mTvListTitle.setText("Alarm List");
+
 		LinearLayout ll = (LinearLayout) mView.findViewById(R.id.alarmListViewWrap);
 		ll.removeAllViews();
 		LayoutInflater inflater = getActivity().getLayoutInflater();

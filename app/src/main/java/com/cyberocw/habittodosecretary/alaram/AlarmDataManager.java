@@ -372,7 +372,7 @@ public class AlarmDataManager {
 			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i)));
 
 			String aa = "alarmDataManager set 알람은 " + alarmTimeList.get(i).getAlarmTitle()
-					+ " 알람 시간:" + CommonUtils.convertFullDateType(tempCal) + " ocwocw\n";
+					+ " 알람 시간:" + CommonUtils.convertFullDateType(tempCal) + " ReqCode = " + arrReq[i];
 
 			CommonUtils.putLogPreference(mCtx, aa);
 			Crashlytics.log(Log.DEBUG, this.toString(), aa);
@@ -422,6 +422,7 @@ public class AlarmDataManager {
 			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "background Service stop");
 			mCtx.stopService(intentAlarmbackground);
 
+			CommonUtils.putLogPreference(mCtx, "기존 알람 모두 취소 완료");
 		}
 	}
 
@@ -453,7 +454,7 @@ public class AlarmDataManager {
 		AlarmManager alarmDataManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
 		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
 
-		myIntent.putExtra("alarmTimeVO", alarmTimeVO);
+		//myIntent.putExtra("alarmTimeVO", alarmTimeVO);
 		alarmTimeVO.setReqCode(reqCode);
 		//myIntent.putExtra("title", alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, reqCode, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);

@@ -36,7 +36,8 @@ public class AlarmReceiver extends BroadcastReceiver{
 		}
 		mAlarmDataManager.resetMinAlarmCall();
 
-		onReceiveOri(context, intent);
+
+		//onReceiveOri(context, intent);
 
 
 
@@ -61,9 +62,12 @@ public class AlarmReceiver extends BroadcastReceiver{
 		//AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
 		//mAlarmDataManager.resetMinAlarmCall();
 	}
-
+	/* nougat 버젼에서는 serializable 안됨 */
 	public void onReceiveOri(Context context, Intent intent) {
+
 		AlarmTimeVO alarmTimeVO = (AlarmTimeVO) intent.getSerializableExtra("alarmTimeVO");
+
+		Log.d(this.toString(), "alarmTimeVO= " + alarmTimeVO);
 
 		Calendar tempCal = Calendar.getInstance();
 		tempCal.setTimeInMillis(alarmTimeVO.getTimeStamp());

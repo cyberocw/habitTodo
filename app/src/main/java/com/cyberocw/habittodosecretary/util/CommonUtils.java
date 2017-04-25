@@ -60,7 +60,7 @@ public class CommonUtils {
 		String data = prefs.getString(Const.DEBUG_TAG, "");
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(Const.DEBUG_TAG);
-		editor.putString(Const.DEBUG_TAG, data + CommonUtils.convertFullDateType(Calendar.getInstance()) + " : " + value);
+		editor.putString(Const.DEBUG_TAG, data + CommonUtils.convertFullDateType(Calendar.getInstance()) + " : " + value + "\n\n");
 		return editor.commit();
 	}
 
