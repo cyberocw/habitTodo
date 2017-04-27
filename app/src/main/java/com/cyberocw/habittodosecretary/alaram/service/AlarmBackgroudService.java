@@ -248,7 +248,7 @@ public class AlarmBackgroudService extends Service {
 
     private void startTTS(String title, long id){
         Intent ttsIntent = new Intent(mCtx, TTSNotiActivity.class);
-        ttsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        ttsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         ttsIntent.putExtra("alaramTitle", title);
         ttsIntent.putExtra("alarmId", id);
         mCtx.startActivity(ttsIntent);

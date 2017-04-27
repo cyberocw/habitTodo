@@ -113,7 +113,7 @@ public class NotificationService extends Service{
 		intentAlarm.putExtra(Const.PARAM.MODE, Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG);
 		intentAlarm.putExtra(Const.PARAM.REQ_CODE, reqCode);
 
-		intentAlarm.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intentAlarm.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_NO_HISTORY);
 		PendingIntent pendingIntentAlarm = PendingIntent.getActivity(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		remoteView.setOnClickPendingIntent(R.id.btnPostpone, pendingIntentAlarm);
@@ -151,9 +151,9 @@ public class NotificationService extends Service{
 
             if(bundle != null) {
                 NotificationManager manager = (NotificationManager) context.getSystemService(Service.NOTIFICATION_SERVICE);
-                long reqCode = bundle.getLong(Const.PARAM.REQ_CODE);
+                int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
                 Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "reqCode="+reqCode);
-                manager.cancel((int) reqCode);
+                manager.cancel(reqCode);
             }
         }
     }

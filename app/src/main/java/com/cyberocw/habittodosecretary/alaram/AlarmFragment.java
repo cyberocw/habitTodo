@@ -307,12 +307,21 @@ public class AlarmFragment extends Fragment{
 		builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				// User cancelled the dialog
-
+				dialog.dismiss();
+				getActivity().finish();
 			}
 		});
 
 // 3. Get the AlertDialog from create()
 		AlertDialog dialog = builder.create();
+		dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				dialog.dismiss();
+				getActivity().finish();
+			}
+		});
+
 		dialog.show();
 
 		/*
@@ -341,8 +350,9 @@ public class AlarmFragment extends Fragment{
 	}
 
 	private void initTimerUi(){
+		mTvListTitle.setText("Timer List");
+
 		if(mListViewType != Const.ALARM_LIST_VIEW_TYPE.LIST) {
-			mTvListTitle.setText("Timer List");
 			LinearLayout ll = (LinearLayout) mView.findViewById(R.id.alarmListViewWrap);
 			ll.removeAllViews();
 			LayoutInflater inflater = getActivity().getLayoutInflater();

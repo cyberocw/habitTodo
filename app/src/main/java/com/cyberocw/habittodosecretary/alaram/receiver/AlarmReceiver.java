@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,34 +17,74 @@ import com.cyberocw.habittodosecretary.alaram.service.NotificationService;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.util.Calendar;
 import java.util.Set;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by cyberocw on 2015-08-31.
  */
 //// TODO: 2016-10-03 데이터 전달할 객체 생성하여 전달하기 serializable 혹은 parceable
-public class AlarmReceiver extends BroadcastReceiver{
+public class AlarmReceiver extends WakefulBroadcastReceiver {
 	private AlarmBackgroudService mService;
 	private boolean mBound;
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		String log = "onReceive start";
+		Fabric.with(context, new Crashlytics());
+		CommonUtils.putLogPreference(context, log);
+		//Crashlytics.log(Log.DEBUG, this.toString(), log);
+
 		AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
 
-		try { Thread.sleep(1000);
+		try { Thread.sleep(500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
+		log = "receiver after 1sec sleep minAlarmCall start";
+		CommonUtils.putLogPreference(context, log);
+		//Crashlytics.log(Log.DEBUG, this.toString(), log);
+
 		mAlarmDataManager.resetMinAlarmCall();
 
+		log = "receiver resetMinAlarm end";
+		CommonUtils.putLogPreference(context, log);
+		//Crashlytics.log(Log.DEBUG, this.toString(), log);
 
 		//onReceiveOri(context, intent);
 
 
 
-		/*
+
 		Intent myIntent = new Intent(context, AlarmBackgroudService.class);
-		myIntent.putExtras(intent.getExtras());
+
+		ByteArrayInputStream bis = new ByteArrayInputStream(intent.getByteArrayExtra("alarmTimeVO"));
+		ObjectInput in = null;
+		AlarmTimeVO alarmTimeVO = null;
+		try {
+			in = new ObjectInputStream(bis);
+			alarmTimeVO = (AlarmTimeVO)in.readObject();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		myIntent.putExtra("alarmTimeVO", alarmTimeVO);
 
 		Bundle bundle = intent.getExtras();
 
@@ -54,7 +95,7 @@ public class AlarmReceiver extends BroadcastReceiver{
 			sb.append(key + "\n");
 		}
 		Crashlytics.log(Log.DEBUG, this.toString(), " extara keys = " + sb.toString());
-		context.startService(myIntent);*/
+		startWakefulService(context, myIntent);
 
 
 		//context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);

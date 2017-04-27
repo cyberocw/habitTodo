@@ -23,9 +23,14 @@ import com.cyberocw.habittodosecretary.common.vo.RelationVO;
 import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by cyberocw on 2015-08-16.
@@ -51,6 +56,7 @@ public class AlarmDataManager {
 	}
 
 	public AlarmDataManager(Context ctx, Calendar cal) {
+		Fabric.with(ctx, new Crashlytics());
 		mCtx = ctx;
 		mDb = AlarmDbManager.getInstance(ctx);
 		mManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
@@ -446,19 +452,37 @@ public class AlarmDataManager {
 			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
 			alarmTimeVO.setReqCode(reqCode);
 			myIntent.putExtra("alarmTimeVO", alarmTimeVO);
+
 			Crashlytics.log(Log.DEBUG, this.getClass().toString(), "timer background start service alarmVO id=" + alarmTimeVO.getId() + " title =" + alarmTimeVO.getAlarmTitle());
 			mCtx.startService(myIntent);
 			return reqCode;
 		}
+
+		alarmTimeVO.setReqCode(reqCode);
+
 		//15분 이상일 경우 setTime 시킴
 		AlarmManager alarmDataManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
 		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutputStream out = null;
+		try {
+			out = new ObjectOutputStream(bos);
+			out.writeObject(alarmTimeVO);
+			out.flush();
+			byte[] data = bos.toByteArray();
+			myIntent.putExtra("alarmTimeVO", data);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				bos.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
 
-		//myIntent.putExtra("alarmTimeVO", alarmTimeVO);
-		alarmTimeVO.setReqCode(reqCode);
 		//myIntent.putExtra("title", alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, reqCode, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
 		setAlarmExact(alarmDataManager, AlarmManager.RTC_WAKEUP, ccc.getTimeInMillis(), pendingIntent);
 
 		return reqCode;

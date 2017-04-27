@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import io.fabric.sdk.android.Fabric;
+
 /**
  * Created by cyberocw on 2015-12-06.
  */
@@ -40,7 +42,7 @@ public class AlarmDbManager extends DbHelper{
 		// don't accidentally leak an Activity's context.
 		// See this article for more information: http://bit.ly/6LRzfx
 		mCtx = context;
-
+		Fabric.with(context, new Crashlytics());
 		if (sInstance == null) {
 			sInstance = new AlarmDbManager(context);
 		}
