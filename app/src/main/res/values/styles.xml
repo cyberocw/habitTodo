@@ -10,17 +10,37 @@
         <item name="android:colorBackground">@color/background</item>
         <item name="android:buttonStyle">@style/AppTheme.Widget.Button</item>
         <item name="android:textColor">@color/primary_dark</item>
+
+
+    </style>
+
+    <style name="PopupMenuStyle" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:background">@android:color/white</item>
     </style>
 
     <!-- Activity themes -->
-    <style name="Theme.Base" parent="Theme.AppCompat.Light.NoActionBar" />
+    <!--<style name="Theme.Base" parent="Theme.AppCompat.DayNight.NoActionBar" />
 
     <style name="Theme.Sample" parent="Theme.Base">
         <item name="colorAccent">@color/fab_color_1</item>
     </style>
-
+-->
     <style name="Widget" />
+    <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="background">@color/background</item>
+        <item name="titleTextStyle">@style/MyActionBarTitle</item>
+    </style>
 
+    <style name="MyActionBarTitle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/primary_dark</item>
+    </style>
+
+    <style name="MyActionBar.MenuTextStyle"
+        parent="style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/primary_dark</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">25sp</item>
+    </style>
     <style name="Widget.SampleMessage">
         <item name="android:textAppearance">?android:textAppearanceMedium</item>
         <item name="android:lineSpacingMultiplier">1.1</item>

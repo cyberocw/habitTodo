@@ -51,7 +51,7 @@ import com.cyberocw.habittodosecretary.R;
 
         private void init() {
 
-            Drawable tempDrawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_action_about);
+            Drawable tempDrawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_close_black_24dp);
             clearDrawable = DrawableCompat.wrap(tempDrawable);
             DrawableCompat.setTintList(clearDrawable,getHintTextColors());
             clearDrawable.setBounds(0, 0, clearDrawable.getIntrinsicWidth(), clearDrawable.getIntrinsicHeight());

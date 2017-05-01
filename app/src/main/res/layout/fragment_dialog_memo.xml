@@ -15,134 +15,156 @@
 
         >
         <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="저장"
             android:id="@+id/btnMemoSave"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_gravity="right"
-            />
+            android:layout_marginRight="@dimen/margin_small"
+            android:background="@drawable/ic_check_black_24dp"
+            android:elevation="0dp"
+            android:text="" />
     </android.support.v7.widget.Toolbar>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="10dp"
-            >
+            android:padding="10dp">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <EditText
+                    android:id="@+id/txMemoTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/txMemoTitle"
                     android:layout_marginRight="50dp"
-                    android:singleLine="true"/>
+                    android:singleLine="true" />
 
             </RelativeLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_weight="0.04">
+                android:layout_weight="0.04"
+                android:layout_marginTop="@dimen/margin_small"
+                android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="중요도"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_marginRight="15dp"
                     android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"/>
+                    android:layout_marginRight="15dp"
+                    android:gravity="center_vertical"
+                    android:text="중요도"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
                 <RatingBar
+                    android:id="@+id/ratingBar"
+                    style="?android:attr/ratingBarStyleIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/ratingBar"
                     android:layout_alignParentTop="true"
-                    style="?android:attr/ratingBarStyleIndicator"
                     android:numStars="5"
-                    android:stepSize="1"
-                    android:rating="2"/>
+                    android:rating="2"
+                    android:stepSize="1" />
             </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+
+                android:layout_marginTop="@dimen/margin_medium"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
                 >
+
                 <Spinner
+                    android:id="@+id/spCategory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/spCategory"
-                    android:layout_toLeftOf="@+id/btnAddAlarm"
-                    android:layout_toStartOf="@+id/btnAddAlarm"
-                    android:layout_alignBottom="@+id/btnAddAlarm"/>
-                <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:text="T"
+                    android:layout_alignTop="@+id/btnEdit"
+                    android:layout_toRightOf="@+id/btnEdit"
+                    android:layout_toEndOf="@+id/btnEdit"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="31dp"
+                    android:layout_marginStart="30dp" />
+
+                <Button
                     android:id="@+id/btnAddAlarm"
-                    android:src="@drawable/ic_action_alarms"
-                    android:layout_alignParentTop="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true" />
+                    android:layout_alignParentTop="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/margin_small"
+                    android:background="@null"
+                    android:drawableLeft="@drawable/ic_timer_black_24dp"
+                    android:textSize="13sp"
+                    android:text="@string/btn_memo_alarm" />
 
                 <ImageButton
+                    android:id="@+id/btnAttachFile"
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:text="F"
-                    android:id="@+id/btnAttachFile"
-                    android:src="@drawable/ic_action_attachment"
                     android:layout_alignParentTop="true"
                     android:layout_toLeftOf="@+id/btnInfo"
                     android:layout_toStartOf="@+id/btnInfo"
-                />
+                    android:src="@drawable/ic_action_attachment"
+                    android:text="F"
+                    android:visibility="gone" />
+
                 <ImageButton
+                    android:id="@+id/btnInfo"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:text="I"
-                    android:id="@+id/btnInfo"
-                    android:src="@drawable/ic_action_about"
-                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"/>
+                    android:layout_alignParentTop="true"
+                    android:src="@drawable/ic_action_about"
+                    android:text="I"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/btnEdit"
-                    style="@style/Widget.AppCompat.Button.Small"
+                    style="@style/button_primary"
                     android:layout_width="wrap_content"
+                    android:minWidth="60dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
+                    android:padding="8dp"
+                    android:text="@string/btn_memo_modify"
+                    android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:padding="10dp"
-                    android:text="@string/btn_memo_modify" />
+                    android:layout_alignParentStart="true" />
             </RelativeLayout>
 
             <EditText xmlns:android="http://schemas.android.com/apk/res/android"
-                android:visibility="gone"
                 android:id="@+id/etMemoEditor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:gravity="top"
                 android:padding="15dip"
                 android:scrollbars="vertical"
-                android:gravity="top"
                 android:textSize="16sp"
-                android:capitalize="sentences"
-                android:layout_alignParentTop="true"/>
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/tvMemoEditor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:autoLink="all"
-                android:capitalize="sentences"
                 android:clickable="true"
                 android:gravity="top"
                 android:linksClickable="true"

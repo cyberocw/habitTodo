@@ -26,6 +26,11 @@
     <string name="group_title_postpone">미룬 알람</string>
     <string name="group_title_tomorrow">내일</string>
     <string name="group_title_after_day_tomorrow">모레</string>
-
     <string name="btn_memo_modify">내용 편집</string>
+    <string name="btn_memo_alarm">알람 등록</string>
+    <string name="btn_memo_alarm_edit">알람 편집</string>
+    <string name="btnToggleViewTimer">타이머 모드</string>
+    <string name="btnToggleViewNoTimer">알람 모드</string>
+
+
 </resources>

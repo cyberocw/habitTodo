@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.ui.RenderAlarmView;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
@@ -91,7 +92,7 @@ public class AlarmExListAdapter extends BaseExpandableListAdapter implements Ala
             convertView = inflater.inflate(R.layout.alarm_view, parent, false);
         }
 
-        RenderAlarmView.RenderAlarmView(mCtx, mMainFragment, mManager, vo, convertView);
+        RenderAlarmView.RenderAlarmView(mCtx, mMainFragment, mManager, vo, convertView, Const.ALARM_LIST_VIEW_TYPE.EXPENDABLE_LIST);
 
         return convertView;
     }

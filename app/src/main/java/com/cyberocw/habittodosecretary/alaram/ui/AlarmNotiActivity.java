@@ -60,7 +60,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		String title = "";
 		if(mBundle != null) {
 			title = mBundle.getString("title");
-			mAlarmId = mBundle.getLong("alarmId");
+			mAlarmId = mBundle.getLong("alarmId", -1);
 			mEtcType = mBundle.getString(Const.PARAM.ETC_TYPE_KEY, "");
 			if(mEtcType.equals(Const.ETC_TYPE.MEMO)){
 				mBtnEtcView.setText("메모 보기");

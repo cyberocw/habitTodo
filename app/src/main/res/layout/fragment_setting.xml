@@ -4,39 +4,102 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:divider="?android:attr/dividerVertical"
-    android:showDividers="middle">
+    android:showDividers="middle"
+    android:padding="@dimen/margin_small"
+    >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="@dimen/margin_small"
+        android:orientation="vertical"
         >
-        <Button
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="공휴일 동기화"
-            android:id="@+id/btnHolidaySync"
-            android:layout_gravity="center_horizontal" />
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="휴일 데이터 관리"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_small"
+            android:orientation="horizontal"
+            >
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="공휴일 동기화"
+                android:id="@+id/btnHolidaySync"
+                android:layout_gravity="center_horizontal"
+                style="@style/button_primary"
+                />
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="@dimen/margin_small"
+        android:orientation="vertical"
         >
-        <Button
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="데이터 관리"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/half_black"
+                android:text="Documents 폴더에 모든 데이터를 백업 및 복구합니다."
+                />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="데이터 백업"
-            android:id="@+id/btnDbBackup"
-            android:layout_gravity="center_horizontal" />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="데이터 복구"
-            android:id="@+id/btnDbRestore"
-            android:layout_gravity="center_horizontal" />
+            android:orientation="horizontal"
+            android:padding="@dimen/margin_small"
+            >
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="데이터 백업"
+                android:id="@+id/btnDbBackup"
+                android:layout_gravity="center_horizontal"
+                style="@style/button_primary"
+
+                />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="데이터 복구"
+                android:id="@+id/btnDbRestore"
+                android:layout_gravity="center_horizontal"
+                style="@style/button_primary"
+
+                android:layout_marginLeft="@dimen/margin_small"
+                />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         >
         <CheckBox
             android:id="@+id/checkAllAlarm"
@@ -48,44 +111,81 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:padding="@dimen/margin_small"
         >
-        <CheckBox
-            android:id="@+id/checkBackgroundNoti"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="백그라운드 서비스 알림 활성화" />
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="알람전 노티바 활성화 "
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical"
+                />
+            <CheckBox
+                android:id="@+id/checkBackgroundNoti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/half_black"
+                android:text="노티바를 활성화해두면, 메모리가 부족해도 알람 서비스를 강제 정지시키지 않아, 알람이 울리지 않을 확률을 낮춰줍니다"
+                />
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/margin_tiny"
+        android:padding="@dimen/margin_small"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
         >
-
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:padding="@dimen/margin_tiny"
-            android:layout_gravity="center"
-            android:text="TTS VOlume " />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:drawable/ic_lock_silent_mode_off"
-            android:backgroundTint="@android:color/holo_orange_light" />
-
-        <SeekBar
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:text="TTS 볼륨 " />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/seekbarTTSVol"
-            />
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_small"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/ic_lock_silent_mode_off"
+                android:backgroundTint="@android:color/holo_orange_light" />
 
+            <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/seekbarTTSVol"
+                />
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        >
 
         <Button
             android:id="@+id/btnShowLog"

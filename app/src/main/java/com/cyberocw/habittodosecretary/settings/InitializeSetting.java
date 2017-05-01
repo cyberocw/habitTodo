@@ -28,7 +28,8 @@ public class InitializeSetting extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPreExecute() {
         asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        asyncDialog.setMessage("초기 데이터 생성중입니다..");
+        asyncDialog.setMessage("공휴일 데이터 생성중입니다..");
+        asyncDialog.show();
 
         // show dialog
         //asyncDialog.show();

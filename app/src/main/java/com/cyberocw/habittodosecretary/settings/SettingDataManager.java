@@ -91,7 +91,7 @@ public class SettingDataManager {
 
                 Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "Backup Successful!");
 
-                Toast.makeText(mCtx, "Backup Successful!",
+                Toast.makeText(mCtx, "백업 파일 생성 완료",
                         Toast.LENGTH_SHORT).show();
 
 
@@ -128,7 +128,7 @@ public class SettingDataManager {
 
                 Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "Import Successful!");
 
-                Toast.makeText(mCtx, "Import Successful!",
+                Toast.makeText(mCtx, "백업 파일 복구 완료",
                         Toast.LENGTH_SHORT).show();
 
 

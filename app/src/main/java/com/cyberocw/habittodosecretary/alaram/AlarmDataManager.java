@@ -79,9 +79,9 @@ public class AlarmDataManager {
 
 		for(int i = 0 ; i < this.dataList.size(); i++){
 			vo = this.dataList.get(i);
-			if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT){
+			if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT || vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
 				arrRepeat.add(vo);
-			}else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE || vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
+			}else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE){
 				arrSetTime.add(vo);
 			}else{
 				arrPostpone.add(vo);
@@ -229,7 +229,7 @@ public class AlarmDataManager {
 		//알람 인던트 등록
 		if(item.getId() == -1){
 			Log.e(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
-			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG);
+			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
 			return false;
 		}
 
@@ -293,7 +293,7 @@ public class AlarmDataManager {
 
 		if(item.getId() == -1){
 			Log.e(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
-			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG);
+			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
 			return false;
 		}
 
@@ -382,7 +382,7 @@ public class AlarmDataManager {
 
 			CommonUtils.putLogPreference(mCtx, aa);
 			Crashlytics.log(Log.DEBUG, this.toString(), aa);
-			Toast.makeText(mCtx, aa, Toast.LENGTH_LONG).show();
+			//Toast.makeText(mCtx, aa, Toast.LENGTH_LONG).show();
 
 		}
 

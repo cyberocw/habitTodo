@@ -86,6 +86,7 @@ public class AlarmFragment extends Fragment{
 	private View mView;
 	TextView mDateTv = null;
 	TextView mTvListTitle = null;
+
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -363,6 +364,9 @@ public class AlarmFragment extends Fragment{
 			ll.addView(newLv);
 		}
 
+		LinearLayout wekkWrap = ButterKnife.findById(mView, R.id.weekDayWrap);
+		wekkWrap.setVisibility(View.GONE);
+
 		ListView lv = (ListView) mView.findViewById(R.id.alramListView);
 
 
@@ -393,6 +397,9 @@ public class AlarmFragment extends Fragment{
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "initAlamUi start");
+
+		LinearLayout wekkWrap = ButterKnife.findById(mView, R.id.weekDayWrap);
+		wekkWrap.setVisibility(View.VISIBLE);
 
 		if(mListViewType == Const.ALARM_LIST_VIEW_TYPE.LIST){
 
@@ -676,6 +683,8 @@ public class AlarmFragment extends Fragment{
 		btnToday.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				if(mViewType == Const.ALARM_OPTION.NO_DATE_TIMER)
+					return;
 				selectedDateChange(Calendar.getInstance());
 			}
 		});
@@ -686,7 +695,7 @@ public class AlarmFragment extends Fragment{
 		btnToggleViewTimer.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				changeAlarmView();
+				changeAlarmView(v);
 			}
 		});
 
@@ -715,6 +724,9 @@ public class AlarmFragment extends Fragment{
 		btnViewMode.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				if(mViewType == Const.ALARM_OPTION.NO_DATE_TIMER)
+					return;
+
 				if(mListViewType == Const.ALARM_LIST_VIEW_TYPE.LIST) {
 					mListViewType = Const.ALARM_LIST_VIEW_TYPE.EXPENDABLE_LIST;
 					((Button) v).setText("시간순");
@@ -735,13 +747,17 @@ public class AlarmFragment extends Fragment{
 
 	}
 
-	public void changeAlarmView(){
+	public void changeAlarmView(View view){
+		Button btnToggleView = (Button) view;
+
 		if(mViewType == Const.ALARM_OPTION.SET_DATE_TIMER) {
 			mViewType = Const.ALARM_OPTION.NO_DATE_TIMER;
+			btnToggleView.setText(mCtx.getResources().getString(R.string.btnToggleViewNoTimer));
 			initTimerUi();
 		}
 		else {
 			mViewType = Const.ALARM_OPTION.SET_DATE_TIMER;
+			btnToggleView.setText(mCtx.getResources().getString(R.string.btnToggleViewTimer));
 			initAlamUi();
 		}
 	}
@@ -756,9 +772,17 @@ public class AlarmFragment extends Fragment{
 			bundle.putSerializable(Const.PARAM.TIMER_VO, mTimerDataManager.getItemById(id));
 			timerDialog.setArguments(bundle);
 		}
-		timerDialog.show(fm, "fragment_dialog_timer");
+		//timerDialog.show(fm, "fragment_dialog_timer");
 
 		timerDialog.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_TIMER_CODE);
+
+		FragmentTransaction transaction = fm.beginTransaction();
+		// For a little polish, specify a transition animation
+		transaction.setTransition(FragmentTransaction.TRANSIT_ENTER_MASK);
+		// To make it fullscreen, use the 'content' root view as the container
+		// for the fragment, which is always the root view for the activity
+		transaction.replace(R.id.warpContainer, timerDialog, "timerDialog")
+				.addToBackStack(null).commit();
 	}
 
 	public void showNewAlarmDialog(long id) {

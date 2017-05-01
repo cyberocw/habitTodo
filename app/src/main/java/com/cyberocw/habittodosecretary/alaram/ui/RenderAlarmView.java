@@ -13,12 +13,14 @@ import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by cyber on 2017-04-15.
  */
 
 public class RenderAlarmView {
-    public static void RenderAlarmView(final Context ctx, final AlarmFragment mMainFragment, final AlarmDataManager mManager, final AlarmVO vo, View convertView){
+    public static void RenderAlarmView(final Context ctx, final AlarmFragment mMainFragment, final AlarmDataManager mManager, final AlarmVO vo, View convertView, int listViewType){
 
         /*if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT)
             convertView.setBackgroundResource(R.color.background_repeat);
@@ -97,5 +99,23 @@ public class RenderAlarmView {
 
         TextView tv = (TextView) convertView.findViewById(R.id.alarmTitle);
         tv.setText(title);
+
+        TextView tvGroupTitle = ButterKnife.findById(convertView, R.id.tvGroupTitle);
+
+        if(listViewType == Const.ALARM_LIST_VIEW_TYPE.LIST){
+
+            String result = "";
+            switch (vo.getAlarmDateType()){
+                case Const.ALARM_DATE_TYPE.REPEAT_MONTH :
+                case Const.ALARM_DATE_TYPE.REPEAT : result = ctx.getResources().getString(R.string.group_title_repeat); break;
+                case Const.ALARM_DATE_TYPE.SET_DATE : result = ctx.getResources().getString(R.string.group_title_set_date); break;
+                case Const.ALARM_DATE_TYPE.POSTPONE_DATE : result = ctx.getResources().getString(R.string.group_title_postpone); break;
+
+            }
+            tvGroupTitle.setText(result);
+            tvGroupTitle.setVisibility(View.VISIBLE);
+        }else{
+            tvGroupTitle.setVisibility(View.GONE);
+        }
     }
 }

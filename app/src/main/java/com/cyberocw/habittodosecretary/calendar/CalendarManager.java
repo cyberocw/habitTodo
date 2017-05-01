@@ -138,7 +138,7 @@ public class CalendarManager {
 	private void initDayArea(final int index){
 
 		LinearLayout dayWrap = new LinearLayout(mCtx);
-		LinearLayout.LayoutParams paramsLl = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f);
+		LinearLayout.LayoutParams paramsLl = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f);
 		dayWrap.setOrientation(LinearLayout.VERTICAL);
 		paramsLl.gravity = Gravity.CENTER;
 		dayWrap.setLayoutParams(paramsLl);
@@ -150,7 +150,7 @@ public class CalendarManager {
 		});
 
 		TextView tvTitle = new TextView(mCtx);
-		LinearLayout.LayoutParams paramsTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, pixelsHeight);
+		LinearLayout.LayoutParams paramsTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, pixelsHeight, 1f);
 		tvTitle.setLayoutParams(paramsTv);
 		tvTitle.setText(dayText[index]);
 		tvTitle.setGravity(Gravity.CENTER);
@@ -190,9 +190,11 @@ public class CalendarManager {
 		tvDayName.setLayoutParams(paramsTv);
 		tvDayName.setHeight(pixelsDayName);
 		tvDayName.setGravity(Gravity.CENTER);
+
 		tvDayName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
 		tvDayName.setSingleLine(true);
 		tvDayName.setEllipsize(TextUtils.TruncateAt.END);
+		tvDayName.setText("aa");
 		dayWrap.addView(tvDayName);
 		arrTextDayName[index] = tvDayName;
 
@@ -233,12 +235,8 @@ public class CalendarManager {
 				arrTextViewDayTitle[i].setTextColor(Color.BLACK);
 				arrTextViewDayNum[i].setTextColor(Color.BLACK);
 			}
-
-
-
 			// 공휴일정보 체크
 			arrTextDayName[i].setText("");
-
 			String strCal = String.valueOf(cal2.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal2.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal2.get(Calendar.DAY_OF_MONTH));
 
 			if (mHolidayMap.containsKey(strCal)) {
@@ -252,7 +250,6 @@ public class CalendarManager {
 						String daytext ="";
 						if(hVO.getType().equals("i"))
 							daytext = "대체공휴일";
-
 						else
 							daytext = hVO.getName();
 
@@ -264,6 +261,7 @@ public class CalendarManager {
 						arrTextDayName[i].setSingleLine(true);
 						arrTextDayName[i].setEllipsize(TextUtils.TruncateAt.END);
 						*/
+
 						if(mCalendar.getTimeInMillis() == cal2.getTimeInMillis()){
 							Crashlytics.log(Log.DEBUG, this.toString(), "mFullDateView.getText()="+mFullDateView.getText());
 							mFullDateView.setText(mFullDateView.getText() + " - " + daytext);
@@ -272,17 +270,11 @@ public class CalendarManager {
 					}
 				}
 			}
-
-
 			arrTextViewDayNum[i].setText(fDay + "");
-
 			//오늘 날짜
 			if(mCalendar.getTimeInMillis() == cal2.getTimeInMillis()){
 				//arrTextViewDayNum[i].setBackgroundResource(R.drawable.day_of_week_ring);
 				arrIconWrap[i].setBackgroundResource(R.drawable.day_of_week_ring);
-
-
-
 			}else{
 				//arrTextViewDayNum[i].setBackgroundResource(0);
 				arrIconWrap[i].setBackgroundResource(0);

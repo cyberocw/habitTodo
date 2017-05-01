@@ -7,20 +7,28 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.ArrayList;
+
+import butterknife.ButterKnife;
 
 
 /**
@@ -36,10 +44,31 @@ public class TimerDialog extends DialogFragment {
 	private NumberPicker mNpHour = null;
 	private NumberPicker mNpMinute = null;
 	private NumberPicker mNpSecond = null;
+	Button mBtnSave = null;
 
 	public TimerDialog() {
 	}
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
 
+		Crashlytics.log(Log.DEBUG, this.toString(), " onCreateView ");
+		// Inflate the layout for this fragment
+		View view = inflater.inflate(R.layout.fragment_dialog_timer, container, false);
+		mView = view;
+
+		Toolbar toolbar = (Toolbar) mView.findViewById(R.id.toolbar);
+		toolbar.setVisibility(View.VISIBLE);
+		toolbar.setTitle(R.string.app_name);
+		toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
+		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getActivity().onBackPressed();
+			}
+		});
+
+		return mView;
+	}
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		mCtx = getActivity();
@@ -56,10 +85,11 @@ public class TimerDialog extends DialogFragment {
 
 		//bindEvent();
 		init();
+		CommonUtils.setupUI(mView, getActivity());
 		super.onActivityCreated(savedInstanceState);
 	}
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+	public Dialog onCreateDialog2(Bundle savedInstanceState) {
 		AlertDialog.Builder b=  new  AlertDialog.Builder(getActivity())
 				.setTitle("알림 추가")
 				.setPositiveButton("OK",
@@ -88,12 +118,12 @@ public class TimerDialog extends DialogFragment {
 
 	public void init(){
 		getViewRes();
-		makeSpinnerAlarmType();
+		//makeSpinnerAlarmType();
 	}
 
 	public void getViewRes(){
+		mBtnSave = ButterKnife.findById(mView, R.id.btnSave);
 		mTxAlarmTitle = (EditText) mView.findViewById(R.id.txAlarmTitle);
-		mSpAlarmType = (Spinner) mView.findViewById(R.id.spAlarmType);
 		mNpHour = (NumberPicker) mView.findViewById(R.id.addAlarmHourPicker);
 		mNpMinute = (NumberPicker) mView.findViewById(R.id.addAlarmMinutePicker);
 		mNpSecond = (NumberPicker) mView.findViewById(R.id.addAlarmSecondPicker);
@@ -111,41 +141,15 @@ public class TimerDialog extends DialogFragment {
 			mNpMinute.setValue(mTimerVO.getMinute());
 			mNpSecond.setValue(mTimerVO.getSecond());
 		}
-	}
-	public void makeSpinnerAlarmType(){
-		ArrayList<String> arrayList = new ArrayList<String>();
-		//// TODO: 2015-10-18 공통 함수로 분리하기
-		arrayList.add("없음");
-		arrayList.add("진동");
-		arrayList.add("진동+소리");
-		arrayList.add("무음");
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-				android.R.layout.simple_spinner_item, arrayList);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-		//스피너 속성
-		mSpAlarmType.setPrompt("알람 종류"); // 스피너 제목
-		mSpAlarmType.setAdapter(adapter);
-
-		if(mModifyMode == 1){
-			mSpAlarmType.setSelection(mTimerVO.getAlarmType());
-		}
-
-		mSpAlarmType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		mBtnSave.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-
+			public void onClick(View v) {
+				returnData();
 			}
 		});
-
-
 	}
+
 
 	private void returnData(){
 		int hour = mNpHour.getValue();
@@ -170,8 +174,6 @@ public class TimerDialog extends DialogFragment {
 		mTimerVO.setAlarmTitle(alarmTitle);
 
 		//알리는 방법
-		int alarmType = mSpAlarmType.getSelectedItemPosition();
-		mTimerVO.setAlarmType(alarmType);
 
 		Bundle bundle = new Bundle();
 		bundle.putSerializable("timerVO", mTimerVO);
@@ -180,5 +182,6 @@ public class TimerDialog extends DialogFragment {
 
 		int returnCode = mModifyMode == 1 ? Const.ALARM_INTERFACE_CODE.ADD_TIMER_MODIFY_FINISH_CODE : Const.ALARM_INTERFACE_CODE.ADD_TIMER_FINISH_CODE;
 		getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
+		getActivity().getSupportFragmentManager().popBackStackImmediate();
 	}
 }

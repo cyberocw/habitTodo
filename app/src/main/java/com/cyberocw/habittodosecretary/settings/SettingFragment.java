@@ -163,7 +163,7 @@ public class SettingFragment extends Fragment {
         btnDbRestore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mSettingDataManager.importDB();
+                showConfirmDbRestore();
             }
         });
 
@@ -239,9 +239,9 @@ public class SettingFragment extends Fragment {
 
     private void showConfirmAlarm(){
         AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
-        builder.setTitle("알림 시간 추가");
+        builder.setTitle("주의!");
 
-        builder.setMessage("주의! 정말로 상태바 알림 메세지를 받지 않겠습니까?");
+        builder.setMessage("정말로 상태바 알림 메세지를 받지 않겠습니까?");
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -254,6 +254,28 @@ public class SettingFragment extends Fragment {
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 mCbAllAlarm.setChecked(true);
+            }
+        });
+
+// 3. Get the AlertDialog from create()
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showConfirmDbRestore(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+        builder.setTitle("주의!");
+
+        builder.setMessage("기존 자료는 모두 삭제됩니다. 데이터를 복구하겠습니까?");
+
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                mSettingDataManager.importDB();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
             }
         });
 

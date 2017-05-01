@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.crashlytics.android.Crashlytics;
@@ -79,7 +80,7 @@ public class NotificationService extends Service{
 		mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
 		mCompatBuilder.setTicker("Habit Todo");
 		mCompatBuilder.setWhen(System.currentTimeMillis());
-
+		mCompatBuilder.setContentTitle(noti_title);
 		//mCompatBuilder.setContentTitle(noti_title);
 
 		//mCompatBuilder.setContentText(noti_message);
@@ -92,13 +93,15 @@ public class NotificationService extends Service{
 		remoteView.setOnClickPendingIntent(R.id.notiWrap, pendingIntent);
 
         remoteView.setTextViewText(R.id.tvAlarmTitle, noti_title);
-		//mCompatBuilder.setContentIntent(pendingIntent);
+		mCompatBuilder.setContentIntent(pendingIntent);
 		mCompatBuilder.setAutoCancel(true);
 
 		if(etcType.equals(Const.ETC_TYPE.MEMO)) {
+			remoteView.setViewVisibility(R.id.tvAlarmSubTitle, View.VISIBLE);
 			remoteView.setTextViewText(R.id.tvAlarmSubTitle, "메모를 보려면 터치해주세요");
+			mCompatBuilder.setContentText("메모를 보려면 터치해주세요");
 		}else{
-
+			mCompatBuilder.setContentText("아래로 스크롤하면 알림을 연기할 수 있습니다");
 		}
         Calendar now = Calendar.getInstance();
         remoteView.setTextViewText(R.id.tvAlarmTime, CommonUtils.numberDigit(2, now.get(Calendar.HOUR_OF_DAY)) + ":" + CommonUtils.numberDigit(2, now.get(Calendar.MINUTE)));
@@ -117,8 +120,10 @@ public class NotificationService extends Service{
 		PendingIntent pendingIntentAlarm = PendingIntent.getActivity(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		remoteView.setOnClickPendingIntent(R.id.btnPostpone, pendingIntentAlarm);
+		mCompatBuilder.addAction(R.drawable.ic_add_alert_black_24dp, "연기하기", pendingIntentAlarm);
 
-		mCompatBuilder.setContent(remoteView);
+		//mCompatBuilder.setCustomContentView(remoteView);
+
 
 		//NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.mipmap.ic_launcher, "연장하기", pendingIntentAlarm).build();
 		//mCompatBuilder.addAction(action);

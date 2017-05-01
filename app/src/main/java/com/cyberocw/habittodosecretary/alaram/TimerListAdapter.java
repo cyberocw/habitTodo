@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -138,6 +139,7 @@ public class TimerListAdapter extends BaseAdapter {
 					intent = new Intent(mCtx, TimerService.class);
 					intent.putExtra("remainTime", remainTime);
 					intent.putExtra("position", position);
+					intent.putExtra("title", vo.getAlarmTitle());
 					mCtx.startService(intent);
 					mCtx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 					btnDateToggle.setText("Cancel");
@@ -151,7 +153,14 @@ public class TimerListAdapter extends BaseAdapter {
 				}
 			}
 		});
-
+		ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);
+		btnOption.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//AlarmVO vo = mManager.getItem(position);
+				mMainFragment.longClickPopup(0, mManager.getItem(position).getId());
+			}
+		});
 		if(mStartedTimerId == mManager.getItem(position).getId()){
 			if(mBound)
 				mService.setTxtMap(mMapConvertView);

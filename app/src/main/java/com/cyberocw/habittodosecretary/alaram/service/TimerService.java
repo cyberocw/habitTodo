@@ -38,6 +38,7 @@ public class TimerService extends Service {
 	private CountDownTimer mCountDownTimer = null;
 	public long mMillisRemainTime = -1;
 	private int mPosition = -1;
+	private String mTitle = "";
 	public TextView mTv;
 	private TimerListAdapter mTimerListAdapter = null;
 
@@ -62,6 +63,7 @@ public class TimerService extends Service {
 			Crashlytics.log(Log.DEBUG, "service", "onBind with extra");
 			mPosition = (Integer) extras.get("position");
 			mMillisRemainTime = (Long) extras.get("remainTime");
+			mTitle = (String) extras.get("title");
 		}
 		return mBinder;
 	}
@@ -161,7 +163,7 @@ public class TimerService extends Service {
 				int minute = (int) ((millisUntilFinished / (1000 * 60)) % 60);
 				int hour = (int) ((millisUntilFinished / (1000 * 60 * 60)));
 
-				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on tinck =" + second);
+				//Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on tinck =" + second);
 
 				if(mTv != null) {
 					mTv.setText(mNumberFormat.format(hour) + ":" + mNumberFormat.format(minute) +
@@ -182,6 +184,7 @@ public class TimerService extends Service {
 	private void startAleart(){
 		Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
 		myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+		myIntent.putExtra("title", mTitle);
 		mCtx.startActivity(myIntent);
 	}
 

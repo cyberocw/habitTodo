@@ -21,12 +21,14 @@
             >
             <Button
                 android:id="@+id/btnEtcView"
-                android:layout_width="wrap_content"
+                android:layout_width="184dp"
                 android:layout_height="wrap_content"
+                style="@style/button_primary"
                 android:layout_alignEnd="@+id/tvAlarmTitle"
                 android:layout_alignRight="@+id/tvAlarmTitle"
                 android:layout_below="@+id/tvAlarmTitle"
                 android:visibility="gone"
+                android:padding="10dp"
                 android:text="메모 보기" />
         </LinearLayout>
 
@@ -34,32 +36,34 @@
             android:id="@+id/tvAlarmTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:layout_marginTop="164dp"
             android:text="TextView"
             android:textAlignment="center"
             android:textSize="24sp"
+            android:padding="4dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
 
         <Button
             android:id="@+id/btnTimerStop"
-            android:layout_width="183dp"
+            android:layout_width="184dp"
             android:layout_height="wrap_content"
-
-            android:layout_marginTop="11dp"
+            android:layout_marginTop="20dp"
             android:text="STOP"
             android:layout_below="@+id/linearLayout"
+            android:padding="10dp"
+            style="@style/button_primary"
             android:layout_centerHorizontal="true" />
 
         <Button
             android:id="@+id/btnPostpone"
-            android:layout_width="wrap_content"
+            android:layout_width="184dp"
             android:layout_height="wrap_content"
-
+            style="@style/button_primary"
+            android:padding="10dp"
             android:layout_below="@+id/btnTimerStop"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:text="연장하기" />
 
     </RelativeLayout>

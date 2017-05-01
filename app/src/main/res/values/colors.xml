@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 <resources>
-    <color name="window_background">#CC000000</color>
+    <color name="window_background">#ccffffff</color>
     <color name="primary">#495764</color>
     <color name="primary_header">#778694</color>
     <color name="primary_dark">#3b4751</color>
@@ -40,7 +40,7 @@
     <color name="fab_color_2">#9c27b0</color>
     <color name="fab_color_2_muted">#a56ab0</color>
     <color name="black_semi_transparent">#b2000000</color>
-    <color name="background">#ffff</color>
+    <color name="background">#ffffff</color>
     <color name="half_black">#808080</color>
     <color name="white">#fafafa</color>
     <color name="white_pressed">#f1f1f1</color>

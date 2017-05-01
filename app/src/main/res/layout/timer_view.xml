@@ -1,46 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    android:clickable="true"
+    android:longClickable="true"
+    android:background="@drawable/border_set"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="40dp"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        >
+
+        <ToggleButton
+            android:id="@+id/timeText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:checked="false"
+            android:drawableLeft="@drawable/toggle_timer"
+            android:padding="5dp"
+            android:textColor="@color/toggle_text"
+            android:text="00:53"
+            android:textOff="00:53"
+            android:textOn="" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="28dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+            <TextView
+                android:id="@+id/alarmTitle"
+
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="left"
-                android:padding="10dip"
-                android:orientation="horizontal"
-                android:id="@+id/wrapper"
-                android:clickable="true"
-                android:longClickable="true">
-<ToggleButton
-    android:id="@+id/timeText"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="11:10:44"
-    android:layout_gravity="left"
-    android:textSize="15sp"
-    />
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="80dp"
+                android:layout_marginTop="1dp"
+                android:text=" ㄴㅇㄹ sdf sdsd"
+                android:textSize="14sp"
+                android:ellipsize="marquee"
+                android:maxLines="1"/>
+                <LinearLayout
+                    android:id="@+id/actionWrap"
+                    android:orientation="vertical"
+                    android:layout_width="80dp"
+                    android:layout_marginLeft="-73dp"
+                    android:layout_height="wrap_content"
+                    >
 
-<TextView
-    android:id="@+id/alarmTitle"
-    android:layout_width="wrap_content"
-    android:layout_marginLeft="10dp"
-    android:paddingRight="80dp"
-    android:gravity="center_vertical"
-    android:layout_toRightOf="@id/timeText"
-    android:text=" ㄴㅇㄹ sdf sdf asdv sdv sdv sdvvds dvd sd s ds s sdsd"
-    android:layout_height="wrap_content"
-    android:textSize="15sp"
-    android:elegantTextHeight="true"
-    android:ellipsize="end"
-    android:singleLine="false"
-    />
-<LinearLayout
-    android:id="@+id/actionWrap"
-    android:orientation="vertical"
-    android:layout_width="80dp"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="-80dp"
-    android:layout_gravity="right"
-    android:gravity="right"
-    android:layout_alignParentRight="true">
+                </LinearLayout>
+        </LinearLayout>
 
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-40dp"
+        android:gravity="right">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/optionButton"
+            android:background="@drawable/ic_action_overflow"/>
+    </LinearLayout>
 </LinearLayout>
 
-</RelativeLayout>
+
+
+

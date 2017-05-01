@@ -10,7 +10,7 @@
     >
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginRight="40dp"
         android:orientation="horizontal"
         android:layout_gravity="center"
@@ -25,19 +25,41 @@
             android:drawableLeft="@drawable/toggle_timer"
             android:padding="5dp"
             android:textColor="@color/toggle_text"
-            android:text=""
-            android:textOff=""
+            android:text="00:53"
+            android:textOff="00:53"
             android:textOn="" />
-
-        <TextView
-            android:id="@+id/alarmTitle"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text=" ㄴㅇㄹ sdf sdf asdv sdv sdv sdvvds dvd sd s ds s sdsd"
-            android:textSize="14sp"
-            android:ellipsize="marquee"
-            android:maxLines="1"/>
+            android:minHeight="28dp"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            >
+            <TextView
+                android:id="@+id/tvGroupTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="반복 알람"
+                android:visibility="gone"
+                android:textSize="8sp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:background="@drawable/button_header_round"
+                android:textColor="@color/white"
+                android:maxLines="1"/>
+            <TextView
+                android:id="@+id/alarmTitle"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="1dp"
+                android:text=" ㄴㅇㄹ sdf sdf asdv sdv sdv sdvvds dvd sd s ds s sdsd"
+                android:textSize="14sp"
+                android:ellipsize="marquee"
+                android:maxLines="1"/>
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="40dp"

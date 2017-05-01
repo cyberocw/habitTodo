@@ -17,6 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left|top"
             android:background="@color/primary"
+            android:layout_marginBottom="@dimen/margin_small"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -46,7 +47,7 @@
 
                 <Button
                     android:id="@+id/btnViewMode"
-                    android:layout_width="80dp"
+                    android:layout_width="70dp"
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@+id/btnToday"
                     android:text="종류별" />
@@ -59,14 +60,13 @@
                     android:text="오늘"
 
                     />
-
                 <Button
                     android:id="@+id/btnToggleViewTimer"
-                    android:layout_width="70dp"
+                    android:layout_width="80dp"
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:layout_gravity="right"
-                    android:text="타이머"
+                    android:text="@string/btnToggleViewTimer"
 
                     />
             </RelativeLayout>
@@ -81,10 +81,11 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/weekDayWrap"
                 android:layout_width="match_parent"
                 android:layout_height="62dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/margin_tiny"
+
                 android:orientation="horizontal">
 
                 <Button

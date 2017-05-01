@@ -20,7 +20,7 @@
             />
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_below="@+id/toolbar"
             android:id="@+id/wrapSearch"
@@ -31,9 +31,12 @@
             <com.cyberocw.habittodosecretary.util.ui.EditTextClear
                 android:id="@+id/etSearchKeyword"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="34dp"
                 android:layout_marginRight="60dp"
                 android:text=""
+                android:inputType="text"
+                android:maxLines="1"
                 >
 
             </com.cyberocw.habittodosecretary.util.ui.EditTextClear>
@@ -43,6 +46,8 @@
                 android:layout_width="50dp"
                 android:layout_marginLeft="-55dp"
                 android:layout_height="wrap_content"
+                style="@style/button_primary"
+                android:padding="@dimen/margin_small"
                 android:text="정렬" />
         </LinearLayout>
         <ListView

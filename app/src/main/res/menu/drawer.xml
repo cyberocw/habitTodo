@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:id="@+id/alarmGroup" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_item_alaram"
-            android:checked="true"
             android:icon="@drawable/ic_tick"
             android:title="@string/nav_item_alaram" />
+    </group>
+    <group android:id="@+id/menuGroup" android:checkableBehavior="single">
         <item android:title="Memo">
             <menu>
-                <item
-                    android:id="@+id/nav_item_cate"
-                    android:icon="@drawable/ic_tick"
-                    android:title="@string/nav_item_cate" />
-                <item
-                    android:id="@+id/nav_item_memo"
-                    android:icon="@drawable/ic_tick"
-                    android:title="@string/nav_item_memo" />
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_item_cate"
+                        android:icon="@drawable/ic_tick"
+
+                        android:title="@string/nav_item_cate" />
+                    <item
+                        android:id="@+id/nav_item_memo"
+                        android:icon="@drawable/ic_tick"
+                        android:title="@string/nav_item_memo" />
+                </group>
             </menu>
         </item>
-        <item
-            android:id="@+id/nav_item_info"
-            android:icon="@drawable/ic_tick"
-            android:title="@string/nav_item_info" />
+    </group>
+    <group android:id="@+id/settingGroup" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_item_setting"
             android:icon="@drawable/ic_tick"

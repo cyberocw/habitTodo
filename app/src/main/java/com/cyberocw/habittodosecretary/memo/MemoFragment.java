@@ -388,7 +388,7 @@ public class MemoFragment extends Fragment {
 						Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
 					}
 				}
-
+				Toast.makeText(mCtx, "추가 되었습니다", Toast.LENGTH_SHORT).show();
 				break;
 			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE :
 				if(mMemoDataManager.modifyItem(memoVO) == true) {
@@ -435,11 +435,13 @@ public class MemoFragment extends Fragment {
 					mAlarmDataManager.deleteItemById(bundle.getLong(Const.MEMO.ORIGINAL_ALARM_ID_KEY));
 					mAlarmDataManager.resetMinAlarmCall();
 				}
+				Toast.makeText(mCtx, "수정 되었습니다", Toast.LENGTH_SHORT).show();
 				break;
 		}
 
 
 		if(mIsShareMode){
+			Toast.makeText(mCtx, "등록 되었습니다", Toast.LENGTH_SHORT).show();
 			getActivity().finish();
 		}else{
 			mListView.removeAllViewsInLayout();

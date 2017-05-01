@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmDialogNew;
@@ -52,7 +54,7 @@ public class MemoDialogNew extends Fragment{
 	TextView mTvMemoEditor;
 	RatingBar mRatingBar;
 	Button mBtnSave, mBtnEdit;
-	ImageButton mBtnAddAlarm;
+	Button mBtnAddAlarm;
 	MemoVO mMemoVO;
 	AlarmVO mAlarmVO, mAlarmOriginalVO = null;
 	CategoryDataManager mCateDataManager;
@@ -153,7 +155,9 @@ public class MemoDialogNew extends Fragment{
 		mRatingBar = (RatingBar) mView.findViewById(R.id.ratingBar);
 		mBtnSave = (Button) mView.findViewById(R.id.btnMemoSave);
 		mBtnEdit = (Button) mView.findViewById(R.id.btnEdit);
-		mBtnAddAlarm = (ImageButton) mView.findViewById(R.id.btnAddAlarm);
+		mBtnAddAlarm = (Button) mView.findViewById(R.id.btnAddAlarm);
+		if(mAlarmVO != null)
+			mBtnAddAlarm.setText(getResources().getText(R.string.btn_memo_alarm_edit));
 		makeCategoryList();
 
 		bindEvent();
@@ -331,6 +335,7 @@ public class MemoDialogNew extends Fragment{
 							break;
 						case 1:
 							deleteAlarm();
+							mBtnAddAlarm.setText(getResources().getText(R.string.btn_memo_alarm));
 							break;
 					}
 					dialogInterface.dismiss();
@@ -394,7 +399,7 @@ public class MemoDialogNew extends Fragment{
 			return false;
 		}
 
-		if(mTvTitle.getText().equals("")){
+		if(mTvTitle.getText().toString().equals("")){
 			Toast.makeText(mCtx, "제목을 입력해 주세요", Toast.LENGTH_SHORT).show();
 			return false;
 		}
@@ -430,6 +435,7 @@ public class MemoDialogNew extends Fragment{
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		isModifyAlarm = true;
 		mAlarmVO = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
+		mBtnAddAlarm.setText(getResources().getText(R.string.btn_memo_alarm_edit));
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 }
