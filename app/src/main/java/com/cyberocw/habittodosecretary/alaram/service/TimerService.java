@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
@@ -40,6 +41,7 @@ public class TimerService extends Service {
 	private int mPosition = -1;
 	private String mTitle = "";
 	public TextView mTv;
+	public ToggleButton mBtnToggle;
 	private TimerListAdapter mTimerListAdapter = null;
 
 	NumberFormat mNumberFormat = new DecimalFormat("##00");
@@ -90,6 +92,9 @@ public class TimerService extends Service {
 	public void setTxtView(TextView view){
 		mTv = view;
 	}
+	public void setToggleButton(ToggleButton view){
+		mBtnToggle = view;
+	}
 
 	@Override
 	public void onCreate() {
@@ -104,6 +109,8 @@ public class TimerService extends Service {
 	}
 
 	public void startTimer(long remainTime){
+
+		Log.d(this.toString(), "mMillisRemainTime = " + mMillisRemainTime);
 
 		if(mCountDownTimer != null)
 			return ;
@@ -131,31 +138,16 @@ public class TimerService extends Service {
 		startCaountDownTimer(remainTime);
 	}
 
-	public void startTimer2(long remainTime){
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "startTimer remainTime=" + mMillisRemainTime);
-
-		if(mCountDownTimer != null)
-			return ;
-
-		Notification notification = new Notification(R.drawable.ic_launcher , "타이머" , System.currentTimeMillis());
-
-		int second = (int) (remainTime / 1000) % 60;
-		int minute = (int) ((remainTime / (1000 * 60)) % 60);
-		int hour = (int) ((remainTime / (1000 * 60 * 60)));
-
-		Intent notificationIntent = new Intent(this, MainActivity.class);
-		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_TIMER_NOTI_ID, notificationIntent, 0);
-		/*
-		notification.setLatestEventInfo(this, "HbitTodo Timer is running",
-				mNumberFormat.format(hour) + ":" + mNumberFormat.format(minute) +
-						":" + mNumberFormat.format(second), pendingIntent);
-		startForeground(Const.ONGOING_TIMER_NOTI_ID, notification);
-
-		startCaountDownTimer(remainTime);
-		*/
-	}
 	private void startCaountDownTimer(long remainTime){
+		if(mBtnToggle != null)
+			mBtnToggle.setChecked(true);
+
+		if(remainTime < 0) {
+			cancelTimer();
+			mCountDownTimer = null;
+			return;
+		}
+
 		mCountDownTimer = new CountDownTimer(remainTime, 1000) {
 			public void onTick(long millisUntilFinished) {
 				mMillisRemainTime = millisUntilFinished;
@@ -183,14 +175,15 @@ public class TimerService extends Service {
 	}
 	private void startAleart(){
 		Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
-		myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+		myIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 		myIntent.putExtra("title", mTitle);
 		mCtx.startActivity(myIntent);
 	}
 
 	public void cancelTimer(){
 		mMillisRemainTime = -1;
-		mCountDownTimer.cancel();
+		if(mCountDownTimer != null)
+			mCountDownTimer.cancel();
 		mTimerListAdapter.resetButton();
 		mTimerListAdapter.unbindService();
 		//stopForeground(true);
@@ -225,7 +218,7 @@ public class TimerService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onStartCommand" + " mCountdownTimer is null=" + (mCountDownTimer == null));
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onStartCommand mCountdownTimer is null=" + (mCountDownTimer == null));
 		//if(mCountDownTimer != null)
 		//	mTimerListAdapter.showRunningAlert();
 		return super.onStartCommand(intent, flags, startId);

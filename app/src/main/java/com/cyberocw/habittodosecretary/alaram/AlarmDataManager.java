@@ -39,6 +39,7 @@ public class AlarmDataManager {
 	AlarmManager mManager;
 	Context mCtx = null;
 	AlarmDbManager mDb;
+	public Calendar mCalendar = null;
 
 	// 각각의 알람이 저장 됨
 	private ArrayList<AlarmVO> dataList = new ArrayList<>();
@@ -60,6 +61,7 @@ public class AlarmDataManager {
 		mCtx = ctx;
 		mDb = AlarmDbManager.getInstance(ctx);
 		mManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
+		mCalendar = cal;
 		this.dataList = mDb.getAlarmList(cal);
 	}
 
@@ -369,30 +371,35 @@ public class AlarmDataManager {
 			return ;
 
 		String[] arrReq = new String[alarmTimeList.size()];
+		Long[] arrAlarmId = new Long[alarmTimeList.size()];
 
 		Crashlytics.log(Log.DEBUG, this.toString(), "alarmTimeList.size()="+alarmTimeList.size());
 		Calendar tempCal =  Calendar.getInstance();
-		long alarmTimeInMils = 0;
+
 		for(int i = 0; i < alarmTimeList.size(); i++){
 			tempCal.setTimeInMillis(alarmTimeList.get(i).getTimeStamp());
 			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i)));
-
-			String aa = "alarmDataManager set 알람은 " + alarmTimeList.get(i).getAlarmTitle()
-					+ " 알람 시간:" + CommonUtils.convertFullDateType(tempCal) + " ReqCode = " + arrReq[i];
+			arrAlarmId[i] = alarmTimeList.get(i).getId();
+			String aa = "다음 알람은 " + alarmTimeList.get(i).getAlarmTitle()
+					+ " 시간:" + CommonUtils.convertFullDateType(tempCal) + " 입니다.";
 
 			CommonUtils.putLogPreference(mCtx, aa);
 			Crashlytics.log(Log.DEBUG, this.toString(), aa);
-			//Toast.makeText(mCtx, aa, Toast.LENGTH_LONG).show();
-
+			Toast.makeText(mCtx, aa, Toast.LENGTH_SHORT).show();
 		}
 
 		String newReqCode = TextUtils.join("," , arrReq);
+		String alarmIds = TextUtils.join("," , arrAlarmId);
+
 
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "newReqCode=" + newReqCode);
 		//등록된 code 저장해둠
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(reqCode);
 		editor.putString(reqCode, newReqCode);
+		editor.putString(Const.PARAM.ALARM_ID, alarmIds);
+		editor.putLong(Const.PARAM.ALARM_ID_TIME_STAMP, alarmTimeList.get(0).getTimeStamp());
+
 		editor.commit();
 	}
 
@@ -451,7 +458,7 @@ public class AlarmDataManager {
 		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
 			alarmTimeVO.setReqCode(reqCode);
-			myIntent.putExtra("alarmTimeVO", alarmTimeVO);
+			myIntent.putExtra(Const.PARAM.ALARM_TIME_VO, alarmTimeVO);
 
 			Crashlytics.log(Log.DEBUG, this.getClass().toString(), "timer background start service alarmVO id=" + alarmTimeVO.getId() + " title =" + alarmTimeVO.getAlarmTitle());
 			mCtx.startService(myIntent);
@@ -470,7 +477,7 @@ public class AlarmDataManager {
 			out.writeObject(alarmTimeVO);
 			out.flush();
 			byte[] data = bos.toByteArray();
-			myIntent.putExtra("alarmTimeVO", data);
+			myIntent.putExtra(Const.PARAM.ALARM_TIME_VO, data);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {

@@ -64,7 +64,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
 		Intent myIntent = new Intent(context, AlarmBackgroudService.class);
 
-		ByteArrayInputStream bis = new ByteArrayInputStream(intent.getByteArrayExtra("alarmTimeVO"));
+		ByteArrayInputStream bis = new ByteArrayInputStream(intent.getByteArrayExtra(Const.PARAM.ALARM_TIME_VO));
 		ObjectInput in = null;
 		AlarmTimeVO alarmTimeVO = null;
 		try {
@@ -84,7 +84,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 			}
 		}
 
-		myIntent.putExtra("alarmTimeVO", alarmTimeVO);
+		myIntent.putExtra(Const.PARAM.ALARM_TIME_VO, alarmTimeVO);
 
 		Bundle bundle = intent.getExtras();
 
@@ -106,7 +106,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 	/* nougat 버젼에서는 serializable 안됨 */
 	public void onReceiveOri(Context context, Intent intent) {
 
-		AlarmTimeVO alarmTimeVO = (AlarmTimeVO) intent.getSerializableExtra("alarmTimeVO");
+		AlarmTimeVO alarmTimeVO = (AlarmTimeVO) intent.getSerializableExtra(Const.PARAM.ALARM_TIME_VO);
 
 		Log.d(this.toString(), "alarmTimeVO= " + alarmTimeVO);
 

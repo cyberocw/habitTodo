@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
@@ -94,6 +95,10 @@ public class SettingFragment extends Fragment {
         Button btnDbRestore= (Button) mView.findViewById(R.id.btnDbRestore);
         Button btnShowLog = ButterKnife.findById(mView, R.id.btnShowLog);
         Button btnClearLog = ButterKnife.findById(mView, R.id.btnClearLog);
+        final Switch swAlarmNoti = ButterKnife.findById(mView, R.id.isAlarmNoti);
+        final Switch swTTSNoti = ButterKnife.findById(mView, R.id.isTTSNoti);
+        final Switch swTTSNotiManner = ButterKnife.findById(mView, R.id.isTTSNotiManner);
+
         final TextView tvLog = ButterKnife.findById(mView, R.id.tvLog);
         /*
         TextView tvReqCode = (TextView) mView.findViewById(R.id.tvReqCode);
@@ -102,16 +107,27 @@ public class SettingFragment extends Fragment {
         tvReqCode.setText(prefs.getString(Const.PARAM.REQ_CODE, "없음"));
         */
         mCbAllAlarm = (CheckBox) mView.findViewById(R.id.checkAllAlarm);
-        final CheckBox cbBackgroundNoti = (CheckBox) mView.findViewById(R.id.checkBackgroundNoti);
-
+        final Switch cbBackgroundNoti = (Switch) mView.findViewById(R.id.checkBackgroundNoti);
         boolean isUseNotibar = mPrefs.getBoolean(Const.SETTING.IS_NOTIBAR_USE, true);
         boolean isBackgNoti = mPrefs.getBoolean(Const.SETTING.IS_BACKGROUND_NOTI_USE, true);
-
-        if(isBackgNoti)
-            cbBackgroundNoti.setChecked(true);
+        boolean isAlarmNoti = mPrefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
+        boolean isTTSNoti = mPrefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
+        boolean isTTSNotiManner = mPrefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
 
         if(isUseNotibar)
             mCbAllAlarm.setChecked(true);
+        if(isBackgNoti)
+            cbBackgroundNoti.setChecked(true);
+        if(isAlarmNoti)
+            swAlarmNoti.setChecked(true);
+        if(isTTSNoti)
+            swTTSNoti.setChecked(true);
+        else
+            swTTSNotiManner.setEnabled(false);
+        if(isTTSNotiManner)
+            swTTSNotiManner.setChecked(true);
+
+
 
         cbBackgroundNoti.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,6 +207,61 @@ public class SettingFragment extends Fragment {
                 tvLog.setText("");
             }
         });
+
+        swAlarmNoti.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Switch view = (Switch) v;
+                toggleAlarmPreference(Const.SETTING.IS_ALARM_NOTI);
+                if(getAlarmPreference(Const.SETTING.IS_ALARM_NOTI))
+                    view.setChecked(true);
+                else
+                    view.setChecked(false);
+            }
+        });
+        swTTSNoti.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Switch view = (Switch) v;
+                toggleAlarmPreference(Const.SETTING.IS_TTS_NOTI);
+                if(getAlarmPreference(Const.SETTING.IS_TTS_NOTI)) {
+                    view.setChecked(true);
+                    swTTSNotiManner.setEnabled(true);
+                }
+                else {
+                    view.setChecked(false);
+                    swTTSNotiManner.setEnabled(false);
+                }
+            }
+        });
+        swTTSNotiManner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Switch view = (Switch) v;
+                toggleAlarmPreference(Const.SETTING.IS_TTS_NOTI_MANNER);
+                if(getAlarmPreference(Const.SETTING.IS_TTS_NOTI_MANNER))
+                    view.setChecked(true);
+                else
+                    view.setChecked(false);
+            }
+        });
+    }
+
+    protected boolean putAlarmPreference(String key, boolean value){
+        SharedPreferences prefs = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove(key);
+        editor.putBoolean(key, value);
+        return editor.commit();
+    }
+
+    private boolean getAlarmPreference(String key){
+        SharedPreferences prefs = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+        return prefs.getBoolean(key, true);
+    }
+
+    private boolean toggleAlarmPreference(String key){
+        return putAlarmPreference(key, !getAlarmPreference(key));
     }
 
     private void bindSeekBarListener(){

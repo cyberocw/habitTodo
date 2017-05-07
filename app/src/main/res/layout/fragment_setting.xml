@@ -118,7 +118,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-            <TextView
+            <!--<TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="알람전 노티바 활성화 "
@@ -130,7 +130,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="" />
+                android:text="" />-->
+            <Switch
+                android:id="@+id/checkBackgroundNoti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:text="알람전 노티바 활성화" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -143,9 +150,104 @@
                 android:text="노티바를 활성화해두면, 메모리가 부족해도 알람 서비스를 강제 정지시키지 않아, 알람이 울리지 않을 확률을 낮춰줍니다"
                 />
         </LinearLayout>
-
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:padding="@dimen/margin_small"
+        >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <!--
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/setting_menu_title_use_alarm"
+                            android:textStyle="bold"
+                            android:layout_gravity="center_vertical"
+                            />
 
+                        <CheckBox
+                            android:id="@+id/isAlarmNoti"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="" />-->
+            <Switch
+                android:id="@+id/isAlarmNoti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:text="@string/setting_menu_title_use_alarm" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/half_black"
+                android:text="해당 옵션을 꺼두면, 알림이 울릴 때 진동이나 소리가 나지 않습니다. 매너 모드에서는 옵션이 켜져 있어도 진동만 울립니다."
+                />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:padding="@dimen/margin_small"
+        >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <!--<TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_menu_title_use_tts"
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical"
+                />
+            <CheckBox
+                android:id="@+id/isTTSNoti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="" />-->
+            <Switch
+                android:id="@+id/isTTSNoti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:text="@string/setting_menu_title_use_tts" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/half_black"
+                android:text="해당 옵션을 꺼두면, 알림이 울릴 때 알림 제목을 음성으로 읽어주지 않습니다."
+                />
+            <Switch
+                android:id="@+id/isTTSNotiManner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+
+                android:text="매너모드에서도 재생" />
+        </LinearLayout>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -161,7 +263,7 @@
             android:layout_height="match_parent"
             android:textStyle="bold"
             android:layout_gravity="center_vertical"
-            android:text="TTS 볼륨 " />
+            android:text="음성 볼륨 " />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

@@ -3,18 +3,30 @@ package com.cyberocw.habittodosecretary.alaram.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
+import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
+import com.cyberocw.habittodosecretary.alaram.service.AlarmBackgroudService;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.util.TTSNoti;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +41,10 @@ public class AlarmNotiActivity extends AppCompatActivity {
 	String mTitle = "", mEtcType = "";
 	long mAlarmId = -1;
 	Bundle mBundle;
+	long mStartedTimeInMilis = 0;
+	boolean isButtonClick = false;
+	Context mCtx;
+
 	@BindView(R.id.tvAlarmTitle) TextView mTvTitle;
 	@BindView(R.id.btnEtcView) Button mBtnEtcView;
 	@BindView(R.id.btnPostpone) Button mBtnPostpone;
@@ -36,28 +52,49 @@ public class AlarmNotiActivity extends AppCompatActivity {
 
 	@OnClick(R.id.btnTimerStop) void submit() {
 		mVibe.cancel();
+		isButtonClick = true;
 		finish();
 	}
 	@OnClick(R.id.btnPostpone) void clickPostpone(){
 		mVibe.cancel();
+		isButtonClick = true;
 		showPostPhone();
 		finish();
 	}
 	@OnClick(R.id.btnEtcView) void clickEtcView(){
 		mVibe.cancel();
+		isButtonClick = true;
 		showEtcView();
 		finish();
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Intent intent = getIntent();
+		int alarmOption = -1;
+		Log.d(this.toString(), " oncreated ocwocw" + intent.getExtras());
+
 		super.onCreate(savedInstanceState);
+
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN |
+						WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+						WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+						WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+						WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN |
+						WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+						WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+						WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+						WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+
 		setContentView(R.layout.timer_noti);
 		ButterKnife.bind(this);
+		mCtx = getApplicationContext();
 
-		Intent intent = getIntent();
 		mBundle = intent.getExtras();
 		String title = "";
+
 		if(mBundle != null) {
 			title = mBundle.getString("title");
 			mAlarmId = mBundle.getLong("alarmId", -1);
@@ -66,11 +103,9 @@ public class AlarmNotiActivity extends AppCompatActivity {
 				mBtnEtcView.setText("메모 보기");
 				mBtnEtcView.setVisibility(View.VISIBLE);
 			}
-
+			//개별 알림 TTS 재생 여부 옵션
+			alarmOption = mBundle.getInt(Const.PARAM.ALARM_OPTION, -1);
 		}
-
-
-
 		SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 		boolean isAlarmNoti = prefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
 		if(isAlarmNoti) {
@@ -100,18 +135,35 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		}
 
 		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN |
-						WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
-						WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-						WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
-						WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN |
-						WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
-						WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-						WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
-						WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		Fabric.with(this, new Crashlytics());
+		mStartedTimeInMilis = Calendar.getInstance().getTimeInMillis();
+
+		boolean isTTS = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
+		boolean isTTSManner = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
+
+
+		if(alarmOption == 1 && isTTS && !isTTSManner){
+			AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+			switch (am.getRingerMode()) {
+				case AudioManager.RINGER_MODE_SILENT:
+					Log.i(Const.DEBUG_TAG, "Silent mode");
+				case AudioManager.RINGER_MODE_VIBRATE:
+					Log.i(Const.DEBUG_TAG, "Vibrate mode");
+					isTTS = false;
+					break;
+				case AudioManager.RINGER_MODE_NORMAL:
+					Log.i(Const.DEBUG_TAG, "Normal mode");
+			}
+		}
+		if(alarmOption == 1 && isTTS)
+			startTTS(title, mAlarmId);
+	}
+	private void startTTS(String title, long id){
+		Intent ttsIntent = new Intent(getApplicationContext(), TTSNoti.class);
+		ttsIntent.putExtra("alaramTitle", title);
+		ttsIntent.putExtra("alarmId", id);
+		getApplicationContext().startService(ttsIntent);
 	}
 
 	private void showEtcView(){
@@ -140,9 +192,69 @@ public class AlarmNotiActivity extends AppCompatActivity {
 	}
 
 	@Override
-	protected void onDestroy() {
-		mVibe.cancel();
+	public void onBackPressed() {
+		Log.d(this.toString(), "onBackPressed");
+		//autoPostpone();
+		super.onBackPressed();
+	}
+
+	protected void autoPostpone() {
+		Log.d(this.toString(), "on autoPostpone");
+
+		AlarmDataManager alarmDataManager = new AlarmDataManager(mCtx);
+		final AlarmVO alarmVO = alarmDataManager.getItemByIdInDB(mAlarmId);
+		ArrayList<Integer> arrAlarmCall = new ArrayList<Integer>();
+		arrAlarmCall.add(0);
+		alarmVO.setAlarmCallList(arrAlarmCall);
+		alarmVO.setAlarmDateType(Const.ALARM_DATE_TYPE.POSTPONE_DATE);
+		alarmVO.setIsHolidayALL(0);
+		alarmVO.setIsHolidayNone(0);
+		alarmVO.setRepeatDay(null);
+
+		//알림 날짜 계산
+		ArrayList<Calendar> alarmDate = new ArrayList<Calendar>();
+		Calendar now = Calendar.getInstance();
+		now.add(Calendar.MINUTE, 1);
+		alarmDate.add(now);
+		alarmVO.setAlarmDateList(alarmDate);
+		alarmVO.setHour(now.get(Calendar.HOUR_OF_DAY));
+		alarmVO.setMinute(now.get(Calendar.MINUTE));
+
+		if(alarmDataManager.addItem(alarmVO) == true)
+			Toast.makeText(mCtx, "연기했습니다", Toast.LENGTH_LONG).show();
+		else
+			Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+
+		alarmDataManager.resetMinAlarmCall();
 		finish();
+	}
+	@Override
+	protected void onStop() {
+		super.onStop();
+		long nowTime = Calendar.getInstance().getTimeInMillis();
+		Log.d(this.toString(), "onStop timeMils = " + (nowTime - mStartedTimeInMilis));
+
+
+		if(nowTime - mStartedTimeInMilis > 500 && isButtonClick == false)
+			autoPostpone();
+	}
+
+	@Override
+	protected void onResume() {
+		Log.d(this.toString(), "onResume");
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		Log.d(this.toString(), "onPause");
+		super.onPause();
+	}
+
+	@Override
+	protected void onDestroy() {
+		Log.d(this.toString(), "onDestroy");
+		mVibe.cancel();
 		super.onDestroy();
 	}
 }

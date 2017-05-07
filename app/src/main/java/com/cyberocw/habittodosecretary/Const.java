@@ -27,7 +27,10 @@ public class Const {
 		public static final String VIEW_TYPE = "viewType";
 		public static final String MEMO_VO = "memoVO";
 		public static final String ALARM_VO = "alarmVO";
-	}
+		public static final String ALARM_TIME_VO = "alarmTimeVO";
+		public static final String ALARM_OPTION = "alarmOption";
+		public static final String ALARM_ID_TIME_STAMP = "alarmIdTimeStamp";
+    }
 
 	public class ALARM_INTERFACE_CODE{
 		public static final int ADD_ALARM_CODE = 111;
@@ -142,6 +145,7 @@ public class Const {
 		public static final String VERSION = "version";
 		public static final String IS_ALARM_NOTI = "isAlarmNoti";
 		public static final String IS_TTS_NOTI = "isTTSNoti";
+		public static final String IS_TTS_NOTI_MANNER = "isTTSNotiManner";
 		public static final String IS_NOTIBAR_USE = "isNotibarUse";
 		public static final String IS_BACKGROUND_NOTI_USE = "isBackgroundNotibarUse";
 		public static final String TTS_VOLUME = "ttsVolume";

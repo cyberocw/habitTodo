@@ -293,7 +293,7 @@ public class AlarmFragment extends Fragment{
 					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
 
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}finally {
@@ -301,7 +301,7 @@ public class AlarmFragment extends Fragment{
 				}
 
 				mAlarmDataManager.resetMinAlarmCall();
-				refreshAlarmList();
+				//refreshAlarmList();
 
 			}
 		});
@@ -641,6 +641,8 @@ public class AlarmFragment extends Fragment{
 		mDateTv.setOnClickListener(new View.OnClickListener() {
 			                           @Override
 			                           public void onClick(View v) {
+										   if(mViewType == Const.ALARM_OPTION.NO_DATE_TIMER)
+										   		return;
 
 				                           int myYear = mCalendar.get(Calendar.YEAR);
 				                           int myMonth = mCalendar.get(Calendar.MONTH);

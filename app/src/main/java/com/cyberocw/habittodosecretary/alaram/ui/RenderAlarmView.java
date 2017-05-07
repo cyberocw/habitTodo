@@ -1,6 +1,10 @@
 package com.cyberocw.habittodosecretary.alaram.ui;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -13,6 +17,9 @@ import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+
 import butterknife.ButterKnife;
 
 /**
@@ -21,6 +28,16 @@ import butterknife.ButterKnife;
 
 public class RenderAlarmView {
     public static void RenderAlarmView(final Context ctx, final AlarmFragment mMainFragment, final AlarmDataManager mManager, final AlarmVO vo, View convertView, int listViewType){
+        SharedPreferences prefs = ctx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+        String text = prefs.getString(Const.PARAM.ALARM_ID, null);
+        String[] arrAlarmId = null;
+        if(text != null && !"".equals(text)) {
+            arrAlarmId = text.split(",");
+            if (arrAlarmId.length == 0)
+                arrAlarmId[0] = text;
+        }
+
+
 
         /*if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT)
             convertView.setBackgroundResource(R.color.background_repeat);
@@ -36,6 +53,42 @@ public class RenderAlarmView {
         dateToggleBtn.setText(vo.getTimeText());
         dateToggleBtn.setTextOn(vo.getTimeText());
         dateToggleBtn.setTextOff(vo.getTimeText());
+
+        boolean isFind = false;
+
+        Calendar alarmDate = (Calendar) mManager.mCalendar.clone();
+
+        alarmDate.set(Calendar.MINUTE, vo.getMinute());
+        alarmDate.set(Calendar.HOUR_OF_DAY, vo.getHour());
+        alarmDate.set(Calendar.SECOND, 0);
+        alarmDate.set(Calendar.MILLISECOND, 0);
+        //활성화된 알림 중
+        if(vo.getUseYn() == 1) {
+            for (int i = 0; i < arrAlarmId.length; i++) {
+                //동일 아이디일 경우만 처리
+                if (Long.valueOf(arrAlarmId[i]) == vo.getId()) {
+                    long timeStamp = prefs.getLong(Const.PARAM.ALARM_ID_TIME_STAMP, 0);
+                    ArrayList<Integer> arrAlarmCallList = vo.getAlarmCallList();
+
+                    for (int k = 0; k < arrAlarmCallList.size(); k++) {
+                        Calendar cal = (Calendar) alarmDate.clone();
+                        cal.add(Calendar.MINUTE, arrAlarmCallList.get(k));
+                        if(timeStamp == cal.getTimeInMillis()){
+                            Drawable img = ContextCompat.getDrawable(ctx, R.drawable.ic_chevron_right_black_24dp);
+                            dateToggleBtn.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+                            isFind = true;
+                            break;
+                        }
+                    }
+                    if(isFind)
+                        break;
+                }
+            }
+        }
+        if (!isFind) {
+            Drawable img = ContextCompat.getDrawable(ctx, R.drawable.toggle_timer);
+            dateToggleBtn.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+        }
 
         ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);
         btnOption.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +145,7 @@ public class RenderAlarmView {
                 else {
                     mManager.resetMinAlarmCall(vo.getAlarmDateType());
                 }
+                mMainFragment.refreshAlarmList();
             }
         });
 

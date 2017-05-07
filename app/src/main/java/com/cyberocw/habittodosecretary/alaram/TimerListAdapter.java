@@ -7,6 +7,8 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.support.v7.content.res.AppCompatResources;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,6 +120,9 @@ public class TimerListAdapter extends BaseAdapter {
 
 		final long remainTime = (hour * 60 * 60 + minute * 60 + second) * 1000;
 
+		Log.d(this.toString(), "mStartedTimerId = " + mStartedTimerId + "  this alarmId = " + mManager.getItem(position).getId()
+				+ "  mbound = " + mBound );
+
 		//// TODO: 2015-11-17 서비스 시작 및 복구 되도록 변경 하기
 		btnDateToggle.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -125,6 +130,9 @@ public class TimerListAdapter extends BaseAdapter {
 				TimerVO vo = mManager.getItem(position);
 				ToggleButton btn = (ToggleButton) v;
 				boolean isChecked = btn.isChecked();
+
+				Log.d(this.toString(), "mStartedTimerId = " + mStartedTimerId + "  this alarmId = " + mManager.getItem(position).getId()
+						+ "  mbound = " + mBound + " isChecked = "+isChecked);
 
 				//이미 실행중인 타이머가 있을 경우
 				if (mBound == true && isChecked == true) {
@@ -142,12 +150,11 @@ public class TimerListAdapter extends BaseAdapter {
 					intent.putExtra("title", vo.getAlarmTitle());
 					mCtx.startService(intent);
 					mCtx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-					btnDateToggle.setText("Cancel");
+					btnDateToggle.setText(mCtx.getResources().getText(R.string.timerBtnToggleOn));
 					setPrefsTimerId(mManager.getItem(position).getId());
 
 				} else {
-					btnDateToggle.setText("Start");
-
+					btnDateToggle.setText(mCtx.getResources().getText(R.string.timerBtnToggleOff));
 					if (mBound)
 						mService.cancelTimer();
 				}
@@ -161,12 +168,23 @@ public class TimerListAdapter extends BaseAdapter {
 				mMainFragment.longClickPopup(0, mManager.getItem(position).getId());
 			}
 		});
+
 		if(mStartedTimerId == mManager.getItem(position).getId()){
 			if(mBound)
 				mService.setTxtMap(mMapConvertView);
 
-			btnDateToggle.toggle();
-			btnDateToggle.callOnClick();
+			mBtnCheckedToggle = btnDateToggle;
+
+			Intent intent;
+			intent = new Intent(mCtx, TimerService.class);
+			mCtx.startService(intent);
+			mCtx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+			btnDateToggle.setChecked(true);
+			btnDateToggle.setText(mCtx.getResources().getText(R.string.timerBtnToggleOn));
+			setPrefsTimerId(mManager.getItem(position).getId());
+
+
+			//btnDateToggle.callOnClick();
 
 		}
 		return convertView;
@@ -179,6 +197,8 @@ public class TimerListAdapter extends BaseAdapter {
 	//// TODO: 2015-11-22 나중에 interface로 빼기
 	public void unbindService(){
 		//activity가 종료되는 경우 mConnection 값이 달라져서 unbindService 호출 에러가 뜸
+		Log.d(this.toString(), "unbindService ");
+
 		mBound = false;
 		try {
 			if (mConnection != null)
@@ -224,6 +244,8 @@ public class TimerListAdapter extends BaseAdapter {
 		public void onServiceConnected(ComponentName className,
 		                               IBinder service) {
 			// We've bound to LocalService, cast the IBinder and get LocalService instance
+			Log.d(this.toString(), "onServiceConnected ");
+
 			TimerService.LocalBinder binder = (TimerService.LocalBinder) service;
 			mService = binder.getService();
 			mService.bindInterface(TimerListAdapter.this);

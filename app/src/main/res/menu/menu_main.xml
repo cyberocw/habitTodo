@@ -3,18 +3,18 @@
       xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
     <item
         android:id="@+id/isAlarmNoti"
-        android:title="알람 소리/진동 켜기"
+        android:title="@string/setting_menu_title_use_alarm"
         android:orderInCategory="100"
         android:checkable="true"
         />
     <item
-        android:title="TTS 켜기"
+        android:title="@string/setting_menu_title_use_tts"
         android:id="@+id/isTTSNoti"
         android:orderInCategory="100"
         android:checkable="true"
         />
     <item android:id="@+id/setting"
-        android:title="설정"
+        android:title="@string/setting"
         android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>

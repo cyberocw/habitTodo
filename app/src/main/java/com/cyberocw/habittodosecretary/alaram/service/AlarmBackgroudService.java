@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
@@ -43,8 +44,7 @@ import io.fabric.sdk.android.Fabric;
 public class AlarmBackgroudService extends Service {
     public ArrayList<AlarmTimeVO> mArrAlarmVOList = new ArrayList<AlarmTimeVO>();
     public long mMillisRemainTime = -1;
-    public TextView mTv;
-    NumberFormat mNumberFormat = new DecimalFormat("##00");
+
     /**
      * Created by cyberocw on 2015-11-16.
      */
@@ -54,9 +54,7 @@ public class AlarmBackgroudService extends Service {
     private String mTitle = "";
     private int mAlarmOption = -1;
     private int mAlarmType = -1;
-    private final String mAppTitle = "HabitTodoSecretary";
-
-    private AlarmReceiver mTimerListAdapter = null;
+    private String mAppTitle = "";
 
     public AlarmBackgroudService() {
     }
@@ -71,6 +69,8 @@ public class AlarmBackgroudService extends Service {
         Crashlytics.log(Log.DEBUG, this.toString(), "onStartCommand" + " mCountdownTimer is null=" + (mCountDownTimer == null));
         //if(mCountDownTimer != null)
         //	mTimerListAdapter.showRunningAlert();
+        mAppTitle = getApplicationContext().getResources().getString(R.string.app_name);
+
         Bundle extras = intent.getExtras();
 
         CommonUtils.putLogPreference(mCtx, this.toString() + "background service start");
@@ -83,6 +83,7 @@ public class AlarmBackgroudService extends Service {
         if (extras != null) {
             Crashlytics.log(Log.DEBUG, "service", "onBind with extra @@@@@@@@@@@@ mArrAlarmVOList size=" + mArrAlarmVOList.size());
             //mMillisRemainTime = (Long) extras.get("realTime");
+/*
 
             Set<String> keySet = extras.keySet();
             StringBuilder sb = new StringBuilder();
@@ -91,8 +92,9 @@ public class AlarmBackgroudService extends Service {
                 sb.append(key + "\n");
             }
             Crashlytics.log(Log.DEBUG, this.toString(), " extara keys = " + sb.toString());
+*/
 
-            AlarmTimeVO alarmTimeVO = (AlarmTimeVO) intent.getSerializableExtra("alarmTimeVO");
+            AlarmTimeVO alarmTimeVO = (AlarmTimeVO) intent.getSerializableExtra(Const.PARAM.ALARM_TIME_VO);
 
             Crashlytics.log(Log.DEBUG, this.toString(), "alarmTimeVO = "+alarmTimeVO);
 
@@ -175,13 +177,16 @@ public class AlarmBackgroudService extends Service {
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_ALARM_NOTI_ID, notificationIntent, 0);
 
+            Calendar alertTime = Calendar.getInstance();
+            alertTime.setTimeInMillis(alarmTimeVO.getTimeStamp());
+
             android.support.v4.app.NotificationCompat.Builder mCompatBuilder = new android.support.v4.app.NotificationCompat.Builder(this);
             mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
             mCompatBuilder.setTicker("Habit Todo Timer");
             mCompatBuilder.setWhen(System.currentTimeMillis());
             //mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 300L, 300L, 400L, 400L });
             mCompatBuilder.setContentTitle(mAppTitle);
-            mCompatBuilder.setContentText(mTitle + " 알림 예정 ");
+            mCompatBuilder.setContentText(mTitle + " " + alertTime.get(Calendar.HOUR_OF_DAY) + "시 " + alertTime.get(Calendar.MINUTE) + "분 알림 예정 ");
             //mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
             mCompatBuilder.setContentIntent(pendingIntent);
             //mCompatBuilder.setAutoCancel(true);
@@ -222,8 +227,28 @@ public class AlarmBackgroudService extends Service {
 
         SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
         boolean isTTS = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
+        boolean isTTSManner = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
 
         if(mAlarmType < 1) {
+            if(isTTS && !isTTSManner){
+                AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+                switch (am.getRingerMode()) {
+                    case AudioManager.RINGER_MODE_SILENT:
+                        Log.i(Const.DEBUG_TAG, "Silent mode");
+                    case AudioManager.RINGER_MODE_VIBRATE:
+                        Log.i(Const.DEBUG_TAG, "Vibrate mode");
+                        isTTS = false;
+                        break;
+                    case AudioManager.RINGER_MODE_NORMAL:
+                        Log.i(Const.DEBUG_TAG, "Normal mode");
+                }
+            }
+
+            //mAlarmOption - 개별 알람 tts
+            if(mAlarmOption == 1 && isTTS) {
+                startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
+            }
+
             Intent myIntent = new Intent(mCtx, NotificationService.class);
             Crashlytics.log(Log.DEBUG, this.toString(), " background mArrAlarmVOList.get(mMinRemainPosition).getReqCode() = " + mArrAlarmVOList.get(mMinRemainPosition).getReqCode());
             myIntent.putExtra("title", mTitle);
@@ -235,15 +260,18 @@ public class AlarmBackgroudService extends Service {
         }else{
             Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
             myIntent.putExtra("title", mTitle);
+            myIntent.putExtra(Const.PARAM.ALARM_OPTION, mAlarmOption);
             myIntent.putExtra(Const.PARAM.ETC_TYPE_KEY, mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
             myIntent.putExtra(Const.PARAM.ALARM_ID, mArrAlarmVOList.get(mMinRemainPosition).getfId());
-            myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            //myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK );
+            myIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            Crashlytics.log(Log.DEBUG, this.toString(), "start alarmNotiActivity mTitle=" + mTitle);
+
             mCtx.startActivity(myIntent);
         }
 
-        if(mAlarmOption == 1 && isTTS) {
-            startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
-        }
+
     }
 
     private void startTTS(String title, long id){

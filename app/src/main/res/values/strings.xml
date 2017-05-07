@@ -32,5 +32,12 @@
     <string name="btnToggleViewTimer">타이머 모드</string>
     <string name="btnToggleViewNoTimer">알람 모드</string>
 
+    <string name="timerBtnToggleOn">Cancel</string>
+    <string name="timerBtnToggleOff">Start</string>
+
+    <string name="setting">설정</string>
+    <string name="setting_menu_title_use_alarm">알림 소리/진동 켜기</string>
+    <string name="setting_menu_title_use_tts">알림 음성 재생 켜기</string>
+
 
 </resources>
