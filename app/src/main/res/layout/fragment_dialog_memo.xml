@@ -3,6 +3,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/bannerHeight"
               android:weightSum="1"
                 android:background="@color/background"
     >
@@ -12,7 +13,6 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark"
-
         >
         <Button
             android:id="@+id/btnMemoSave"

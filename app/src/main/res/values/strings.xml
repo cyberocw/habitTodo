@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HabitTodoSecretary</string>
+    <string name="app_name">Oh Reminder</string>
 
     <string name="title_section1">습관 할일 알람</string>
     <string name="title_section2">메모</string>
@@ -32,6 +32,10 @@
     <string name="btnToggleViewTimer">타이머 모드</string>
     <string name="btnToggleViewNoTimer">알람 모드</string>
 
+    <string name="dialog_title_alaram">알람 추가/편집</string>
+    <string name="dialog_title_memo">메모 추가/편집</string>
+    <string name="dialog_title_timer">타이머 추가/편집</string>
+
     <string name="timerBtnToggleOn">Cancel</string>
     <string name="timerBtnToggleOff">Start</string>
 
@@ -39,5 +43,9 @@
     <string name="setting_menu_title_use_alarm">알림 소리/진동 켜기</string>
     <string name="setting_menu_title_use_tts">알림 음성 재생 켜기</string>
 
+    <!-- test ad -->
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <!-- real ad -->
+    <!--<string name="banner_ad_unit_id">ca-app-pub-광고 단위 ID</string>-->
 
 </resources>

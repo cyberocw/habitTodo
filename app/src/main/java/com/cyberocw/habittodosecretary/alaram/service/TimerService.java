@@ -124,8 +124,8 @@ public class TimerService extends Service {
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_TIMER_NOTI_ID, notificationIntent, 0);
 
 		NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this);
-		mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
-		mCompatBuilder.setTicker("Habit Todo Timer");
+		mCompatBuilder.setSmallIcon(R.drawable.ic_stat_noti);
+		mCompatBuilder.setTicker(getResources().getString(R.string.app_name));
 		mCompatBuilder.setWhen(System.currentTimeMillis());
 		//mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 300L, 300L, 400L, 400L });
 		mCompatBuilder.setContentTitle("Habit Todo timer is running");

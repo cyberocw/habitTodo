@@ -3,8 +3,10 @@ package com.cyberocw.habittodosecretary.calendar;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +40,7 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
     private ArrayList<AlarmVO> mArrAlarmList;
     private ArrayList<String> mArrTodayAlarm = new ArrayList<String>();
     ArrayList<HolidayVO> mArrHoliday;
-    private TextView mTvTitle;
+    private TextView mTvTitle, mTvHoliday;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
 
@@ -87,6 +89,8 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
 
         ListView lv = (ListView) view.findViewById(R.id.alramListView);
         mTvTitle = (TextView) view.findViewById(R.id.tvSelectedDateInfo);
+        mTvHoliday = (TextView) view.findViewById(R.id.tvSelectedDateHoliday);
+
         mAlarmAdapter = new ArrayAdapter(getContext(), R.layout.simple_small_text_view, R.id.alarmTitle, mArrTodayAlarm) ;
         lv.setAdapter(mAlarmAdapter);
 
@@ -105,7 +109,7 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
 
         String sDate = dateFormat.format(mCalendar.getTime());
         mTvTitle.setText(sDate);
-
+        mTvHoliday.setText("");
         b.setView(view);
         Dialog dialog = b.create();
         dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -122,6 +126,7 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
         String sDate = dateFormat.format(calendar.getTime());
 
         mTvTitle.setText(sDate);
+        mTvHoliday.setText("");
 
         for(int i = 0 ; i < mArrHoliday.size(); i++){
             hVO = mArrHoliday.get(i);
@@ -135,7 +140,8 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
                         daytext = hVO.getName();
 
                     //mTvTitle.setVisibility(View.VISIBLE);
-                    mTvTitle.setText(sDate + " : " + daytext);
+                    //mTvTitle.setText(sDate + " : " + daytext);
+                    mTvHoliday.setText(daytext);
                     break;
                 }
             }
@@ -169,20 +175,25 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
         ArrayList<AlarmVO> arrAlarm = mCalendarManager.getAlarmList(mCalendar);
         mArrTodayAlarm.clear();
 
+        String str = "";
         for(int i = 0 ; i < arrAlarm.size(); i++){
             AlarmVO vo = arrAlarm.get(i);
 
             if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
                 continue;
 
-            mArrTodayAlarm.add(CommonUtils.numberDigit(2, vo.getHour()) + ":" + CommonUtils.numberDigit(2, vo.getMinute()) + "  " +
-                    vo.getAlarmTitle() + "  " + Const.ALARM_DATE_TYPE.getText(Const.ALARM_DATE_TYPE.getPositionByCode(vo.getAlarmDateType())));
+            if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT)
+                str = CommonUtils.numberDigit(2, vo.getHour()) + ":" + CommonUtils.numberDigit(2, vo.getMinute()) + "  " +
+                    vo.getAlarmTitle() + "  " + Const.ALARM_DATE_TYPE.getText(Const.ALARM_DATE_TYPE.getPositionByCode(vo.getAlarmDateType()));
+            else
+                str = CommonUtils.numberDigit(2, vo.getHour()) + ":" + CommonUtils.numberDigit(2, vo.getMinute()) + "  " +
+                        vo.getAlarmTitle() + "  <" + Const.ALARM_DATE_TYPE.getText(Const.ALARM_DATE_TYPE.getPositionByCode(vo.getAlarmDateType())) + ">";
+
+            mArrTodayAlarm.add(str);
         }
 
         mAlarmAdapter.notifyDataSetChanged();
         //mArrTodayAlarm = array;
-
-
     }
     private void setCalendarIcon(){
         Crashlytics.log(Log.DEBUG, this.toString(), "setCalendarIcon start");

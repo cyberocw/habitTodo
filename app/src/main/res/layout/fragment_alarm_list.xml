@@ -252,6 +252,7 @@
                 android:id="@+id/alarmListViewWrap"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingBottom="50dp"
                 android:layout_marginTop="2dp">
 
                 <ExpandableListView
@@ -272,7 +273,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="false"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="5dp"
             fab:fab_colorNormal="@color/pink"
             fab:fab_colorPressed="@color/pink_pressed"
             fab:fab_icon="@drawable/ic_add" />

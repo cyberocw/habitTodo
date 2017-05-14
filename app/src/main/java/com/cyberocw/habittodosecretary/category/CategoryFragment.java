@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,7 +40,7 @@ public class CategoryFragment extends Fragment {
 	// TODO: Rename and change types of parameters
 	private String mParam1;
 	private String mParam2;
-
+	private ActionBar mActionBar = null;
 	private View mView;
 	private Context mCtx;
 	SharedPreferences mPrefs;
@@ -286,16 +287,23 @@ public class CategoryFragment extends Fragment {
 		if(b == null)
 			b = new Bundle();
 
+
 		b.putLong(Const.CATEGORY.CATEGORY_ID, id);
 		b.putString(Const.CATEGORY.CATEGORY_TITLE_KEY, mCateDataManager.getItemById(id).getTitle());
 		b.putBoolean(Const.MEMO.SHOW_TOOLBAR, true);
 		f.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE);
 
+		mActionBar.setTitle(mCateDataManager.getItemById(id).getTitle());
+
 		f.setArguments(b);
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 		fragmentManager.beginTransaction()
 				.addToBackStack(null)
-				.add(R.id.warpContainer, f).commit();
+				.add(R.id.main_container, f).commit();
+	}
+
+	public void setActionBar(ActionBar actionBar){
+		mActionBar = actionBar;
 	}
 
 	@Override

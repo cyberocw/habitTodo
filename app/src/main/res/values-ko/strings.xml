@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">HabitTodoSecretary</string>
+    <string name="app_name">오리마인더</string>
     <string name="group_title_repeat">반복 알람</string>
     <string name="group_title_set_date">날짜 지정 알람</string>
     <string name="group_title_postpone">연기한 알람</string>

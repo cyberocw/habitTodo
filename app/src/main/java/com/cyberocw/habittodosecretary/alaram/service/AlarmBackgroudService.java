@@ -181,8 +181,8 @@ public class AlarmBackgroudService extends Service {
             alertTime.setTimeInMillis(alarmTimeVO.getTimeStamp());
 
             android.support.v4.app.NotificationCompat.Builder mCompatBuilder = new android.support.v4.app.NotificationCompat.Builder(this);
-            mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
-            mCompatBuilder.setTicker("Habit Todo Timer");
+            mCompatBuilder.setSmallIcon(R.drawable.ic_stat_noti);
+            mCompatBuilder.setTicker(getResources().getString(R.string.app_name));
             mCompatBuilder.setWhen(System.currentTimeMillis());
             //mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 300L, 300L, 400L, 400L });
             mCompatBuilder.setContentTitle(mAppTitle);

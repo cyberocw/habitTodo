@@ -21,7 +21,7 @@
     <color name="primary_dark">#3b4751</color>
     <color name="primary_light">#a5a8ab</color>
     <color name="accent">#FF4081</color>
-
+    <color name="red">#ef0f1e</color>
     <color name="my_primary">#ED1C24</color>
     <color name="my_primary_dark">#CC0000</color>
     <color name="my_primary_light">#B3E5FC</color>

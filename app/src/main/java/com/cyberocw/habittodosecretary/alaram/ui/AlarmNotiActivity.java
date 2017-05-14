@@ -161,6 +161,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 	}
 	private void startTTS(String title, long id){
 		Intent ttsIntent = new Intent(getApplicationContext(), TTSNoti.class);
+
 		ttsIntent.putExtra("alaramTitle", title);
 		ttsIntent.putExtra("alarmId", id);
 		getApplicationContext().startService(ttsIntent);

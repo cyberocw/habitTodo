@@ -56,12 +56,13 @@ public class CommonUtils {
 	}
 
 	public static boolean putLogPreference(Context ctx, String value){
-		SharedPreferences prefs = ctx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+		/*SharedPreferences prefs = ctx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 		String data = prefs.getString(Const.DEBUG_TAG, "");
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(Const.DEBUG_TAG);
 		editor.putString(Const.DEBUG_TAG, data + CommonUtils.convertFullDateType(Calendar.getInstance()) + " : " + value + "\n\n");
-		return editor.commit();
+		return editor.commit();*/
+		return true;
 	}
 
 	public static String getLogPreference(Context ctx){

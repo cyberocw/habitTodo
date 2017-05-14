@@ -132,7 +132,7 @@ public class MemoFragment extends Fragment {
 		Bundle args = getArguments();
 		boolean showToolbar = false;
 		if(args != null){
-			showToolbar = args.getBoolean(Const.MEMO.SHOW_TOOLBAR, false);
+			//showToolbar = args.getBoolean(Const.MEMO.SHOW_TOOLBAR, false);
 		}
 
 		if(showToolbar) {

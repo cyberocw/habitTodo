@@ -77,7 +77,7 @@ public class NotificationService extends Service{
 
 		NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this);
 
-		mCompatBuilder.setSmallIcon(R.drawable.ic_launcher);
+		mCompatBuilder.setSmallIcon(R.drawable.ic_stat_noti);
 		mCompatBuilder.setTicker("Habit Todo");
 		mCompatBuilder.setWhen(System.currentTimeMillis());
 		mCompatBuilder.setContentTitle(noti_title);

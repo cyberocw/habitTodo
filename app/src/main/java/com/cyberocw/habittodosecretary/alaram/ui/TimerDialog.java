@@ -58,7 +58,7 @@ public class TimerDialog extends DialogFragment {
 
 		Toolbar toolbar = (Toolbar) mView.findViewById(R.id.toolbar);
 		toolbar.setVisibility(View.VISIBLE);
-		toolbar.setTitle(R.string.app_name);
+		toolbar.setTitle(getResources().getString(R.string.dialog_title_timer));
 		toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			@Override

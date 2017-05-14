@@ -178,7 +178,7 @@ public class AlarmDbManager extends DbHelper{
 	//시간 순서에 따라 가장 가까운 시간 알림 가져옴
 	public ArrayList<AlarmTimeVO> getMinAlarmTime(long nowTime){
 		String selectQuery =
-				"SELECT A." + KEY_ID + ", A." + KEY_TIME_STAMP + ", A." + KEY_CALL_TIME + ", B." + KEY_ALARM_TITLE + ", A." + KEY_F_ALARM_ID +
+				"SELECT B." + KEY_ID + ", A." + KEY_TIME_STAMP + ", A." + KEY_CALL_TIME + ", B." + KEY_ALARM_TITLE + ", A." + KEY_F_ALARM_ID +
 						", B." + KEY_ALARM_TYPE + ", B." + KEY_ALARM_OPTION + ", B." + KEY_TYPE +
 						" FROM " + TABLE_ALARM_ORDER +" AS A INNER JOIN " + TABLE_ALARM + " AS B ON " +
 						" A." + KEY_F_ALARM_ID + " = B." + KEY_ID + " WHERE  B." + KEY_USE_YN + " = 1 AND A." + KEY_TIME_STAMP + " = " +

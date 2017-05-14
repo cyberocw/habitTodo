@@ -3,6 +3,7 @@ package com.cyberocw.habittodosecretary;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -16,6 +17,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,6 +32,10 @@ import com.cyberocw.habittodosecretary.category.CategoryFragment;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.settings.InitializeSetting;
 import com.cyberocw.habittodosecretary.settings.SettingFragment;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -43,6 +49,9 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	private DrawerLayout mDrawer;
 
 	private ActionBar actionBar;
+	private final long FINISH_INTERVAL_TIME = 2000;
+	private long backPressedTime = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +65,19 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
         actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(R.drawable.ic_drawer);
         actionBar.setDisplayHomeAsUpEnabled(true);
-
+		actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
 	    mDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
 	    mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
 	    mNavigationView.setNavigationItemSelectedListener(this);
+
+		//MobileAds.initialize(this, "ca-app-pub-8072677228798230/9898207305"); // real
+		MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713"); // test
+
+		AdView adView = (AdView) findViewById(R.id.adView);
+		AdRequest adRequest = new AdRequest.Builder()
+				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+				.build();
+		adView.loadAd(adRequest);
 
 	    FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -78,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				Crashlytics.log(Log.DEBUG, this.toString(), "bundle.getString(Const.PARAM.ETC_TYPE_KEY)="+bundle.getString(Const.PARAM.ETC_TYPE_KEY));
 				if(bundle.getString(Const.PARAM.ETC_TYPE_KEY).equals(Const.ETC_TYPE.MEMO)){
 					fragment = new MemoFragment();
+					actionBar.setTitle(getResources().getString(R.string.nav_item_memo));
 				}else{
 					Toast.makeText(getApplicationContext(), "etcType이 잘못 되었습니다", Toast.LENGTH_LONG).show();
 					Log.e(this.toString(), "버그! etcType이 잘못 되었습니다 etcType="+ bundle.getString("etcType"));
@@ -121,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				Fragment alarmFragment = new AlarmFragment();
 
 				alarmFragment.setArguments(intent.getExtras());
-
+				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
 				fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 						.replace(R.id.main_container, alarmFragment).commit();
 
@@ -151,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "versionName = " + versionName + " , prefsSavedVersion= " + prefsSavedVersion);
 
 		if(prefsSavedVersion.equals("0") || !prefsSavedVersion.equals(versionName)){
-			InitializeSetting initializeSetting = new InitializeSetting(getApplication());
+			InitializeSetting initializeSetting = new InitializeSetting(this);
 			initializeSetting.execute();
 			SharedPreferences.Editor editor = setPrefs.edit();
 			editor.putString(Const.SETTING.VERSION, versionName);
@@ -238,15 +257,20 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		switch (id) {
 			case R.id.nav_item_alaram:
 				fragment = new AlarmFragment();
+				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
 				break;
 			case R.id.nav_item_memo:
 				fragment = new MemoFragment();
+				actionBar.setTitle(getResources().getString(R.string.nav_item_memo));
 				break;
 			case R.id.nav_item_cate:
 				fragment = new CategoryFragment();
+				((CategoryFragment) fragment).setActionBar(actionBar);
+				actionBar.setTitle(getResources().getString(R.string.nav_item_cate));
 				break;
 			case R.id.nav_item_setting:
 				fragment = new SettingFragment();
+				actionBar.setTitle(getResources().getString(R.string.nav_item_setting));
 				break;
 			default:
                 //fragment = new AlarmFragment();
@@ -276,4 +300,40 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 		super.onDestroy();
 	}
+
+	@Override
+	public void onBackPressed() {
+		long tempTime = System.currentTimeMillis();
+		long intervalTime = tempTime - backPressedTime;
+
+		int count = getSupportFragmentManager().getBackStackEntryCount();
+
+		Log.d(this.toString(), "count="+count);
+
+		if(count == 0)
+			showFinishPopup();
+		else
+			super.onBackPressed();
+	}
+
+	public void showFinishPopup() {
+		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(this);
+		alert_confirm.setMessage("정말 종료하시겠습니까?").setCancelable(false).setPositiveButton("확인",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						finish();
+					}
+				}).setNegativeButton("취소",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// 'No'
+						dialog.dismiss();
+					}
+				});
+		AlertDialog alert = alert_confirm.create();
+		alert.show();
+	}
+
 }

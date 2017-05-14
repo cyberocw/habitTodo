@@ -50,17 +50,23 @@
                 android:padding="@dimen/margin_small"
                 android:text="정렬" />
         </LinearLayout>
-        <ListView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/memoListView"
-            android:longClickable="true"
-            android:clickable="true"
             android:layout_below="@+id/wrapSearch"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:background="#ffffff"/>
-
+            android:background="#ffffff"
+            >
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/memoListView"
+                android:longClickable="true"
+                android:clickable="true"
+                android:paddingBottom="50dp"
+                />
+        </LinearLayout>
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddAlarm"
             android:layout_width="wrap_content"
@@ -69,7 +75,7 @@
             fab:fab_colorNormal="@color/pink"
             fab:fab_colorPressed="@color/pink_pressed"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="10dp"
             android:layout_alignParentEnd="false"
             android:layout_alignParentRight="true"/>
 

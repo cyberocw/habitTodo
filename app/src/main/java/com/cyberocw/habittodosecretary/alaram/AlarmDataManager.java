@@ -381,11 +381,11 @@ public class AlarmDataManager {
 			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i)));
 			arrAlarmId[i] = alarmTimeList.get(i).getId();
 			String aa = "다음 알람은 " + alarmTimeList.get(i).getAlarmTitle()
-					+ " 시간:" + CommonUtils.convertFullDateType(tempCal) + " 입니다.";
+					+ " 시간:" + CommonUtils.convertFullDateType(tempCal) + " 입니다. id=" + alarmTimeList.get(i).getId();
 
 			CommonUtils.putLogPreference(mCtx, aa);
 			Crashlytics.log(Log.DEBUG, this.toString(), aa);
-			Toast.makeText(mCtx, aa, Toast.LENGTH_SHORT).show();
+			//Toast.makeText(mCtx, aa, Toast.LENGTH_SHORT).show();
 		}
 
 		String newReqCode = TextUtils.join("," , arrReq);
@@ -396,6 +396,7 @@ public class AlarmDataManager {
 		//등록된 code 저장해둠
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(reqCode);
+		editor.remove(Const.PARAM.ALARM_ID);
 		editor.putString(reqCode, newReqCode);
 		editor.putString(Const.PARAM.ALARM_ID, alarmIds);
 		editor.putLong(Const.PARAM.ALARM_ID_TIME_STAMP, alarmTimeList.get(0).getTimeStamp());
@@ -440,7 +441,6 @@ public class AlarmDataManager {
 	}
 
 	public long setAlarm(AlarmTimeVO alarmTimeVO) {
-		int callTime = alarmTimeVO.getCallTime();
 		Calendar ccc = Calendar.getInstance();
 		Calendar nowCal = Calendar.getInstance();
 		long reqResult = (alarmTimeVO.getId() + nowCal.get(Calendar.MILLISECOND));
@@ -487,7 +487,8 @@ public class AlarmDataManager {
 				ex.printStackTrace();
 			}
 		}
-
+		ccc.add(Calendar.MINUTE, 14);
+		ccc.add(Calendar.SECOND, 50);
 		//myIntent.putExtra("title", alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, reqCode, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		setAlarmExact(alarmDataManager, AlarmManager.RTC_WAKEUP, ccc.getTimeInMillis(), pendingIntent);

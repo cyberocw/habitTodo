@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -37,8 +38,6 @@ public class RenderAlarmView {
                 arrAlarmId[0] = text;
         }
 
-
-
         /*if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT)
             convertView.setBackgroundResource(R.color.background_repeat);
         else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE)
@@ -65,6 +64,9 @@ public class RenderAlarmView {
         //활성화된 알림 중
         if(vo.getUseYn() == 1) {
             for (int i = 0; i < arrAlarmId.length; i++) {
+
+                Log.d(Const.DEBUG_TAG, "arrAlarmId = " + arrAlarmId[i] + " void = " + vo.getId());
+
                 //동일 아이디일 경우만 처리
                 if (Long.valueOf(arrAlarmId[i]) == vo.getId()) {
                     long timeStamp = prefs.getLong(Const.PARAM.ALARM_ID_TIME_STAMP, 0);
