@@ -92,7 +92,7 @@ public class AlarmExListAdapter extends BaseExpandableListAdapter implements Ala
             convertView = inflater.inflate(R.layout.alarm_view, parent, false);
         }
 
-        RenderAlarmView.RenderAlarmView(mCtx, mMainFragment, mManager, vo, convertView, Const.ALARM_LIST_VIEW_TYPE.EXPENDABLE_LIST);
+        RenderAlarmView.RenderAlarmView(mCtx, mMainFragment, mManager, vo, convertView, Const.ALARM_LIST_VIEW_TYPE.EXPENDABLE_LIST, position);
 
         return convertView;
     }

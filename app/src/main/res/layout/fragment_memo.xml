@@ -64,7 +64,6 @@
                 android:id="@+id/memoListView"
                 android:longClickable="true"
                 android:clickable="true"
-                android:paddingBottom="50dp"
                 />
         </LinearLayout>
         <com.getbase.floatingactionbutton.FloatingActionButton

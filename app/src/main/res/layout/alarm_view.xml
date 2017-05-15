@@ -7,13 +7,16 @@
               android:clickable="true"
               android:longClickable="true"
             android:background="@drawable/border_set"
+
     >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/listViewTextWrap"
         android:layout_marginRight="40dp"
         android:orientation="horizontal"
         android:layout_gravity="center"
+
         >
 
         <ToggleButton
@@ -31,6 +34,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
             android:minHeight="28dp"
             android:orientation="vertical"
             android:gravity="center_vertical"
@@ -58,7 +62,8 @@
                 android:text=" ㄴㅇㄹ sdf sdf asdv sdv sdv sdvvds dvd sd s ds s sdsd"
                 android:textSize="14sp"
                 android:ellipsize="marquee"
-                android:maxLines="1"/>
+                android:maxLines="1"
+                />
         </LinearLayout>
     </LinearLayout>
     <LinearLayout

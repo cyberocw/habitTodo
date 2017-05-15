@@ -33,4 +33,8 @@
     <dimen name="bannerHeight">50dp</dimen>
     <dimen name="listViewTopMargin">6dp</dimen>
 
+    <dimen name="listViewBottom">60dp</dimen>
+    <dimen name="memoListViewPadding">10dp</dimen>
+    <dimen name="timerListViewPadding">15dp</dimen>
+
 </resources>

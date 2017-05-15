@@ -82,6 +82,16 @@ public class TimerListAdapter extends BaseAdapter {
 
 		LinearLayout ll = (LinearLayout) convertView.findViewById(R.id.actionWrap);
 
+		LinearLayout listViewTextWrap = (LinearLayout) convertView.findViewById(R.id.listViewTextWrap);
+		int padding = mCtx.getResources().getDimensionPixelOffset(R.dimen.timerListViewPadding);
+		if(position == mManager.getCount()-1){
+			//float scale = ctx.getResources().getDisplayMetrics().density;
+			int paddingBottom = mCtx.getResources().getDimensionPixelOffset(R.dimen.listViewBottom);
+			listViewTextWrap.setPadding(padding, padding, padding, paddingBottom);
+		}else{
+			listViewTextWrap.setPadding(padding, padding, padding, padding);
+		}
+
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

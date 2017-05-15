@@ -56,7 +56,9 @@ public class AlarmListAdapter extends BaseAdapter implements AlarmListAdapterInt
 			convertView = inflater.inflate(R.layout.alarm_view, parent, false);
 		}
 
-		RenderAlarmView.RenderAlarmView(mCtx, mMainFragment, mManager, vo, convertView, Const.ALARM_LIST_VIEW_TYPE.LIST);
+		RenderAlarmView.RenderAlarmView(mCtx, mMainFragment, mManager, vo, convertView, Const.ALARM_LIST_VIEW_TYPE.LIST, position);
+
+
 
 		return convertView;
 	}

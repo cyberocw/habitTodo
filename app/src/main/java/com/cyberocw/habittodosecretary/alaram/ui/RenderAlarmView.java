@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -28,7 +29,7 @@ import butterknife.ButterKnife;
  */
 
 public class RenderAlarmView {
-    public static void RenderAlarmView(final Context ctx, final AlarmFragment mMainFragment, final AlarmDataManager mManager, final AlarmVO vo, View convertView, int listViewType){
+    public static void RenderAlarmView(final Context ctx, final AlarmFragment mMainFragment, final AlarmDataManager mManager, final AlarmVO vo, View convertView, int listViewType, int position){
         SharedPreferences prefs = ctx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
         String text = prefs.getString(Const.PARAM.ALARM_ID, null);
         String[] arrAlarmId = null;
@@ -48,7 +49,16 @@ public class RenderAlarmView {
             convertView.setBackgroundResource(R.color.background_repeat_day);*/
 
         ToggleButton dateToggleBtn = (ToggleButton) convertView.findViewById(R.id.timeText);
+        LinearLayout listViewTextWrap = (LinearLayout) convertView.findViewById(R.id.listViewTextWrap);
+        if(position == mManager.getCount()-1){
+            //float scale = ctx.getResources().getDisplayMetrics().density;
+            int padding = ctx.getResources().getDimensionPixelOffset(R.dimen.listViewBottom);
+            //int dpAsPixels = (int) (40 * scale + 0.5f);
 
+            listViewTextWrap.setPadding(0, 0, 0, padding);
+        }else{
+            listViewTextWrap.setPadding(0, 0, 0, 0);
+        }
         dateToggleBtn.setText(vo.getTimeText());
         dateToggleBtn.setTextOn(vo.getTimeText());
         dateToggleBtn.setTextOff(vo.getTimeText());

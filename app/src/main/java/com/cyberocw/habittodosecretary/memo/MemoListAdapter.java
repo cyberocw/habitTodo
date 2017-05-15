@@ -74,6 +74,16 @@ public class MemoListAdapter extends BaseAdapter {
 		ImageView ivInfo = (ImageView) convertView.findViewById(R.id.ivInfo);
 		r.setRating((float) vo.getRank());
 
+		LinearLayout listViewTextWrap = (LinearLayout) convertView.findViewById(R.id.listViewTextWrap);
+		int padding = mCtx.getResources().getDimensionPixelOffset(R.dimen.memoListViewPadding);
+		if(position == mManager.getCount()-1){
+			//float scale = ctx.getResources().getDisplayMetrics().density;
+			int paddingBottom = mCtx.getResources().getDimensionPixelOffset(R.dimen.listViewBottom);
+			listViewTextWrap.setPadding(padding, padding, padding, paddingBottom);
+		}else{
+			listViewTextWrap.setPadding(padding, padding, padding, padding);
+		}
+
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(vo.getUpdateDt());
 		tvRegDate.setText(cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
