@@ -139,7 +139,7 @@ public class MemoFragment extends Fragment {
 			Toolbar toolbar = (Toolbar) mView.findViewById(R.id.toolbar);
 			toolbar.setVisibility(View.VISIBLE);
 			toolbar.setTitle(R.string.app_name);
-			toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
+			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
 			toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {

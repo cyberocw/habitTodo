@@ -89,15 +89,15 @@ public class AlarmDbManager extends DbHelper{
 		}
 		vo.setId(id);
 
-		// 날짜 지정 알람
-
 		ArrayList<Calendar> dateList = vo.getAlarmDateList();
 
+		//매달 반복
 		if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT_MONTH && dateList != null && !dateList.isEmpty()){
 			insertRepeatDay(id, dateList.get(0));
 			dateList = null;
 		}
 
+		//날짜지정 알람
 		if(dateList != null && !dateList.isEmpty()) {
 			insertDate(id, dateList);
 			//날짜 시간 순서 테이블에 삽입

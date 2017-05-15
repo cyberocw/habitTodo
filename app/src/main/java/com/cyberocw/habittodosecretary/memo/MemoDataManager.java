@@ -103,7 +103,7 @@ public class MemoDataManager {
 
 		//알람 인던트 등록
 		if(item.getId() == -1){
-			Toast.makeText(mCtx, "오류 : CATEGORY ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
+			Toast.makeText(mCtx, "오류 : MEMO ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
 			return false;
 		}
 

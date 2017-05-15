@@ -27,15 +27,22 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
+import com.cyberocw.habittodosecretary.memo.MemoDataManager;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
+import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.settings.InitializeSetting;
 import com.cyberocw.habittodosecretary.settings.SettingFragment;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -168,6 +175,41 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		}
 
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "versionName = " + versionName + " , prefsSavedVersion= " + prefsSavedVersion);
+
+		//앱 최초 실행시 기초 데이터 생성
+		if(prefsSavedVersion.equals("0")){
+			AlarmDataManager alarmDataManager = new AlarmDataManager(this, Calendar.getInstance());
+			AlarmVO vo = new AlarmVO();
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.MINUTE, 4);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			vo.setAlarmTitle("4분뒤 알림");
+			vo.setAlarmType(0);
+			vo.setAlarmOption(1);
+			vo.setHour(cal.get(Calendar.HOUR_OF_DAY));
+			vo.setMinute(cal.get(Calendar.MINUTE));
+			ArrayList<Integer> arrAlarmCall = new ArrayList<Integer>();
+			arrAlarmCall.add(0);
+			vo.setAlarmCallList(arrAlarmCall);
+			//vo.setRepeatDay(mDataRepeatDay);
+			vo.setAlarmDateType(Const.ALARM_DATE_TYPE.SET_DATE);
+			ArrayList<Calendar> alarmDate = new ArrayList<Calendar>();
+			alarmDate.add(cal);
+			vo.setAlarmDateList(alarmDate);
+			vo.setEtcType("");
+
+			alarmDataManager.addItem(vo);
+
+			MemoDataManager memoDataManager = new MemoDataManager(this);
+			memoDataManager.makeDataList();
+			MemoVO memoVO = new MemoVO();
+			memoVO.setCategoryId(1);
+			memoVO.setTitle("슈퍼에서 살것");
+			memoVO.setContents("생수\n아이스크림\n두부\n참기름");
+			memoVO.setRank(4);
+			memoDataManager.addItem(memoVO);
+		}
 
 		if(prefsSavedVersion.equals("0") || !prefsSavedVersion.equals(versionName)){
 			InitializeSetting initializeSetting = new InitializeSetting(this);

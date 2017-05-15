@@ -154,7 +154,7 @@ public class AlarmDialogNew extends DialogFragment{
 		Toolbar toolbar = (Toolbar) mView.findViewById(R.id.toolbar);
 		toolbar.setVisibility(View.VISIBLE);
 		toolbar.setTitle(getResources().getString(R.string.dialog_title_alaram));
-		toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
+		toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

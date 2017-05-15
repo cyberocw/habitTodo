@@ -163,9 +163,6 @@ public class DbHelper extends SQLiteOpenHelper {
 				KEY_UPDATE_DATE + " integer " +
 				");CREATE INDEX " + TABLE_TIMER + " timer_create_date_idx ON " + TABLE_TIMER + "(" + KEY_CREATE_DATE + ");";
 
-
-
-
 		db.beginTransaction();
 		try {
 			db.execSQL(sql);
