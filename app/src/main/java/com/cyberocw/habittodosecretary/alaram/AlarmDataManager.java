@@ -488,7 +488,7 @@ public class AlarmDataManager {
 			}
 		}
 		ccc.add(Calendar.MINUTE, 14);
-		ccc.add(Calendar.SECOND, 50);
+		ccc.add(Calendar.SECOND, 55);
 		//myIntent.putExtra("title", alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, reqCode, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		setAlarmExact(alarmDataManager, AlarmManager.RTC_WAKEUP, ccc.getTimeInMillis(), pendingIntent);

@@ -78,11 +78,12 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	    mNavigationView.setNavigationItemSelectedListener(this);
 
 		//MobileAds.initialize(this, "ca-app-pub-8072677228798230/9898207305"); // real
-		MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713"); // test
+		//MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713"); // test
 
 		AdView adView = (AdView) findViewById(R.id.adView);
 		AdRequest adRequest = new AdRequest.Builder()
 				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+				.addTestDevice("048A3A6B542D3DD340272D8C1D80AC18")
 				.build();
 		adView.loadAd(adRequest);
 

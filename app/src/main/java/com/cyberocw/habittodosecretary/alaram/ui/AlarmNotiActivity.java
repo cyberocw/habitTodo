@@ -24,6 +24,9 @@ import com.cyberocw.habittodosecretary.alaram.service.AlarmBackgroudService;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,6 +51,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 	@BindView(R.id.tvAlarmTitle) TextView mTvTitle;
 	@BindView(R.id.btnEtcView) Button mBtnEtcView;
 	@BindView(R.id.btnPostpone) Button mBtnPostpone;
+	@BindView(R.id.adViewFront)	AdView adView;
 	//@BindView(R.id.btnTimerStop) Button mBtnStop;
 
 	@OnClick(R.id.btnTimerStop) void submit() {
@@ -133,6 +137,14 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		if(mAlarmId == -1){
 			mBtnPostpone.setVisibility(View.INVISIBLE);
 		}
+
+		//MobileAds.initialize(this, "ca-app-pub-8072677228798230/5472850905"); // real
+
+		AdRequest adRequest = new AdRequest.Builder()
+				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+				.addTestDevice("048A3A6B542D3DD340272D8C1D80AC18")
+				.build();
+		adView.loadAd(adRequest);
 
 		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 
