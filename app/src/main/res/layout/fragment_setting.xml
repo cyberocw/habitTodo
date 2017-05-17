@@ -31,14 +31,15 @@
             android:padding="@dimen/margin_small"
             android:orientation="horizontal"
             >
+
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="공휴일 동기화"
                 android:id="@+id/btnHolidaySync"
-                android:layout_gravity="center_horizontal"
                 style="@style/button_primary"
-                />
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:layout_gravity="center_horizontal"
+                android:padding="5dp"
+                android:text="공휴일 동기화" />
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
@@ -74,25 +75,25 @@
             android:orientation="horizontal"
             android:padding="@dimen/margin_small"
             >
+
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="데이터 백업"
                 android:id="@+id/btnDbBackup"
-                android:layout_gravity="center_horizontal"
                 style="@style/button_primary"
-
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:padding="5dp"
+                android:layout_gravity="center_horizontal"
+                android:text="데이터 백업"
                 />
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="데이터 복구"
                 android:id="@+id/btnDbRestore"
-                android:layout_gravity="center_horizontal"
                 style="@style/button_primary"
-
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="@dimen/margin_small"
-                />
+                android:padding="5dp"
+                android:text="데이터 복구" />
         </LinearLayout>
     </LinearLayout>
 

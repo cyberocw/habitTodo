@@ -47,28 +47,31 @@
 
                 <Button
                     android:id="@+id/btnViewMode"
+                    style="@style/AppTheme.Widget.Button"
                     android:layout_width="70dp"
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@+id/btnToday"
-                    android:text="종류별" />
+                    android:text="종류별"
+                     />
 
                 <Button
                     android:id="@+id/btnToday"
+                    style="@style/AppTheme.Widget.Button"
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@+id/btnToggleViewTimer"
-                    android:text="오늘"
 
-                    />
+                    android:text="오늘" />
+
                 <Button
                     android:id="@+id/btnToggleViewTimer"
+                    style="@style/AppTheme.Widget.Button"
                     android:layout_width="80dp"
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:layout_gravity="right"
-                    android:text="@string/btnToggleViewTimer"
 
-                    />
+                    android:text="@string/btnToggleViewTimer" />
             </RelativeLayout>
         </LinearLayout>
 

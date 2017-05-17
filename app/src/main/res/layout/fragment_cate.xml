@@ -3,10 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/background"
-
-    >
+    android:orientation="vertical"
+    android:theme="@style/AppTheme">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,17 +18,17 @@
 
         <Button
             android:id="@+id/btnAddCate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             style="@style/button_primary"
-            android:padding="10dp"
+            android:layout_width="54dp"
+            android:layout_height="32dp"
+            android:padding="6dp"
             android:text="추가" />
     </LinearLayout>
 
     <ListView
         android:id="@+id/categoryListView"
-        tools:listitem="@layout/cate_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        tools:listitem="@layout/cate_view" />
 </LinearLayout>

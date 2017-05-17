@@ -12,13 +12,13 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         />
+
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/button"
+        style="@style/button_primary"
+        android:layout_height="35dp"
+        android:layout_width="64dp"
         android:layout_marginLeft="@dimen/margin_medium"
         android:padding="10dp"
-        style="@style/button_primary"
-        android:text=" 이전"
-        />
+        android:text=" 이전" />
 </LinearLayout>
