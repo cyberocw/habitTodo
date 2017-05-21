@@ -208,7 +208,7 @@
                     android:lines="1"
                     android:maxLength="32"
                     android:scrollHorizontally="false"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textSize="15sp"
                     android:ellipsize="end"
                     android:linksClickable="false"
                     android:longClickable="false"
