@@ -7,6 +7,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -50,6 +51,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 
@@ -229,9 +231,9 @@ public class AlarmDialogNew extends DialogFragment{
 		}
 		mEtcMap = new LinkedHashMap();
 
-		mEtcMap.put(Const.ETC_TYPE.NONE, "없음");
+		mEtcMap.put(Const.ETC_TYPE.NONE, getString(R.string.none));
 		//mEtcMap.put(Const.ETC_TYPE.WEATHER, "날씨");
-		mEtcMap.put(Const.ETC_TYPE.MEMO, "메모");
+		mEtcMap.put(Const.ETC_TYPE.MEMO, getString(R.string.memoGroupTitle));
 
 //		arraylist.add("날씨");
 //		arraylist.add("뉴스 구독");
@@ -255,7 +257,6 @@ public class AlarmDialogNew extends DialogFragment{
 	}
 
 	private void init(){
-
 		/* alarmTitle, alarmType(진동,소리 등), alarmOption(타이머,시간지정), hour, minute, mArrAlarmCall(몇분전 알림 목록)
 		 , mDataRepeatDay, mAlarmDateType, ArrayList<Calendar> alarmDate = null;
 		*/
@@ -485,13 +486,14 @@ public class AlarmDialogNew extends DialogFragment{
 
 		//mSpDateType;
 		ArrayList<String> arrayList = new ArrayList<String>();
-		String[] arrDateTypeTitle = Const.ALARM_DATE_TYPE.getTextList();
+		Integer[] arrDateTypeTitle = Const.ALARM_DATE_TYPE.getTextList();
+		//String[] arrDateTypeTitle = Const.ALARM_DATE_TYPE.getTextList();
 		for(int i = 0; i < arrDateTypeTitle.length; i++){
-			arrayList.add(arrDateTypeTitle[i]);
+			arrayList.add(getString(arrDateTypeTitle[i]));
 		}
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,
-				android.R.layout.simple_spinner_item, arrayList);
+				R.layout.simple_spinner_item_small, arrayList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 		//스피너 속성
@@ -583,7 +585,10 @@ public class AlarmDialogNew extends DialogFragment{
 			case Const.ALARM_DATE_TYPE.REPEAT :
 				llRepeatDayWrap.setVisibility(View.VISIBLE);
 				llDatePicWrap.setVisibility(View.GONE);
-				llHolidayOptionWrap.setVisibility(View.VISIBLE);
+
+				if(CommonUtils.isLocaleKo(getResources().getConfiguration()))
+					llHolidayOptionWrap.setVisibility(View.VISIBLE);
+
 				llAlertTimeWrap.setVisibility(View.VISIBLE);
 				break;
 			case Const.ALARM_DATE_TYPE.REPEAT_MONTH :
@@ -619,11 +624,11 @@ public class AlarmDialogNew extends DialogFragment{
 
 	public void makeSpinnerAlarmType(){
 		ArrayList<String> arrayList = new ArrayList<String>();
-		arrayList.add("상태바 알림");
-		arrayList.add("끌때까지 알림");
+		arrayList.add(getString(R.string.dialog_alarm_sp_notification));
+		arrayList.add(getString(R.string.dialog_alarm_sp_user_stop));
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-				android.R.layout.simple_spinner_item, arrayList);
+				R.layout.simple_spinner_item_small, arrayList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 		//스피너 속성
@@ -651,7 +656,7 @@ public class AlarmDialogNew extends DialogFragment{
 		}
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-				android.R.layout.simple_spinner_item, arraylist);
+				R.layout.simple_spinner_item_small, arraylist);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		//스피너 속성
 		mSpAppList.setPrompt("알람 종류"); // 스피너 제목
@@ -871,7 +876,7 @@ public class AlarmDialogNew extends DialogFragment{
 	}
 	public void makeBeforeTimer(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
-		builder.setTitle("알림 시간 추가");
+		builder.setTitle(getString(R.string.dialog_alarm_preinform));
 
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -901,7 +906,7 @@ public class AlarmDialogNew extends DialogFragment{
 		//ll.addView(np);
 
 		Button btn = ButterKnife.findById(container, R.id.button);//new Button(mCtx);
-		btn.setText("분 이전");
+		btn.setText(getString(R.string.dialog_alarm_minute_before));
 		//params.gravity = Gravity.CENTER_VERTICAL;
 		//btn.setLayoutParams(params);
 
@@ -916,11 +921,11 @@ public class AlarmDialogNew extends DialogFragment{
 				if (toggle == 0) {
 					v.setTag(1);
 					toggle = 1;
-					((Button) v).setText("분 이후");
+					((Button) v).setText(getString(R.string.dialog_alarm_minute_after));
 				} else {
 					v.setTag(-1);
 					toggle = 0;
-					((Button) v).setText("분 이전");
+					((Button) v).setText(getString(R.string.dialog_alarm_minute_before));
 				}
 			}
 		});
@@ -959,9 +964,9 @@ public class AlarmDialogNew extends DialogFragment{
 		TextView tv = ButterKnife.findById(beforeView, R.id.tvBeforeTime);
 
 		if(flag == -1)
-			tv.setText(val + " 분 전");
+			tv.setText(val + " " + getString(R.string.dialog_alarm_minute_before));
 		else
-			tv.setText(val + " 분 후");
+			tv.setText(val + " " + getString(R.string.dialog_alarm_minute_after));
 
 		ImageButton bt = ButterKnife.findById(beforeView, R.id.btnRemoveTime);
 		//bt.setText("-");

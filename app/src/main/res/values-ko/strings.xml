@@ -2,26 +2,20 @@
 <resources>
     <string name="app_name">오리마인더</string>
 
-    <string name="title_section1">습관 할일 알람</string>
-    <string name="title_section2">메모</string>
-    <string name="title_section3">자료 수집기</string>
-
-    <string name="hello_world">Hello world!</string>
     <string name="alarm_no_title">(제목 없음)</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">설정</string>
     <string name="open_drawer">open drawer</string>
-    <string name="close_drawer">close drawer</string>
+    <string name="close_drawer">닫기</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="ok">ok</string>
-    <string name="cancel">cancel</string>
-    <string name="nav_item_alaram">Alarm</string>
-    <string name="nav_item_memo">Memo</string>
-    <string name="nav_item_info">Info</string>
-    <string name="nav_item_cate">Category</string>
-    <string name="nav_item_setting">Settings</string>
+    <string name="cancel">취소</string>
+    <string name="nav_item_alaram">알림</string>
+    <string name="memoGroupTitle">메모</string>
+    <string name="nav_item_memo">전체 메모</string>
+    <string name="nav_item_cate">카테고리</string>
+    <string name="nav_item_setting">설정</string>
     <string name="group_title_repeat">반복 알람</string>
     <string name="group_title_set_date">날짜 지정 알람</string>
     <string name="group_title_postpone">연기한 알람</string>
@@ -37,8 +31,8 @@
     <string name="dialog_title_memo">메모 추가/편집</string>
     <string name="dialog_title_timer">타이머 추가/편집</string>
 
-    <string name="timerBtnToggleOn">Cancel</string>
-    <string name="timerBtnToggleOff">Start</string>
+    <string name="timerBtnToggleOn">취소</string>
+    <string name="timerBtnToggleOff">시작</string>
 
     <string name="setting">설정</string>
     <string name="setting_menu_title_use_alarm">알림 소리/진동 켜기</string>
@@ -49,4 +43,61 @@
     <!-- real ad -->
     <string name="banner_ad_unit_id">ca-app-pub-8072677228798230/9898207305</string>
     <string name="banner_ad_unit_id_front">ca-app-pub-8072677228798230/5472850905</string>
+    <string name="alarm_sort_type_time">시간순</string>
+    <string name="alarm_sort_type">종류별</string>
+    <string name="alarm_date_today">오늘</string>
+    <string name="edit">편집</string>
+    <string name="delete">삭제</string>
+    <string name="dialog_title_datepick">날짜 선택</string>
+    <string name="option">옵션</string>
+    <string name="delete_all">모두 삭제</string>
+    <string name="cal_Thu">목</string>
+    <string name="cal_fri">금</string>
+    <string name="cal_mon">월</string>
+    <string name="cal_sat">토</string>
+    <string name="cal_sun">일</string>
+    <string name="cal_tue">화</string>
+    <string name="cal_wed">수</string>
+    <string name="dialog_alarm_date_option">날짜 옵션</string>
+    <string name="dialog_alarm_date_pick">날짜</string>
+    <string name="dialog_alarm_time">시간</string>
+    <string name="dialog_alarm_repeat_day">반복 요일</string>
+    <string name="dialog_alarm_holiday_option">휴일 옵션</string>
+    <string name="dialog_alarm_title">제목</string>
+    <string name="dialog_alarm_option">알람 옵션</string>
+    <string name="dialog_alarm_tts_play">음성 재생</string>
+    <string name="dialog_alarm_preinform">미리 알림</string>
+    <string name="add">추가</string>
+    <string name="dialog_alarm_linked_function">연동된 기능</string>
+    <string name="dialog_alarm_sp_notification">상태바 알림-1회 알림</string>
+    <string name="dialog_alarm_sp_user_stop">알람-사용자가 끌때까지</string>
+    <string name="group_title_repeat_month">반복-매달</string>
+    <string name="group_title_repeat_day">반복-요일</string>
+    <string name="dialog_alarm_minute_before">분 전</string>
+    <string name="dialog_alarm_minute_after">분 후</string>
+    <string name="none">없음</string>
+    <string name="dialog_timer_time">타이머 시간</string>
+    <string name="timer_list_limit_text">제한시간</string>
+    <string name="category_message_del">카테고리와 해당 메모를 모두 삭제하시겠습니까?</string>
+    <string name="message_removed">삭제되었습니다</string>
+    <string name="message_failed">실패했습니다</string>
+    <string name="dialog_category_title">카테고리 등록/수정</string>
+    <string name="btn_sort">정렬</string>
+    <string name="memo_sort_edit_ascending">작성일 오름차순</string>
+    <string name="memo_sort_edit_decending">작성일 내림차순</string>
+    <string name="memo_sort_importance_ascending">중요도 오름차순</string>
+    <string name="memo_sort_importance_decending">중요도 내림차순</string>
+    <string name="dialog_memo_sort_title">정렬 옵션</string>
+    <string name="dialog_memo_importance">중요도</string>
+    <string name="btn_memo_finish">편집 완료</string>
+    <string name="setting_data_title">데이터 관리</string>
+    <string name="setting_data_cont">모든 데이터를 Documents 폴더에 백업 및 복구합니다.</string>
+    <string name="setting_btn_backup">데이터 백업</string>
+    <string name="setting_btn_restore">데이터 복구</string>
+    <string name="setting_status_bar_title">상태바에 진행중인 알람 표시</string>
+    <string name="setting_statu_bar_cont">상태바를 활성화해두면, 메모리가 부족해도 알람 서비스를 정지시키지 않도록 하여, 알람이 울리지 않을 확률을 낮춰줍니다</string>
+    <string name="setting_use_sound_and_vibe">해당 옵션을 꺼두면, 알림이 울릴 때 진동이나 소리가 나지 않습니다. 매너 모드에서는 옵션이 켜져 있어도 진동만 울립니다.</string>
+    <string name="setting_play_tts">해당 옵션을 꺼두면, 알림이 울릴 때 알림 제목을 음성으로 읽어주지 않습니다.</string>
+    <string name="setting_play_void_manner_mode">매너모드에서도 음성 재생</string>
+    <string name="setting_voice_volume">음성 볼륨</string>
 </resources>

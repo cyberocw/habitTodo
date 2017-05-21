@@ -64,7 +64,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="15dp"
                     android:gravity="center_vertical"
-                    android:text="중요도"
+                    android:text="@string/dialog_memo_importance"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <RatingBar

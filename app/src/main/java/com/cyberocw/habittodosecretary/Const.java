@@ -1,5 +1,7 @@
 package com.cyberocw.habittodosecretary;
 
+import android.content.Context;
+
 import java.util.Calendar;
 
 /**
@@ -63,7 +65,8 @@ public class Const {
 		public static final int AFTER_DAY_TOMORROW = 3;
 		public static final int POSTPONE_DATE = 4;
 		public static final int REPEAT_MONTH = 5;
-		private static final String[] arrDayName = {"반복-요일", "반복-매달",  "날짜 지정", "내일", "모레"};
+		private static String[] arrDayName = {"반복-요일", "반복-매달",  "날짜 지정", "내일", "모레"};
+		private static Integer[] arrDayNameCode = {R.string.group_title_repeat_day, R.string.group_title_repeat_month, R.string.group_title_set_date, R.string.group_title_tomorrow, R.string.group_title_after_day_tomorrow};
 		private static final int[] arrDayCode = {REPEAT, REPEAT_MONTH,  SET_DATE, TOMORROW, AFTER_DAY_TOMORROW};
 		public static int getNumByPosition(int i){
 			return arrDayCode[i];
@@ -75,11 +78,22 @@ public class Const {
 			}
 			throw new NullPointerException();
 		}
-		public static String getText(int i){
-			return arrDayName[i];
+
+		public static int getNameCodeByPosition(int code){
+			int posi = getPositionByCode(code);
+			return arrDayNameCode[posi];
+
 		}
-		public static String[] getTextList(){
-			return arrDayName;
+
+		public void setDayText(Context ctx){
+
+		}
+
+		public static int getText(int i){
+			return arrDayNameCode[i];
+		}
+		public static Integer[] getTextList(){
+			return arrDayNameCode;
 		}
 	}
 

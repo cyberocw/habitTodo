@@ -51,7 +51,7 @@
                     android:layout_width="70dp"
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@+id/btnToday"
-                    android:text="종류별"
+                    android:text="@string/alarm_sort_type"
                      />
 
                 <Button
@@ -61,7 +61,7 @@
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@+id/btnToggleViewTimer"
 
-                    android:text="오늘" />
+                    android:text="@string/alarm_date_today" />
 
                 <Button
                     android:id="@+id/btnToggleViewTimer"

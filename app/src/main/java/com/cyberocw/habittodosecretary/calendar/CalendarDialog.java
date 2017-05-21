@@ -53,7 +53,7 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         android.support.v7.app.AlertDialog.Builder b = new android.support.v7.app.AlertDialog.Builder(getActivity())
-                .setTitle("날짜 선택")
+                .setTitle(getString(R.string.dialog_alarm_date_pick))
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -102,10 +102,8 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
         robotoCalendarView.showDateTitle(true);
 
         robotoCalendarView.setCalendar(mCalendar);
-
         robotoCalendarView.updateView();
         setCalendarIcon();
-        onDayClick((Calendar) mCalendar.clone());
 
         String sDate = dateFormat.format(mCalendar.getTime());
         mTvTitle.setText(sDate);
@@ -113,7 +111,7 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
         b.setView(view);
         Dialog dialog = b.create();
         dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-
+        onDayClick((Calendar) mCalendar.clone());
         return dialog;
     }
     @Override
@@ -184,10 +182,10 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
 
             if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT)
                 str = CommonUtils.numberDigit(2, vo.getHour()) + ":" + CommonUtils.numberDigit(2, vo.getMinute()) + "  " +
-                    vo.getAlarmTitle() + "  " + Const.ALARM_DATE_TYPE.getText(Const.ALARM_DATE_TYPE.getPositionByCode(vo.getAlarmDateType()));
+                    vo.getAlarmTitle() + "  " + getString(Const.ALARM_DATE_TYPE.getNameCodeByPosition(vo.getAlarmDateType()));
             else
                 str = CommonUtils.numberDigit(2, vo.getHour()) + ":" + CommonUtils.numberDigit(2, vo.getMinute()) + "  " +
-                        vo.getAlarmTitle() + "  <" + Const.ALARM_DATE_TYPE.getText(Const.ALARM_DATE_TYPE.getPositionByCode(vo.getAlarmDateType())) + ">";
+                        vo.getAlarmTitle() + "  <" + getString(Const.ALARM_DATE_TYPE.getNameCodeByPosition(vo.getAlarmDateType())) + ">";
 
             mArrTodayAlarm.add(str);
         }

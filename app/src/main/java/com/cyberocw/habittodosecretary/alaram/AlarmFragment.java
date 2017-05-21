@@ -159,10 +159,10 @@ public class AlarmFragment extends Fragment{
 
 		Button btnViewMode = ButterKnife.findById(mView, R.id.btnViewMode);
 		if(mListViewType == Const.ALARM_LIST_VIEW_TYPE.LIST) {
-			btnViewMode.setText("종류별");
+			btnViewMode.setText(getString(R.string.alarm_sort_type));
 		}
 		else
-			btnViewMode.setText("시간순");
+			btnViewMode.setText(getString(R.string.alarm_sort_type_time));
 
 		if(mViewType == Const.ALARM_OPTION.SET_DATE_TIMER)
 			initAlamUi();
@@ -498,13 +498,13 @@ public class AlarmFragment extends Fragment{
 	}
 
 	public void longClickPopup(int position, final long _id){
-		String names[] ={"편집","삭제"};
+		String names[] ={getString(R.string.edit),getString(R.string.delete)};
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
 
 		ListView lv = new ListView(mCtx);
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		alertDialog.setView(lv);
-		alertDialog.setTitle("옵션");
+		alertDialog.setTitle(getString(R.string.option));
 
 		lv.setLayoutParams(params);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,android.R.layout.simple_list_item_1,names);
@@ -535,7 +535,7 @@ public class AlarmFragment extends Fragment{
 
 	public void deleteItemAlertDialog(final long id){
 		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
-		alert_confirm.setMessage("해당 알림을 삭제하시겠습니까?").setCancelable(false).setPositiveButton("확인",
+		alert_confirm.setMessage("해당 알림을 삭제하시겠습니까?").setCancelable(false).setPositiveButton(getString(R.string.ok),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -546,7 +546,7 @@ public class AlarmFragment extends Fragment{
 
 						dialog.dismiss();
 					}
-				}).setNegativeButton("취소",
+				}).setNegativeButton(getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -576,7 +576,7 @@ public class AlarmFragment extends Fragment{
 		if(options == 55500){//Const.ALARM_DATE_TYPE.REPEAT){
 			AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
 			alert_confirm.setMessage("반복되는 알림을 모두 삭제하시겠습니까?").setCancelable(false)
-					.setPositiveButton("모두 삭제",
+					.setPositiveButton(getString(R.string.delete_all),
 							new DialogInterface.OnClickListener() {
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
@@ -584,7 +584,7 @@ public class AlarmFragment extends Fragment{
 									refreshAlarmList();
 
 								}
-					}).setNegativeButton("취소",
+					}).setNegativeButton(getString(R.string.cancel),
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
@@ -623,7 +623,7 @@ public class AlarmFragment extends Fragment{
 	}
 
 	public void setSelectedDateText(int year, int monthOfYear, int dayOfMonth){
-		mDateTv.setText(String.valueOf(year) + "년 " + String.valueOf(monthOfYear + 1) + "월 " + String.valueOf(dayOfMonth) + "일");
+		mDateTv.setText(String.valueOf(year) + "/" + CommonUtils.numberDigit(2, monthOfYear + 1) + "/" + CommonUtils.numberDigit(2, dayOfMonth));
 	}
 
 	public void refreshTimerList(){
@@ -643,21 +643,6 @@ public class AlarmFragment extends Fragment{
 			                           public void onClick(View v) {
 										   if(mViewType == Const.ALARM_OPTION.NO_DATE_TIMER)
 										   		return;
-
-				                           int myYear = mCalendar.get(Calendar.YEAR);
-				                           int myMonth = mCalendar.get(Calendar.MONTH);
-				                           int myDay = mCalendar.get(Calendar.DAY_OF_MONTH);
-
-				                           //Dialog dlgDate = new DatePickerDialog(new ContextThemeWrapper(mCtx, android.R.style.Theme_Holo_Light_Dialog), myDateSetListener, myYear,
-				                           //myMonth, myDay);
-
-										   /*
-				                           Dialog dlgDate = new DatePickerDialog(mCtx, myDateSetListener, myYear,
-						                           myMonth, myDay);
-
-				                           dlgDate.show();
-				                           */
-
 										   CalendarDialog d = new CalendarDialog();
 										   Bundle bundle = new Bundle();
 										   bundle.putString("selectedDate", CommonUtils.convertDateType(mCalendar));
@@ -731,11 +716,11 @@ public class AlarmFragment extends Fragment{
 
 				if(mListViewType == Const.ALARM_LIST_VIEW_TYPE.LIST) {
 					mListViewType = Const.ALARM_LIST_VIEW_TYPE.EXPENDABLE_LIST;
-					((Button) v).setText("시간순");
+					((Button) v).setText(getString(R.string.alarm_sort_type_time));
 				}
 				else {
 					mListViewType = Const.ALARM_LIST_VIEW_TYPE.LIST;
-					((Button) v).setText("종류별");
+					((Button) v).setText(getString(R.string.alarm_sort_type));
 				}
 				SharedPreferences.Editor editor = mPrefs.edit();
 				//editor.clear();

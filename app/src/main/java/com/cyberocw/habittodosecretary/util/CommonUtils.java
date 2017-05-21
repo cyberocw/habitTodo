@@ -1,9 +1,12 @@
 package com.cyberocw.habittodosecretary.util;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +21,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Created by cyberocw on 2015-11-01.
@@ -124,5 +128,25 @@ public class CommonUtils {
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(Const.DEBUG_TAG);
 		editor.commit();
+	}
+
+	@SuppressWarnings("deprecation")
+	public static Locale getSystemLocaleLegacy(Configuration config){
+		return config.locale;
+	}
+
+	@TargetApi(Build.VERSION_CODES.N)
+	public static Locale getSystemLocale(Configuration config){
+		return config.getLocales().get(0);
+	}
+
+	public static boolean isLocaleKo(Configuration config){
+		Locale locale ;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			locale = CommonUtils.getSystemLocale(config);
+		}else {
+			locale = CommonUtils.getSystemLocaleLegacy(config);
+		}
+		return locale.getLanguage().equals("ko");
 	}
 }

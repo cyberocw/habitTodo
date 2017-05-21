@@ -234,13 +234,13 @@ public class MemoFragment extends Fragment {
 		btnSortMemo.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String names[] ={"작성일 내림차순","작성일 오름차순", "중요도 내림차순", "중요도 올림차순"};
+				String names[] ={getString(R.string.memo_sort_edit_decending),getString(R.string.memo_sort_edit_ascending), getString(R.string.memo_sort_importance_decending), getString(R.string.memo_sort_importance_ascending)};
 				AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
 
 				ListView lv = new ListView(mCtx);
 				LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 				alertDialog.setView(lv);
-				alertDialog.setTitle("정렬 옵션");
+				alertDialog.setTitle(getString(R.string.dialog_memo_sort_title));
 
 				lv.setLayoutParams(params);
 				ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,android.R.layout.simple_list_item_1,names);

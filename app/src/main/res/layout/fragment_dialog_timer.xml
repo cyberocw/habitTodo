@@ -43,7 +43,7 @@
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:text="알람 제목"
+                android:text="@string/dialog_alarm_title"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <EditText
@@ -68,7 +68,7 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="타이머 시간"
+                android:text="@string/dialog_timer_time"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
             </LinearLayout>
             <LinearLayout
@@ -86,7 +86,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="시간"
+                    android:text=" : "
                     android:layout_gravity="center"
                     />
                 <NumberPicker
@@ -98,7 +98,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="분"
+                    android:text=" : "
                     android:layout_gravity="center"
                     />
                 <NumberPicker
@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_gravity="center"
-                    android:text="초"
+                    android:text=""
                     />
             </LinearLayout>
         </LinearLayout>

@@ -8,7 +8,7 @@
             android:title="@string/nav_item_alaram" />
     </group>
     <group android:id="@+id/menuGroup" android:checkableBehavior="single">
-        <item android:title="Memo">
+        <item android:title="@string/memoGroupTitle">
             <menu>
                 <group android:checkableBehavior="single">
                     <item

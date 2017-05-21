@@ -225,7 +225,7 @@ public class MemoDialogNew extends Fragment{
 			mBtnEdit.setVisibility(View.GONE);
 		}
 		else if(isMemoEditable){
-			mBtnEdit.setText("완료");
+			mBtnEdit.setText(getString(R.string.btn_memo_finish));
 
 			mTvMemoEditor.setVisibility(View.GONE);
 			mEtMemoEditor.setVisibility(View.VISIBLE);

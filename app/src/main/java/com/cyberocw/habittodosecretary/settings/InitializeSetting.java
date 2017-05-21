@@ -43,7 +43,7 @@ public class InitializeSetting extends AsyncTask<Void, Void, String> {
         int year = Calendar.getInstance().get(Calendar.YEAR) -1;
         String resultMsg = "";
 
-        for(int i = 0 ; i < 6; i++) {
+        for(int i = 0 ; i < 7; i++) {
             JSONObject jObj = sync.getHolidayData(year + i);
             boolean result = mSettingDataManager.addItems(jObj, year + i);
 

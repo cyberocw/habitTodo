@@ -124,11 +124,10 @@ public class CategoryFragment extends Fragment {
 		String dialogTitle = "";
 		if(cateId > -1){
 			categoryVO = mCateDataManager.getItemById(cateId);
-			dialogTitle = "카테고리 수정";
 		}else{
 			categoryVO = new CategoryVO();
-			dialogTitle = "카테고리 등록";
 		}
+		dialogTitle = getString(R.string.dialog_category_title);
 
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		//LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -191,13 +190,13 @@ public class CategoryFragment extends Fragment {
 
 	}
 	protected void longClickPopup(int position, final long _id){
-		String names[] ={"편집","삭제"};
+		String names[] ={getString(R.string.edit),getString(R.string.delete)};
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
 
 		ListView lv = new ListView(mCtx);
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		alertDialog.setView(lv);
-		alertDialog.setTitle("옵션");
+		alertDialog.setTitle(getString(R.string.option));
 
 		lv.setLayoutParams(params);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,android.R.layout.simple_list_item_1,names);
@@ -225,7 +224,7 @@ public class CategoryFragment extends Fragment {
 	}
 	public void deleteItemAlertDialog(final long id){
 		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
-		alert_confirm.setMessage("해당 카테고리와 하위 메모를 모두 삭제하시겠습니까?").setCancelable(false).setPositiveButton("확인",
+		alert_confirm.setMessage(getString(R.string.category_message_del)).setCancelable(false).setPositiveButton(getString(R.string.ok),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -234,7 +233,7 @@ public class CategoryFragment extends Fragment {
 
 						dialog.dismiss();
 					}
-				}).setNegativeButton("취소",
+				}).setNegativeButton(getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -249,10 +248,10 @@ public class CategoryFragment extends Fragment {
 
 	private void deleteCategory(long id){
 		if(mCateDataManager.deleteItemById(id)){
-			Toast.makeText(mCtx, "삭제되었습니다", Toast.LENGTH_LONG).show();
+			Toast.makeText(mCtx, getString(R.string.message_removed), Toast.LENGTH_LONG).show();
 			mCateAdapter.notifyDataSetChanged();
 		}else{
-			Toast.makeText(mCtx, "실패했습니다", Toast.LENGTH_LONG).show();
+			Toast.makeText(mCtx, getString(R.string.message_failed), Toast.LENGTH_LONG).show();
 		}
 	}
 

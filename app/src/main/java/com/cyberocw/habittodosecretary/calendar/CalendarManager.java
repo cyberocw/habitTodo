@@ -65,7 +65,8 @@ public class CalendarManager {
 		pixelsIcon = (int) (4 * scale + 0.5f);
 		pixelsDayName = mCtx.getResources().getDimensionPixelSize(R.dimen.calendarDayNameHeight);
 		pixelsIconWrapHeight = mCtx.getResources().getDimensionPixelSize(R.dimen.calendarDayIconWrapHeight);
-
+		dayText = new String[]{context.getString(R.string.cal_sun), context.getString(R.string.cal_mon), context.getString(R.string.cal_tue),
+				context.getString(R.string.cal_wed), context.getString(R.string.cal_Thu), context.getString(R.string.cal_fri), context.getString(R.string.cal_sat)};
 	}
 
 	public void init(){

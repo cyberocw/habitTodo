@@ -398,6 +398,8 @@ public class AlarmDbManager extends DbHelper{
 					cal = (Calendar) nowCal.clone();
 					cal.set(Calendar.HOUR_OF_DAY, hour);
 					cal.set(Calendar.MINUTE, minute);
+					cal.set(Calendar.SECOND, 0);
+					cal.set(Calendar.MILLISECOND, 0);
 
 					//지금 시간 이후가 아니면 통과 ( 몇 분 후 로직이 안먹혀서 삭제 )
 					//if( i == 0 && nowTimeInMil >= cal.getTimeInMillis())

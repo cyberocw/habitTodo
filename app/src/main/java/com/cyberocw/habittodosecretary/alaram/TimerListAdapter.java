@@ -118,8 +118,8 @@ public class TimerListAdapter extends BaseAdapter {
 
 		this.addTimeRemainView(position, tvActionWrap);
 
-		final String defaultAlarmText = mNumberFormat.format(hour) + ":" + mNumberFormat.format(minute) +
-				":" + mNumberFormat.format(second) + "\n후 알림";
+		final String defaultAlarmText = mCtx.getString(R.string.timer_list_limit_text) + "\n" + mNumberFormat.format(hour) + ":" + mNumberFormat.format(minute) +
+				":" + mNumberFormat.format(second);
 		tvActionWrap.setText(defaultAlarmText);
 		//남은 시간 표시 영역
 		ll.addView(tvActionWrap);
