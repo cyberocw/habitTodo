@@ -588,7 +588,8 @@ public class AlarmDialogNew extends DialogFragment{
 
 				if(CommonUtils.isLocaleKo(getResources().getConfiguration()))
 					llHolidayOptionWrap.setVisibility(View.VISIBLE);
-
+				else
+					llHolidayOptionWrap.setVisibility(View.GONE);
 				llAlertTimeWrap.setVisibility(View.VISIBLE);
 				break;
 			case Const.ALARM_DATE_TYPE.REPEAT_MONTH :

@@ -69,10 +69,7 @@ public class AlarmDbManager extends DbHelper{
 			c = Calendar.getInstance();
 		values.put(KEY_CREATE_DATE, c.getTimeInMillis());
 
-		c = vo.getUpdateDt();
-
-		if(c == null)
-			c = Calendar.getInstance();
+		c = Calendar.getInstance();
 
 		values.put(KEY_UPDATE_DATE, c.getTimeInMillis());
 

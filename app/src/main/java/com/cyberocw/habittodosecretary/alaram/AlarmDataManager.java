@@ -453,8 +453,8 @@ public class AlarmDataManager {
 		ccc.setTimeInMillis(timeStamp);
 
 		// ----------------------- Doze 모드 때문에 제공되는 API만 사용
-		ccc.add(Calendar.MINUTE, -15);
-		//15분 이내일 경우 바로 서비스 실행
+		ccc.add(Calendar.MINUTE, -1);
+		//1분 이내
 		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
 			alarmTimeVO.setReqCode(reqCode);
@@ -487,22 +487,44 @@ public class AlarmDataManager {
 				ex.printStackTrace();
 			}
 		}
-		ccc.add(Calendar.MINUTE, 14);
-		ccc.add(Calendar.SECOND, 55);
+
+
+		ccc.add(Calendar.MINUTE, -14);
+		boolean isSetAlarmClock = false;
+		//15분 이내일 경우 바로 서비스 실행
+
+		//Log.d(this.toString(), " calendar diff ccc=" +CommonUtils.convertFullDateType(ccc) + "  now = " + CommonUtils.convertFullDateType(nowCal));
+
+		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
+			isSetAlarmClock = true;
+			ccc.add(Calendar.MINUTE, 14);
+			ccc.add(Calendar.SECOND, 55);
+		}else{
+			ccc.add(Calendar.MINUTE, 2);
+			//ccc.add(Calendar.SECOND, 55);
+		}
+
+
 		//myIntent.putExtra("title", alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, reqCode, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		setAlarmExact(alarmDataManager, AlarmManager.RTC_WAKEUP, ccc.getTimeInMillis(), pendingIntent);
+		setAlarmExact(alarmDataManager, AlarmManager.RTC_WAKEUP, ccc.getTimeInMillis(), pendingIntent, isSetAlarmClock);
 
 		return reqCode;
 	}
 
 	@SuppressLint("NewApi")
-	private void setAlarmExact(AlarmManager am, int type, long time, PendingIntent it){
+	private void setAlarmExact(AlarmManager am, int type, long time, PendingIntent it, boolean isSetAlarmClock){
 		final int sdkVersion = Build.VERSION.SDK_INT;
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "high version set alarmExact");
-			am.setExactAndAllowWhileIdle(type, time, it);
+			if(isSetAlarmClock) {
+				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "high version set alarmExact setAlarmClock");
+				am.setAlarmClock(new AlarmManager.AlarmClockInfo(time, it), it);
+			}
+			else {
+				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "high version set alarmExact setExactAndAllowWhileIdle");
+				am.setExactAndAllowWhileIdle(type, time, it);
+			}
 		}
 		else if(sdkVersion >= Build.VERSION_CODES.KITKAT) {
 			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "kitkat set alarmExact");
