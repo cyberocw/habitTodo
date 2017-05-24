@@ -29,7 +29,7 @@
                 android:layout_alignRight="@+id/tvAlarmTitle"
                 android:layout_below="@+id/tvAlarmTitle"
                 android:padding="10dp"
-                android:text="메모 보기"
+                android:text="@string/btn_etc_view"
                 android:visibility="gone" />
         </LinearLayout>
 

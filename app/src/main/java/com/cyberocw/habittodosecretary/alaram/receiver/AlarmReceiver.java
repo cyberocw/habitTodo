@@ -59,7 +59,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
 		//onReceiveOri(context, intent);
 
-
+		if(1==1)
+			return;
 
 
 		Intent myIntent = new Intent(context, AlarmBackgroudService.class);

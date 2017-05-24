@@ -244,7 +244,7 @@ public class TimerListAdapter extends BaseAdapter {
 	}
 
 	public void showRunningAlert(){
-		Toast.makeText(mCtx, "실행 중인 타이머가 있습니다", Toast.LENGTH_LONG).show();
+		Toast.makeText(mCtx, mCtx.getString(R.string.timer_is_running), Toast.LENGTH_LONG).show();
 	}
 
 	/** Defines callbacks for service binding, passed to bindService() */

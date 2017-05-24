@@ -36,7 +36,7 @@ public class CalendarManager {
 	private LinearLayout mWrapper;
 	private LinearLayout[] arrIconWrap = new LinearLayout[7];
 	private HashMap[] mArrDateMap = new HashMap[7];
-	private String[] dayText = {"일", "월", "화", "수", "목", "금", "토"};
+	private String[] dayText = null;
 	private TextView[] arrTextViewDayTitle = new TextView[7];
 	private TextView[] arrTextViewDayNum = new TextView[7];
 	private ImageView[] arrImageView = new ImageView[7];

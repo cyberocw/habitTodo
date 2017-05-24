@@ -185,7 +185,7 @@ public class AlarmFragment extends Fragment{
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "makeAlarmPostpone");
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
-		builder.setTitle("알림 연장");
+		builder.setTitle(getString(R.string.alarm_postpone_title));
 
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		View view = inflater.inflate(R.layout.dialog_postpone, null);
@@ -257,7 +257,7 @@ public class AlarmFragment extends Fragment{
 
 		if(alarmVO == null){
 			Log.e(Const.DEBUG_TAG, "Alarm Id가 잘못되었습니다. 데이터를 가져올 수 없습니다 id=" + id);
-			Toast.makeText(mCtx, "Alarm Id가 잘못되었습니다. 데이터를 가져올 수 없습니다 id=" + id, Toast.LENGTH_LONG);
+			Toast.makeText(mCtx, getString(R.string.alarm_postpone_msg_invalid_id) + " id=" + id, Toast.LENGTH_LONG);
 			return;
 		}
 		alarmVO.setId(-1);
@@ -288,9 +288,9 @@ public class AlarmFragment extends Fragment{
 
 				// 알람 추가
 				if(mAlarmDataManager.addItem(alarmVO) == true)
-					Toast.makeText(mCtx, "연기했습니다", Toast.LENGTH_LONG).show();
+					Toast.makeText(mCtx, getString(R.string.success), Toast.LENGTH_LONG).show();
 				else
-					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+					Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 
 				try {
 					Thread.sleep(100);
@@ -535,7 +535,7 @@ public class AlarmFragment extends Fragment{
 
 	public void deleteItemAlertDialog(final long id){
 		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
-		alert_confirm.setMessage("해당 알림을 삭제하시겠습니까?").setCancelable(false).setPositiveButton(getString(R.string.ok),
+		alert_confirm.setMessage(getString(R.string.fragment_alarm_msg_delete_confirm)).setCancelable(false).setPositiveButton(getString(R.string.ok),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -573,36 +573,9 @@ public class AlarmFragment extends Fragment{
 		}
 
 		final int options = vo.getAlarmDateType();
-		if(options == 55500){//Const.ALARM_DATE_TYPE.REPEAT){
-			AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
-			alert_confirm.setMessage("반복되는 알림을 모두 삭제하시겠습니까?").setCancelable(false)
-					.setPositiveButton(getString(R.string.delete_all),
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									mAlarmDataManager.deleteItemById(id);
-									refreshAlarmList();
-
-								}
-					}).setNegativeButton(getString(R.string.cancel),
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// 'No'
-
-							return;
-						}
-					});
-			AlertDialog alert = alert_confirm.create();
-			alert.show();
-		}
-		//오늘 날짜만 삭제 (dateList가 여러개일때 로직 바꿔야 함
-		else{
-			mAlarmDataManager.deleteItemById(id);
-			mAlarmDataManager.resetMinAlarmCall();
-			refreshAlarmList();
-
-		}
+		mAlarmDataManager.deleteItemById(id);
+		mAlarmDataManager.resetMinAlarmCall();
+		refreshAlarmList();
 	}
 
 	public void selectedDateChange(Calendar cal){
@@ -811,7 +784,7 @@ public class AlarmFragment extends Fragment{
 
 				// 알람 추가
 				if(!mAlarmDataManager.addItem(vo) == true)
-					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+					Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 
 				mAlarmDataManager.resetMinAlarmCall(vo.getAlarmDateType());
 				refreshAlarmList();
@@ -822,7 +795,7 @@ public class AlarmFragment extends Fragment{
 				vo = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
 				// 알람 추가
 				if(!mAlarmDataManager.modifyItem(vo) == true)
-					Toast.makeText(mCtx, "DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
+					Toast.makeText(mCtx, getString(R.string.msg_failed_modify), Toast.LENGTH_LONG).show();
 
 				// 수정일 경우 date type이 변경 될 수도 있기 때문에 두개 모두 갱신
 				mAlarmDataManager.resetMinAlarmCall();
@@ -835,14 +808,14 @@ public class AlarmFragment extends Fragment{
 				if(mTimerDataManager.addItem(tvo) == true)
 					mTimerAdapter.notifyDataSetChanged();
 				else
-					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+					Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 				break;
 			case Const.ALARM_INTERFACE_CODE.ADD_TIMER_MODIFY_FINISH_CODE :
 				tvo = (TimerVO) data.getExtras().getSerializable("timerVO");
 				if(mTimerDataManager.modifyItem(tvo) == true)
 					mTimerAdapter.notifyDataSetChanged();
 				else
-					Toast.makeText(mCtx, "DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
+					Toast.makeText(mCtx, getString(R.string.msg_failed_modify), Toast.LENGTH_LONG).show();
 				break;
 			case Const.ALARM_INTERFACE_CODE.SELECT_CALENDAR_DATE :
 				Calendar date = (Calendar) data.getExtras().getSerializable("selectedDate");

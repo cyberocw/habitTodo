@@ -100,4 +100,23 @@
     <string name="setting_play_tts">해당 옵션을 꺼두면, 알림이 울릴 때 알림 제목을 음성으로 읽어주지 않습니다.</string>
     <string name="setting_play_void_manner_mode">매너모드에서도 음성 재생</string>
     <string name="setting_voice_volume">음성 볼륨</string>
+    <string name="dialog_alarm_msg_select_repeat">반복할 요일을 선택하세요</string>
+    <string name="dialog_alarm_msg_select_memo">메모를 선택해 주세요</string>
+    <string name="dialog_alarm_msg_duplication_call">중복되는 알림이 있습니다.</string>
+    <string name="btn_etc_view">메모 보기</string>
+    <string name="noti_activity_msg_postponed">연기했습니다</string>
+    <string name="msg_failed_insert">삽입 실패</string>
+    <string name="msg_failed_conversion">상태 변환에 실패했습니다.</string>
+    <string name="dialog_timer_msg_select_time">시간을 지정해 주세요.</string>
+    <string name="service_alarm_scheduled">알람 예정</string>
+    <string name="service_noti_msg_view_memo_touch">메모를 보려면 터치해주세요</string>
+    <string name="service_noti_msg_scroll_postpone">아래로 스크롤하면 알림을 연기할 수 있습니다</string>
+    <string name="service_noti_postpone">연기하기</string>
+    <string name="db_failed_generate_id">ID가 생성되지 않았습니다.</string>
+    <string name="alarm_postpone_title">연기하기</string>
+    <string name="alarm_postpone_msg_invalid_id">Alarm Id가 잘못되었습니다. 데이터를 가져올 수 없습니다</string>
+    <string name="success">완료했습니다</string>
+    <string name="fragment_alarm_msg_delete_confirm">해당 알람을 삭제하시겠습니까?</string>
+    <string name="msg_failed_modify">수정 실패</string>
+    <string name="timer_is_running">실행중인 타이머가 있습니다.</string>
 </resources>

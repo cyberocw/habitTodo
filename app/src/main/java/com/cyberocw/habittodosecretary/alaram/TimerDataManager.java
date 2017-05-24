@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 
@@ -85,7 +86,7 @@ public class TimerDataManager {
 		//알람 인던트 등록
 		if(item.getId() == -1){
 			Log.e(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
-			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
+			Toast.makeText(mCtx, mCtx.getString(R.string.db_failed_generate_id), Toast.LENGTH_LONG).show();
 			return false;
 		}
 
@@ -98,7 +99,7 @@ public class TimerDataManager {
 		int nAffRow = mDb.updateTimer(item);
 
 		if (nAffRow < 1){
-			Toast.makeText(mCtx, "오류 : 수정에 실패했습니다.", Toast.LENGTH_LONG).show();
+			Toast.makeText(mCtx, mCtx.getString(R.string.msg_failed_modify), Toast.LENGTH_LONG).show();
 			return false;
 		}
 		else {

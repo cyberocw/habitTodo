@@ -231,7 +231,7 @@ public class AlarmDataManager {
 		//알람 인던트 등록
 		if(item.getId() == -1){
 			Log.e(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
-			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
+			Toast.makeText(mCtx, mCtx.getString(R.string.db_failed_generate_id), Toast.LENGTH_LONG).show();
 			return false;
 		}
 
@@ -295,7 +295,7 @@ public class AlarmDataManager {
 
 		if(item.getId() == -1){
 			Log.e(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
-			Toast.makeText(mCtx, "오류 : 알림 ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
+			Toast.makeText(mCtx, mCtx.getString(R.string.db_failed_generate_id), Toast.LENGTH_LONG).show();
 			return false;
 		}
 
@@ -451,21 +451,19 @@ public class AlarmDataManager {
 		//myIntent.removeExtra("title");
 		long timeStamp = alarmTimeVO.getTimeStamp();
 		ccc.setTimeInMillis(timeStamp);
-
+		alarmTimeVO.setReqCode(reqCode);
 		// ----------------------- Doze 모드 때문에 제공되는 API만 사용
 		ccc.add(Calendar.MINUTE, -1);
-		//1분 이내
+		//1분 이내일 경우 service 돌림
 		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
-			alarmTimeVO.setReqCode(reqCode);
+
 			myIntent.putExtra(Const.PARAM.ALARM_TIME_VO, alarmTimeVO);
 
 			Crashlytics.log(Log.DEBUG, this.getClass().toString(), "timer background start service alarmVO id=" + alarmTimeVO.getId() + " title =" + alarmTimeVO.getAlarmTitle());
 			mCtx.startService(myIntent);
 			return reqCode;
 		}
-
-		alarmTimeVO.setReqCode(reqCode);
 
 		//15분 이상일 경우 setTime 시킴
 		AlarmManager alarmDataManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
@@ -488,17 +486,17 @@ public class AlarmDataManager {
 			}
 		}
 
-
+		//-15분 만들어줌
 		ccc.add(Calendar.MINUTE, -14);
 		boolean isSetAlarmClock = false;
-		//15분 이내일 경우 바로 서비스 실행
+
 
 		//Log.d(this.toString(), " calendar diff ccc=" +CommonUtils.convertFullDateType(ccc) + "  now = " + CommonUtils.convertFullDateType(nowCal));
-
+		//15분 이내일 경우 setAlarmClock으로 예정시간 5초전에 울리도록 함
 		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			isSetAlarmClock = true;
 			ccc.add(Calendar.MINUTE, 14);
-			ccc.add(Calendar.SECOND, 55);
+			//ccc.add(Calendar.SECOND, 50);
 		}else{
 			ccc.add(Calendar.MINUTE, 2);
 			//ccc.add(Calendar.SECOND, 55);

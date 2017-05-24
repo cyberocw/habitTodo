@@ -98,10 +98,10 @@ public class NotificationService extends Service{
 
 		if(etcType.equals(Const.ETC_TYPE.MEMO)) {
 			remoteView.setViewVisibility(R.id.tvAlarmSubTitle, View.VISIBLE);
-			remoteView.setTextViewText(R.id.tvAlarmSubTitle, "메모를 보려면 터치해주세요");
-			mCompatBuilder.setContentText("메모를 보려면 터치해주세요");
+			remoteView.setTextViewText(R.id.tvAlarmSubTitle, getString(R.string.service_noti_msg_view_memo_touch));
+			mCompatBuilder.setContentText(getString(R.string.service_noti_msg_view_memo_touch));
 		}else{
-			mCompatBuilder.setContentText("아래로 스크롤하면 알림을 연기할 수 있습니다");
+			mCompatBuilder.setContentText(getString(R.string.service_noti_msg_scroll_postpone));
 		}
         Calendar now = Calendar.getInstance();
         remoteView.setTextViewText(R.id.tvAlarmTime, CommonUtils.numberDigit(2, now.get(Calendar.HOUR_OF_DAY)) + ":" + CommonUtils.numberDigit(2, now.get(Calendar.MINUTE)));
@@ -120,7 +120,7 @@ public class NotificationService extends Service{
 		PendingIntent pendingIntentAlarm = PendingIntent.getActivity(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		remoteView.setOnClickPendingIntent(R.id.btnPostpone, pendingIntentAlarm);
-		mCompatBuilder.addAction(R.drawable.ic_add_alert_black_24dp, "연기하기", pendingIntentAlarm);
+		mCompatBuilder.addAction(R.drawable.ic_add_alert_black_24dp, getString(R.string.service_noti_postpone), pendingIntentAlarm);
 
 		//mCompatBuilder.setCustomContentView(remoteView);
 

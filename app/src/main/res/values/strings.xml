@@ -99,5 +99,24 @@
     <string name="setting_play_tts">If you turn off the option, the alert will not be read as a voice when the alert sounds.</string>
     <string name="setting_play_void_manner_mode">Play voice in manners mode</string>
     <string name="setting_voice_volume">Voice Volume</string>
+    <string name="dialog_alarm_msg_select_repeat">Please choose a day to repeat</string>
+    <string name="dialog_alarm_msg_select_memo">Please select a memo</string>
+    <string name="dialog_alarm_msg_duplication_call">There are duplicate times</string>
+    <string name="btn_etc_view">View memo</string>
+    <string name="noti_activity_msg_postponed">Postponed</string>
+    <string name="msg_failed_insert">Failed to insert</string>
+    <string name="msg_failed_conversion">State conversion failed</string>
+    <string name="dialog_timer_msg_select_time">Please specify the time.</string>
+    <string name="service_alarm_scheduled">Alarm scheduled</string>
+    <string name="service_noti_msg_view_memo_touch">Touch to see memo</string>
+    <string name="service_noti_msg_scroll_postpone">You can delay notifications by scrolling down</string>
+    <string name="service_noti_postpone">Postpone</string>
+    <string name="db_failed_generate_id">Fail! ID not generated</string>
+    <string name="alarm_postpone_title">Postpone</string>
+    <string name="alarm_postpone_msg_invalid_id">Alarm Id is invalid. Could not fetch data</string>
+    <string name="success">Success</string>
+    <string name="fragment_alarm_msg_delete_confirm">Are you sure you want to delete this alarm?</string>
+    <string name="msg_failed_modify">Failed to modify</string>
+    <string name="timer_is_running">There is a running timer</string>
 
 </resources>

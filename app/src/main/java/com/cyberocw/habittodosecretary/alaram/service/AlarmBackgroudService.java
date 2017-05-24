@@ -160,7 +160,7 @@ public class AlarmBackgroudService extends Service {
 
         int callTime = alarmTimeVO.getCallTime();
 
-        mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : ""));
+        mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + getString(R.string.dialog_alarm_minute_before) : (callTime > 0 ? callTime + getString(R.string.dialog_alarm_minute_after) : ""));
 
         int second = (int) (remainTime / 1000) % 60;
         int minute = (int) ((remainTime / (1000 * 60)) % 60);
@@ -186,7 +186,7 @@ public class AlarmBackgroudService extends Service {
             mCompatBuilder.setWhen(System.currentTimeMillis());
             //mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 300L, 300L, 400L, 400L });
             mCompatBuilder.setContentTitle(mAppTitle);
-            mCompatBuilder.setContentText(mTitle + " " + alertTime.get(Calendar.HOUR_OF_DAY) + "시 " + alertTime.get(Calendar.MINUTE) + "분 알림 예정 ");
+            mCompatBuilder.setContentText(mTitle + " " + alertTime.get(Calendar.HOUR_OF_DAY) + ":" + alertTime.get(Calendar.MINUTE) + " " + getString(R.string.service_alarm_scheduled));
             //mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
             mCompatBuilder.setContentIntent(pendingIntent);
             //mCompatBuilder.setAutoCancel(true);

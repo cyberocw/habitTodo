@@ -104,7 +104,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 			mAlarmId = mBundle.getLong("alarmId", -1);
 			mEtcType = mBundle.getString(Const.PARAM.ETC_TYPE_KEY, "");
 			if(mEtcType.equals(Const.ETC_TYPE.MEMO)){
-				mBtnEtcView.setText("메모 보기");
+				//mBtnEtcView.setText("메모 보기");
 				mBtnEtcView.setVisibility(View.VISIBLE);
 			}
 			//개별 알림 TTS 재생 여부 옵션
@@ -234,9 +234,9 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		alarmVO.setMinute(now.get(Calendar.MINUTE));
 
 		if(alarmDataManager.addItem(alarmVO) == true)
-			Toast.makeText(mCtx, "연기했습니다", Toast.LENGTH_LONG).show();
+			Toast.makeText(mCtx, getString(R.string.noti_activity_msg_postponed), Toast.LENGTH_LONG).show();
 		else
-			Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+			Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 
 		alarmDataManager.resetMinAlarmCall();
 		finish();

@@ -379,7 +379,7 @@ public class AlarmDialogNew extends DialogFragment{
 		// 반복이 아닐 경우 날짜 지정 데이터 삽입
 		if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT){
 			if(mDataRepeatDay.size() == 0){
-				Toast.makeText(mCtx, "반복할 요일을 선택하세요", Toast.LENGTH_LONG).show();
+				Toast.makeText(mCtx, getString(R.string.dialog_alarm_msg_select_repeat), Toast.LENGTH_LONG).show();
 				return ;
 			}
 
@@ -397,7 +397,7 @@ public class AlarmDialogNew extends DialogFragment{
 		}
 
 		if(mEtcType.equals(Const.ETC_TYPE.MEMO) && mMemoVO == null){
-			Toast.makeText(mCtx, "메모를 선택해 주세요", Toast.LENGTH_LONG).show();
+			Toast.makeText(mCtx, getString(R.string.dialog_alarm_msg_select_repeat), Toast.LENGTH_LONG).show();
 			return;
 		}
 
@@ -633,7 +633,7 @@ public class AlarmDialogNew extends DialogFragment{
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 		//스피너 속성
-		mSpAlarmType.setPrompt("알람 종류"); // 스피너 제목
+		//mSpAlarmType.setPrompt("알람 종류"); // 스피너 제목
 		mSpAlarmType.setAdapter(adapter);
 		mSpAlarmType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
@@ -660,7 +660,7 @@ public class AlarmDialogNew extends DialogFragment{
 				R.layout.simple_spinner_item_small, arraylist);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		//스피너 속성
-		mSpAppList.setPrompt("알람 종류"); // 스피너 제목
+		//mSpAppList.setPrompt("알람 종류"); // 스피너 제목
 		mSpAppList.setAdapter(adapter);
 		mSpAppList.setEnabled(false);
 
@@ -953,7 +953,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 	public void appendAlarmRow(int val, int flag) {
 		if(mArrAlarmCall.contains(val*flag)) {
-			Toast.makeText(mCtx, "중복되는 알림이 있습니다", Toast.LENGTH_LONG).show();
+			Toast.makeText(mCtx, getString(R.string.dialog_alarm_msg_duplication_call), Toast.LENGTH_LONG).show();
 			return ;
 		}
 
