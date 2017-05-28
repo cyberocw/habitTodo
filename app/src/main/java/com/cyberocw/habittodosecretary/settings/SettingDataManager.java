@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.HolidayVO;
 import com.cyberocw.habittodosecretary.settings.db.SettingDbManager;
 
@@ -91,13 +92,13 @@ public class SettingDataManager {
 
                 Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "Backup Successful!");
 
-                Toast.makeText(mCtx, "백업 파일 생성 완료",
+                Toast.makeText(mCtx, mCtx.getString(R.string.success),
                         Toast.LENGTH_SHORT).show();
 
 
         } catch (Exception e) {
             Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "Backup Failed!" + e.getCause() + " " + e.getMessage());
-            Toast.makeText(mCtx, "Backup Failed!", Toast.LENGTH_SHORT)
+            Toast.makeText(mCtx, mCtx.getString(R.string.message_failed), Toast.LENGTH_SHORT)
                     .show();
             e.printStackTrace();
 
@@ -128,13 +129,13 @@ public class SettingDataManager {
 
                 Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "Import Successful!");
 
-                Toast.makeText(mCtx, "백업 파일 복구 완료",
+                Toast.makeText(mCtx, mCtx.getString(R.string.success),
                         Toast.LENGTH_SHORT).show();
 
 
         } catch (Exception e) {
             Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "Import Failed!" + e.getCause() + " " + e.getMessage());
-            Toast.makeText(mCtx, "Import Failed!", Toast.LENGTH_SHORT)
+            Toast.makeText(mCtx, mCtx.getString(R.string.message_failed), Toast.LENGTH_SHORT)
                     .show();
 
             e.printStackTrace();

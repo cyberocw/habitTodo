@@ -7,7 +7,7 @@
     <string name="open_drawer">open drawer</string>
     <string name="close_drawer">Close drawer</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="ok">ok</string>
     <string name="cancel">cancel</string>
     <string name="nav_item_alaram">Alarm</string>
@@ -42,7 +42,7 @@
     <!-- real ad -->
     <string name="banner_ad_unit_id">ca-app-pub-8072677228798230/9898207305</string>
     <string name="banner_ad_unit_id_front">ca-app-pub-8072677228798230/5472850905</string>
-    <string name="alarm_sort_type_time">Time order</string>
+    <string name="alarm_sort_type_time">Time Order</string>
     <string name="alarm_sort_type">Type Order</string>
     <string name="alarm_date_today">Today</string>
     <string name="edit">Edit</string>
@@ -118,5 +118,27 @@
     <string name="fragment_alarm_msg_delete_confirm">Are you sure you want to delete this alarm?</string>
     <string name="msg_failed_modify">Failed to modify</string>
     <string name="timer_is_running">There is a running timer</string>
+    <string name="dialog_cate_msg_subject">Please enter the subject</string>
+    <string name="uncategorized">Uncategorized</string>
+    <string name="dialog_memo_msg_category_id_not">Category ID not delivered</string>
+    <string name="dialog_memo_msg_no_title">Please enter the subject</string>
+    <string name="fragment_memo_no_relation">Could not get Relation information</string>
+    <string name="fragment_memo_already_alarm">Alarm is already assigned</string>
+    <string name="msg_failed_relation_insert_db">Relation insert failed</string>
+    <string name="fragment_msg_delete_alarm">Deleted existing alarm</string>
+    <string name="fragment_msg_delete_alarm_failed">Failed to delete existing alarm</string>
+    <string name="framgent_memo_confirm_delete_memo">Are you sure you want to delete this memo?</string>
+    <string name="caution">Caution</string>
+    <string name="fragment_setting_msg_cancel_notibar">Do you really want to receive status bar notifications?</string>
+    <string name="fragment_setting_msg_restore">All existing data will be deleted. Would you like to recover your data?</string>
+    <string name="tts_author_failed">Audio permission was not obtained</string>
+    <string name="main_activity_etctype_invalid">EtcType is invalid</string>
+    <string name="confirm_msg_quit">Are you sure you want to quit?</string>
+
+    <string name="title_activity_intro">Intro</string>
+    <string name="category_memo_count">memo</string>
+    <string name="ex_alarm_title">Example) Alarm</string>
+    <string name="ex_memo_title">Example) Things to buy in a super</string>
+    <string name="ex_memo_cont">bottled water\nIce cream\nmelon</string>
 
 </resources>

@@ -182,7 +182,7 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
 
             if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT)
                 str = CommonUtils.numberDigit(2, vo.getHour()) + ":" + CommonUtils.numberDigit(2, vo.getMinute()) + "  " +
-                    vo.getAlarmTitle() + "  " + getString(Const.ALARM_DATE_TYPE.getNameCodeByPosition(vo.getAlarmDateType()));
+                    vo.getAlarmTitle() + "  <" + getString(Const.ALARM_DATE_TYPE.getNameCodeByPosition(vo.getAlarmDateType())) + ">";
             else
                 str = CommonUtils.numberDigit(2, vo.getHour()) + ":" + CommonUtils.numberDigit(2, vo.getMinute()) + "  " +
                         vo.getAlarmTitle() + "  <" + getString(Const.ALARM_DATE_TYPE.getNameCodeByPosition(vo.getAlarmDateType())) + ">";

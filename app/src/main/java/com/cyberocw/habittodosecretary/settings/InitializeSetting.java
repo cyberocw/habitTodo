@@ -2,8 +2,12 @@ package com.cyberocw.habittodosecretary.settings;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
+
+import com.cyberocw.habittodosecretary.MainActivity;
+import com.cyberocw.habittodosecretary.intro.Intro;
 
 import org.json.JSONObject;
 
@@ -68,6 +72,8 @@ public class InitializeSetting extends AsyncTask<Void, Void, String> {
 
         Toast.makeText(mCtx, result, Toast.LENGTH_LONG).show();
 
-        super.onPostExecute(result);
+        /*Intent i = new Intent(mCtx, Intro.class);
+        mCtx.startActivity(i);
+        super.onPostExecute(result);*/
     }
 }

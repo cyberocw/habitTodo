@@ -315,9 +315,9 @@ public class SettingFragment extends Fragment {
 
     private void showConfirmAlarm(){
         AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
-        builder.setTitle("주의!");
+        builder.setTitle(getString(R.string.caution));
 
-        builder.setMessage("정말로 상태바 알림 메세지를 받지 않겠습니까?");
+        builder.setMessage(getString(R.string.fragment_setting_msg_cancel_notibar));
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -340,9 +340,9 @@ public class SettingFragment extends Fragment {
 
     private void showConfirmDbRestore(){
         AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
-        builder.setTitle("주의!");
+        builder.setTitle(mCtx.getString(R.string.caution));
 
-        builder.setMessage("기존 자료는 모두 삭제됩니다. 데이터를 복구하겠습니까?");
+        builder.setMessage(getString(R.string.fragment_setting_msg_restore));
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {

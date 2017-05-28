@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,7 +133,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 					// Start playback
 					speakText();
 				} else if (result == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
-					Toast.makeText(getApplicationContext(), "오디오 권한을 얻지 못했습니다", Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(), getString(R.string.tts_author_failed), Toast.LENGTH_LONG).show();
 					//mState.audioFocusGranted = false;
 				}
 

@@ -1,6 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+    <!--
+    <item android:id="@+id/actionHelp"
+        android:icon="@drawable/ic_help_outline_black_24dp"
+        android:title="HELP"
+        app:showAsAction="ifRoom" />
+    -->
     <item
         android:id="@+id/isAlarmNoti"
         android:title="@string/setting_menu_title_use_alarm"

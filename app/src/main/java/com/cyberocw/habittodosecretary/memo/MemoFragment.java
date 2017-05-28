@@ -194,7 +194,7 @@ public class MemoFragment extends Fragment {
 			long alarmId = getArguments().getLong(Const.PARAM.ALARM_ID);
 			RelationVO rVO = mCommonRelationDBManager.getByAlarmId(alarmId);
 			if(rVO.getfId() == -1){
-				Toast.makeText(mCtx, "Relation 정보를 가져올 수 없습니다", Toast.LENGTH_LONG).show();
+				Toast.makeText(mCtx, getString(R.string.fragment_memo_no_relation), Toast.LENGTH_LONG).show();
 				Log.e(this.toString(), "error! Relation 정보를 가져올 수 없습니다");
 			}
 			else
@@ -289,13 +289,12 @@ public class MemoFragment extends Fragment {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 		{
-			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " aa click");
 			if(mIsEtcMode == false)
 				showNewMemoDialog(mMemoDataManager.getItem(position).getId());
 			else{
 				MemoVO memoVO = mMemoDataManager.getItem(position);
 				if(memoVO.getAlarmId() > -1){
-					Toast.makeText(mCtx, "이미 알림이 할당되어 있습니다", Toast.LENGTH_LONG).show();
+					Toast.makeText(mCtx, getString(R.string.fragment_memo_already_alarm), Toast.LENGTH_LONG).show();
 					return;
 				}
 
@@ -373,35 +372,35 @@ public class MemoFragment extends Fragment {
 				if(mMemoDataManager.addItem(memoVO) == true)
 					mMemoAdapter.notifyDataSetChanged();
 				else
-					Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+					Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 
 				// main Activity 사용 또는 인스턴스 생성
 				// 알람 추가
 				if(alarmVO != null) {
 					if (mAlarmDataManager.addItem(alarmVO) == true) {
 						if (!insertRelation(alarmVO, memoVO)){
-							Toast.makeText(mCtx, "Relation 수정 등록 실패", Toast.LENGTH_LONG).show();
+							Toast.makeText(mCtx, getString(R.string.msg_failed_relation_insert_db), Toast.LENGTH_LONG).show();
 						}
 						mAlarmDataManager.resetMinAlarmCall();
 					}
 					else {
-						Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+						Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 					}
 				}
-				Toast.makeText(mCtx, "추가 되었습니다", Toast.LENGTH_SHORT).show();
+				Toast.makeText(mCtx, getString(R.string.success), Toast.LENGTH_SHORT).show();
 				break;
 			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE :
 				if(mMemoDataManager.modifyItem(memoVO) == true) {
 					mMemoAdapter.notifyDataSetChanged();
 				}
 				else {
-					Toast.makeText(mCtx, "Memo DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
+					Toast.makeText(mCtx, getString(R.string.msg_failed_modify), Toast.LENGTH_LONG).show();
 				}
 
 				if(alarmVO != null) {
 					if(alarmVO.getId() == -1){
 						if (mAlarmDataManager.addItem(alarmVO) == false) {
-							Toast.makeText(mCtx, "DB에 삽입하는데 실패했습니다", Toast.LENGTH_LONG).show();
+							Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 							break;
 						}else {
 							if(bundle.containsKey(Const.MEMO.ORIGINAL_ALARM_ID_KEY))
@@ -416,15 +415,15 @@ public class MemoFragment extends Fragment {
 						RelationVO relationVO = mCommonRelationDBManager.getByTypeId(Const.ETC_TYPE.MEMO, memoVO.getId());
 
 						if(mAlarmDataManager.deleteItemById(relationVO.getAlarmId())){
-							Toast.makeText(mCtx, "기존 알람이 삭제되었습니다", Toast.LENGTH_SHORT).show();
+							Toast.makeText(mCtx, getString(R.string.fragment_msg_delete_alarm), Toast.LENGTH_SHORT).show();
 						}else{
-							Toast.makeText(mCtx, "기존 알람을 삭제하는데 실패했습니다", Toast.LENGTH_SHORT).show();
+							Toast.makeText(mCtx, getString(R.string.fragment_msg_delete_alarm_failed), Toast.LENGTH_SHORT).show();
 						}
 					}
 					else{
 						//alarm modify시 delete 후 insert 과정에서 delete하면서 relation도 함께 지워짐
 						if (mAlarmDataManager.modifyItem(alarmVO) == false) {
-							Toast.makeText(mCtx, "Alarm DB를 수정하는데 실패했습니다", Toast.LENGTH_LONG).show();
+							Toast.makeText(mCtx, getString(R.string.msg_failed_modify), Toast.LENGTH_LONG).show();
 							break;
 						}
 					}
@@ -435,13 +434,13 @@ public class MemoFragment extends Fragment {
 					mAlarmDataManager.deleteItemById(bundle.getLong(Const.MEMO.ORIGINAL_ALARM_ID_KEY));
 					mAlarmDataManager.resetMinAlarmCall();
 				}
-				Toast.makeText(mCtx, "수정 되었습니다", Toast.LENGTH_SHORT).show();
+				Toast.makeText(mCtx, getString(R.string.success), Toast.LENGTH_SHORT).show();
 				break;
 		}
 
 
 		if(mIsShareMode){
-			Toast.makeText(mCtx, "등록 되었습니다", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mCtx, getString(R.string.success), Toast.LENGTH_SHORT).show();
 			getActivity().finish();
 		}else{
 			mListView.removeAllViewsInLayout();
@@ -453,7 +452,7 @@ public class MemoFragment extends Fragment {
 
 	public void deleteItemAlertDialog(final long id){
 		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
-		alert_confirm.setMessage("해당 메모를 삭제하시겠습니까?").setCancelable(false).setPositiveButton("확인",
+		alert_confirm.setMessage(getString(R.string.framgent_memo_confirm_delete_memo)).setCancelable(false).setPositiveButton(getString(R.string.ok),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -461,7 +460,7 @@ public class MemoFragment extends Fragment {
 
 						dialog.dismiss();
 					}
-				}).setNegativeButton("취소",
+				}).setNegativeButton(getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -475,10 +474,10 @@ public class MemoFragment extends Fragment {
 
 	public void deleteMemo(long id){
 		if(mMemoDataManager.deleteItemById(id)){
-			Toast.makeText(mCtx, "삭제 되었습니다", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mCtx, getString(R.string.message_removed), Toast.LENGTH_SHORT).show();
 			mAlarmDataManager.resetMinAlarmCall();
 		}else{
-			Toast.makeText(mCtx, "삭제에 실패했습니다", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mCtx, getString(R.string.message_failed), Toast.LENGTH_SHORT).show();
 		}
 		mMemoAdapter.notifyDataSetChanged();
 	}

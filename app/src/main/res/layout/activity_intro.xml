@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:attrs="http://schemas.android.com/apk/res-auto"
+    android:background="#102130"
+    android:orientation="horizontal"
+    tools:context="com.cyberocw.habittodosecretary.intro.Intro">
+
+
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+    <android.support.v4.view.ViewPager
+        android:id="@+id/introViewPager"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnSkip"
+        android:textColor="@color/white"
+        android:theme="@style/Theme.AppCompat.Translucent"
+        android:text="CLOSE"
+        android:textSize="11sp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="35dp"
+        android:layout_marginRight="10dp"
+        />
+    <com.rd.PageIndicatorView
+        android:id="@+id/pageIndicatorView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        attrs:piv_viewPager="@id/introViewPager"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="48dp"
+        attrs:piv_selectedColor="@color/red"
+        attrs:piv_unselectedColor="@color/background_repeat_day"
+        />
+</RelativeLayout>

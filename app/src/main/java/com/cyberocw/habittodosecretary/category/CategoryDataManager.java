@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.category.db.CategoryDbManager;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 
@@ -81,7 +82,7 @@ public class CategoryDataManager {
 
 		//알람 인던트 등록
 		if(item.getId() == -1){
-			Log.e(Const.DEBUG_TAG, "오류 : CATEGORY ID가 생성되지 않았습니다");
+			Log.e(Const.DEBUG_TAG, mCtx.getString(R.string.db_failed_generate_id));
 			return false;
 		}
 

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
  Copyright 2014, The Android Open Source Project
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,5 +52,7 @@
     <color name="background_postphone_date">#808eef6a</color>
     <color name="background_repeat_day">#80decfae</color>
     <color name="sub_header">#61c0bf</color>
+
+    <color name="black_overlay">#66000000</color>
 
 </resources>

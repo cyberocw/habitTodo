@@ -128,7 +128,7 @@ public class MemoDialogNew extends Fragment{
 				mMemoVO = new MemoVO();
 		}
 		else{
-			Toast.makeText(mCtx, "카테고리 ID가 전달되지 않았습니다", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mCtx, getString(R.string.dialog_memo_msg_category_id_not), Toast.LENGTH_SHORT).show();
 			getFragmentManager().popBackStackImmediate();
 		}
 
@@ -312,13 +312,13 @@ public class MemoDialogNew extends Fragment{
 		if(mAlarmVO == null || mAlarmVO.getId() == -2) {
 			showAlarmPopup();
 		}else{
-			String names[] ={"편집","삭제"};
+			String names[] ={getString(R.string.edit),getString(R.string.delete)};
 			AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
 
 			ListView lv = new ListView(mCtx);
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 			alertDialog.setView(lv);
-			alertDialog.setTitle("옵션");
+			alertDialog.setTitle(getString(R.string.option));
 
 			lv.setLayoutParams(params);
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,android.R.layout.simple_list_item_1,names);
@@ -400,7 +400,7 @@ public class MemoDialogNew extends Fragment{
 		}
 
 		if(mTvTitle.getText().toString().equals("")){
-			Toast.makeText(mCtx, "제목을 입력해 주세요", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mCtx, getString(R.string.dialog_memo_msg_no_title), Toast.LENGTH_SHORT).show();
 			return false;
 		}
 

@@ -60,7 +60,7 @@ public class CategoryListAdapter extends BaseAdapter {
 
 		tvTitle.setText(vo.getTitle());
 
-		tvCnt.setText(Integer.toString(vo.getCnt()));
+		tvCnt.setText(Integer.toString(vo.getCnt()) + " " + mCtx.getString(R.string.category_memo_count));
 
 		ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);
 

@@ -173,12 +173,12 @@ public class DbHelper extends SQLiteOpenHelper {
 
 			db.execSQL(getCreateTableQuery(TABLE_MEMO));
 			db.execSQL(getCreateTableQuery(TABLE_CATEGORY));
-			ContentValues values = new ContentValues();
-			values.put(KEY_TITLE, "미지정");
+			/*ContentValues values = new ContentValues();
+			values.put(KEY_TITLE, "Uncategorized");
 			values.put(KEY_TYPE, "category");
 			values.put(KEY_USE_YN, 1);
 			values.put(KEY_SORT, 0);
-			db.insert(TABLE_CATEGORY, null, values);
+			db.insert(TABLE_CATEGORY, null, values);*/
 
 			db.execSQL(getCreateTableQuery(TABLE_ALARAM_RELATION));
 			db.execSQL(getCreateTableQuery(TABLE_HOLIDAY));

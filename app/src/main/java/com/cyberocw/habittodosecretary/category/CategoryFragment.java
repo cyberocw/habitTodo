@@ -165,7 +165,7 @@ public class CategoryFragment extends Fragment {
 		String title = mEtCateTitle.getText().toString();
 
 		if(title.equals("")){
-			Toast.makeText(mCtx, "제목을 입력해 주세요", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mCtx, getString(R.string.dialog_cate_msg_subject), Toast.LENGTH_SHORT).show();
 			return;
 		}
 
@@ -175,15 +175,15 @@ public class CategoryFragment extends Fragment {
 		Crashlytics.log(Log.DEBUG, this.toString(), "categoryVO.getId()="+categoryVO.getId());
 		if(categoryVO.getId() == -1){
 			if(mCateDataManager.addItem(categoryVO))
-				Toast.makeText(mCtx, "추가 되었습니다", Toast.LENGTH_SHORT).show();
+				Toast.makeText(mCtx, getString(R.string.success), Toast.LENGTH_SHORT).show();
 			else
-				Toast.makeText(mCtx, "오류 : CATEGORY ID가 생성되지 않았습니다", Toast.LENGTH_LONG).show();
+				Toast.makeText(mCtx, getString(R.string.db_failed_generate_id), Toast.LENGTH_LONG).show();
 
 		}else{
 			if(mCateDataManager.modifyItem(categoryVO))
-				Toast.makeText(mCtx, "수정 되었습니다", Toast.LENGTH_SHORT).show();
+				Toast.makeText(mCtx, getString(R.string.success), Toast.LENGTH_SHORT).show();
 			else
-				Toast.makeText(mCtx, "오류 : 수정에 실패했습니다.", Toast.LENGTH_LONG).show();
+				Toast.makeText(mCtx, getString(R.string.msg_failed_modify), Toast.LENGTH_LONG).show();
 		}
 		dialog.dismiss();
 		mCateAdapter.notifyDataSetChanged();

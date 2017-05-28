@@ -2,6 +2,7 @@ package com.cyberocw.habittodosecretary;
 
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,12 +31,16 @@ import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.category.CategoryDataManager;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
+import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
+import com.cyberocw.habittodosecretary.intro.Intro;
 import com.cyberocw.habittodosecretary.memo.MemoDataManager;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.settings.InitializeSetting;
 import com.cyberocw.habittodosecretary.settings.SettingFragment;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -85,7 +90,12 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
 				.addTestDevice("048A3A6B542D3DD340272D8C1D80AC18")
 				.build();
-		adView.loadAd(adRequest);
+		if(Const.IS_DEBUG){
+			adView.setVisibility(View.GONE);
+			adView.loadAd(adRequest);
+			//+dimension margin 0 주기
+		}
+
 
 	    FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -106,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 					fragment = new MemoFragment();
 					actionBar.setTitle(getResources().getString(R.string.nav_item_memo));
 				}else{
-					Toast.makeText(getApplicationContext(), "etcType이 잘못 되었습니다", Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(), getString(R.string.main_activity_etctype_invalid), Toast.LENGTH_LONG).show();
 					Log.e(this.toString(), "버그! etcType이 잘못 되었습니다 etcType="+ bundle.getString("etcType"));
 					fragment = new AlarmFragment();
 				}
@@ -123,16 +133,11 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			    .replace(R.id.main_container, fragment).commit();
 
 		afterUpdateVersion();
-
-
     }
 
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onResume start");
-
 		if(intent != null) {
 			Bundle bundle = intent.getExtras();
 
@@ -185,8 +190,9 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			cal.add(Calendar.MINUTE, 4);
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);
-			vo.setAlarmTitle("4분뒤 알림");
+			vo.setAlarmTitle(getString(R.string.ex_alarm_title));
 			vo.setAlarmType(0);
+			vo.setUseYn(0);
 			vo.setAlarmOption(1);
 			vo.setHour(cal.get(Calendar.HOUR_OF_DAY));
 			vo.setMinute(cal.get(Calendar.MINUTE));
@@ -206,19 +212,35 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			memoDataManager.makeDataList();
 			MemoVO memoVO = new MemoVO();
 			memoVO.setCategoryId(1);
-			memoVO.setTitle("슈퍼에서 살것");
-			memoVO.setContents("생수\n아이스크림\n두부\n참기름");
+			memoVO.setTitle(getString(R.string.ex_memo_title));
+			memoVO.setContents(getString(R.string.ex_memo_cont));
 			memoVO.setRank(4);
 			memoDataManager.addItem(memoVO);
-		}
 
-		if(prefsSavedVersion.equals("0") || !prefsSavedVersion.equals(versionName)){
-			InitializeSetting initializeSetting = new InitializeSetting(this);
-			initializeSetting.execute();
+
+			CategoryVO cateVO = new CategoryVO();
+			CategoryDataManager cdm = new CategoryDataManager(ctx);
+			cateVO.setTitle(getString(R.string.uncategorized));
+			cateVO.setSortOrder(0);
+			cateVO.setType(Const.CATEGORY.TYPE);
+			cateVO.setUseYn('Y');
+			cdm.addItem(cateVO);
+
+			Intent i = new Intent(this, Intro.class);
+			i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+			startActivity(i);
+
+		}
+		if (prefsSavedVersion.equals("0") || !prefsSavedVersion.equals(versionName)) {
+			if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
+				InitializeSetting initializeSetting = new InitializeSetting(this);
+				initializeSetting.execute();
+			}
 			SharedPreferences.Editor editor = setPrefs.edit();
 			editor.putString(Const.SETTING.VERSION, versionName);
 			editor.apply();
 		}
+
 	}
 
 	protected boolean putAlarmPreference(String key, boolean value){
@@ -301,6 +323,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			case R.id.nav_item_alaram:
 				fragment = new AlarmFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
+
 				break;
 			case R.id.nav_item_memo:
 				fragment = new MemoFragment();
@@ -361,13 +384,13 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 	public void showFinishPopup() {
 		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(this);
-		alert_confirm.setMessage("정말 종료하시겠습니까?").setCancelable(false).setPositiveButton("확인",
+		alert_confirm.setMessage(getString(R.string.confirm_msg_quit)).setCancelable(false).setPositiveButton(getString(R.string.ok),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						finish();
 					}
-				}).setNegativeButton("취소",
+				}).setNegativeButton(getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {

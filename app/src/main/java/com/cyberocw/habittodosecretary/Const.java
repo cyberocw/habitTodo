@@ -18,6 +18,8 @@ public class Const {
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
 	public static final int ONGOING_ALARM_NOTI_ID = 999999998;
 
+    public static final boolean IS_DEBUG = true;
+
 
 	public class PARAM{
 		public static final String MODE = "mode";
@@ -65,7 +67,6 @@ public class Const {
 		public static final int AFTER_DAY_TOMORROW = 3;
 		public static final int POSTPONE_DATE = 4;
 		public static final int REPEAT_MONTH = 5;
-		private static String[] arrDayName = {"반복-요일", "반복-매달",  "날짜 지정", "내일", "모레"};
 		private static Integer[] arrDayNameCode = {R.string.group_title_repeat_day, R.string.group_title_repeat_month, R.string.group_title_set_date, R.string.group_title_tomorrow, R.string.group_title_after_day_tomorrow};
 		private static final int[] arrDayCode = {REPEAT, REPEAT_MONTH,  SET_DATE, TOMORROW, AFTER_DAY_TOMORROW};
 		public static int getNumByPosition(int i){

@@ -106,13 +106,13 @@ public class MemoListAdapter extends BaseAdapter {
 	}
 
 	private void longClickPopup(int position, final long _id){
-		String names[] ={"편집","삭제"};
+		String names[] ={mCtx.getString(R.string.edit), mCtx.getString(R.string.delete)};
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
 
 		ListView lv = new ListView(mCtx);
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		alertDialog.setView(lv);
-		alertDialog.setTitle("옵션");
+		alertDialog.setTitle(mCtx.getString(R.string.option));
 
 		lv.setLayoutParams(params);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,android.R.layout.simple_list_item_1,names);
