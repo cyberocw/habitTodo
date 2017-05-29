@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	private ActionBar actionBar;
 	private final long FINISH_INTERVAL_TIME = 2000;
 	private long backPressedTime = 0;
-
+	private MenuItem mHelpMenu = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,10 +92,9 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				.build();
 		if(Const.IS_DEBUG){
 			adView.setVisibility(View.GONE);
-			adView.loadAd(adRequest);
 			//+dimension margin 0 주기
 		}
-
+		adView.loadAd(adRequest);
 
 	    FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -227,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			cdm.addItem(cateVO);
 
 			Intent i = new Intent(this, Intro.class);
+			i.putExtra(Const.PARAM.MODE, "intro");
 			i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 			startActivity(i);
 
@@ -268,6 +268,12 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
         int id = item.getItemId();
 
         switch (id) {
+			case R.id.actionHelp:
+				Intent i = new Intent(this, Intro.class);
+				i.putExtra(Const.PARAM.MODE, "alarmList");
+				i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+				startActivity(i);
+				return true;
             case android.R.id.home:
                 mDrawer.openDrawer(GravityCompat.START);
                 return true;
@@ -294,6 +300,9 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+		mHelpMenu = menu.getItem(0);
+		if(!CommonUtils.isLocaleKo(getResources().getConfiguration()))
+			mHelpMenu.setVisible(false);
         return true;
     }
 
@@ -323,20 +332,25 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			case R.id.nav_item_alaram:
 				fragment = new AlarmFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
-
+				//한글일때만 나옴
+				if(CommonUtils.isLocaleKo(getResources().getConfiguration()))
+					mHelpMenu.setVisible(true);
 				break;
 			case R.id.nav_item_memo:
 				fragment = new MemoFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_memo));
+				mHelpMenu.setVisible(false);
 				break;
 			case R.id.nav_item_cate:
 				fragment = new CategoryFragment();
 				((CategoryFragment) fragment).setActionBar(actionBar);
 				actionBar.setTitle(getResources().getString(R.string.nav_item_cate));
+				mHelpMenu.setVisible(false);
 				break;
 			case R.id.nav_item_setting:
 				fragment = new SettingFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_setting));
+				mHelpMenu.setVisible(false);
 				break;
 			default:
                 //fragment = new AlarmFragment();

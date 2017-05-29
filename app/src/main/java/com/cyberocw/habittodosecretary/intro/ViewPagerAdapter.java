@@ -20,27 +20,44 @@ public class ViewPagerAdapter extends PagerAdapter {
     Context mCtx;
     BitmapFactory.Options options;
     Bitmap galImage;
-    private final int[] galImages = new int[] {
-            R.drawable.intro1,
-            R.drawable.intro2,
-            R.drawable.intro3,
-            R.drawable.intro4,
-            R.drawable.intro5,
-            R.drawable.intro6
-    };
+    String mMode;
+    private int[] galImages = null;
 
-    private final int[] engGalImages = new int[] {
-            R.drawable.eng_intro1,
-            R.drawable.eng_intro2,
-            R.drawable.eng_intro3,
-            R.drawable.eng_intro4,
-            R.drawable.eng_intro5,
-            R.drawable.eng_intro6
-    };
-
-    ViewPagerAdapter(Intro ctx){
+    ViewPagerAdapter(Intro ctx, String mode){
         mCtx = ctx;
         options = new BitmapFactory.Options();
+        mMode = mode;
+        if(mMode.equals("intro")) {
+            if (CommonUtils.isLocaleKo(mCtx.getResources().getConfiguration())) {
+                galImages = new int[] {
+                        R.drawable.intro1,
+                        R.drawable.intro2,
+                        R.drawable.intro3,
+                        R.drawable.intro4,
+                        R.drawable.intro5,
+                        R.drawable.intro6
+                };
+            } else {
+                galImages = new int[] {
+                        R.drawable.eng_intro1,
+                        R.drawable.eng_intro2,
+                        R.drawable.eng_intro3,
+                        R.drawable.eng_intro4,
+                        R.drawable.eng_intro5,
+                        R.drawable.eng_intro6
+                };
+            }
+        }
+        else if(mMode.equals("alarmList")) {
+            galImages = new int[]{
+                    R.drawable.help_alarm_list
+            };
+        }
+        else if(mMode.equals("alarmPopup")) {
+            galImages = new int[]{
+                    R.drawable.help_alarm_popup
+            };
+        }
     }
     @Override
     public int getCount() {
@@ -62,11 +79,8 @@ public class ViewPagerAdapter extends PagerAdapter {
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
         options.inSampleSize = 2;
-        if(CommonUtils.isLocaleKo(mCtx.getResources().getConfiguration())) {
-            galImage = BitmapFactory.decodeResource(mCtx.getResources(), galImages[position], options);
-        }else{
-            galImage = BitmapFactory.decodeResource(mCtx.getResources(), engGalImages[position], options);
-        }
+
+        galImage = BitmapFactory.decodeResource(mCtx.getResources(), galImages[position], options);
 
         imageView.setImageBitmap(galImage);
         //imageView.setImageResource(galImages[position]);

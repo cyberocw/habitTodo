@@ -43,6 +43,7 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
+import com.cyberocw.habittodosecretary.intro.Intro;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
@@ -79,7 +80,7 @@ public class AlarmDialogNew extends DialogFragment{
 	private int mModifyMode = 0;
 	private Boolean mIsInitMemoMode = false;
 	private Spinner mSpAlarmType, mSpAppList, mSpDateType;
-	private Button mBtnAddAlarm = null, mBtnClose, mBtnSave;
+	private Button mBtnAddAlarm = null, mBtnClose, mBtnSave, mBtnHelp;
 	private EditText mTxAlarmTitle;
 	private Context mCtx = null;
 	private TimePicker mAddAlarmTimePicker;
@@ -120,7 +121,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 		//mBtnClose = ButterKnife.findById(mView, R.id.btnClose);
 		mBtnSave = ButterKnife.findById(mView, R.id.btnSave);
-
+		mBtnHelp = ButterKnife.findById(mView, R.id.btnHelp);
 		mSpAlarmType = (Spinner) view.findViewById(R.id.spAlarmType);
 		mBtnAddAlarm = (Button) view.findViewById(R.id.btnAddAlarm);
 		mAlarmList = (LinearLayout) view.findViewById(R.id.alarmList);
@@ -807,6 +808,20 @@ public class AlarmDialogNew extends DialogFragment{
 				returnData();
 			}
 		});
+
+		if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
+			mBtnHelp.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent i = new Intent(mCtx, Intro.class);
+					i.putExtra(Const.PARAM.MODE, "alarmPopup");
+					i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+					startActivity(i);
+				}
+			});
+		}else{
+			mBtnHelp.setVisibility(View.GONE);
+		}
 	}
 
 	private void txTimeSet(int hourOfDay, int minute){

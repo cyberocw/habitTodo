@@ -30,7 +30,7 @@
     <dimen name="calendarDayIconWrapHeight">10dp</dimen>
     <dimen name="calendarDayNumPaddingBottom">10dp</dimen>
     <dimen name="calendarDayNameHeight">12dp</dimen>
-    <dimen name="bannerHeight">0dp</dimen>
+    <dimen name="bannerHeight">50dp</dimen>
     <dimen name="bannerHeightAd">50dp</dimen>
     <dimen name="listViewTopMargin">6dp</dimen>
 

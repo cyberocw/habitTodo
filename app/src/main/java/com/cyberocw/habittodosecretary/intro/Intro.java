@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
+import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.rd.PageIndicatorView;
 
@@ -22,6 +23,11 @@ public class Intro extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle bundle = getIntent().getExtras();
+        if(bundle == null){
+            finish();
+        }
+        String mode = bundle.getString(Const.PARAM.MODE);
 
         setContentView(R.layout.activity_intro);
         ViewPager viewPager = (ViewPager) findViewById(R.id.introViewPager);
@@ -32,7 +38,7 @@ public class Intro extends Activity {
                 finish();
             }
         });
-        ViewPagerAdapter adapter = new ViewPagerAdapter(this);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(this, mode);
         viewPager.setAdapter(adapter);
         PageIndicatorView pageIndicatorView = (PageIndicatorView) findViewById(R.id.pageIndicatorView);
         pageIndicatorView.setViewPager(viewPager);

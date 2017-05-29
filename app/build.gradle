@@ -22,7 +22,7 @@ android {
         config {
             keyAlias 'ocwkey'
             keyPassword 'ocwpass'
-            storeFile file('C:/Users/cyber/keystores')
+            storeFile file('H:/android/keystore.jks')
             storePassword 'ocwsotrepass'
         }
     }
@@ -32,7 +32,7 @@ android {
         applicationId "com.cyberocw.habittodosecretary"
         minSdkVersion 15
         targetSdkVersion 19
-        versionCode 3
+        versionCode 4
         versionName "1.0.1"
     }
     buildTypes {
