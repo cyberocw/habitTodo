@@ -143,7 +143,9 @@ public class Const {
 			public static final int ADD_MEMO_FINISH_CODE = 1112;
 			public static final int ADD_MEMO_MODIFY_FINISH_CODE = 1113;
 			public static final int ADD_MEMO_ETC_CODE = 1114;
+			public static final int VIEW_MEMO_ETC_CODE = 1115;
 			public static final String ADD_MEMO_ETC_KEY = "memoEtc";
+			public static final String VIEW_MEMO_ETC_KEY = "viewMemoEtc";
 			public static final String SHARE_MEMO_MODE = "MEMO_MODE";
 		}
 	}

@@ -116,7 +116,7 @@ public class MemoFragment extends Fragment {
 			if(arguments.containsKey(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY)){
 				mIsEtcMode = arguments.getBoolean(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY);
 			}
-			if(arguments.containsKey(Const.PARAM.ETC_TYPE_KEY)){
+			if(arguments.containsKey(Const.PARAM.ETC_TYPE_KEY) || arguments.containsKey(Const.MEMO.MEMO_INTERFACE_CODE.VIEW_MEMO_ETC_KEY)){
 				mIsEtcViewMode = true;
 			}
 

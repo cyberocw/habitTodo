@@ -140,5 +140,6 @@
     <string name="ex_alarm_title">Example) Alarm</string>
     <string name="ex_memo_title">Example) Things to buy in a super</string>
     <string name="ex_memo_cont">bottled water\nIce cream\nmelon</string>
+    <string name="alarm_msg_move_memo">If you move to the memo screen, the alarms that have not been saved will disappear. \nGo to the notes screen?</string>
 
 </resources>

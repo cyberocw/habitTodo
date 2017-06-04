@@ -312,13 +312,15 @@
                     android:layout_height="match_parent"
                     ></Spinner>
 
-                <TextView
+                <Button
                     android:id="@+id/etcTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
+                    android:background="@drawable/button_alarm_time_round"
                     android:text="TextView 2222 "
+                    android:layout_gravity="center"
                     android:visibility="gone" />
 
             </LinearLayout>

@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmDialogNew;
 import com.cyberocw.habittodosecretary.alaram.ui.TimerDialog;
@@ -39,6 +40,7 @@ import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
 import com.cyberocw.habittodosecretary.calendar.CalendarManager;
 import com.cyberocw.habittodosecretary.memo.MemoDataManager;
+import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
@@ -820,11 +822,25 @@ public class AlarmFragment extends Fragment{
 			case Const.ALARM_INTERFACE_CODE.SELECT_CALENDAR_DATE :
 				Calendar date = (Calendar) data.getExtras().getSerializable("selectedDate");
 				selectedDateChange(date);
+				break;
+			case Const.MEMO.MEMO_INTERFACE_CODE.VIEW_MEMO_ETC_CODE :
+				//vo = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
+				getActivity().getSupportFragmentManager().popBackStackImmediate();
+				showMemo(data.getExtras().getLong(Const.PARAM.ALARM_ID));
+
+
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-
+	public void showMemo(long alarmId){
+		Intent intent = new Intent();
+		Bundle bundle = new Bundle();
+		bundle.putString(Const.PARAM.ETC_TYPE_KEY, Const.ETC_TYPE.MEMO);
+		bundle.putLong(Const.PARAM.ALARM_ID, alarmId);
+		intent.putExtras(bundle);
+		((MainActivity)getActivity()).initMainActivity(intent);
+	}
 
 	@Override
 	public void onAttach(Activity activity) {

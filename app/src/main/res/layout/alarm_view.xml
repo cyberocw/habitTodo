@@ -39,22 +39,62 @@
             android:orientation="vertical"
             android:gravity="center_vertical"
             >
-            <TextView
-                android:id="@+id/tvGroupTitle"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:text="반복 알람"
-                android:visibility="gone"
-                android:textSize="8sp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:background="@drawable/button_header_round"
-                android:textColor="@color/white"
-                android:maxLines="1"/>
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:id="@+id/tvGroupTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2dp"
+                    android:text="반복 알람"
+                    android:visibility="visible"
+                    android:textSize="8sp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:background="@drawable/button_header_round"
+                    android:textColor="@color/white"
+                    android:maxLines="1"/>
+                <TextView
+                    android:id="@+id/tvRelationTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2dp"
+                    android:text="메모"
+                    android:visibility="visible"
+                    android:textSize="8sp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:background="@drawable/button_light_round"
+                    android:textColor="@color/white"
+                    android:maxLines="1"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/alarmOptionWrap"
+                    android:orientation="horizontal"
+                    >
+                    <TextView
+                        android:id="@+id/tvTimeTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="2dp"
+                        android:text="-10"
+                        android:visibility="gone"
+                        android:textSize="8sp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:background="@drawable/button_alarm_time_round"
+                        android:textColor="@color/black_semi_transparent"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/alarmTitle"
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"

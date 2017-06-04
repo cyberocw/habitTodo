@@ -44,6 +44,7 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
 import com.cyberocw.habittodosecretary.intro.Intro;
+import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
@@ -88,7 +89,8 @@ public class AlarmDialogNew extends DialogFragment{
 	private ScrollView mScvAddAlarm;
 	private int mAlarmOption = 1;
 	private int mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE; //날짜지정 or repeat
-	private TextView mTvAlarmDate, mTvAlarmTime = null, mTvEtcTitle;
+	private TextView mTvAlarmDate, mTvAlarmTime = null;
+    private Button mTvEtcTitle = null;
 	private CheckBox mCbHolidayAll = null;
 	private CheckBox mCbHolidayNone = null;
 	private CheckBox mCbTTS = null;
@@ -149,7 +151,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 		mCbTTS = (CheckBox) view.findViewById(R.id.cbTTS);
 
-		mTvEtcTitle = (TextView) view.findViewById(R.id.etcTitle);
+		mTvEtcTitle = (Button) view.findViewById(R.id.etcTitle);
 
 		for(int i = 0; i < mArrDayId.length; i++) {
 			mMapDay.put(mArrDayString[i], (Button) view.findViewById(mArrDayId[i]));
@@ -365,6 +367,7 @@ public class AlarmDialogNew extends DialogFragment{
 		mSpAppList.setEnabled(false);
 		if(mAlarmVO.getAlarmTitle() == null)
 			mTxAlarmTitle.setText(mMemoVO.getTitle());
+		mTvEtcTitle.setOnClickListener(null);
 	}
 
 	private void returnData(){
@@ -373,8 +376,6 @@ public class AlarmDialogNew extends DialogFragment{
 		if(alarmTitle.equals("")){
 			alarmTitle = getString(R.string.alarm_no_title);
 		}
-
-
 		ArrayList<Calendar> alarmDate = new ArrayList<Calendar>();
 
 		// 반복이 아닐 경우 날짜 지정 데이터 삽입
@@ -683,6 +684,34 @@ public class AlarmDialogNew extends DialogFragment{
 				.add(R.id.main_container, fragment).addToBackStack(null).commit();
 	}
 
+    private void showMemo(){
+		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
+		alert_confirm.setMessage(getString(R.string.alarm_msg_move_memo)).setCancelable(false).setPositiveButton(getString(R.string.ok),
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+					//mTvEtcTitle
+					Bundle args = new Bundle();
+					args.putBoolean(Const.MEMO.MEMO_INTERFACE_CODE.VIEW_MEMO_ETC_KEY, true);
+					args.putLong(Const.PARAM.ALARM_ID, mAlarmVO.getId());
+					Intent intent = new Intent();
+					intent.putExtras(args);
+					int returnCode = Const.MEMO.MEMO_INTERFACE_CODE.VIEW_MEMO_ETC_CODE;
+					getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
+					dialog.dismiss();
+					}
+				}).setNegativeButton(getString(R.string.cancel),
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// 'No'
+						dialog.dismiss();
+					}
+				});
+		AlertDialog alert = alert_confirm.create();
+		alert.show();
+    }
+
 	public void bindEvent(){
 		final Object[] values = mEtcMap.keySet().toArray();
 		mSpAppList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -822,7 +851,16 @@ public class AlarmDialogNew extends DialogFragment{
 		}else{
 			mBtnHelp.setVisibility(View.GONE);
 		}
-	}
+
+		if(!mIsInitMemoMode) {
+			mTvEtcTitle.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					showMemo();
+				}
+			});
+		}
+    }
 
 	private void txTimeSet(int hourOfDay, int minute){
 		boolean isPm = false;

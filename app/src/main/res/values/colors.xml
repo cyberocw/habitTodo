@@ -19,6 +19,7 @@
     <color name="primary_header">#778694</color>
     <color name="primary_dark">#3b4751</color>
     <color name="primary_light">#a5a8ab</color>
+    <color name="primary_light2">#e3e6e9</color>
     <color name="accent">#FF4081</color>
     <color name="red">#ef0f1e</color>
     <color name="my_primary">#ED1C24</color>

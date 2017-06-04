@@ -38,4 +38,8 @@
     <dimen name="memoListViewPadding">10dp</dimen>
     <dimen name="timerListViewPadding">15dp</dimen>
 
+    <dimen name="alarmViewTopGroupTextSize">3sp</dimen>
+    <dimen name="alarmViewTopGroupMargin">2dp</dimen>
+    <dimen name="alarmViewTopGroupPadding">5dp</dimen>
+
 </resources>

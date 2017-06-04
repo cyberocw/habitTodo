@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -181,6 +183,44 @@ public class RenderAlarmView {
             tvGroupTitle.setVisibility(View.VISIBLE);
         }else{
             tvGroupTitle.setVisibility(View.GONE);
+        }
+
+        TextView tvRelationTitle = ButterKnife.findById(convertView, R.id.tvRelationTitle);
+        if(vo.getEtcType().equals(Const.ETC_TYPE.MEMO)){
+            tvRelationTitle.setVisibility(View.VISIBLE);
+            tvRelationTitle.setText(ctx.getString(R.string.memoGroupTitle));
+        }else{
+            tvRelationTitle.setVisibility(View.GONE);
+        }
+
+        //TextView tvTimeTitle = ButterKnife.findById(convertView, R.id.tvTimeTitle);
+        ArrayList<Integer> arrCall = vo.getAlarmCallList();
+
+        LinearLayout linearLayout = ButterKnife.findById(convertView, R.id.alarmOptionWrap);
+        linearLayout.removeAllViewsInLayout();
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(5, 0, 5, 0);
+
+        for(int i = 0 ; i < arrCall.size(); i++){
+            if(arrCall.get(i) == 0)
+                continue;
+
+            TextView tvTime = new TextView(ctx);
+            tvTime.setText(arrCall.get(i) < 0 ? arrCall.get(i).toString() : "+" + arrCall.get(i));
+            tvTime.setLayoutParams(params);
+            tvTime.setTextColor(ContextCompat.getColor(ctx, R.color.black_semi_transparent));
+            tvTime.setBackground(ContextCompat.getDrawable(ctx, R.drawable.button_alarm_time_round));
+            tvTime.setPadding(8, 5, 8, 5);
+            tvTime.setTextSize(ctx.getResources().getDimension(R.dimen.alarmViewTopGroupTextSize));
+            linearLayout.addView(tvTime);
+        }
+        //linearLayout.removeView(tvTimeTitle);
+
+        if(vo.getEtcType().equals(Const.ETC_TYPE.MEMO)){
+            tvRelationTitle.setVisibility(View.VISIBLE);
+            tvRelationTitle.setText(ctx.getString(R.string.memoGroupTitle));
+        }else {
+            tvRelationTitle.setVisibility(View.GONE);
         }
     }
 }

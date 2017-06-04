@@ -96,42 +96,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		}
 		adView.loadAd(adRequest);
 
-	    FragmentManager fragmentManager = getSupportFragmentManager();
-
-		Fragment fragment;
-		Intent intent = getIntent();
-
-		if(intent != null && intent.getExtras() != null) {
-			Bundle bundle = intent.getExtras();
-			if (bundle.containsKey(Const.PARAM.REQ_CODE)) {
-				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-				int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
-				Crashlytics.log(Log.DEBUG, this.toString(), "cancel reqCode=" + reqCode);
-				manager.cancel(reqCode);
-			}
-			if(!bundle.getString(Const.PARAM.ETC_TYPE_KEY, "").equals("")){
-				Crashlytics.log(Log.DEBUG, this.toString(), "bundle.getString(Const.PARAM.ETC_TYPE_KEY)="+bundle.getString(Const.PARAM.ETC_TYPE_KEY));
-				if(bundle.getString(Const.PARAM.ETC_TYPE_KEY).equals(Const.ETC_TYPE.MEMO)){
-					fragment = new MemoFragment();
-					actionBar.setTitle(getResources().getString(R.string.nav_item_memo));
-				}else{
-					Toast.makeText(getApplicationContext(), getString(R.string.main_activity_etctype_invalid), Toast.LENGTH_LONG).show();
-					Log.e(this.toString(), "버그! etcType이 잘못 되었습니다 etcType="+ bundle.getString("etcType"));
-					fragment = new AlarmFragment();
-				}
-			}else{
-				fragment = new AlarmFragment();
-			}
-			fragment.setArguments(bundle);
-		}else
-			fragment = new AlarmFragment();
-
-
-
-	    fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-			    .replace(R.id.main_container, fragment).commit();
-
-		afterUpdateVersion();
+		initMainActivity(getIntent());
     }
 
 	@Override
@@ -146,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
 				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "reqCode=" + reqCode);
 				manager.cancel(reqCode);
+				initMainActivity(intent);
+				/*
 
 				FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -155,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
 				fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 						.replace(R.id.main_container, alarmFragment).commit();
+*/
 
 				//afterUpdateVersion();
 			} else {
@@ -162,6 +130,48 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			}
 			setIntent(intent);
 		}
+	}
+
+	public void initMainActivity(Intent intent){
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		Fragment fragment;
+
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "ocw vintent = " + intent + " get extras = " + intent.getExtras());
+
+		if(intent != null && intent.getExtras() != null) {
+			Bundle bundle = intent.getExtras();
+			if (bundle.containsKey(Const.PARAM.REQ_CODE)) {
+				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+				int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
+				Crashlytics.log(Log.DEBUG, this.toString(), "cancel reqCode=" + reqCode);
+				manager.cancel(reqCode);
+			}
+
+			Log.d(this.toString(), "tectype key ocw = " + bundle.getString(Const.PARAM.ETC_TYPE_KEY));
+
+			if(!bundle.getString(Const.PARAM.ETC_TYPE_KEY, "").equals("")){
+				Crashlytics.log(Log.DEBUG, this.toString(), "bundle.getString(Const.PARAM.ETC_TYPE_KEY)="+bundle.getString(Const.PARAM.ETC_TYPE_KEY));
+				if(bundle.getString(Const.PARAM.ETC_TYPE_KEY).equals(Const.ETC_TYPE.MEMO)){
+					fragment = new MemoFragment();
+					actionBar.setTitle(getResources().getString(R.string.nav_item_memo));
+					mHelpMenu.setVisible(false);
+				}else{
+					Toast.makeText(getApplicationContext(), getString(R.string.main_activity_etctype_invalid), Toast.LENGTH_LONG).show();
+					Log.e(this.toString(), "버그! etcType이 잘못 되었습니다 etcType="+ bundle.getString("etcType"));
+					fragment = new AlarmFragment();
+				}
+			}else{
+				fragment = new AlarmFragment();
+			}
+			fragment.setArguments(bundle);
+		}else
+			fragment = new AlarmFragment();
+
+
+		fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+				.replace(R.id.main_container, fragment).commit();
+
+		afterUpdateVersion();
 	}
 
 	private void afterUpdateVersion(){
