@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -170,6 +171,8 @@ public class RenderAlarmView {
 
         TextView tvGroupTitle = ButterKnife.findById(convertView, R.id.tvGroupTitle);
 
+        boolean headerVisible = false;
+
         if(listViewType == Const.ALARM_LIST_VIEW_TYPE.LIST){
 
             String result = "";
@@ -181,14 +184,16 @@ public class RenderAlarmView {
             }
             tvGroupTitle.setText(result);
             tvGroupTitle.setVisibility(View.VISIBLE);
+            headerVisible = true;
         }else{
             tvGroupTitle.setVisibility(View.GONE);
         }
 
         TextView tvRelationTitle = ButterKnife.findById(convertView, R.id.tvRelationTitle);
-        if(vo.getEtcType().equals(Const.ETC_TYPE.MEMO)){
+        if(vo.getEtcType() != null && vo.getEtcType().equals(Const.ETC_TYPE.MEMO)){
             tvRelationTitle.setVisibility(View.VISIBLE);
             tvRelationTitle.setText(ctx.getString(R.string.memoGroupTitle));
+            headerVisible = true;
         }else{
             tvRelationTitle.setVisibility(View.GONE);
         }
@@ -213,14 +218,10 @@ public class RenderAlarmView {
             tvTime.setPadding(8, 5, 8, 5);
             tvTime.setTextSize(ctx.getResources().getDimension(R.dimen.alarmViewTopGroupTextSize));
             linearLayout.addView(tvTime);
+            headerVisible = true;
         }
-        //linearLayout.removeView(tvTimeTitle);
 
-        if(vo.getEtcType().equals(Const.ETC_TYPE.MEMO)){
-            tvRelationTitle.setVisibility(View.VISIBLE);
-            tvRelationTitle.setText(ctx.getString(R.string.memoGroupTitle));
-        }else {
-            tvRelationTitle.setVisibility(View.GONE);
-        }
+        LinearLayout llTitleWrap = ButterKnife.findById(convertView, R.id.alarmViewTitleWrap);
+        llTitleWrap.setVisibility(headerVisible == true ? View.VISIBLE : View.GONE);
     }
 }
