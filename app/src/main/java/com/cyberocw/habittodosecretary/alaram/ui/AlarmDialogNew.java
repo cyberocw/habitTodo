@@ -322,12 +322,12 @@ public class AlarmDialogNew extends DialogFragment{
 
 			ArrayList<Integer> arrAlarmCall = mAlarmVO.getAlarmCallList();
 			int temp;
-
-			for(int i = 0; i < arrAlarmCall.size(); i++){
-				temp = arrAlarmCall.get(i);
-				appendAlarmRow(Math.abs(temp), (temp < 0 ? -1 : 1));
+			if(arrAlarmCall != null) {
+				for (int i = 0; i < arrAlarmCall.size(); i++) {
+					temp = arrAlarmCall.get(i);
+					appendAlarmRow(Math.abs(temp), (temp < 0 ? -1 : 1));
+				}
 			}
-
 			mEtcType = mAlarmVO.getEtcType();
 			restoreEtcType();
 
@@ -1025,15 +1025,18 @@ public class AlarmDialogNew extends DialogFragment{
 		ImageButton bt = ButterKnife.findById(beforeView, R.id.btnRemoveTime);
 		//bt.setText("-");
 		bt.setTag(val * flag);
-		bt.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				int index = mArrAlarmCall.indexOf(v.getTag());
+		if(val != 0) {
+			bt.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
 
-				mArrAlarmCall.remove(index);
-				((ViewGroup) v.getParent().getParent()).removeView((ViewGroup) v.getParent());
-			}
-		});
+					int index = mArrAlarmCall.indexOf(v.getTag());
+
+					mArrAlarmCall.remove(index);
+					((ViewGroup) v.getParent().getParent()).removeView((ViewGroup) v.getParent());
+				}
+			});
+		}
 		mAlarmList.addView(beforeView);
 
 		mScvAddAlarm.refreshDrawableState();

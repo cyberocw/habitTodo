@@ -206,20 +206,21 @@ public class RenderAlarmView {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(5, 0, 5, 0);
 
-        for(int i = 0 ; i < arrCall.size(); i++){
-            if(arrCall.get(i) == 0)
-                continue;
+        if(arrCall != null)
+            for(int i = 0 ; i < arrCall.size(); i++){
+                if(arrCall.get(i) == 0)
+                    continue;
 
-            TextView tvTime = new TextView(ctx);
-            tvTime.setText(arrCall.get(i) < 0 ? arrCall.get(i).toString() : "+" + arrCall.get(i));
-            tvTime.setLayoutParams(params);
-            tvTime.setTextColor(ContextCompat.getColor(ctx, R.color.black_semi_transparent));
-            tvTime.setBackground(ContextCompat.getDrawable(ctx, R.drawable.button_alarm_time_round));
-            tvTime.setPadding(8, 5, 8, 5);
-            tvTime.setTextSize(ctx.getResources().getDimension(R.dimen.alarmViewTopGroupTextSize));
-            linearLayout.addView(tvTime);
-            headerVisible = true;
-        }
+                TextView tvTime = new TextView(ctx);
+                tvTime.setText(arrCall.get(i) < 0 ? arrCall.get(i).toString() : "+" + arrCall.get(i));
+                tvTime.setLayoutParams(params);
+                tvTime.setTextColor(ContextCompat.getColor(ctx, R.color.black_semi_transparent));
+                tvTime.setBackground(ContextCompat.getDrawable(ctx, R.drawable.button_alarm_time_round));
+                tvTime.setPadding(8, 5, 8, 5);
+                tvTime.setTextSize(ctx.getResources().getDimension(R.dimen.alarmViewTopGroupTextSize));
+                linearLayout.addView(tvTime);
+                headerVisible = true;
+            }
 
         LinearLayout llTitleWrap = ButterKnife.findById(convertView, R.id.alarmViewTitleWrap);
         llTitleWrap.setVisibility(headerVisible == true ? View.VISIBLE : View.GONE);
