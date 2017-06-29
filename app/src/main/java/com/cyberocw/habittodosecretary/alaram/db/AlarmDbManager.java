@@ -407,9 +407,19 @@ public class AlarmDbManager extends DbHelper{
 						cal.add(Calendar.DAY_OF_MONTH, i);
 
 					// 몇분전 값이 실제 시간이기 때문에 이부분에서 최소 값을 찾음
+					int val;
 					for(int j = 0 ; j < alarmCallList.length; j++) {
 						cal2 = (Calendar) cal.clone();
-						cal2.add(Calendar.MINUTE, Integer.valueOf(alarmCallList[j]));
+						try{
+							cal2.add(Calendar.MINUTE, Integer.valueOf(alarmCallList[j]));
+						}catch(Exception e){
+							try {
+								Crashlytics.log(Log.ERROR, Const.ERROR_TAG, "alarmCallList[j] = " + alarmCallList[j]);
+							}catch(Exception el){
+								Crashlytics.log(Log.ERROR, Const.ERROR_TAG, e.getMessage() + " " + e.getCause());
+							}
+						}
+
 						timeinMil = cal2.getTimeInMillis();
 
 						// - 몇분전/후 계산 값이 현재 시간보다 빠르면 건너 뜀
