@@ -58,7 +58,7 @@ public class InitializeSetting extends AsyncTask<Void, Void, String> {
             else
                 resultMsg = "공휴일 데이터 동기화 완료";
 
-            mSettingDataManager.getList(year + i);
+            //mSettingDataManager.getList(year + i);
         }
 
 

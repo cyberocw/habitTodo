@@ -14,6 +14,7 @@
     <string name="nav_item_memo">전체 메모</string>
     <string name="nav_item_cate">카테고리</string>
     <string name="nav_item_setting">설정</string>
+    <string name="nav_item_keyword">이슈 키워드</string>
     <string name="group_title_repeat">반복 알람</string>
     <string name="group_title_set_date">날짜 지정 알람</string>
     <string name="group_title_postpone">연기한 알람</string>
@@ -140,4 +141,5 @@
     <string name="ex_memo_cont">생수\n아이스크림\n두부\n참기름</string>
     <string name="alarm_msg_move_memo">메모 화면으로 이동하면 저장하지 않은 알람 내용은 사라집니다.\n메모 화면으로 이동하시겠습니까?</string>
     <string name="alarm_no_title">(제목 없음)</string>
+    <string name="keyword">nav_item_keyword</string>
 </resources>

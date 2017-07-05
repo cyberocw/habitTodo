@@ -1,0 +1,107 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    tools:context="com.cyberocw.habittodosecretary.alaram.AlarmFragment"
+    android:id="@+id/frame">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|top"
+            android:background="@color/primary"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/optionWrap"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btnPrevWeek"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_chevron_left_black_24dp"
+                    android:layout_alignBaseline="@+id/dateView"
+                    android:layout_alignBottom="@+id/dateView"
+
+                    />
+                <TextView
+                    android:id="@+id/dateView"
+                    style="@style/AppTheme.Widget.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center"
+
+                    android:elevation="1dp"
+                    android:ellipsize="end"
+                    android:gravity="center_horizontal|fill_vertical"
+                    android:singleLine="true"
+                    android:text="2015/08/14 18:00"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:layout_toRightOf="@+id/btnPrevWeek"
+                    android:layout_toEndOf="@+id/btnPrevWeek" />
+                <Button
+                    android:id="@+id/btnNextWeek"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_chevron_right_black_24dp"
+                    android:layout_alignBaseline="@+id/dateView"
+                    android:layout_alignBottom="@+id/dateView"
+                    android:layout_toRightOf="@+id/dateView"
+                    android:layout_toEndOf="@+id/dateView" />
+
+                <Switch
+                    android:id="@+id/switch1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="실시간"
+                    android:textOff="실시간"
+                    android:textOn="누적"
+                    android:layout_alignTop="@+id/btnNextWeek"
+                    android:layout_toRightOf="@+id/btnNextWeek"
+                    android:layout_toEndOf="@+id/btnNextWeek" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/contents"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/header"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                ></LinearLayout>
+            <LinearLayout
+                android:id="@+id/alarmListViewWrap"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_marginTop="2dp">
+
+                <ListView
+                    android:id="@+id/keywordListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:longClickable="true"
+                    tools:listitem="@layout/alarm_view" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>

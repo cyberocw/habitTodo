@@ -15,6 +15,8 @@
     <string name="nav_item_memo">All Memo</string>
     <string name="nav_item_cate">Category</string>
     <string name="nav_item_setting">Settings</string>
+    <string name="nav_item_keyword">Keyword</string>
+
     <string name="group_title_repeat">Repeat alarm</string>
     <string name="group_title_set_date">Specify Date</string>
     <string name="group_title_postpone">Postponed</string>
@@ -141,5 +143,6 @@
     <string name="ex_memo_title">Example) Things to buy in a super</string>
     <string name="ex_memo_cont">bottled water\nIce cream\nmelon</string>
     <string name="alarm_msg_move_memo">If you move to the memo screen, the alarms that have not been saved will disappear. \nGo to the notes screen?</string>
+    <string name="keyword">nav_item_keyword</string>
 
 </resources>

@@ -35,6 +35,7 @@ import com.cyberocw.habittodosecretary.category.CategoryDataManager;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 import com.cyberocw.habittodosecretary.intro.Intro;
+import com.cyberocw.habittodosecretary.keyword.KeywordFragment;
 import com.cyberocw.habittodosecretary.memo.MemoDataManager;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
@@ -362,9 +363,16 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				actionBar.setTitle(getResources().getString(R.string.nav_item_setting));
 				mHelpMenu.setVisible(false);
 				break;
-			default:
+			case R.id.nav_item_keyword:
                 //fragment = new AlarmFragment();
-				android.os.Process.killProcess(android.os.Process.myPid());
+				//android.os.Process.killProcess(android.os.Process.myPid());
+				fragment = new KeywordFragment();
+				actionBar.setTitle(getResources().getString(R.string.nav_item_setting));
+				mHelpMenu.setVisible(false);
+				break;
+			default:
+				//fragment = new AlarmFragment();
+				//android.os.Process.killProcess(android.os.Process.myPid());
 				break;
 		}
 		if (fragment != null) {

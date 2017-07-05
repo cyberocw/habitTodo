@@ -150,7 +150,7 @@ public class SettingDbManager extends DbHelper {
     private ArrayList<HolidayVO> bindVO(Cursor c){
         ArrayList<HolidayVO> list = new ArrayList<HolidayVO>();
 
-        if(c == null || c.getCount() > 0)
+        if(c == null || c.getCount() == 0)
             return list;
 
         if (c.moveToFirst()) {
