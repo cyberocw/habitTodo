@@ -166,9 +166,20 @@ public class Const {
 		public static final String IS_NOTIBAR_USE = "isNotibarUse";
 		public static final String IS_BACKGROUND_NOTI_USE = "isBackgroundNotibarUse";
 		public static final String TTS_VOLUME = "ttsVolume";
+	}
 
+	public class KEYWORD{
+		public class API{
+			private static final String HOST = "http://61.97.142.3";
+			public static final String SUM = HOST + "/summary";
+			public static final String LIST = HOST + "/list";
+			public static final int CALENDAR_INTERFACE_CODE = 800;
 
-
+			public class MODE{
+				public static final String SUM = "SUM";
+				public static final String TIME = "TIME";
+			}
+		}
 
 	}
 

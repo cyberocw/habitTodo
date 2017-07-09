@@ -13,7 +13,9 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true"
+        >
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -45,6 +47,11 @@
         <activity
             android:name=".intro.Intro"
             android:label="intro"
+            />
+        <activity
+            android:name=".WebViewActivity"
+            android:label="WebView"
+            android:theme="@style/AppTheme"
             />
         <receiver android:name=".alaram.receiver.AlarmReceiver" />
         <receiver android:name=".alaram.service.NotificationService$CloseButtonListener" />

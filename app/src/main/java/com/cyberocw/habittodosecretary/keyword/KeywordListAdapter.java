@@ -55,30 +55,13 @@ public class KeywordListAdapter extends BaseAdapter {
         }
         TextView tvTitle = (TextView) convertView.findViewById(R.id.tvKeywordTitle);
 
-        tvTitle.setText(vo.getRank() + " : " + vo.getKeyword() + " : " + vo.getSimpleDate());
+        tvTitle.setText(vo.getRank() + " : " + vo.getKeyword());
 
         if(position == 0){
             //btnOption.setVisibility(View.GONE);
         }
 
-        tvTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://search.naver.com/search.naver?query=" + vo.getKeyword()));
-                mCtx.getApplicationContext().startActivity(intent);
 
-               /* CategoryVO vo = mManager.getItem(position);
-                mCategoryFragment.longClickPopup(0, mManager.getItem(position).getId());*/
-                //mManager.deleteItemById(vo.getId());
-
-            }
-        });
-		/*convertView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				mCategoryFragment.showMemoList(mManager.getItem(position).getId());
-			}
-		});*/
         return convertView;
     }
 }

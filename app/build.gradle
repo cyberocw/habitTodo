@@ -64,6 +64,7 @@ dependencies {
     compile 'com.android.support:gridlayout-v7:25.3.1'
     compile 'com.romandanylyk:pageindicatorview:0.2.0@aar'
     compile 'com.android.support:support-v4:24.2.1'
+    compile 'us.belka:androidtoggleswitch:1.2.2'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
 

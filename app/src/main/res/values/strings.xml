@@ -44,6 +44,7 @@
     <!-- real ad -->
     <string name="banner_ad_unit_id">ca-app-pub-8072677228798230/9898207305</string>
     <string name="banner_ad_unit_id_front">ca-app-pub-8072677228798230/5472850905</string>
+    <string name="banner_ad_unit_id_webview">ca-app-pub-8072677228798230/1453912904</string>
     <string name="alarm_sort_type_time">Time Order</string>
     <string name="alarm_sort_type">Type Order</string>
     <string name="alarm_date_today">Today</string>

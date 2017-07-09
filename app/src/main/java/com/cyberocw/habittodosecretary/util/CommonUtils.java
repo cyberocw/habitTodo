@@ -54,6 +54,16 @@ public class CommonUtils {
 		return cal;
 	}
 
+	public static String convertKeywordDateType(Calendar c){
+		SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");// cal.get(Calendar.YEAR)
+		return sdf.format(c.getTime());//sdf.format(c);
+	}
+
+	public static String convertKeywordSimpleDateType(Calendar c){
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");// cal.get(Calendar.YEAR)
+		return sdf.format(c.getTime());//sdf.format(c);
+	}
+
 	public static String convertFullDateType(Calendar c){
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// cal.get(Calendar.YEAR)
 		return sdf.format(c.getTime());//sdf.format(c);

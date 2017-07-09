@@ -29,7 +29,7 @@ import javax.net.ssl.HttpsURLConnection;
  * Created by cyber on 2017-07-06.
  */
 
-public class KeywordAPI extends AsyncTask<Void, Void, String> {
+public class KeywordAPI extends AsyncTask<String, Void, String> {
 
     private ProgressDialog asyncDialog;
     KeywordDataManager keywordDataManager;
@@ -51,8 +51,8 @@ public class KeywordAPI extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPreExecute() {
         asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        //asyncDialog.setMessage("공휴일 데이터 생성중입니다..");
-        //asyncDialog.show();
+        asyncDialog.setMessage("데이터 수신중..");
+        asyncDialog.show();
 
         // show dialog
         //asyncDialog.show();
@@ -60,15 +60,13 @@ public class KeywordAPI extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected String doInBackground(Void... arg0) {
-        HolidaySync sync = new HolidaySync();
+    protected String doInBackground(String... addr) {
 
-
-        String addr = "http://61.97.142.3/summary";
+        //String addr = "http://61.97.142.3/summary";
 
         StringBuilder html = new StringBuilder();
         try {
-            URL url = new URL(addr);
+            URL url = new URL(addr[0]);
             //HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
             HttpURLConnection conn = null;
@@ -88,10 +86,8 @@ public class KeywordAPI extends AsyncTask<Void, Void, String> {
                 conn.setRequestProperty("Content-type", "application/json");
                 //conn.setRequestProperty("TDCProjectKey", "1106e8d5-2f94-41a6-84ac-9683c68c9be6");
                 conn.setConnectTimeout(10000);
-                conn.setUseCaches(false);
-                int resultcode = conn.getResponseCode();
-
-                Log.d(Const.DEBUG_TAG, "resultcode="+resultcode);
+                conn.setUseCaches(false); // 캐싱데이터를 받을지 안받을지
+                conn.setDefaultUseCaches(false); // 캐싱데이터 디폴트 값 설정
 
                 if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     BufferedReader br = new BufferedReader(
@@ -111,8 +107,10 @@ public class KeywordAPI extends AsyncTask<Void, Void, String> {
             Crashlytics.log(Log.ERROR, Const.ERROR_TAG, ex.getMessage());
         }
         //Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "year = " + year + ", result="+html.toString());
-        Log.d(Const.DEBUG_TAG, "html.toString()="+html.toString());
+
         try {
+            this.dataList = new ArrayList<>();
+
             JSONArray jArray = new JSONArray(html.toString());
             for(int i = 0 ; i< jArray.length(); i++){
                 KeywordVO vo = new KeywordVO();
@@ -123,12 +121,13 @@ public class KeywordAPI extends AsyncTask<Void, Void, String> {
                 vo.setTypeCode(obj.getInt("typeCode"));
                 vo.setFromSite(obj.getString("fromSite"));
                 vo.setId(obj.getLong("id"));
-                Log.d(Const.DEBUG_TAG, "this.dataList="+this.dataList);
+
                 this.dataList.add(vo);
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
+            return "실패";
         }
 
         return "완료";

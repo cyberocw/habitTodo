@@ -58,8 +58,6 @@ public class SettingDataManager {
 
 
     public void getList(int year) {
-        Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "getHolidayList start");
-        mDb.getHolidayList(year);
 
     }
 

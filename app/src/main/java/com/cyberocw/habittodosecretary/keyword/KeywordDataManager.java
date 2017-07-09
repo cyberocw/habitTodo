@@ -72,8 +72,6 @@ public class KeywordDataManager {
                 conn.setUseCaches(false);
                 int resultcode = conn.getResponseCode();
 
-                Log.d(Const.DEBUG_TAG, "resultcode="+resultcode);
-
                 if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     BufferedReader br = new BufferedReader(
                             new InputStreamReader(conn.getInputStream()));
@@ -92,7 +90,7 @@ public class KeywordDataManager {
             Crashlytics.log(Log.ERROR, Const.ERROR_TAG, ex.getMessage());
         }
         //Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "year = " + year + ", result="+html.toString());
-        Log.d(Const.DEBUG_TAG, "html.toString()="+html.toString());
+
         try {
             JSONArray jArray = new JSONArray(html.toString());
             for(int i = 0 ; i< jArray.length(); i++){

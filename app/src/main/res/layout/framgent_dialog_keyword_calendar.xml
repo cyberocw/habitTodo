@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:theme="@style/Theme.AppCompat.Light"
+    >
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="0dp"
+    android:padding="5dp"
+    android:orientation="vertical"
+    >
+
+    <CalendarView
+        android:id="@+id/datePicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:datePickerMode="calendar"
+        android:calendarViewShown="false"
+        android:layout_centerHorizontal="true"/>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/datePicker"
+    android:gravity="center"
+    >
+    <NumberPicker
+        android:id="@+id/numberPickerHour"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:timePickerMode="spinner"
+        android:layout_alignParentLeft="true"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="시"
+        />
+    <NumberPicker
+        android:id="@+id/numberPickerMinute"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:timePickerMode="spinner"
+        android:layout_marginLeft="10dp"
+        android:layout_alignBaseline="@+id/numberPickerHour"
+        android:layout_alignBottom="@+id/numberPickerHour"
+        android:layout_toRightOf="@+id/numberPickerHour"
+        android:layout_toEndOf="@+id/numberPickerHour"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="분"
+        />
+</LinearLayout>
+</RelativeLayout>
+</ScrollView>
