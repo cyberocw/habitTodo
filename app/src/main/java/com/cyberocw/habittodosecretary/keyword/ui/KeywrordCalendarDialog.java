@@ -80,7 +80,11 @@ public class KeywrordCalendarDialog extends DialogFragment {
 
         mCalendarView.setMaxDate(today.getTimeInMillis());
 
-        mNumberPickerHour.setMaxValue(today.get(Calendar.HOUR_OF_DAY));
+        if(mCalendar.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH))
+            mNumberPickerHour.setMaxValue(today.get(Calendar.HOUR_OF_DAY));
+        else
+            mNumberPickerHour.setMaxValue(23);
+
 
         setTimePickMinuteDefault();
 

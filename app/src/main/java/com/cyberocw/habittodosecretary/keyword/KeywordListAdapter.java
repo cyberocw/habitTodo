@@ -6,6 +6,8 @@ package com.cyberocw.habittodosecretary.keyword;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.category.CategoryDataManager;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
@@ -54,14 +57,23 @@ public class KeywordListAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.keyword_view, parent, false);
         }
         TextView tvTitle = (TextView) convertView.findViewById(R.id.tvKeywordTitle);
-
-        tvTitle.setText(vo.getRank() + " : " + vo.getKeyword());
-
-        if(position == 0){
-            //btnOption.setVisibility(View.GONE);
+        TextView tvRank = (TextView) convertView.findViewById(R.id.tvPortalRank);
+        if(vo.getTypeCode() == 2){
+            tvRank.setVisibility(View.GONE);
+        }else{
+            tvRank.setVisibility(View.VISIBLE);
+            String rankText = "";
+            Log.d(Const.DEBUG_TAG, "narver rank = " + vo.getRankNAVER());
+            if(!TextUtils.isEmpty(vo.getRankNAVER()))
+                rankText += " N : " + vo.getRankNAVER();
+            if(!TextUtils.isEmpty(vo.getRankDAUM()))
+                rankText += "   D : " + vo.getRankDAUM();
+            if(!TextUtils.isEmpty(vo.getRankZUM()))
+                rankText += "   Z : " + vo.getRankZUM();
+            tvRank.setText(rankText);
         }
 
-
+        tvTitle.setText(vo.getRank() + " : " + vo.getKeyword());
         return convertView;
     }
 }

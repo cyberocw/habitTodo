@@ -91,7 +91,7 @@ public class KeywordFragment extends Fragment {
         lv.setOnItemClickListener(new ListViewItemClickListener());
 
         mToggleSwitch = ButterKnife.findById(mView, R.id.toggleKeywordType);
-
+        mToggleSwitch.setCheckedTogglePosition(1);
 
         mSimpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
 

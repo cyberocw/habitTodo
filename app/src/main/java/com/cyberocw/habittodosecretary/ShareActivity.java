@@ -44,8 +44,10 @@
 		String type = intent.getType();
 		if ("text/plain".equals(type)) {
 			memoVO.setContents(intent.getStringExtra(Intent.EXTRA_TEXT));    // 가져온 인텐트의 텍스트 정보
-			//memoVO.setTitle(intent.getStringExtra(Intent.EXTRA_TITLE));
-			memoVO.setTitle(intent.getStringExtra(Intent.EXTRA_SUBJECT));
+			if(intent.hasExtra(Intent.EXTRA_TITLE))
+				memoVO.setTitle(intent.getStringExtra(Intent.EXTRA_TITLE));
+			else
+				memoVO.setTitle(intent.getStringExtra(Intent.EXTRA_SUBJECT));
 		}
 		mFragment = new MemoFragment();
 

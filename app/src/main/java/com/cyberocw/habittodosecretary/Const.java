@@ -165,6 +165,7 @@ public class Const {
 		public static final String IS_TTS_NOTI_MANNER = "isTTSNotiManner";
 		public static final String IS_NOTIBAR_USE = "isNotibarUse";
 		public static final String IS_BACKGROUND_NOTI_USE = "isBackgroundNotibarUse";
+		public static final String IS_SHOW_UPDATE_LOG = "isUpdateLog";
 		public static final String TTS_VOLUME = "ttsVolume";
 	}
 

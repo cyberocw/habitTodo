@@ -98,7 +98,10 @@ public class KeywordDataManager {
                 JSONObject obj = jArray.getJSONObject(i);
                 vo.setKeyword(obj.getString("keyword"));
                 vo.setSimpleDate(obj.getLong("simpleDate"));
-                vo.setRank(obj.getInt("rank"));
+                if(obj.getInt("rank") == -1)
+                    vo.setRank(i+1);
+                else
+                    vo.setRank(obj.getInt("rank"));
                 vo.setTypeCode(obj.getInt("typeCode"));
                 vo.setFromSite(obj.getString("fromSite"));
                 vo.setId(obj.getLong("id"));

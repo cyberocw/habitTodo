@@ -4,14 +4,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
@@ -34,10 +41,34 @@ public class WebViewActivity extends AppCompatActivity {
     @BindView(R.id.webView) WebView webView;
     @BindView(R.id.webViewTitle) TextView mTvTitle;
     @BindView(R.id.webViewUrl) TextView mTvUrl;
+    @BindView(R.id.progressBar)
+    ProgressBar mProgressBar;
 
     @OnClick(R.id.btnClose) void submit() {
-        Log.d(Const.DEBUG_TAG, "btn close click");
         finish();
+    }
+    @OnClick(R.id.btnOption) void showOption(View v){
+        PopupMenu popup = new PopupMenu(this, v);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.browser_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.menu_share :
+                        showSharePopup();
+                        return true;
+                    case R.id.menu_reload :
+                        reloadPage();
+                        return true;
+                    case R.id.menu_back :
+                        moveBack();
+                        return true;
+                }
+                return false;
+            }
+        });
+        popup.show();
     }
 
     @Override
@@ -57,13 +88,27 @@ public class WebViewActivity extends AppCompatActivity {
         mBundle = intent.getExtras();
 
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient() {
+        webView.setWebChromeClient(new WebChromeClient(){
             @Override
-            public void onPageFinished(WebView view, String url) {
-                WebViewActivity.this.setTitle(view.getTitle());
+            public void onReceivedTitle(WebView view, String title) {
+                super.onReceivedTitle(view, title);
+                if (!TextUtils.isEmpty(title)) {
+                    WebViewActivity.this.setTitle(title);
+                }
+            }
+
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                if(newProgress < 100){
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    mProgressBar.setProgress(newProgress);
+                }else{
+                    mProgressBar.setVisibility(View.INVISIBLE);
+                }
             }
         });
-
+        webView.setWebViewClient(new WebViewClient());
 
         if(mBundle != null) {
             //webView.setWebChromeClient(new WebChromeClient());
@@ -86,9 +131,45 @@ public class WebViewActivity extends AppCompatActivity {
         Fabric.with(this, new Crashlytics());
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.browser_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.menu_share:
+                showSharePopup();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void showSharePopup(){
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TITLE, webView.getTitle());
+        shareIntent.putExtra(Intent.EXTRA_TEXT, webView.getUrl());
+        startActivity(Intent.createChooser(shareIntent, "Share..."));
+    }
+
     public void setTitle(String title){
         mTvTitle.setText(title);
         mTvUrl.setText(webView.getUrl());
+    }
+
+    public void reloadPage(){
+        webView.reload();
+    }
+
+    public void moveBack(){
+        if(webView.canGoBack())
+            webView.goBack();
     }
 
     @Override

@@ -11,7 +11,9 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/white"
         android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        app:popupTheme="@style/PopupMenuStyle"
         >
+
         <Button
             android:id="@+id/btnClose"
             android:layout_width="32dp"
@@ -48,9 +50,12 @@
                 android:layout_marginTop="4dp"
                 android:textColor="@color/gray"
                 />
+
+
         </LinearLayout>
 
         <Button
+            android:id="@+id/btnOption"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentBottom="true"
@@ -61,8 +66,18 @@
             android:background="@drawable/ic_action_overflow"
             android:elevation="0dp"
             android:text="" />
-    </android.support.v7.widget.Toolbar>
 
+
+    </android.support.v7.widget.Toolbar>
+        <android.support.v4.widget.ContentLoadingProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/toolbar"
+            android:layout_marginTop="-2dp"
+            android:progress="50"
+            />
         <WebView
             android:layout_width="match_parent"
             android:layout_height="match_parent"

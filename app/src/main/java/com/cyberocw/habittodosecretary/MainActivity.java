@@ -173,6 +173,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				.replace(R.id.main_container, fragment).commit();
 
 		afterUpdateVersion();
+
+		//showUpdateLog();
 	}
 
 	private void afterUpdateVersion(){
@@ -180,6 +182,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		SharedPreferences setPrefs = ctx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 
 		String prefsSavedVersion = setPrefs.getString(Const.SETTING.VERSION, "0");
+		//int isShowUpdateLog = setPrefs.getInt(Const.SETTING.IS_SHOW_UPDATE_LOG, 0);
+
 		String versionName = "";
 		PackageInfo info = null;
 
@@ -247,11 +251,28 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				InitializeSetting initializeSetting = new InitializeSetting(this);
 				initializeSetting.execute();
 			}
+			if(!prefsSavedVersion.equals("0")){
+				showUpdateLog();
+			}
+
 			SharedPreferences.Editor editor = setPrefs.edit();
 			editor.putString(Const.SETTING.VERSION, versionName);
 			editor.apply();
 		}
 
+	}
+
+	private void showUpdateLog(){
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert.setTitle("기능 업데이트 안내");
+		alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();     //닫기
+			}
+		});
+		alert.setMessage("여러 포털 사이트들의 시간대별 실시간 인기 키워드 및 하루 누적 키워드를 종합한 순위를 볼 수 있는 기능이 업데이트 되었습니다.\n\n이제 오늘의 이슈/트렌드를 놓치지 마세요.");
+		alert.show();
 	}
 
 	protected boolean putAlarmPreference(String key, boolean value){

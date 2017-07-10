@@ -117,8 +117,23 @@ public class KeywordAPI extends AsyncTask<String, Void, String> {
                 JSONObject obj = jArray.getJSONObject(i);
                 vo.setKeyword(obj.getString("keyword"));
                 vo.setSimpleDate(obj.getLong("simpleDate"));
-                vo.setRank(obj.getInt("rank"));
                 vo.setTypeCode(obj.getInt("typeCode"));
+
+                if(obj.getInt("rank") == -1)
+                    vo.setRank(i+1);
+                else
+                    vo.setRank(obj.getInt("rank"));
+
+
+                if(vo.getTypeCode() == 1){
+                    if(!obj.getString("rankNAVER").equals("null"))
+                        vo.setRankNAVER(obj.getString("rankNAVER"));
+                    if(!obj.getString("rankDAUM").equals("null"))
+                        vo.setRankDAUM(obj.getString("rankDAUM"));
+                    if(!obj.getString("rankZUM").equals("null"))
+                        vo.setRankZUM(obj.getString("rankZUM"));
+                }
+
                 vo.setFromSite(obj.getString("fromSite"));
                 vo.setId(obj.getLong("id"));
 

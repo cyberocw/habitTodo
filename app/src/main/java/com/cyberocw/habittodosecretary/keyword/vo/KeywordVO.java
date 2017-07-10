@@ -15,6 +15,9 @@ public class KeywordVO {
       private Date regDate;
       private long simpleDate;
       private int typeCode;
+    private String rankNAVER;
+    private String rankDAUM;
+    private String rankZUM;
 
     public long getId() {
         return id;
@@ -78,5 +81,29 @@ public class KeywordVO {
 
     public void setTypeCode(int typeCode) {
         this.typeCode = typeCode;
+    }
+
+    public String getRankNAVER() {
+        return rankNAVER;
+    }
+
+    public void setRankNAVER(String rankNAVER) {
+        this.rankNAVER = rankNAVER;
+    }
+
+    public String getRankDAUM() {
+        return rankDAUM;
+    }
+
+    public void setRankDAUM(String rankDAUM) {
+        this.rankDAUM = rankDAUM;
+    }
+
+    public String getRankZUM() {
+        return rankZUM;
+    }
+
+    public void setRankZUM(String rankZUM) {
+        this.rankZUM = rankZUM;
     }
 }

@@ -27,7 +27,7 @@
         </activity>
         <activity
             android:name=".ShareActivity"
-            android:label="Alarm"
+            android:label="Oh Reminder"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

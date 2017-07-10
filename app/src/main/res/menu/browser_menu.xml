@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_share"
+        android:title="공유하기" />
+    <item android:id="@+id/menu_back"
+        android:title="뒤로" />
+    <item android:id="@+id/menu_reload"
+        android:title="새로고침" />
+</menu>
