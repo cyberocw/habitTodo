@@ -77,6 +77,7 @@ public class KeywordAPI extends AsyncTask<String, Void, String> {
                 https.setHostnameVerifier(DO_NOT_VERIFY);
                 conn = https;*/
             } else {
+
                 conn = (HttpURLConnection) url.openConnection();
             }
 
@@ -152,8 +153,10 @@ public class KeywordAPI extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String result) {
         asyncDialog.dismiss();
 
-        Toast.makeText(mCtx, result, Toast.LENGTH_LONG).show();
-
+        if(result.equals("실패")) {
+            Toast.makeText(mCtx, result, Toast.LENGTH_LONG).show();
+            return;
+        }
         keywordDataManager.setDataList(this.dataList);
         keywordListAdapter.notifyDataSetChanged();
         /*Intent i = new Intent(mCtx, Intro.class);

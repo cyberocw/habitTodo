@@ -181,6 +181,16 @@ public class Const {
 				public static final String TIME = "TIME";
 			}
 		}
+		public class PARAM{
+			public static final String SUM_PORTAL_KEY = "sumPortal";
+			public static final String TIME_PORTAL_KEY = "timePortal";
+			public static final String DEFAULT = "default";
+			public static final String TOP_RANK = "topRank";
+			public static final String NAVER = "NAVER";
+			public static final String DAUM = "DAUM";
+			public static final String ZUM = "ZUM";
+		}
+
 
 	}
 

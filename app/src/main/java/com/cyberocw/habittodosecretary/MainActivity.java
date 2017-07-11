@@ -388,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
                 //fragment = new AlarmFragment();
 				//android.os.Process.killProcess(android.os.Process.myPid());
 				fragment = new KeywordFragment();
-				actionBar.setTitle(getResources().getString(R.string.nav_item_setting));
+				actionBar.setTitle(getResources().getString(R.string.nav_item_keyword));
 				mHelpMenu.setVisible(false);
 				break;
 			default:

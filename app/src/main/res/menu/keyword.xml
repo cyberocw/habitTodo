@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_time_portal"
+        android:title="누적 순위 링크 검색 엔진" />
+    <item android:id="@+id/menu_sum_portal"
+        android:title="시점 순위 링크 검색 엔진 " />
+
+</menu>

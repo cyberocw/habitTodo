@@ -62,10 +62,9 @@ public class KeywordListAdapter extends BaseAdapter {
             tvRank.setVisibility(View.GONE);
         }else{
             tvRank.setVisibility(View.VISIBLE);
-            String rankText = "";
-            Log.d(Const.DEBUG_TAG, "narver rank = " + vo.getRankNAVER());
+            String rankText = "현재 순위 : ";
             if(!TextUtils.isEmpty(vo.getRankNAVER()))
-                rankText += " N : " + vo.getRankNAVER();
+                rankText += "   N : " + vo.getRankNAVER();
             if(!TextUtils.isEmpty(vo.getRankDAUM()))
                 rankText += "   D : " + vo.getRankDAUM();
             if(!TextUtils.isEmpty(vo.getRankZUM()))

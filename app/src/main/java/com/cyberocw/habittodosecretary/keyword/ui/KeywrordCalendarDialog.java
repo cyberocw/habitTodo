@@ -23,6 +23,9 @@ import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
 import com.cyberocw.habittodosecretary.calendar.CalendarManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import butterknife.ButterKnife;
@@ -78,6 +81,13 @@ public class KeywrordCalendarDialog extends DialogFragment {
         //mCalendarView.setMinDate();
         mStrToday = CommonUtils.convertDateType(today); //today.get(Calendar.YEAR) + "" + today.get(Calendar.MONTH) + today.get(Calendar.DAY_OF_MONTH);
 
+        String minDate = "2017/07/11";
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+        try {
+            mCalendarView.setMinDate(format.parse(minDate).getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         mCalendarView.setMaxDate(today.getTimeInMillis());
 
         if(mCalendar.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH))

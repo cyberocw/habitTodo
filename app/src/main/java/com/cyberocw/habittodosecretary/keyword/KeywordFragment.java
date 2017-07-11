@@ -2,6 +2,7 @@ package com.cyberocw.habittodosecretary.keyword;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -9,8 +10,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.PopupMenu;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Xml;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -27,13 +34,18 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
 import com.cyberocw.habittodosecretary.keyword.ui.KeywrordCalendarDialog;
+import com.cyberocw.habittodosecretary.keyword.vo.KeywordVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import belka.us.androidtoggleswitch.widgets.ToggleSwitch;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -152,6 +164,31 @@ public class KeywordFragment extends Fragment {
                 refreshDate();
             }
         });
+        Button option = ButterKnife.findById(mView, R.id.btnSetting);
+        option.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popup = new PopupMenu(mCtx, v);
+                MenuInflater inflater = popup.getMenuInflater();
+                inflater.inflate(R.menu.keyword, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()){
+                            case R.id.menu_sum_portal :
+                                showSumPortal();
+                                return true;
+                            case R.id.menu_time_portal :
+                                showTimePortal();
+                                return true;
+                        }
+                        return false;
+                    }
+                });
+                popup.show();
+            }
+        });
+
     }
     /*
         SUM - 해당 simpleDate 일치하는걸 sum해줌 > typeCode 는 1이어야 함
@@ -226,6 +263,62 @@ public class KeywordFragment extends Fragment {
 
         startActivity(intent);
     }
+
+    //time 이 누적임
+    private void showTimePortal(){
+        final String items[] = { Const.KEYWORD.PARAM.NAVER, Const.KEYWORD.PARAM.DAUM, Const.KEYWORD.PARAM.ZUM };
+        AlertDialog.Builder ab = new AlertDialog.Builder(mCtx);
+        ab.setTitle("시점 검색 엔진 선택");
+        String timePortal = mPrefs.getString(Const.KEYWORD.PARAM.TIME_PORTAL_KEY, "");
+        int selectedIndex = 0;
+        for(int i = 0; i < items.length; i++){
+            if(items[i].equals(timePortal)){
+                selectedIndex = i;
+                break;
+            }
+        }
+
+        ab.setSingleChoiceItems(items, selectedIndex,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Log.d(Const.DEBUG_TAG, "whichButton="+whichButton);
+                        SharedPreferences.Editor editor = mPrefs.edit();
+                        editor.putString(Const.KEYWORD.PARAM.TIME_PORTAL_KEY, items[whichButton]);
+                        editor.commit();
+                        dialog.dismiss();
+                    }
+                });
+        ab.show();
+    }
+
+    private void showSumPortal(){
+        final String items[] = {"키워드 인기 순위가 가장 높은 검색엔진" ,  "누적 순위 선택과 동일"};
+        AlertDialog.Builder ab = new AlertDialog.Builder(mCtx);
+        ab.setTitle("검색 엔진 선택");
+        String sumPortal = mPrefs.getString(Const.KEYWORD.PARAM.SUM_PORTAL_KEY, "");
+        int selectedIndex = 0;
+
+        if(sumPortal.equals(Const.KEYWORD.PARAM.DEFAULT)){
+            selectedIndex = 1;
+        }
+
+        ab.setSingleChoiceItems(items, selectedIndex,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        SharedPreferences.Editor editor = mPrefs.edit();
+                        if(whichButton == 0)
+                            editor.putString(Const.KEYWORD.PARAM.SUM_PORTAL_KEY, Const.KEYWORD.PARAM.TOP_RANK);
+                        else
+                            editor.putString(Const.KEYWORD.PARAM.SUM_PORTAL_KEY, Const.KEYWORD.PARAM.DEFAULT);
+
+
+                        editor.commit();
+                        dialog.dismiss();
+                    }
+                });
+        ab.show();
+    }
+
     public interface RefreshKeyword{
         void refreshKeyword();
     }
@@ -237,13 +330,56 @@ public class KeywordFragment extends Fragment {
     private class ListViewItemClickListener implements AdapterView.OnItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
             //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://search.naver.com/search.naver?query=" + mKeywordDataManager.getItem(position).getKeyword()));
-            String url = "https://search.naver.com/search.naver?query=" + mKeywordDataManager.getItem(position).getKeyword();
-            //mCtx.getApplicationContext().startActivity(intent);
+            String keyword;
+            try {
+                keyword = URLEncoder.encode(mKeywordDataManager.getItem(position).getKeyword(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                keyword = mKeywordDataManager.getItem(position).getKeyword();
+            }
 
-            openWebView(url);
+            String url ; //+ keyword;
 
+            Log.d(Const.DEBUG_TAG, "getToggleMode() = " + getToggleMode() + " mPrefs.getString(Const.KEYWORD.PARAM.TIME_PORTAL_KEY, Const.KEYWORD.PARAM.DEFAULT)="+mPrefs.getString(Const.KEYWORD.PARAM.SUM_PORTAL_KEY, Const.KEYWORD.PARAM.TOP_RANK));
+            if(getToggleMode().equals(Const.KEYWORD.API.MODE.TIME) || mPrefs.getString(Const.KEYWORD.PARAM.SUM_PORTAL_KEY, Const.KEYWORD.PARAM.DEFAULT).equals(Const.KEYWORD.PARAM.TOP_RANK)) {
+                String sumPortal = mPrefs.getString(Const.KEYWORD.PARAM.TIME_PORTAL_KEY, Const.KEYWORD.PARAM.NAVER);
+                switch (sumPortal) {
+                    case Const.KEYWORD.PARAM.DAUM:
+                        url = "https://m.search.daum.net/search?w=tot&q=";
+                        break;
+                    case Const.KEYWORD.PARAM.ZUM:
+                        url = "http://m.search.zum.com/search.zum?method=uni&query=";
+                        break;
+                    default:
+                        url = "https://m.search.naver.com/search.naver?query=";
+                        break;
+                }
+                url += keyword;
+                //mCtx.getApplicationContext().startActivity(intent);
+            }
+            else{
+                KeywordVO vo = mKeywordDataManager.getItem(position);
+                int naver = 20, daum = 20, zum = 20;
+                if(!TextUtils.isEmpty(vo.getRankNAVER()))
+                    naver = Integer.parseInt(vo.getRankNAVER());
+                if(!TextUtils.isEmpty(vo.getRankDAUM()))
+                    daum = Integer.parseInt(vo.getRankDAUM());
+                if(!TextUtils.isEmpty(vo.getRankZUM()))
+                    zum = Integer.parseInt(vo.getRankZUM());
+
+                Log.d(Const.DEBUG_TAG, "naver =" + naver + " daum=" + daum + " zum="+zum);
+
+                if(daum < naver && daum <= zum)
+                    url = "https://m.search.daum.net/search?w=tot&q=";
+                else if(zum < naver && zum <= daum)
+                    url = "http://m.search.zum.com/search.zum?method=uni&query=";
+                else
+                    url = "https://m.search.naver.com/search.naver?query=";
+
+                url += keyword;
+            }
+             openWebView(url);
 
         }
     }
