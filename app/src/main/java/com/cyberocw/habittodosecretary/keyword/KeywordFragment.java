@@ -341,8 +341,7 @@ public class KeywordFragment extends Fragment {
 
             String url ; //+ keyword;
 
-            Log.d(Const.DEBUG_TAG, "getToggleMode() = " + getToggleMode() + " mPrefs.getString(Const.KEYWORD.PARAM.TIME_PORTAL_KEY, Const.KEYWORD.PARAM.DEFAULT)="+mPrefs.getString(Const.KEYWORD.PARAM.SUM_PORTAL_KEY, Const.KEYWORD.PARAM.TOP_RANK));
-            if(getToggleMode().equals(Const.KEYWORD.API.MODE.TIME) || mPrefs.getString(Const.KEYWORD.PARAM.SUM_PORTAL_KEY, Const.KEYWORD.PARAM.DEFAULT).equals(Const.KEYWORD.PARAM.TOP_RANK)) {
+            if(getToggleMode().equals(Const.KEYWORD.API.MODE.TIME) || mPrefs.getString(Const.KEYWORD.PARAM.SUM_PORTAL_KEY, Const.KEYWORD.PARAM.TOP_RANK).equals(Const.KEYWORD.PARAM.DEFAULT)) {
                 String sumPortal = mPrefs.getString(Const.KEYWORD.PARAM.TIME_PORTAL_KEY, Const.KEYWORD.PARAM.NAVER);
                 switch (sumPortal) {
                     case Const.KEYWORD.PARAM.DAUM:
