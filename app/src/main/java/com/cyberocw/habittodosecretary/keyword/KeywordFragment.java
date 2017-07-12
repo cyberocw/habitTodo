@@ -268,7 +268,7 @@ public class KeywordFragment extends Fragment {
     private void showTimePortal(){
         final String items[] = { Const.KEYWORD.PARAM.NAVER, Const.KEYWORD.PARAM.DAUM, Const.KEYWORD.PARAM.ZUM };
         AlertDialog.Builder ab = new AlertDialog.Builder(mCtx);
-        ab.setTitle("시점 검색 엔진 선택");
+        ab.setTitle("누적 순위 검색 엔진");
         String timePortal = mPrefs.getString(Const.KEYWORD.PARAM.TIME_PORTAL_KEY, "");
         int selectedIndex = 0;
         for(int i = 0; i < items.length; i++){
@@ -292,9 +292,9 @@ public class KeywordFragment extends Fragment {
     }
 
     private void showSumPortal(){
-        final String items[] = {"키워드 인기 순위가 가장 높은 검색엔진" ,  "누적 순위 선택과 동일"};
+        final String items[] = {"해당 키워드 순위가 높은 검색엔진" ,  "누적 순위 엔진과 동일"};
         AlertDialog.Builder ab = new AlertDialog.Builder(mCtx);
-        ab.setTitle("검색 엔진 선택");
+        ab.setTitle("시점 순위 링크 검색 엔진");
         String sumPortal = mPrefs.getString(Const.KEYWORD.PARAM.SUM_PORTAL_KEY, "");
         int selectedIndex = 0;
 

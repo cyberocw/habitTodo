@@ -28,14 +28,14 @@
             android:textSize="12sp"
             android:text="포털 순위"
             />
-
     </LinearLayout>
     <LinearLayout
         android:layout_width="40dp"
         android:layout_height="match_parent"
         android:layout_marginLeft="-40dp"
-        android:gravity="right">
-
+        android:gravity="right"
+        android:visibility="gone"
+        >
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
