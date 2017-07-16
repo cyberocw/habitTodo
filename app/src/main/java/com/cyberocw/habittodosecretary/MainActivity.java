@@ -34,6 +34,7 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.CategoryDataManager;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
+import com.cyberocw.habittodosecretary.dashboard.DashboardFragment;
 import com.cyberocw.habittodosecretary.intro.Intro;
 import com.cyberocw.habittodosecretary.keyword.KeywordFragment;
 import com.cyberocw.habittodosecretary.memo.MemoDataManager;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	private long backPressedTime = 0;
 	private MenuItem mHelpMenu = null;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,9 +85,6 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	    mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
 	    mNavigationView.setNavigationItemSelectedListener(this);
 
-		//MobileAds.initialize(this, "ca-app-pub-8072677228798230/9898207305"); // real
-		//MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713"); // test
-
 		AdView adView = (AdView) findViewById(R.id.adView);
 		AdRequest adRequest = new AdRequest.Builder()
 				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
@@ -99,6 +98,20 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 		initMainActivity(getIntent());
     }
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+
+
+		super.onRestoreInstanceState(savedInstanceState);
+
+	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -138,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		Fragment fragment;
 
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "ocw vintent = " + intent + " get extras = " + intent.getExtras());
-
+		//시작하는 경우는 최초 실행, 메모보기, 알림 연장 의 경우로 아 래 로직을 탐
 		if(intent != null && intent.getExtras() != null) {
 			Bundle bundle = intent.getExtras();
 			if (bundle.containsKey(Const.PARAM.REQ_CODE)) {
@@ -165,8 +178,10 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				fragment = new AlarmFragment();
 			}
 			fragment.setArguments(bundle);
-		}else
-			fragment = new AlarmFragment();
+		}else {
+			fragment = new DashboardFragment();
+			actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
+		}
 
 
 		fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -271,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				dialog.dismiss();     //닫기
 			}
 		});
-		alert.setMessage("여러 포털 사이트들의 시간대별 실시간 인기 키워드 및 하루 누적 키워드를 종합한 순위를 볼 수 있는 기능이 업데이트 되었습니다.\n\n이제 오늘의 이슈/트렌드를 놓치지 마세요.");
+		alert.setMessage("대시보드 화면과 여러 포털 사이트의 시간대별 인기 키워드 종합 순위를 볼 수 있는 기능이 업데이트 되었습니다.\n\n앞으로도 기능들이 업데이트 될 예정입니다. 많은 이용 바랍니다.");
 		alert.show();
 	}
 
@@ -361,6 +376,10 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		Fragment fragment = null;
 		//int id = item.getItemId();
 		switch (id) {
+			case R.id.nav_item_dashboard:
+				fragment = new DashboardFragment();
+				actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
+				break;
 			case R.id.nav_item_alaram:
 				fragment = new AlarmFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
@@ -385,8 +404,6 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				mHelpMenu.setVisible(false);
 				break;
 			case R.id.nav_item_keyword:
-                //fragment = new AlarmFragment();
-				//android.os.Process.killProcess(android.os.Process.myPid());
 				fragment = new KeywordFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_keyword));
 				mHelpMenu.setVisible(false);

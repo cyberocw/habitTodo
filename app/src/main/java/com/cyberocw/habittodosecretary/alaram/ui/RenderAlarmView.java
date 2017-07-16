@@ -17,6 +17,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
@@ -33,6 +34,10 @@ import butterknife.ButterKnife;
 
 public class RenderAlarmView {
     public static void RenderAlarmView(final Context ctx, final AlarmFragment mMainFragment, final AlarmDataManager mManager, final AlarmVO vo, View convertView, int listViewType, int position){
+        boolean isDashboard = false;
+        if(mMainFragment == null)
+            isDashboard = true;
+
         SharedPreferences prefs = ctx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
         String text = prefs.getString(Const.PARAM.ALARM_ID, null);
         String[] arrAlarmId = null;
@@ -41,24 +46,12 @@ public class RenderAlarmView {
             if (arrAlarmId.length == 0)
                 arrAlarmId[0] = text;
         }
-
-        /*if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT)
-            convertView.setBackgroundResource(R.color.background_repeat);
-        else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE)
-            convertView.setBackgroundResource(R.color.background_date);
-        else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
-            convertView.setBackgroundResource(R.color.background_postphone_date);
-        else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT_MONTH)
-            convertView.setBackgroundResource(R.color.background_repeat_day);*/
-
         ToggleButton dateToggleBtn = (ToggleButton) convertView.findViewById(R.id.timeText);
         LinearLayout listViewTextWrap = (LinearLayout) convertView.findViewById(R.id.listViewTextWrap);
         if(position == mManager.getCount()-1){
-            //float scale = ctx.getResources().getDisplayMetrics().density;
             int padding = ctx.getResources().getDimensionPixelOffset(R.dimen.listViewBottom);
-            //int dpAsPixels = (int) (40 * scale + 0.5f);
-
-            listViewTextWrap.setPadding(0, 0, 0, padding);
+            if(!isDashboard)
+                listViewTextWrap.setPadding(0, 0, 0, padding);
         }else{
             listViewTextWrap.setPadding(0, 0, 0, 0);
         }
@@ -82,10 +75,13 @@ public class RenderAlarmView {
 
                 //동일 아이디일 경우만 처리
                 if (Long.valueOf(arrAlarmId[i]) == vo.getId()) {
-                    long timeStamp = prefs.getLong(Const.PARAM.ALARM_ID_TIME_STAMP, 0);
-                    ArrayList<Integer> arrAlarmCallList = vo.getAlarmCallList();
-
-                    for (int k = 0; k < arrAlarmCallList.size(); k++) {
+                    Drawable img = ContextCompat.getDrawable(ctx, R.drawable.ic_chevron_right_black_24dp);
+                    dateToggleBtn.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+                    /*
+                        long timeStamp = prefs.getLong(Const.PARAM.ALARM_ID_TIME_STAMP, 0);
+                        ArrayList<Integer> arrAlarmCallList = vo.getAlarmCallList();
+                        어짜피 알람 단위로 아이콘이 표시되지 -5 분 앞에 표시가 아니라 아래 로직은 불필요
+                        for (int k = 0; k < arrAlarmCallList.size(); k++) {
                         Calendar cal = (Calendar) alarmDate.clone();
                         cal.add(Calendar.MINUTE, arrAlarmCallList.get(k));
                         if(timeStamp == cal.getTimeInMillis()){
@@ -96,7 +92,7 @@ public class RenderAlarmView {
                         }
                     }
                     if(isFind)
-                        break;
+                        break;*/
                 }
             }
         }
@@ -104,39 +100,50 @@ public class RenderAlarmView {
             Drawable img = ContextCompat.getDrawable(ctx, R.drawable.toggle_timer);
             dateToggleBtn.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
         }
-
         ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);
-        btnOption.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //AlarmVO vo = mManager.getItem(position);
-                if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE) {
-                    mMainFragment.deleteItemAlertDialog(vo.getId());
+
+        if(isDashboard == false) {
+            btnOption.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //AlarmVO vo = mManager.getItem(position);
+                    if (vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE) {
+                        mMainFragment.deleteItemAlertDialog(vo.getId());
+                    } else
+                        mMainFragment.longClickPopup(0, vo.getId());
                 }
-                else
-                    mMainFragment.longClickPopup(0, vo.getId());
-            }
-        });
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //AlarmVO vo = mManager.getItem(position);
+            });
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //AlarmVO vo = mManager.getItem(position);
 
-                if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE){
-                    mMainFragment.deleteItemAlertDialog(vo.getId());
+                    if (vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE) {
+                        mMainFragment.deleteItemAlertDialog(vo.getId());
+                    } else
+                        mMainFragment.showNewAlarmDialog(vo.getId());
                 }
-                else
-                    mMainFragment.showNewAlarmDialog(vo.getId());
-            }
-        });
+            });
+        }
+        else{
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //AlarmVO vo = mManager.getItem(position);
+                    Log.d(Const.DEBUG_TAG, "nav item activity gogo");
+                    ((MainActivity) ctx).onNavigationItemSelected(R.id.nav_item_alaram);
 
-
+                }
+            });
+            btnOption.setVisibility(View.GONE);
+        }
 
         if(vo.getUseYn() == 1)
             dateToggleBtn.setChecked(true);
         else
             dateToggleBtn.setChecked(false);
 
+        final boolean finalIsDashboard = isDashboard;
         dateToggleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,7 +153,8 @@ public class RenderAlarmView {
 
                 if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE){
                     btn.setChecked(true);
-                    mMainFragment.deleteItemAlertDialog(vo.getId());
+                    if(finalIsDashboard == false)
+                        mMainFragment.deleteItemAlertDialog(vo.getId());
                     return;
                 }
 
@@ -160,7 +168,8 @@ public class RenderAlarmView {
                 else {
                     mManager.resetMinAlarmCall(vo.getAlarmDateType());
                 }
-                mMainFragment.refreshAlarmList();
+                if(finalIsDashboard == false)
+                    mMainFragment.refreshAlarmList();
             }
         });
 
@@ -172,6 +181,19 @@ public class RenderAlarmView {
         TextView tvGroupTitle = ButterKnife.findById(convertView, R.id.tvGroupTitle);
 
         boolean headerVisible = false;
+
+/*
+        TextView tvDayTitle = ButterKnife.findById(convertView, R.id.tvDayTitle);
+        //대시 보드
+        if(isDashboard){
+            tvDayTitle.setVisibility(View.VISIBLE);
+            vo.getAlarmDateType()
+            tvDayTitle.setText();
+            headerVisible = true;
+        }else{
+            tvDayTitle.setVisibility(View.GONE);
+        }
+*/
 
         if(listViewType == Const.ALARM_LIST_VIEW_TYPE.LIST){
 

@@ -189,6 +189,9 @@ public class Const {
 			public static final String NAVER = "NAVER";
 			public static final String DAUM = "DAUM";
 			public static final String ZUM = "ZUM";
+			public static final String PREFS_CACHE = "KEYWORD_CACHE";
+			public static final String PREFS = "KEYWORD_PREFS";
+			public static final String VIEW_MODE = "viewMode";
 		}
 
 

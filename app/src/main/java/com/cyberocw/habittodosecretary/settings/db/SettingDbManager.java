@@ -132,21 +132,6 @@ public class SettingDbManager extends DbHelper {
 
     }
 
-    public ArrayList<HolidayVO> getHolidayList(int year){
-        String selectQuery = " SELECT * FROM " + TABLE_HOLIDAY  ;//+ " where year = " + year;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        ArrayList<HolidayVO> list = new ArrayList<HolidayVO>();
-
-        list = bindVO(c);
-
-        c.close();
-        this.close();
-        return list;
-    }
-
     private ArrayList<HolidayVO> bindVO(Cursor c){
         ArrayList<HolidayVO> list = new ArrayList<HolidayVO>();
 

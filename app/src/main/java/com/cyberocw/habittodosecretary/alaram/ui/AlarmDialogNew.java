@@ -168,45 +168,16 @@ public class AlarmDialogNew extends DialogFragment{
 		});
 		return mView;
 	}
-/*
+
 	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		Crashlytics.log(Log.DEBUG, this.toString(), " onCreateDialog ");
-
-		AlertDialog.Builder b=  new  AlertDialog.Builder(getActivity())
-				.setTitle("알림 추가")
-				.setPositiveButton("OK",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								returnData();
-							}
-						}
-				)
-				.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								dialog.dismiss();
-							}
-						}
-				);
-
-		LayoutInflater inflater = getActivity().getLayoutInflater();
-		View view = inflater.inflate(R.layout.fragment_dialog_alarm_add, null);
-		mView = view;
-
-
-		b.setView(view);
-		Dialog dialog = b.create();
-		dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-		mDialog = dialog;
-
-
-		return dialog;
-
-	}*/
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putAll(getArguments());
+		super.onSaveInstanceState(outState);
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 		Crashlytics.log(Log.DEBUG, this.toString(), " onActivityCreated ");
 
 		if(savedInstanceState != null){
@@ -214,7 +185,14 @@ public class AlarmDialogNew extends DialogFragment{
 		}
 
 		mCtx = getActivity();
-		Bundle arguments = getArguments();
+
+		Bundle arguments = null;
+
+		if(getArguments() != null)
+			arguments = getArguments();
+		else if(savedInstanceState != null){
+			arguments = savedInstanceState;
+		}
 
 		if(arguments != null) {
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.PARAM.ALARM_VO);
@@ -255,8 +233,6 @@ public class AlarmDialogNew extends DialogFragment{
 		}
 
 		CommonUtils.setupUI(mView, getActivity());
-
-		super.onActivityCreated(savedInstanceState);
 	}
 
 	private void init(){
@@ -1067,14 +1043,6 @@ public class AlarmDialogNew extends DialogFragment{
 			}
 		}
 	}*/
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		//outState.put
-
-
-		super.onSaveInstanceState(outState);
-	}
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {

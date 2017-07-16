@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -121,6 +122,13 @@ public class AlarmFragment extends Fragment{
 	}
 
 	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putInt(Const.PARAM.MODE, mMode);
+		outState.putLong(Const.PARAM.ALARM_ID, mAlarmId);
+
+		super.onSaveInstanceState(outState);
+	}
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
@@ -131,6 +139,13 @@ public class AlarmFragment extends Fragment{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
+
+		if(savedInstanceState != null){
+			mMode = savedInstanceState.getInt(Const.PARAM.MODE);
+			mAlarmId = savedInstanceState.getLong(Const.PARAM.ALARM_ID);
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " alarm fragment mMode = get Arguments = " + mMode + " al id= " + mAlarmId);
+		}
+
 		mDateTv = (TextView) mView.findViewById(R.id.dateView);
 		mCtx = getActivity();
 		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
@@ -178,7 +193,6 @@ public class AlarmFragment extends Fragment{
 			mMode = -1;
 			mAlarmId = -1;
 		}
-
 		bindEvent();
 	}
 
@@ -880,5 +894,6 @@ public class AlarmFragment extends Fragment{
 		// TODO: Update argument type and name
 		void onFragmentInteraction(Uri uri);
 	}
+
 
 }

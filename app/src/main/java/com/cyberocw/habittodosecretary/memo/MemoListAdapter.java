@@ -76,7 +76,7 @@ public class MemoListAdapter extends BaseAdapter {
 
 		LinearLayout listViewTextWrap = (LinearLayout) convertView.findViewById(R.id.listViewTextWrap);
 		int padding = mCtx.getResources().getDimensionPixelOffset(R.dimen.memoListViewPadding);
-		if(position == mManager.getCount()-1){
+		if(position == mManager.getCount()-1 && mManager.mCnt == 0){
 			//float scale = ctx.getResources().getDisplayMetrics().density;
 			int paddingBottom = mCtx.getResources().getDimensionPixelOffset(R.dimen.listViewBottom);
 			listViewTextWrap.setPadding(padding, padding, padding, paddingBottom);
@@ -95,13 +95,18 @@ public class MemoListAdapter extends BaseAdapter {
 		}
 
 		ImageButton ibtn = (ImageButton) convertView.findViewById(R.id.memoOptionButton);
-		ibtn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				longClickPopup(position, mManager.getItem(position).getId());
-			}
-		});
 
+		if(mManager.mCnt > 0){
+			ibtn.setVisibility(View.GONE);
+		}
+		else {
+			ibtn.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					longClickPopup(position, mManager.getItem(position).getId());
+				}
+			});
+		}
 		return convertView;
 	}
 

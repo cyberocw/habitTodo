@@ -40,7 +40,7 @@ public class AlarmListAdapter extends BaseAdapter implements AlarmListAdapterInt
 
 	@Override
 	public Object getItem(int position) {
-		return mManager.getItem(position).getAlarmTitle();
+		return mManager.getItem(position);
 	}
 
 	@Override
@@ -57,8 +57,6 @@ public class AlarmListAdapter extends BaseAdapter implements AlarmListAdapterInt
 		}
 
 		RenderAlarmView.RenderAlarmView(mCtx, mMainFragment, mManager, vo, convertView, Const.ALARM_LIST_VIEW_TYPE.LIST, position);
-
-
 
 		return convertView;
 	}

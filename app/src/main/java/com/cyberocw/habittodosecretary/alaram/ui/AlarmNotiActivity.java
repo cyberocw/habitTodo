@@ -215,6 +215,9 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		Log.d(this.toString(), "on autoPostpone");
 
 		AlarmDataManager alarmDataManager = new AlarmDataManager(mCtx);
+		if(mAlarmId == -1)
+			return;
+
 		final AlarmVO alarmVO = alarmDataManager.getItemByIdInDB(mAlarmId);
 		ArrayList<Integer> arrAlarmCall = new ArrayList<Integer>();
 		arrAlarmCall.add(0);

@@ -496,12 +496,7 @@ public class AlarmDbManager extends DbHelper{
 	 * */
 	public ArrayList<AlarmVO> getAlarmList(Calendar date){
 		int[] day = {date.get(Calendar.DAY_OF_WEEK)};
-		Calendar c = Calendar.getInstance();
-		c.setTime(date.getTime());
-		c.add(Calendar.DAY_OF_MONTH, 1);
-
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "getAlarmList only startDate");
-
 		return getAlarmList(-1, date, null, day);
 	}
 	public ArrayList<AlarmVO> getAlarmList(Calendar startDate, Calendar endDate){
@@ -581,7 +576,7 @@ public class AlarmDbManager extends DbHelper{
 				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE " + KEY_REPEAT_DAY +
 						" = " + startDate.get(Calendar.DAY_OF_MONTH) + " ) ";
 			}
-			//////// 날짜 지정 알림에서 불러옴 - 주간 달력에 settime 유형 o 표시 위함
+			//////// 날짜 지정 알림에서 불러옴 - 주간 달력에 settime 유형 o 표시 위함 -> 주간 날짜 지정 알림만 가져옴
 			else if (startDate != null && endDate != null) {
 				selectQuery += " (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
 						KEY_ALARM_DATE + " BETWEEN " + CommonUtils.convertDateType(startDate) + " AND " + CommonUtils.convertDateType(endDate) + ")";

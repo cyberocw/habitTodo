@@ -89,11 +89,14 @@ public class KeywordFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
         mCtx = getActivity();
-
+        mPrefs = mCtx.getSharedPreferences(Const.KEYWORD.PARAM.PREFS, Context.MODE_PRIVATE);
         initActivity();
         Fabric.with(mCtx, new Crashlytics());
     }
-
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
     private void initActivity(){
         mKeywordDataManager = new KeywordDataManager(mCtx);
         mKeywordAdapter = new KeywordListAdapter( mCtx, mKeywordDataManager);
@@ -103,7 +106,9 @@ public class KeywordFragment extends Fragment {
         lv.setOnItemClickListener(new ListViewItemClickListener());
 
         mToggleSwitch = ButterKnife.findById(mView, R.id.toggleKeywordType);
-        mToggleSwitch.setCheckedTogglePosition(1);
+        String viewMode = mPrefs.getString(Const.KEYWORD.PARAM.VIEW_MODE, Const.KEYWORD.API.MODE.SUM);
+        mToggleSwitch.setCheckedTogglePosition(getTogglePosition(viewMode));
+        mPrefs.edit().remove(Const.KEYWORD.PARAM.VIEW_MODE);
 
         mSimpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
 
@@ -118,8 +123,6 @@ public class KeywordFragment extends Fragment {
         mTvDate = ButterKnife.findById(mView, R.id.dateView);
 
         getData();
-
-        mPrefs = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 
         bindBtnEvent();
     }
@@ -204,11 +207,6 @@ public class KeywordFragment extends Fragment {
         mTvDate.setText(strDate);
     }
     private void getData(){
-
-        if(mCalendar == null){
-            mCalendar = Calendar.getInstance();
-        }
-
         refreshDate();
 
         String mode = getToggleMode();
@@ -243,7 +241,13 @@ public class KeywordFragment extends Fragment {
         else
             return Const.KEYWORD.API.MODE.SUM;
     }
+    private int getTogglePosition(String mode){
 
+        if(mode.equals(Const.KEYWORD.API.MODE.TIME))
+            return 0;
+        else
+            return 1;
+    }
     private void changeDate(Calendar cal){
         mCalendar = cal;
         mTvDate.setText(CommonUtils.convertKeywordDateType(cal));
@@ -327,7 +331,7 @@ public class KeywordFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-    private class ListViewItemClickListener implements AdapterView.OnItemClickListener{
+    public class ListViewItemClickListener implements AdapterView.OnItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://search.naver.com/search.naver?query=" + mKeywordDataManager.getItem(position).getKeyword()));

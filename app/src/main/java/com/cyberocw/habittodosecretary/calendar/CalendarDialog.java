@@ -48,7 +48,12 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+       outState.putAll(getArguments());
 
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -71,6 +76,11 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
 
         Bundle bundle = getArguments();
         if (bundle != null) {
+            String selectedDay = bundle.getString("selectedDate");
+            mCalendar = CommonUtils.convertDateType(selectedDay);
+        }
+        else if(savedInstanceState != null){
+            bundle = savedInstanceState;
             String selectedDay = bundle.getString("selectedDate");
             mCalendar = CommonUtils.convertDateType(selectedDay);
         }

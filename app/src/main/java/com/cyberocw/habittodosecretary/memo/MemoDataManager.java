@@ -21,6 +21,7 @@ public class MemoDataManager {
 	ArrayList<MemoVO> dataList = null;
 	String mSortOption = "";
 	long mCateId = -1;
+    int mCnt = 0;
 
 	public MemoDataManager(Context ctx) {
 		mCtx = ctx;
@@ -37,6 +38,16 @@ public class MemoDataManager {
 		makeDataList(mCateId, mSortOption);
 	}
 
+	public MemoDataManager(Context ctx, Long cateId, int cnt) {
+		mCtx = ctx;
+		mDb = MemoDbManager.getInstance(ctx);
+		mCateId = cateId;
+        mCnt = cnt;
+		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+		mSortOption = prefs.getString(Const.MEMO.SORT_KEY, Const.MEMO.SORT_REG_DATE_DESC);
+		makeDataList(mCateId, mSortOption, mCnt);
+	}
+
 	public void refreshData(){
 		makeDataList(mCateId, mSortOption);
 	}
@@ -48,10 +59,17 @@ public class MemoDataManager {
 	public void makeDataList(){
 		this.dataList = mDb.getList();
 	}
+	public void makeDataList(int cnt){
+		this.dataList = mDb.getList(cnt);
+	}
+
+	public void makeDataList(Long cateId, String sortOption, int cnt){
+		dataList = mDb.getListByCate(cateId, sortOption, cnt);
+		cachedDataList = (ArrayList) dataList.clone();
+	}
 
 	public void makeDataList(Long cateId, String sortOption){
-		dataList = mDb.getListByCate(cateId, sortOption);
-		cachedDataList = (ArrayList) dataList.clone();
+		this.makeDataList(cateId, sortOption, 0);
 	}
 
 	public void setDataList(ArrayList<MemoVO> dataList) {

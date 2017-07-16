@@ -145,5 +145,6 @@
     <string name="ex_memo_cont">bottled water\nIce cream\nmelon</string>
     <string name="alarm_msg_move_memo">If you move to the memo screen, the alarms that have not been saved will disappear. \nGo to the notes screen?</string>
     <string name="keyword">nav_item_keyword</string>
+    <string name="nav_item_dashboard">Dashboard</string>
 
 </resources>

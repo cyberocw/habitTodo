@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -72,6 +73,109 @@ public class AlarmDataManager {
 	public void makeDataList(Calendar cal){
 		this.dataList = mDb.getAlarmList(cal);
 		makeGroupDataList();
+	}
+
+	public void makeDataListDashboard(){
+		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+		String text = prefs.getString(Const.PARAM.ALARM_ID, null);
+		String[] arrAlarmId = null;
+		if(text != null && !"".equals(text)) {
+			arrAlarmId = text.split(",");
+			if (arrAlarmId.length == 0)
+				arrAlarmId[0] = text;
+		}
+		this.dataList = new ArrayList<AlarmVO>();
+
+		if(arrAlarmId != null) {
+			AlarmVO vo = mDb.getAlarmById(Long.valueOf(arrAlarmId[0]));
+
+			// 이후 알람이 없을 경우, 마지막 알람이 prefs에 남아있음 그래서 검증 필요 지난 알림인지
+			int dateType = vo.getAlarmDateType();
+			if(dateType == Const.ALARM_DATE_TYPE.REPEAT || dateType == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
+				this.dataList.add(vo);
+				return;
+			}
+			ArrayList<Calendar> arrAlarmDate = vo.getAlarmDateList();
+			Calendar alarmDate = null;
+			if(arrAlarmDate == null && arrAlarmDate.size() == 0)
+				return;
+
+			alarmDate = arrAlarmDate.get(0);
+			alarmDate.set(Calendar.HOUR_OF_DAY, vo.getHour());
+			alarmDate.set(Calendar.MINUTE, vo.getMinute());
+
+			ArrayList<Integer> arrAlarmCall = vo.getAlarmCallList();
+			int temp;
+			Calendar now = Calendar.getInstance();
+			if(arrAlarmCall != null) {
+				for (int i = 0; i < arrAlarmCall.size(); i++) {
+					temp = arrAlarmCall.get(i);
+					Calendar c = (Calendar) alarmDate.clone();
+					c.add(Calendar.MINUTE, temp);
+					//현재 이후 알림이 있으면 추가하고 종료
+					if(now.getTimeInMillis() < c.getTimeInMillis()){
+						this.dataList.add(vo);
+						return;
+					}
+				}
+			}
+
+			//this.dataList.add(vo);
+		}
+	}
+
+	public void makeDataListDashboard_backup(){
+		int MAX_ALARM_CNT = 1;
+
+		Crashlytics.log(Log.DEBUG, this.toString(), "makeDataListDashboard start");
+		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+		String text = prefs.getString(Const.PARAM.ALARM_ID, null);
+		String[] arrAlarmId = null;
+		if(text != null && !"".equals(text)) {
+			arrAlarmId = text.split(",");
+			if (arrAlarmId.length == 0)
+				arrAlarmId[0] = text;
+		}
+
+		ArrayList<AlarmVO> arr = this.dataList;
+		ArrayList<AlarmVO> newArr = new ArrayList<AlarmVO>();
+		int addCnt = -1;
+		for(int i = 0 ; i< arr.size(); i++){
+			if(addCnt == -1 && Arrays.binarySearch(arrAlarmId, String.valueOf(arr.get(i).getId())) > -1){
+				addCnt = 0;
+			}
+			if(addCnt >= 0){
+				newArr.add(arr.get(i));
+				addCnt++;
+
+				if(addCnt == MAX_ALARM_CNT) {
+					break;
+				}
+			}
+		}
+
+		this.dataList = newArr;
+
+		if(addCnt < MAX_ALARM_CNT){
+			Calendar today = Calendar.getInstance();
+			int whileCnt = 0;
+			while (addCnt < MAX_ALARM_CNT && whileCnt < 6) {
+				int max = MAX_ALARM_CNT - addCnt;
+				ArrayList<AlarmVO> arrList = getTomorrowAlarmList(today);
+				for (int i = 0; i < Math.min(arrList.size(), max); i++) {
+					this.dataList.add(arrList.get(i));
+					addCnt++;
+				}
+				whileCnt++;
+			}
+		}
+
+		Log.d(Const.DEBUG_TAG, "this.dataList= size="+this.dataList.size() + " text alarmId =" + text + "  vo = " + this.dataList.get(0).getId());
+	}
+
+	private ArrayList<AlarmVO> getTomorrowAlarmList(Calendar calendar){
+		calendar.add(Calendar.DAY_OF_MONTH, 1);
+		return mDb.getAlarmList(calendar);
 	}
 
 	private void makeGroupDataList(){

@@ -3,13 +3,12 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp"
+    android:padding="10dp"
     android:descendantFocusability="blocksDescendants"
     >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginRight="40dp"
         android:orientation="vertical"
         >
         <TextView
@@ -17,8 +16,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/tvKeywordTitle"
             android:text="1 : 오지존"
+            android:lines="1"
+            android:ellipsize="end"
             android:padding="2dp"
             android:textStyle="bold"
+            android:textSize="12sp"
             android:typeface="sans"/>
         <TextView
             android:id="@+id/tvPortalRank"
@@ -28,18 +30,5 @@
             android:textSize="11sp"
             android:text="순위: N : 1 D : 2 Z : 1"
             />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="40dp"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="-40dp"
-        android:gravity="right"
-        android:visibility="gone"
-        >
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/optionButton"
-            android:background="@drawable/ic_action_overflow"/>
     </LinearLayout>
 </LinearLayout>

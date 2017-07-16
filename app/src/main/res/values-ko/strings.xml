@@ -137,10 +137,11 @@
     <string name="confirm_msg_quit">정말 종료하시겠습니까?</string>
     <string name="title_activity_intro">인트로</string>
     <string name="category_memo_count">개 메모</string>
-    <string name="ex_alarm_title">예시) 알람</string>
+    <string name="ex_alarm_title">예시) 알람 - TTS 엔진이 여러개인 경우 선택 팝업이 뜹니다.</string>
     <string name="ex_memo_title">예시)슈퍼에서 살것</string>
     <string name="ex_memo_cont">생수\n아이스크림\n두부\n참기름</string>
     <string name="alarm_msg_move_memo">메모 화면으로 이동하면 저장하지 않은 알람 내용은 사라집니다.\n메모 화면으로 이동하시겠습니까?</string>
     <string name="alarm_no_title">(제목 없음)</string>
     <string name="keyword">nav_item_keyword</string>
+    <string name="nav_item_dashboard">Dashboard</string>
 </resources>
