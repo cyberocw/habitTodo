@@ -85,9 +85,12 @@ public class AlarmDataManager {
 				arrAlarmId[0] = text;
 		}
 		this.dataList = new ArrayList<AlarmVO>();
-
+		Log.d(Const.ERROR_TAG, "arrAlarmId="+arrAlarmId[0]);
 		if(arrAlarmId != null) {
 			AlarmVO vo = mDb.getAlarmById(Long.valueOf(arrAlarmId[0]));
+
+			if(vo == null)
+				return;
 
 			// 이후 알람이 없을 경우, 마지막 알람이 prefs에 남아있음 그래서 검증 필요 지난 알림인지
 			int dateType = vo.getAlarmDateType();

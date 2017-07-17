@@ -60,13 +60,13 @@ public class RenderAlarmView {
         dateToggleBtn.setTextOff(vo.getTimeText());
 
         boolean isFind = false;
-
+/*
         Calendar alarmDate = (Calendar) mManager.mCalendar.clone();
 
         alarmDate.set(Calendar.MINUTE, vo.getMinute());
         alarmDate.set(Calendar.HOUR_OF_DAY, vo.getHour());
         alarmDate.set(Calendar.SECOND, 0);
-        alarmDate.set(Calendar.MILLISECOND, 0);
+        alarmDate.set(Calendar.MILLISECOND, 0);*/
         //활성화된 알림 중
         if(vo.getUseYn() == 1) {
             for (int i = 0; i < arrAlarmId.length; i++) {
@@ -75,29 +75,47 @@ public class RenderAlarmView {
 
                 //동일 아이디일 경우만 처리
                 if (Long.valueOf(arrAlarmId[i]) == vo.getId()) {
-                    Drawable img = ContextCompat.getDrawable(ctx, R.drawable.ic_chevron_right_black_24dp);
+                    /*Drawable img = ContextCompat.getDrawable(ctx, R.drawable.ic_chevron_right_black_24dp);
                     dateToggleBtn.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
-                    /*
-                        long timeStamp = prefs.getLong(Const.PARAM.ALARM_ID_TIME_STAMP, 0);
-                        ArrayList<Integer> arrAlarmCallList = vo.getAlarmCallList();
-                        어짜피 알람 단위로 아이콘이 표시되지 -5 분 앞에 표시가 아니라 아래 로직은 불필요
-                        for (int k = 0; k < arrAlarmCallList.size(); k++) {
-                        Calendar cal = (Calendar) alarmDate.clone();
-                        cal.add(Calendar.MINUTE, arrAlarmCallList.get(k));
-                        if(timeStamp == cal.getTimeInMillis()){
-                            Drawable img = ContextCompat.getDrawable(ctx, R.drawable.ic_chevron_right_black_24dp);
-                            dateToggleBtn.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
-                            isFind = true;
-                            break;
+*/
+                    int dateType = vo.getAlarmDateType();
+                    if(dateType == Const.ALARM_DATE_TYPE.REPEAT || dateType == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
+                        isFind = true;
+                        break;
+                    }
+                    ArrayList<Calendar> arrAlarmDate = vo.getAlarmDateList();
+                    Calendar alarmDate2 = null;
+                    if(arrAlarmDate == null && arrAlarmDate.size() == 0) {
+                        break;
+                    }
+
+                    alarmDate2 = arrAlarmDate.get(0);
+                    alarmDate2.set(Calendar.HOUR_OF_DAY, vo.getHour());
+                    alarmDate2.set(Calendar.MINUTE, vo.getMinute());
+
+                    ArrayList<Integer> arrAlarmCall = vo.getAlarmCallList();
+                    int temp;
+                    Calendar now = Calendar.getInstance();
+                    if(arrAlarmCall != null) {
+                        for (int k = 0; k < arrAlarmCall.size(); k++) {
+                            temp = arrAlarmCall.get(k);
+                            Calendar c = (Calendar) alarmDate2.clone();
+                            c.add(Calendar.MINUTE, temp);
+                            //현재 이후 알림이 있으면 추가하고 종료
+                            if(now.getTimeInMillis() < c.getTimeInMillis()){
+                                isFind = true;
+                                break;
+                            }
                         }
                     }
-                    if(isFind)
-                        break;*/
                 }
             }
         }
         if (!isFind) {
             Drawable img = ContextCompat.getDrawable(ctx, R.drawable.toggle_timer);
+            dateToggleBtn.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+        }else{
+            Drawable img = ContextCompat.getDrawable(ctx, R.drawable.ic_chevron_right_black_24dp);
             dateToggleBtn.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
         }
         ImageButton btnOption = (ImageButton) convertView.findViewById(R.id.optionButton);

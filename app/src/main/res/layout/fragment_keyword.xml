@@ -31,7 +31,7 @@
                 <Button
                     android:id="@+id/btnPrevTime"
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_alignBaseline="@+id/dateView"
                     android:layout_alignBottom="@+id/dateView"
                     android:background="@drawable/ic_chevron_left_black_24dp"
@@ -56,7 +56,7 @@
                 <Button
                     android:id="@+id/btnNextTime"
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_alignBaseline="@+id/dateView"
                     android:layout_alignBottom="@+id/dateView"
                     android:layout_toEndOf="@+id/dateView"
@@ -86,8 +86,8 @@
 
                 <Button
                     android:id="@+id/btnSetting"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:gravity="center_vertical"
