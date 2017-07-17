@@ -171,7 +171,11 @@ public class AlarmDialogNew extends DialogFragment{
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putAll(getArguments());
+		try {
+			outState.putAll(getArguments());
+		}catch (Exception e){
+
+		}
 		super.onSaveInstanceState(outState);
 	}
 
@@ -745,7 +749,10 @@ public class AlarmDialogNew extends DialogFragment{
 			public void onClick(View v) {
 				Calendar calendar;
 				if(mModifyMode == 1 && (mAlarmDateType == Const.ALARM_DATE_TYPE.SET_DATE || mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT_MONTH)){
-					calendar = mAlarmVO.getAlarmDateList().get(0);
+					if(mAlarmVO.getAlarmDateList() != null && mAlarmVO.getAlarmDateList().size() > 0)
+						calendar = mAlarmVO.getAlarmDateList().get(0);
+					else
+						calendar = Calendar.getInstance();
 				}else{
 					calendar = Calendar.getInstance();
 				}

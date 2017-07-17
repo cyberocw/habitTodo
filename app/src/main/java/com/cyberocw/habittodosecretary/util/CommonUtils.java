@@ -90,11 +90,8 @@ public class CommonUtils {
 		if (!(view instanceof EditText)) {
 			view.setOnTouchListener(new View.OnTouchListener() {
 				public boolean onTouch(View v, MotionEvent event) {
-					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on thuch");
 					InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-
 					inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "hideSoftKeyboard");
 					return false;
 				}
 			});
@@ -114,11 +111,8 @@ public class CommonUtils {
 		if (!(view instanceof EditText)) {
 			view.setOnTouchListener(new View.OnTouchListener() {
 				public boolean onTouch(View v, MotionEvent event) {
-					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on thuch");
 					InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-
 					inputManager.hideSoftInputFromWindow(dialog.getWindow().getCurrentFocus().getWindowToken(), 0);
-					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "hideSoftKeyboard");
 					return false;
 				}
 			});
