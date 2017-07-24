@@ -6,4 +6,6 @@
         android:title="뒤로" />
     <item android:id="@+id/menu_reload"
         android:title="새로고침" />
+    <item android:id="@+id/menu_open_default"
+        android:title="기본 브라우저에서 열기" />
 </menu>

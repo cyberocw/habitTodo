@@ -20,7 +20,6 @@ public class Const {
 
     public static final boolean IS_DEBUG = false;
 
-
 	public class PARAM{
 		public static final String MODE = "mode";
 		public static final String ALARM_ID = "alarmId";
@@ -103,6 +102,16 @@ public class Const {
 		public static final int NO_DATE_TIMER = 1;
 	}
 
+	/*
+		이게 실제 사용하는 것
+	 */
+	public class ALARM_OPTION_TO_SOUND{
+		public static final int NONE = 0;
+		public static final int TTS = 1;
+		public static final int RECORD = 2;
+		public static final int FILE = 3;
+	}
+
 	public class ALARM_LIST_VIEW_TYPE {
         public static final String TAG = "alarmViewType";
 		public static final String TAG_REPEAT_EXPAND = "repeatExpand";
@@ -144,6 +153,7 @@ public class Const {
 			public static final int ADD_MEMO_MODIFY_FINISH_CODE = 1113;
 			public static final int ADD_MEMO_ETC_CODE = 1114;
 			public static final int VIEW_MEMO_ETC_CODE = 1115;
+			public static final int DEL_MEMO_FINISH_CODE = 1116;
 			public static final String ADD_MEMO_ETC_KEY = "memoEtc";
 			public static final String VIEW_MEMO_ETC_KEY = "viewMemoEtc";
 			public static final String SHARE_MEMO_MODE = "MEMO_MODE";

@@ -31,6 +31,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
@@ -119,6 +121,8 @@ public class AlarmFragment extends Fragment{
 			mAlarmId = getArguments().getLong(Const.PARAM.ALARM_ID);
             Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " alarm fragment mMode = get Arguments = " + mMode + " al id= " + mAlarmId);
 		}
+
+
 	}
 
 	@Override
@@ -194,6 +198,9 @@ public class AlarmFragment extends Fragment{
 			mAlarmId = -1;
 		}
 		bindEvent();
+
+		CommonUtils.logCustomEvent("AlarmFragment", "1", "today alarmDataCount", mAlarmDataManager.getCount());
+
 	}
 
 	private void showPostponeAlarmDialog(long id){
@@ -309,7 +316,7 @@ public class AlarmFragment extends Fragment{
 					Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 
 				try {
-					Thread.sleep(100);
+					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}finally {
@@ -404,6 +411,9 @@ public class AlarmFragment extends Fragment{
 				return true;
 			}
 		});
+
+		CommonUtils.logCustomEvent("AlarmFragment Timer", "1");
+
 	}
 	private void initAlamUi(){
 		mTvListTitle.setText("Alarm List");
@@ -429,7 +439,6 @@ public class AlarmFragment extends Fragment{
 			newLv.setAdapter((ListAdapter) mAlarmAdapter);
 			ll.addView(newLv);
 
-
 			newLv.setClickable(true);
 			newLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -438,15 +447,16 @@ public class AlarmFragment extends Fragment{
 			});
 
 			newLv.setLongClickable(true);
-			newLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			/*newLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 				@Override
 				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 					longClickPopup(position, id);
 					return true;
 				}
 			});
-
+			*/
 		}else{
+			//종류별 ui
 			mAlarmAdapter = new AlarmExListAdapter(this, mCtx, mAlarmDataManager);
 
 			View v = inflater.inflate(R.layout.expandable_list_view, null);
@@ -480,18 +490,20 @@ public class AlarmFragment extends Fragment{
 			newLv.setClickable(true);
 			newLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					Log.d(Const.DEBUG_TAG, "ex short click id="+id);
 					showNewAlarmDialog(id);
 				}
 			});
 
 			newLv.setLongClickable(true);
-			newLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			/*newLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 				@Override
 				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+					Log.d(Const.DEBUG_TAG, "ex long click id="+id);
 					longClickPopup(position, id);
 					return true;
 				}
-			});
+			});*/
 		}
 
 		//mAlarmAdapter.notifyDataSetChanged();
@@ -582,13 +594,16 @@ public class AlarmFragment extends Fragment{
 	}
 
 	public void deleteAlarm(final long id){
+		Crashlytics.log(Log.DEBUG, this.toString(), " getItemByIdInList id = " + id);
 		AlarmVO vo = mAlarmDataManager.getItemByIdInList(id);
 
+		Crashlytics.log(Log.DEBUG, this.toString(), " getItemByIdInList vo = " + vo);
+
 		if(vo == null) {
+			Toast.makeText(mCtx, "알람 데이터가 없습니다", Toast.LENGTH_SHORT).show();
 			return;
 		}
 
-		final int options = vo.getAlarmDateType();
 		mAlarmDataManager.deleteItemById(id);
 		mAlarmDataManager.resetMinAlarmCall();
 		refreshAlarmList();
@@ -770,6 +785,10 @@ public class AlarmFragment extends Fragment{
 		if(id != -1) {
 			Bundle bundle = new Bundle();
 			AlarmVO alarmVO = mAlarmDataManager.getItemByIdInList(id);
+			if(alarmVO == null){
+				Toast.makeText(mCtx, "해당 알람이 데이터베이스에 없습니다.", Toast.LENGTH_SHORT).show();
+				return;
+			}
 			if(alarmVO.getEtcType() != null && alarmVO.getEtcType().equals(Const.ETC_TYPE.MEMO)){
 				bundle.putSerializable(Const.PARAM.MEMO_VO, mMemoDataManager.getItemById(alarmVO.getRfid()));
 			}

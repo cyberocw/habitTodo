@@ -42,6 +42,8 @@ import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by cyberocw on 2015-12-14.
  */
@@ -158,12 +160,13 @@ public class MemoDialogNew extends Fragment{
 		mBtnAddAlarm = (Button) mView.findViewById(R.id.btnAddAlarm);
 		if(mAlarmVO != null)
 			mBtnAddAlarm.setText(getResources().getText(R.string.btn_memo_alarm_edit));
+
 		makeCategoryList();
 
 		bindEvent();
 		init();
 
-
+		CommonUtils.logCustomEvent("MemoDialogNew", "1");
 	}
 
 	private void init(){
@@ -306,6 +309,39 @@ public class MemoDialogNew extends Fragment{
 				bindEventSaveAndEdit();
 			}
 		});
+
+		if(mModifyMode == 1) {
+			Button delete = ButterKnife.findById(mView, R.id.btnMemoDelete);
+			delete.setVisibility(View.VISIBLE);
+			delete.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					deleteItemAlertDialog();
+				}
+			});
+		}
+	}
+
+	public void deleteItemAlertDialog(){
+		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
+		alert_confirm.setMessage(getString(R.string.fragment_memo_msg_delete_confirm)).setCancelable(false).setPositiveButton(getString(R.string.ok),
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+						returnDataDelete();
+					}
+				}).setNegativeButton(getString(R.string.cancel),
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// 'No'
+						dialog.dismiss();
+					}
+				});
+		AlertDialog alert = alert_confirm.create();
+		alert.show();
+
 	}
 
 	private void btnAddAlarmPopup(){
@@ -428,6 +464,15 @@ public class MemoDialogNew extends Fragment{
 		int returnCode = mModifyMode == 1 ? Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE : Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE;
 
 		getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
+		getActivity().getSupportFragmentManager().popBackStackImmediate();
+	}
+
+	private void returnDataDelete(){
+		Bundle bundle = new Bundle();
+		bundle.putSerializable(Const.PARAM.MEMO_VO, mMemoVO);
+		Intent intent = new Intent();
+		intent.putExtras(bundle);
+		getTargetFragment().onActivityResult(getTargetRequestCode(), Const.MEMO.MEMO_INTERFACE_CODE.DEL_MEMO_FINISH_CODE, intent);
 		getActivity().getSupportFragmentManager().popBackStackImmediate();
 	}
 

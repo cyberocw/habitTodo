@@ -47,6 +47,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,11 +68,14 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	private long backPressedTime = 0;
 	private MenuItem mHelpMenu = null;
 
+	FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+
+		Fabric.with(this, new Crashlytics());
+		mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         setContentView(R.layout.activity_main);
 
@@ -84,7 +88,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	    mDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
 	    mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
 	    mNavigationView.setNavigationItemSelectedListener(this);
-
+		if(!CommonUtils.isLocaleKo(getResources().getConfiguration()))
+			mNavigationView.getMenu().findItem(R.id.nav_item_keyword).setVisible(false);
 		AdView adView = (AdView) findViewById(R.id.adView);
 		AdRequest adRequest = new AdRequest.Builder()
 				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
@@ -97,6 +102,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		adView.loadAd(adRequest);
 
 		initMainActivity(getIntent());
+
+		CommonUtils.logCustomEvent("MainActivity", "1");
     }
 
 	@Override
@@ -161,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				manager.cancel(reqCode);
 			}
 
-			Log.d(this.toString(), "tectype key ocw = " + bundle.getString(Const.PARAM.ETC_TYPE_KEY));
+			Crashlytics.log(Log.DEBUG, this.toString(), "tectype key ocw = " + bundle.getString(Const.PARAM.ETC_TYPE_KEY));
 
 			if(!bundle.getString(Const.PARAM.ETC_TYPE_KEY, "").equals("")){
 				Crashlytics.log(Log.DEBUG, this.toString(), "bundle.getString(Const.PARAM.ETC_TYPE_KEY)="+bundle.getString(Const.PARAM.ETC_TYPE_KEY));
@@ -267,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				initializeSetting.execute();
 			}
 			if(!prefsSavedVersion.equals("0")){
-				showUpdateLog();
+				//showUpdateLog();
 			}
 
 			SharedPreferences.Editor editor = setPrefs.edit();
@@ -343,13 +350,19 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
         }
 		return super.onOptionsItemSelected(item);
 	}
+
+	public FirebaseAnalytics getFireBase(){
+		return mFirebaseAnalytics;
+	}
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 		mHelpMenu = menu.getItem(0);
-		if(!CommonUtils.isLocaleKo(getResources().getConfiguration()))
+		if(!CommonUtils.isLocaleKo(getResources().getConfiguration())) {
 			mHelpMenu.setVisible(false);
+		}
         return true;
     }
 
@@ -379,6 +392,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			case R.id.nav_item_dashboard:
 				fragment = new DashboardFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
+				mHelpMenu.setVisible(false);
 				break;
 			case R.id.nav_item_alaram:
 				fragment = new AlarmFragment();

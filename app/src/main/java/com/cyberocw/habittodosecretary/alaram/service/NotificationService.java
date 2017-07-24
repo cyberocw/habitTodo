@@ -152,8 +152,6 @@ public class NotificationService extends Service{
             Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "close button on receive bundle=" + intent.getExtras());
 
             Bundle bundle = intent.getExtras();
-
-
             if(bundle != null) {
                 NotificationManager manager = (NotificationManager) context.getSystemService(Service.NOTIFICATION_SERVICE);
                 int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);

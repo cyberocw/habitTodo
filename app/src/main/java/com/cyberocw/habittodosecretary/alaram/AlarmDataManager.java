@@ -85,7 +85,7 @@ public class AlarmDataManager {
 				arrAlarmId[0] = text;
 		}
 		this.dataList = new ArrayList<AlarmVO>();
-		Log.d(Const.ERROR_TAG, "arrAlarmId="+arrAlarmId[0]);
+		//Log.d(Const.ERROR_TAG, "arrAlarmId="+arrAlarmId[0]);
 		if(arrAlarmId != null) {
 			AlarmVO vo = mDb.getAlarmById(Long.valueOf(arrAlarmId[0]));
 
@@ -366,8 +366,10 @@ public class AlarmDataManager {
 	public boolean modifyItem(AlarmVO item){
 		//삭제 후 새로 insert, relation 또한 새로 insert 해줌 (일단 하나의 alarm은 하나의 relation만을 가진 상태의 로직)
 		long oriId = item.getId();
-		CommonRelationDBManager relationDBManager = CommonRelationDBManager.getInstance(mCtx);
-		RelationVO rvo = relationDBManager.getByAlarmId(oriId);
+
+		//알람 등록때 자동으로 다 지웠따가 등록함
+		/*CommonRelationDBManager relationDBManager = CommonRelationDBManager.getInstance(mCtx);
+		RelationVO rvo = relationDBManager.getByAlarmId(oriId);*/
 
 		boolean delResult = this.deleteItemById(oriId);
 

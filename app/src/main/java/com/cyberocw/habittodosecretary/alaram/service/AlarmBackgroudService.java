@@ -10,24 +10,19 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
-import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
-import com.cyberocw.habittodosecretary.alaram.ui.AlarmNotiActivity;
+import com.cyberocw.habittodosecretary.AlarmNotiActivity;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Set;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -243,12 +238,6 @@ public class AlarmBackgroudService extends Service {
                         Log.i(Const.DEBUG_TAG, "Normal mode");
                 }
             }
-
-            //mAlarmOption - 개별 알람 tts
-            if(mAlarmOption == 1 && isTTS) {
-                startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
-            }
-
             Intent myIntent = new Intent(mCtx, NotificationService.class);
             Crashlytics.log(Log.DEBUG, this.toString(), " background mArrAlarmVOList.get(mMinRemainPosition).getReqCode() = " + mArrAlarmVOList.get(mMinRemainPosition).getReqCode());
             myIntent.putExtra("title", mTitle);
@@ -257,6 +246,10 @@ public class AlarmBackgroudService extends Service {
             myIntent.putExtra(Const.PARAM.ALARM_ID, mArrAlarmVOList.get(mMinRemainPosition).getfId());
             mCtx.startService(myIntent);
 
+            //mAlarmOption - 개별 알람 tts
+            if(mAlarmOption == 1 && isTTS) {
+                startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
+            }
         }else{
             Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
             myIntent.putExtra("title", mTitle);

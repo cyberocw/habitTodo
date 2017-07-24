@@ -2,6 +2,7 @@ package com.cyberocw.habittodosecretary;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
@@ -21,6 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -63,6 +67,9 @@ public class WebViewActivity extends AppCompatActivity {
                         return true;
                     case R.id.menu_back :
                         moveBack();
+                        return true;
+                    case R.id.menu_open_default :
+                        openDefaultBrowser();
                         return true;
                 }
                 return false;
@@ -129,6 +136,7 @@ public class WebViewActivity extends AppCompatActivity {
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 
         Fabric.with(this, new Crashlytics());
+        CommonUtils.logCustomEvent("WebViewActivity", "1");
     }
 
     @Override
@@ -156,6 +164,11 @@ public class WebViewActivity extends AppCompatActivity {
         shareIntent.putExtra(Intent.EXTRA_TITLE, webView.getTitle());
         shareIntent.putExtra(Intent.EXTRA_TEXT, webView.getUrl());
         startActivity(Intent.createChooser(shareIntent, "Share..."));
+    }
+
+    private void openDefaultBrowser(){
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(webView.getUrl()));
+        mCtx.startActivity(intent);
     }
 
     public void setTitle(String title){

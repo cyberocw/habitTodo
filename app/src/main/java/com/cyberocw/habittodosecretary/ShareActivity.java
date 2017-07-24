@@ -16,6 +16,7 @@
  import com.cyberocw.habittodosecretary.category.CategoryFragment;
  import com.cyberocw.habittodosecretary.memo.MemoFragment;
  import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
+ import com.cyberocw.habittodosecretary.util.CommonUtils;
 
  import io.fabric.sdk.android.Fabric;
 
@@ -62,6 +63,8 @@
 		ft.replace(R.id.main_container, mFragment).commit();
 		//ft.addToBackStack(null).commit();
 		//fragment.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
+
+		CommonUtils.logCustomEvent("ShareActivity", "1");
 	}
 
 	public void finishActivity4(){

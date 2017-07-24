@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.ScrollingTabContainerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -39,6 +40,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
@@ -80,7 +83,7 @@ public class AlarmDialogNew extends DialogFragment{
 	private LinkedHashMap mEtcMap;
 	private int mModifyMode = 0;
 	private Boolean mIsInitMemoMode = false;
-	private Spinner mSpAlarmType, mSpAppList, mSpDateType;
+	private Spinner mSpAlarmType, mSpAppList, mSpDateType, mSpSoundType;
 	private Button mBtnAddAlarm = null, mBtnClose, mBtnSave, mBtnHelp;
 	private EditText mTxAlarmTitle;
 	private Context mCtx = null;
@@ -149,7 +152,8 @@ public class AlarmDialogNew extends DialogFragment{
 
 		mScvAddAlarm = (ScrollView) view.findViewById(R.id.scvAddAlarm);
 
-		mCbTTS = (CheckBox) view.findViewById(R.id.cbTTS);
+		//mCbTTS = (CheckBox) view.findViewById(R.id.cbTTS);
+		mSpSoundType = (Spinner) view.findViewById(R.id.spVoiceType);
 
 		mTvEtcTitle = (Button) view.findViewById(R.id.etcTitle);
 
@@ -228,7 +232,9 @@ public class AlarmDialogNew extends DialogFragment{
 
 		makeSpinnerDateType();
 		makeSpinnerAlarmType();
+		makeSpinnerSoundType();
 		makeSpinnerAppList();
+
 		init();
 		bindEvent();
 
@@ -237,6 +243,9 @@ public class AlarmDialogNew extends DialogFragment{
 		}
 
 		CommonUtils.setupUI(mView, getActivity());
+
+		CommonUtils.logCustomEvent("AlarmDialogNew", "1");
+
 	}
 
 	private void init(){
@@ -244,7 +253,7 @@ public class AlarmDialogNew extends DialogFragment{
 		 , mDataRepeatDay, mAlarmDateType, ArrayList<Calendar> alarmDate = null;
 		*/
 		mCalendar = Calendar.getInstance();
-
+		//수정 모드
 		if(mModifyMode == 1) {
 
 			//타이머 , 트리거
@@ -297,8 +306,7 @@ public class AlarmDialogNew extends DialogFragment{
 			mTxAlarmTitle.setText(mAlarmVO.getAlarmTitle());
 
 			mSpAlarmType.setSelection(alarmType);
-
-			mCbTTS.setChecked(mAlarmVO.getAlarmOption() == 1);
+			mSpSoundType.setSelection(CommonUtils.getAlarmOptionPosition(mAlarmVO.getAlarmOption()));
 
 			ArrayList<Integer> arrAlarmCall = mAlarmVO.getAlarmCallList();
 			int temp;
@@ -316,10 +324,12 @@ public class AlarmDialogNew extends DialogFragment{
 				mTvEtcTitle.setVisibility(View.VISIBLE);
 			}
 		}
+		//신규 등록 모드
 		else {
 			txTimeSet(mCalendar.get(Calendar.HOUR_OF_DAY), mCalendar.get(Calendar.MINUTE));
 			appendAlarmRow(0, 1);
-			mCbTTS.setChecked(true);
+			//mCbTTS.setChecked(true);
+			mSpSoundType.setSelection(CommonUtils.getAlarmOptionPosition(2222));
 		}
 
 		if(mIsInitMemoMode) {
@@ -414,7 +424,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 		vo.setAlarmTitle(alarmTitle);
 		vo.setAlarmType(alarmType);
-		vo.setAlarmOption(mCbTTS.isChecked() == true ? 1 : 0);
+		vo.setAlarmOption(CommonUtils.getAlarmOptionValue(mSpSoundType.getSelectedItemPosition()));//mCbTTS.isChecked() == true ? 1 : 0);
 		vo.setHour(hour);
 		vo.setMinute(minute);
 		vo.setAlarmCallList(mArrAlarmCall);
@@ -422,8 +432,6 @@ public class AlarmDialogNew extends DialogFragment{
 		vo.setAlarmDateType(mAlarmDateType);
 		vo.setAlarmDateList(alarmDate);
 		vo.setEtcType(mEtcType);
-
-
 
 		if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT || mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
 			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "mCbHolidayAll.isChecked() =" + mCbHolidayAll.isChecked());
@@ -629,7 +637,32 @@ public class AlarmDialogNew extends DialogFragment{
 			}
 		});
 	}
+	public void makeSpinnerSoundType(){
+		ArrayList<String> arrayList = new ArrayList<String>();
+		arrayList.add(getString(R.string.none));
+		arrayList.add(getString(R.string.dialog_alarm_sp_sound_tts));
+		/*arrayList.add(getString(R.string.dialog_alarm_sp_sound_record));
+		arrayList.add(getString(R.string.dialog_alarm_sp_sound_file));*/
 
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+				R.layout.simple_spinner_item_small, arrayList);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		//스피너 속성
+		//mSpAlarmType.setPrompt("알람 종류"); // 스피너 제목
+		mSpSoundType.setAdapter(adapter);
+		mSpSoundType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
+	}
 	public void makeSpinnerAppList(){
 		//mSpAppList
 		ArrayList<String> arraylist = new ArrayList<String>();
@@ -726,7 +759,6 @@ public class AlarmDialogNew extends DialogFragment{
 			public void onClick(View v) {
 				makeBeforeTimer();
 			}
-
 		});
 
 		for(int i = 0; i < mArrDayString.length; i++){
@@ -843,7 +875,25 @@ public class AlarmDialogNew extends DialogFragment{
 				}
 			});
 		}
+
+		mSpSoundType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(CommonUtils.getAlarmOptionValue(position) == Const.ALARM_OPTION_TO_SOUND.RECORD){
+
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
     }
+
+    private void renderRecorder(){
+
+	}
 
 	private void txTimeSet(int hourOfDay, int minute){
 		boolean isPm = false;
@@ -927,11 +977,7 @@ public class AlarmDialogNew extends DialogFragment{
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		View container = inflater.inflate(R.layout.fragment_dialog_alram_before, null);
 
-
-
-
 		final NumberPicker np = ButterKnife.findById(container, R.id.numberPicker);// new NumberPicker(mCtx);
-
 		np.setMinValue(0);
 		np.setMaxValue(59);
 		np.setValue(5);

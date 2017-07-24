@@ -23,10 +23,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 /**
  * Created by cyberocw on 2015-12-06.
@@ -97,6 +100,8 @@ public class CategoryFragment extends Fragment {
 			}
 		});
 		bindBtnEvent();
+		CommonUtils.logCustomEvent("CategoryFragment", "1", "category count", mCateDataManager.getCount());
+
 	}
 
 	private class CategoryClickListener implements AdapterView.OnItemClickListener{

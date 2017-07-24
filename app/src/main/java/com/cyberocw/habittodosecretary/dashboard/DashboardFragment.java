@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +20,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
@@ -94,7 +97,7 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     public void initActivity(){
         Crashlytics.log(Log.DEBUG, this.toString(), "init activtiy start");
 
-        mScrollView = ButterKnife.findById(mView, R.id.scrollView);
+        //mScrollView = ButterKnife.findById(mView, R.id.scrollView);
 
         mCalendar = Calendar.getInstance();
 
@@ -112,17 +115,40 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
         mKeywordListAdapterSum = new KeywordListAdapter( mCtx, mKeywordDataManagerSum, true);
         mKeywordListAdapterTime = new KeywordListAdapter( mCtx, mKeywordDataManagerTime, true);
 
+
         makeAlarmList();
-        makeKeywordList();
+
+        if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
+            makeKeywordList();
+        }else{
+            ButterKnife.findById(mView, R.id.keywordWrap0).setVisibility(View.GONE);
+            ButterKnife.findById(mView, R.id.keywordWrap1).setVisibility(View.GONE);
+            ButterKnife.findById(mView, R.id.keywordWrap2).setVisibility(View.GONE);
+        }
         makeMemoList();
+
+        ScrollView scrollView = ButterKnife.findById(mView, R.id.scrollView);
+        scrollView.smoothScrollTo(0,0);
+
+        /*scrollView.pageScroll(View.FOCUS_UP);
+        scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // Ready, move up
+                scrollView.fullScroll(View.FOCUS_UP);
+            }
+        });
+        */
+        CommonUtils.logCustomEvent("DashboardFragment", "1");
     }
 
     public void makeAlarmList(){
         Crashlytics.log(Log.DEBUG, this.toString(), "makeAlarmList start");
         mAlarmDataManager.makeDataListDashboard();
-
+        //알람이 없을 경우
         if(mAlarmDataManager.getCount() == 0) {
             TextView tv = ButterKnife.findById(mView, R.id.tvNoAlarm);
+            ButterKnife.findById(mView, R.id.alarmListView).setVisibility(View.GONE);
             tv.setVisibility(View.VISIBLE);
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -130,7 +156,7 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
                     ((MainActivity) getActivity()).onNavigationItemSelected(R.id.nav_item_alaram);
                 }
             });
-            ButterKnife.findById(mView, R.id.alarmListView).setVisibility(View.GONE);
+
         }else {
             ButterKnife.findById(mView, R.id.tvNoAlarm).setVisibility(View.GONE);
 
@@ -151,6 +177,9 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
                 ((MainActivity) getActivity()).onNavigationItemSelected(R.id.nav_item_alaram);
             }
         });
+
+
+
     }
     public void makeMemoList(){
         if(mMemoDataManager.getCount() == 0){

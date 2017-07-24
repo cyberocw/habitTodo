@@ -49,17 +49,11 @@ public class InitializeSetting extends AsyncTask<Void, Void, String> {
 
         for(int i = 0 ; i < 7; i++) {
             JSONObject jObj = sync.getHolidayData(year + i);
-            boolean result = mSettingDataManager.addItems(jObj, year + i);
 
-            if (!result) {
-                resultMsg = (year + i) + "년 공휴일 데이터 동기화에 실패했습니다";
-                break;
-            }
-            else
-                resultMsg = "공휴일 데이터 동기화 완료";
-
+            if(jObj != null)
+                mSettingDataManager.addItems(jObj, year + i);
         }
-
+        resultMsg = "공휴일 데이터 동기화 완료";
 
 
         return resultMsg;

@@ -37,7 +37,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 	private int mIndex = 0;
 	private  AudioManager mAudioManager;
 	private int mOriginalVolume, mPrefsTTSVol;
-
+	private String nowPlayingText = "";
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -75,9 +75,6 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 			int result = mTTS.setLanguage(Locale.getDefault());
 			if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
 				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "tts start");
-
-
-
 				mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
 				int focusResult = mAudioManager.requestAudioFocus(afChangeListener,
@@ -147,6 +144,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 			return;
 		}
 		String spokenText = mArrText.get(0);
+		nowPlayingText = spokenText;
 		mIndex++;
 		mArrText.remove(0);
 
@@ -160,13 +158,17 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 	AudioManager.OnAudioFocusChangeListener afChangeListener =
 			new AudioManager.OnAudioFocusChangeListener() {
 				public void onAudioFocusChange(int focusChange) {
+					Log.d(Const.DEBUG_TAG, " audio focus changed focusChange = " + focusChange);
 					if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
 						// Permanent loss of audio focus
 						// Pause playback immediately
 						//mTTS.stop();
+
 					}
 					else if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT) {
-						//mTTS.stop();
+						mTTS.stop();
+						mArrText.add(nowPlayingText);
+						speakText();
 					} else if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
 						// Lower the volume, keep playing
 						//mTTS.stop();
@@ -182,13 +184,13 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 	private void ttsUnder20(String text, long index) {
 		HashMap<String, String> map = new HashMap<>();
 		map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, String.valueOf(index));
-		mTTS.speak(text + "      "  +text, TextToSpeech.QUEUE_ADD, map);
+		mTTS.speak(text + "   ,   "  +text, TextToSpeech.QUEUE_ADD, map);
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private void ttsGreater21(String text, long index) {
 		String utteranceId=String.valueOf(index);
-		mTTS.speak(text + "      "  +text, TextToSpeech.QUEUE_ADD, null, utteranceId);
+		mTTS.speak(text + "   ,   "  +text, TextToSpeech.QUEUE_ADD, null, utteranceId);
 	}
 
 	@Override

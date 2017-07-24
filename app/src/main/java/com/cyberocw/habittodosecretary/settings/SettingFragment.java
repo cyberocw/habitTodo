@@ -21,6 +21,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
@@ -92,6 +94,7 @@ public class SettingFragment extends Fragment {
         mPrefs = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 
         bindBtnEvent();
+        CommonUtils.logCustomEvent("SettingFragment", "1");
     }
 
     private void bindBtnEvent(){

@@ -1,6 +1,5 @@
 package com.cyberocw.habittodosecretary.alaram.service;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -22,7 +21,7 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.TimerListAdapter;
-import com.cyberocw.habittodosecretary.alaram.ui.AlarmNotiActivity;
+import com.cyberocw.habittodosecretary.AlarmNotiActivity;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

@@ -17,6 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
@@ -122,6 +124,9 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
         Dialog dialog = b.create();
         dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         onDayClick((Calendar) mCalendar.clone());
+
+        CommonUtils.logCustomEvent("CalendarDialog", "1");
+
         return dialog;
     }
     @Override

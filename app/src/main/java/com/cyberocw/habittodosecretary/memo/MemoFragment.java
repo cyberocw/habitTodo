@@ -27,6 +27,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
@@ -201,6 +203,7 @@ public class MemoFragment extends Fragment {
 				showNewMemoDialog(rVO.getfId());
 		}
 
+		CommonUtils.logCustomEvent("MemoFragment", "1", "memo Count", mMemoDataManager.getCount());
 	}
 
 	private void bindEvent(){
@@ -367,6 +370,10 @@ public class MemoFragment extends Fragment {
 
 
 		switch(resultCode) {
+			case Const.MEMO.MEMO_INTERFACE_CODE.DEL_MEMO_FINISH_CODE :
+				if(memoVO != null)
+					deleteMemo(memoVO.getId());
+				break;
 			case Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE :
 				// 메모 추가
 				if(mMemoDataManager.addItem(memoVO) == true)

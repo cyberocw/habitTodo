@@ -65,6 +65,7 @@
     <string name="dialog_alarm_holiday_option">휴일 옵션</string>
     <string name="dialog_alarm_title">제목</string>
     <string name="dialog_alarm_option">알람 옵션</string>
+    <string name="dialog_alarm_sound">소리 옵션</string>
     <string name="dialog_alarm_tts_play">음성 재생</string>
     <string name="dialog_alarm_preinform">미리 알림</string>
     <string name="add">추가</string>
@@ -76,6 +77,9 @@
     <string name="dialog_alarm_minute_before">분 전</string>
     <string name="dialog_alarm_minute_after">분 후</string>
     <string name="none">없음</string>
+    <string name="dialog_alarm_sp_sound_tts">TTS(Text To Speech) 음성 엔진</string>
+    <string name="dialog_alarm_sp_sound_record">사용자 녹음 음성</string>
+    <string name="dialog_alarm_sp_sound_file">파일 재생</string>
     <string name="dialog_timer_time">타이머 시간</string>
     <string name="timer_list_limit_text">제한시간</string>
     <string name="category_message_del">카테고리와 해당 메모를 모두 삭제하시겠습니까?</string>
@@ -117,6 +121,7 @@
     <string name="alarm_postpone_msg_invalid_id">Alarm Id가 잘못되었습니다. 데이터를 가져올 수 없습니다</string>
     <string name="success">완료했습니다</string>
     <string name="fragment_alarm_msg_delete_confirm">정말로 알람을 삭제하시겠습니까?</string>
+    <string name="fragment_memo_msg_delete_confirm">정말로 메모를 삭제하시겠습니까? 연결된 알람이 있으면 함께 삭제 됩니다.</string>
     <string name="msg_failed_modify">수정 실패</string>
     <string name="timer_is_running">실행중인 타이머가 있습니다.</string>
     <string name="dialog_cate_msg_subject">제목을 입력해 주세요.</string>
@@ -137,11 +142,14 @@
     <string name="confirm_msg_quit">정말 종료하시겠습니까?</string>
     <string name="title_activity_intro">인트로</string>
     <string name="category_memo_count">개 메모</string>
-    <string name="ex_alarm_title">예시) 알람 - TTS 엔진이 여러개인 경우 선택 팝업이 뜹니다.</string>
+    <string name="ex_alarm_title">예시) 알람 - TTS 음성 엔진이 여러개인 경우 선택 팝업이 뜹니다.</string>
     <string name="ex_memo_title">예시)슈퍼에서 살것</string>
     <string name="ex_memo_cont">생수\n아이스크림\n두부\n참기름</string>
     <string name="alarm_msg_move_memo">메모 화면으로 이동하면 저장하지 않은 알람 내용은 사라집니다.\n메모 화면으로 이동하시겠습니까?</string>
     <string name="alarm_no_title">(제목 없음)</string>
     <string name="keyword">nav_item_keyword</string>
     <string name="nav_item_dashboard">대시보드</string>
+    <string name="dashboard_title_next_alarm">다음 일정</string>
+    <string name="dashboard_title_memo">메모 목록</string>
+    <string name="dashboard_no_alarm">다음 일정이 없습니다</string>
 </resources>

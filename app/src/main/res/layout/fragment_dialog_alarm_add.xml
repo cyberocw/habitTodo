@@ -246,9 +246,8 @@
                         android:id="@+id/spAlarmType"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         />
-
+                    <!--
                     <CheckBox
                         android:id="@+id/cbTTS"
                         android:layout_width="wrap_content"
@@ -257,8 +256,55 @@
                         android:layout_marginTop="4dp"
                         android:textSize="14sp"
                         android:text="@string/dialog_alarm_tts_play" />
+                        -->
                 </LinearLayout>
 
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="15dp"
+                >
+                <TextView
+                    android:text="@string/dialog_alarm_sound"
+                    style="@style/alarm_dialog_textview"
+                    />
+
+                    <Spinner
+                        android:id="@+id/spVoiceType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/soundWrap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                >
+                <Button
+                    android:id="@+id/btnRecord"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/ic_fiber_manual_record_black_24dp"
+                    />
+                <Button
+                    android:id="@+id/btnStop"
+                    android:visibility="gone"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/ic_stop_black_24dp"
+                    />
+                <Button
+                    android:id="@+id/btnPlay"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/ic_play_circle_filled_black_24dp"
+                    />
             </LinearLayout>
 
             <LinearLayout

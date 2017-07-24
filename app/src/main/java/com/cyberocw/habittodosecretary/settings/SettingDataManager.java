@@ -46,13 +46,13 @@ public class SettingDataManager {
     }
     */
 
-    public boolean addItems(JSONObject jsonObject, int year){
+    public void addItems(JSONObject jsonObject, int year){
         try {
             JSONArray arrObj = jsonObject.getJSONArray("results");
-            return mDb.insertHolidays(arrObj, year);
+            if(arrObj != null)
+                mDb.insertHolidays(arrObj, year);
         } catch (JSONException e) {
             e.printStackTrace();
-            return false;
         }
     }
 

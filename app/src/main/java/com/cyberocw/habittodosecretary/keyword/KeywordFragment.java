@@ -27,7 +27,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.WebViewActivity;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
@@ -36,6 +39,7 @@ import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
 import com.cyberocw.habittodosecretary.keyword.ui.KeywrordCalendarDialog;
 import com.cyberocw.habittodosecretary.keyword.vo.KeywordVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -92,6 +96,8 @@ public class KeywordFragment extends Fragment {
         mPrefs = mCtx.getSharedPreferences(Const.KEYWORD.PARAM.PREFS, Context.MODE_PRIVATE);
         initActivity();
         Fabric.with(mCtx, new Crashlytics());
+        CommonUtils.logCustomEvent("KeywordFragment", "1");
+
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {

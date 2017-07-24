@@ -59,7 +59,7 @@ public class AlarmExListAdapter extends BaseExpandableListAdapter implements Ala
 
     @Override
     public long getChildId(int i, int i1) {
-        return i1;
+        return mManager.getGroupItem(i, i1).getId();
     }
 
     @Override

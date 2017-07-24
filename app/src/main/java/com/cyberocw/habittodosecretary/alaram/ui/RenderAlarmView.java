@@ -142,6 +142,13 @@ public class RenderAlarmView {
                         mMainFragment.showNewAlarmDialog(vo.getId());
                 }
             });
+            convertView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    mMainFragment.longClickPopup(0, vo.getId());
+                    return true;
+                }
+            });
         }
         else{
             convertView.setOnClickListener(new View.OnClickListener() {

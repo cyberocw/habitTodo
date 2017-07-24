@@ -15,6 +15,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
 
 import java.text.DecimalFormat;
@@ -82,6 +84,19 @@ public class CommonUtils {
 	public static String getLogPreference(Context ctx){
 		SharedPreferences prefs = ctx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 		return prefs.getString(Const.DEBUG_TAG, "");
+	}
+
+	public static void logCustomEvent(String name, String id){
+		logCustomEvent(name, id, null, 0);
+	}
+	public static void logCustomEvent(String name, String id, String customName, int customValue){
+		if(Const.IS_DEBUG)
+			return;
+		ContentViewEvent event = new ContentViewEvent();
+		event.putContentName(name).putContentId(id);
+		if(customName != null)
+			event.putCustomAttribute(customName, customValue);
+		Answers.getInstance().logContentView(event);
 	}
 
 	public static void setupUI(View view, final Activity activity) {
@@ -152,5 +167,26 @@ public class CommonUtils {
 			locale = CommonUtils.getSystemLocaleLegacy(config);
 		}
 		return locale.getLanguage().equals("ko");
+	}
+
+    public static int getAlarmOptionPosition(int value) {
+		switch (value){
+			case Const.ALARM_OPTION_TO_SOUND.NONE :
+				return 0;
+			case Const.ALARM_OPTION_TO_SOUND.TTS :
+				return 1;
+			case Const.ALARM_OPTION_TO_SOUND.RECORD :
+				return 2;
+			case Const.ALARM_OPTION_TO_SOUND.FILE :
+				return 3;
+			default :
+				return 1;
+		}
+
+    }
+
+	public static int getAlarmOptionValue(int selectedItemPosition) {
+		//나중에 순서나 내용이 바뀌면 알맞는 번호 리턴하게 만들기
+		return selectedItemPosition;
 	}
 }
