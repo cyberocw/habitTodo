@@ -52,13 +52,6 @@ public class RecorderDataManager {
                 try {
                     fi.close();
                     fos.close();
-                    if(cachedFile.delete()){
-                        Log.d(this.toString(), "기존 케시파일 삭제 완료");
-                    }
-                    else{
-                        Log.d(this.toString(), "기존 케시파일 삭제 실패");
-                    }
-
                     return true;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -71,7 +64,7 @@ public class RecorderDataManager {
     public void deleteRecordFile(long id) {
         File rootDir = new File(mCtx.getFilesDir(), "voice");
         if(rootDir.isDirectory()){
-            File f = new File(rootDir, id+".3gp");
+            File f = new File(rootDir, id+".wav");
             if(f.isFile()){
                 Log.d(Const.DEBUG_TAG, "SOUND FILE IS");
                 f.delete();

@@ -234,7 +234,7 @@ public class RecorderCustomView extends LinearLayout {
     private void startPlaying() {
         playTask = new PlayAudio();
         playTask.execute();
-        countRecord(true, getDuration(recordingFile));
+        countRecord(true, getDuration(new File(mPlayFileName)));
         mTvRecording.setText("playing....");
 
         mTvTime.setVisibility(View.VISIBLE);
@@ -250,6 +250,7 @@ public class RecorderCustomView extends LinearLayout {
 
         //mPlayer.release();
         refreshPlayButton();
+        cancelTimer();
         mPlayer = null;
         mTvTime.setVisibility(View.GONE);
         mTvRecording.setVisibility(GONE);
@@ -293,25 +294,29 @@ public class RecorderCustomView extends LinearLayout {
         initUi();
     }
 
-    private void countRecord(final boolean isPlay, int duration){
+    private void countRecord(final boolean isPlay, long duration){
         mTvTime.setVisibility(View.VISIBLE);
         if(duration == 0)
             duration = 10000;
 
-        final int finalDuration = duration;
-        mCountDownTimer = new CountDownTimer(finalDuration, 1000) {
+        Log.d(this.toString(), "duration = " + duration);
+        final int finalDuration = (int) (duration / 1000) % 60;;
+        mCountDownTimer = new CountDownTimer(duration, 1000) {
             public void onTick(long millisUntilFinished) {
                 mMillisRemainTime = millisUntilFinished;
                 int second = (int) (millisUntilFinished / 1000) % 60;
-
+                Log.d(Const.DEBUG_TAG, "remainTimeText="+CommonUtils.numberDigit(2, finalDuration  - second) + " / " + CommonUtils.numberDigit(2, finalDuration));
                 if(isPlay){
-                    mTvTime.setText(CommonUtils.numberDigit(2, finalDuration - second) + ":" + CommonUtils.numberDigit(2, finalDuration));
+
+                    mTvTime.setText(CommonUtils.numberDigit(2, finalDuration - second) + " / " + CommonUtils.numberDigit(2, finalDuration));
                 }else
                     mTvTime.setText(CommonUtils.numberDigit(2, second));
             }
             public void onFinish() {
                 mTvTime.setVisibility(View.GONE);
-                mBtnRecord.callOnClick();
+                //녹음일때 자동 정치 클릭
+                if(!isPlay)
+                    mBtnRecord.callOnClick();
                 cancelTimer();
                 mCountDownTimer = null;
             }
@@ -365,13 +370,13 @@ public class RecorderCustomView extends LinearLayout {
         public void onDialogNegativeClick();
     }
 
-    private int getDuration(File file) {
+    private long getDuration(File file) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
         String durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        Log.d(this.toString(), "durationStr="+durationStr);
         if(durationStr != null) {
-            int second = (int) (Long.parseLong(durationStr) / 1000) % 60;
-            return second;
+            return Long.parseLong(durationStr);
         }else
             return 0;
     }
@@ -411,6 +416,7 @@ public class RecorderCustomView extends LinearLayout {
                 newFile = newFile.replace("pcm", "wav");
                 Log.d(this.toString(), "newFile="+newFile);
                 File targetFile = new File(newFile);
+
 
                 RawToWave r = new RawToWave(recordingFile, targetFile);
                 r.run();

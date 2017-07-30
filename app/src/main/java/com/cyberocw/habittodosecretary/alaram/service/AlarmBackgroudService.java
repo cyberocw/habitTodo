@@ -20,6 +20,7 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.AlarmNotiActivity;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
+import com.cyberocw.habittodosecretary.record.PlayRawAudio;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
@@ -256,8 +257,8 @@ public class AlarmBackgroudService extends Service {
             if(mAlarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS) {
                 startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
             }else if(mAlarmOption == Const.ALARM_OPTION_TO_SOUND.RECORD && isTTS){
-                String fileName = mArrAlarmVOList.get(mMinRemainPosition).getfId() + ".3gp";
-                String filePath = mCtx.getFilesDir().getAbsolutePath() + "voice" + File.separator + fileName;
+                String fileName = mArrAlarmVOList.get(mMinRemainPosition).getfId() + ".wav";
+                //String filePath = mCtx.getFilesDir().getAbsolutePath() + "voice" + File.separator + fileName;
 
                 File rootDir=new File(mCtx.getFilesDir(), "voice");
                 rootDir.mkdirs();
@@ -265,13 +266,18 @@ public class AlarmBackgroudService extends Service {
                 Log.d(this.toString(), "absolute="+f.getAbsolutePath() + " getPaht= " + f.getPath());
                 FileInputStream fis = null;
                 try {
-                    if(f.isFile())
-                        fis = new FileInputStream(f);
-
+                    if(f.isFile()){
+                        PlayRawAudio pra = new PlayRawAudio(f.getAbsolutePath());
+                        pra.execute();
+                    }
+                        //fis = new FileInputStream(f);
+                    else{
+                        Toast.makeText(mCtx, "파일 경로가 잘못되었습니다", Toast.LENGTH_SHORT).show();
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-                if(fis != null){
+                /*if(fis != null){
                     MediaPlayer player = new MediaPlayer();
                     try {
                         player.setDataSource(fis.getFD());
@@ -285,7 +291,10 @@ public class AlarmBackgroudService extends Service {
                     }
                 }else{
                     Toast.makeText(mCtx, "파일 경로가 잘못되었습니다", Toast.LENGTH_SHORT).show();
-                }
+                }*/
+            }
+            else{
+                //없음
             }
         }else{
             Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);

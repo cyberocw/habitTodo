@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -16,21 +15,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-import com.cyberocw.habittodosecretary.Const;
-import com.cyberocw.habittodosecretary.MainActivity;
-import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
-import com.cyberocw.habittodosecretary.alaram.service.AlarmBackgroudService;
-import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.record.PlayRawAudio;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -50,6 +43,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 	long mStartedTimeInMilis = 0;
 	boolean isButtonClick = false;
 	Context mCtx;
+	PlayRawAudio mPra = null;
 
 	@BindView(R.id.tvAlarmTitle) TextView mTvTitle;
 	@BindView(R.id.btnEtcView) Button mBtnEtcView;
@@ -60,6 +54,9 @@ public class AlarmNotiActivity extends AppCompatActivity {
 	@OnClick(R.id.btnTimerStop) void submit() {
 		if(mVibe != null)
 			mVibe.cancel();
+		if(mPra != null)
+			mPra.cancel(true);
+
 		isButtonClick = true;
 		finish();
 	}
@@ -173,9 +170,28 @@ public class AlarmNotiActivity extends AppCompatActivity {
 					Log.i(Const.DEBUG_TAG, "Normal mode");
 			}
 		}
-		if(alarmOption == 1 && isTTS)
+		if(alarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS) {
 			startTTS(title, mAlarmId);
+		}else if(alarmOption == Const.ALARM_OPTION_TO_SOUND.RECORD && isTTS){
+			String fileName = mAlarmId + ".wav";
+			//String filePath = mCtx.getFilesDir().getAbsolutePath() + "voice" + File.separator + fileName;
 
+			File rootDir=new File(mCtx.getFilesDir(), "voice");
+			rootDir.mkdirs();
+			File f = new File(rootDir, fileName);
+			Log.d(this.toString(), "absolute="+f.getAbsolutePath() + " getPaht= " + f.getPath());
+			try {
+				if(f.isFile()){
+					mPra = new PlayRawAudio(f.getAbsolutePath());
+					mPra.execute();
+				}
+				else{
+					Toast.makeText(mCtx, "파일 경로가 잘못되었습니다", Toast.LENGTH_SHORT).show();
+				}
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+		}
 		CommonUtils.logCustomEvent("AlarmNotiActivity", "1");
 	}
 	private void startTTS(String title, long id){

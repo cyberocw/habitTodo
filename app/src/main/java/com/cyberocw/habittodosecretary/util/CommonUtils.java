@@ -193,9 +193,9 @@ public class CommonUtils {
 	}
 
     public static String getRecordFullPath(Context mCtx, AlarmVO mAlarmVO) {
-		return mCtx.getFilesDir().getAbsolutePath() + File.separator + "voice" + File.separator +  mAlarmVO.getId() + ".3gp";
+		return mCtx.getFilesDir().getAbsolutePath() + File.separator + "voice" + File.separator +  mAlarmVO.getId() + ".wav";
     }
 	public static String getRecordFullPath(Context mCtx, long id) {
-		return mCtx.getFilesDir().getAbsolutePath() + File.separator + "voice" + File.separator +  id + ".3gp";
+		return mCtx.getFilesDir().getAbsolutePath() + File.separator + "voice" + File.separator +  id + ".wav";
 	}
 }

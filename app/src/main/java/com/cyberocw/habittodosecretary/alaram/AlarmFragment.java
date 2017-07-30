@@ -124,8 +124,6 @@ public class AlarmFragment extends Fragment{
 			mAlarmId = getArguments().getLong(Const.PARAM.ALARM_ID);
             Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " alarm fragment mMode = get Arguments = " + mMode + " al id= " + mAlarmId);
 		}
-
-
 	}
 
 	@Override
@@ -157,6 +155,12 @@ public class AlarmFragment extends Fragment{
 		mCtx = getActivity();
 		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 		initActivity();
+
+		File f = new File(mCtx.getFilesDir().getAbsolutePath() + File.separator + "voice");
+		File[] list = f.listFiles();
+		for(int i = 0 ; i < list.length; i++){
+			Log.d(Const.DEBUG_TAG, "fileList = " + list[i].getName() + " size=" + list[i].length()/1000);
+		}
 	}
 
 	private void initActivity() {
@@ -206,7 +210,7 @@ public class AlarmFragment extends Fragment{
 
 	}
 
-	private void showPostponeAlarmDialog(long id){
+	private void showPostponeAlarmDialog(final long id){
 
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "makeAlarmPostpone");
 
@@ -289,7 +293,7 @@ public class AlarmFragment extends Fragment{
 		alarmVO.setId(-1);
 
 		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
+			public void onClick(DialogInterface dialog, int id2) {
 
 				//0분 하나만 지정, 모든 날짜에 울려야해서 공휴일 옵션 0
 				ArrayList<Integer> arrAlarmCall = new ArrayList<Integer>();
@@ -313,8 +317,17 @@ public class AlarmFragment extends Fragment{
 				alarmVO.setAlarmTitle(alarmVO.getAlarmTitle());
 
 				// 알람 추가
-				if(mAlarmDataManager.addItem(alarmVO) == true)
+				if(mAlarmDataManager.addItem(alarmVO) == true) {
+					//copyFile하자
+					Log.d(Const.DEBUG_TAG, "id ocwocw = " + id + " fullpath ="+CommonUtils.getRecordFullPath(mCtx, id));
+					boolean result = getRecorderDataManager().saveFile(CommonUtils.getRecordFullPath(mCtx, id), alarmVO.getId() + ".wav");
+					if(result){
+						Log.d(this.toString(), "미디어 복사 성공");
+						//getRecorderDataManager().deleteRecordFile(oriAlarmId);
+					}
+
 					Toast.makeText(mCtx, getString(R.string.success), Toast.LENGTH_LONG).show();
+				}
 				else
 					Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 
@@ -840,7 +853,7 @@ public class AlarmFragment extends Fragment{
 							Toast.makeText(mCtx, "음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
 							return ;
 						}
-						boolean result = getRecorderDataManager().saveFile(fromPath, vo.getId() + ".3gp");
+						boolean result = getRecorderDataManager().saveFile(fromPath, vo.getId() + ".wav");
 						if(result){
 							Log.d(this.toString(), "미디어 복사 성공");
 						}
@@ -870,7 +883,7 @@ public class AlarmFragment extends Fragment{
 						Toast.makeText(mCtx, "음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
 						return ;
 					}
-					boolean result = getRecorderDataManager().saveFile(fromPath, vo.getId() + ".3gp");
+					boolean result = getRecorderDataManager().saveFile(fromPath, vo.getId() + ".wav");
 					if(result){
 						Log.d(this.toString(), "미디어 복사 성공");
 						getRecorderDataManager().deleteRecordFile(oriAlarmId);
