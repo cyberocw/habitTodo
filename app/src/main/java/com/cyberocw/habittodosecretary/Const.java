@@ -18,7 +18,7 @@ public class Const {
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
 	public static final int ONGOING_ALARM_NOTI_ID = 999999998;
 
-    public static final boolean IS_DEBUG = false;
+    public static final boolean IS_DEBUG = true;
 
 	public class PARAM{
 		public static final String MODE = "mode";
@@ -33,6 +33,8 @@ public class Const {
 		public static final String ALARM_TIME_VO = "alarmTimeVO";
 		public static final String ALARM_OPTION = "alarmOption";
 		public static final String ALARM_ID_TIME_STAMP = "alarmIdTimeStamp";
+		public static final String IS_RECORD = "isRecord";
+		public static final String FILE_PATH = "filePath";
     }
 
 	public class ALARM_INTERFACE_CODE{
@@ -208,4 +210,7 @@ public class Const {
 	}
 
 
+	public class RECORDER {
+		public static final String CACHE_FILE_NAME = "cacheAudio.pcm";
+	}
 }

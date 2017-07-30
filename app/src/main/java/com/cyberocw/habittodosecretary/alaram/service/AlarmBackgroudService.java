@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
@@ -21,6 +23,10 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -247,8 +253,39 @@ public class AlarmBackgroudService extends Service {
             mCtx.startService(myIntent);
 
             //mAlarmOption - 개별 알람 tts
-            if(mAlarmOption == 1 && isTTS) {
+            if(mAlarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS) {
                 startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
+            }else if(mAlarmOption == Const.ALARM_OPTION_TO_SOUND.RECORD && isTTS){
+                String fileName = mArrAlarmVOList.get(mMinRemainPosition).getfId() + ".3gp";
+                String filePath = mCtx.getFilesDir().getAbsolutePath() + "voice" + File.separator + fileName;
+
+                File rootDir=new File(mCtx.getFilesDir(), "voice");
+                rootDir.mkdirs();
+                File f = new File(rootDir, fileName);
+                Log.d(this.toString(), "absolute="+f.getAbsolutePath() + " getPaht= " + f.getPath());
+                FileInputStream fis = null;
+                try {
+                    if(f.isFile())
+                        fis = new FileInputStream(f);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                if(fis != null){
+                    MediaPlayer player = new MediaPlayer();
+                    try {
+                        player.setDataSource(fis.getFD());
+                        fis.close();
+                        player.prepare();
+                        player.start();
+                    } catch (IOException e) {
+                        Log.e(this.toString(), "prepare() failed error=" );
+                        e.printStackTrace();
+                        Toast.makeText(mCtx, "Play Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(mCtx, "파일 경로가 잘못되었습니다", Toast.LENGTH_SHORT).show();
+                }
             }
         }else{
             Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);

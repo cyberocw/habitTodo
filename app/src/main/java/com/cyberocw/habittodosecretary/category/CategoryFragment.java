@@ -62,8 +62,8 @@ public class CategoryFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			isEtcMode = getArguments().getBoolean(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY, false);
-			mParam2 = getArguments().getString(ARG_PARAM2);
+		/*	isEtcMode = getArguments().getBoolean(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY, false);
+			mParam2 = getArguments().getString(ARG_PARAM2);*/
 		}
 	}
 
@@ -73,6 +73,14 @@ public class CategoryFragment extends Fragment {
 		// Inflate the layout for this fragment
 		mView = inflater.inflate(R.layout.fragment_cate, container, false);
 		return mView;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		/*outState.putInt(Const.PARAM.MODE, mMode);
+		outState.putLong(Const.PARAM.ALARM_ID, mAlarmId);
+		*/
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override

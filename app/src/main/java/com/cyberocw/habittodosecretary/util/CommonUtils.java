@@ -18,7 +18,9 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -188,5 +190,12 @@ public class CommonUtils {
 	public static int getAlarmOptionValue(int selectedItemPosition) {
 		//나중에 순서나 내용이 바뀌면 알맞는 번호 리턴하게 만들기
 		return selectedItemPosition;
+	}
+
+    public static String getRecordFullPath(Context mCtx, AlarmVO mAlarmVO) {
+		return mCtx.getFilesDir().getAbsolutePath() + File.separator + "voice" + File.separator +  mAlarmVO.getId() + ".3gp";
+    }
+	public static String getRecordFullPath(Context mCtx, long id) {
+		return mCtx.getFilesDir().getAbsolutePath() + File.separator + "voice" + File.separator +  id + ".3gp";
 	}
 }

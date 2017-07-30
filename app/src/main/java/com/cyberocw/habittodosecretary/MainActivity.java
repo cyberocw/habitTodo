@@ -73,8 +73,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 		Fabric.with(this, new Crashlytics());
+
 		mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         setContentView(R.layout.activity_main);
@@ -175,7 +175,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				if(bundle.getString(Const.PARAM.ETC_TYPE_KEY).equals(Const.ETC_TYPE.MEMO)){
 					fragment = new MemoFragment();
 					actionBar.setTitle(getResources().getString(R.string.nav_item_memo));
-					mHelpMenu.setVisible(false);
+					if(mHelpMenu != null)
+						mHelpMenu.setVisible(false);
 				}else{
 					Toast.makeText(getApplicationContext(), getString(R.string.main_activity_etctype_invalid), Toast.LENGTH_LONG).show();
 					Log.e(this.toString(), "버그! etcType이 잘못 되었습니다 etcType="+ bundle.getString("etcType"));
@@ -360,7 +361,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
         //Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 		mHelpMenu = menu.getItem(0);
-		if(!CommonUtils.isLocaleKo(getResources().getConfiguration())) {
+		if(mHelpMenu != null && !CommonUtils.isLocaleKo(getResources().getConfiguration())) {
 			mHelpMenu.setVisible(false);
 		}
         return true;
@@ -392,35 +393,40 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			case R.id.nav_item_dashboard:
 				fragment = new DashboardFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
-				mHelpMenu.setVisible(false);
+				if(mHelpMenu != null)
+					mHelpMenu.setVisible(false);
 				break;
 			case R.id.nav_item_alaram:
 				fragment = new AlarmFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
 				//한글일때만 나옴
-				if(CommonUtils.isLocaleKo(getResources().getConfiguration()))
+				if(mHelpMenu != null && CommonUtils.isLocaleKo(getResources().getConfiguration()))
 					mHelpMenu.setVisible(true);
 				break;
 			case R.id.nav_item_memo:
 				fragment = new MemoFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_memo));
-				mHelpMenu.setVisible(false);
+				if(mHelpMenu != null)
+					mHelpMenu.setVisible(false);
 				break;
 			case R.id.nav_item_cate:
 				fragment = new CategoryFragment();
 				((CategoryFragment) fragment).setActionBar(actionBar);
 				actionBar.setTitle(getResources().getString(R.string.nav_item_cate));
-				mHelpMenu.setVisible(false);
+				if(mHelpMenu != null)
+					mHelpMenu.setVisible(false);
 				break;
 			case R.id.nav_item_setting:
 				fragment = new SettingFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_setting));
-				mHelpMenu.setVisible(false);
+				if(mHelpMenu != null)
+					mHelpMenu.setVisible(false);
 				break;
 			case R.id.nav_item_keyword:
 				fragment = new KeywordFragment();
 				actionBar.setTitle(getResources().getString(R.string.nav_item_keyword));
-				mHelpMenu.setVisible(false);
+				if(mHelpMenu != null)
+					mHelpMenu.setVisible(false);
 				break;
 			default:
 				//fragment = new AlarmFragment();

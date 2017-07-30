@@ -44,9 +44,11 @@ import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
 import com.cyberocw.habittodosecretary.calendar.CalendarManager;
 import com.cyberocw.habittodosecretary.memo.MemoDataManager;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
+import com.cyberocw.habittodosecretary.record.RecorderDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
@@ -70,6 +72,7 @@ public class AlarmFragment extends Fragment{
 	public Context mCtx;
 	private AlarmDataManager mAlarmDataManager;
 	private TimerDataManager mTimerDataManager;
+	private RecorderDataManager mRecorderDataManager;
 	private LinearLayout llWeekOfDayWrap;
 	private String mParam1;
 	private String mParam2;
@@ -605,6 +608,9 @@ public class AlarmFragment extends Fragment{
 		}
 
 		mAlarmDataManager.deleteItemById(id);
+		if(vo.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
+			getRecorderDataManager().deleteRecordFile(vo.getId());
+		}
 		mAlarmDataManager.resetMinAlarmCall();
 		refreshAlarmList();
 	}
@@ -808,30 +814,72 @@ public class AlarmFragment extends Fragment{
 		//alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
 	}
 
+	private RecorderDataManager getRecorderDataManager(){
+		if(mRecorderDataManager == null)
+			mRecorderDataManager = new RecorderDataManager(mCtx);
+		return mRecorderDataManager;
+	}
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		AlarmVO vo;
 		TimerVO tvo;
-
 		switch(resultCode) {
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE :
-				vo = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
+				try {
+					Bundle bundle = data.getExtras();
+					vo = (AlarmVO) bundle.getSerializable(Const.PARAM.ALARM_VO);
 
-				// 알람 추가
-				if(!mAlarmDataManager.addItem(vo) == true)
+					// 알람 추가
+					if (!mAlarmDataManager.addItem(vo) == true)
+						Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
+					else if (vo.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
+						String fromPath = bundle.getString(Const.PARAM.FILE_PATH);
+						if(fromPath == null){
+							Toast.makeText(mCtx, "음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
+							return ;
+						}
+						boolean result = getRecorderDataManager().saveFile(fromPath, vo.getId() + ".3gp");
+						if(result){
+							Log.d(this.toString(), "미디어 복사 성공");
+						}
+					}
+				}catch(Exception e){
 					Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
+					e.printStackTrace();
+				}
 
-				mAlarmDataManager.resetMinAlarmCall(vo.getAlarmDateType());
+				mAlarmDataManager.resetMinAlarmCall();
 				refreshAlarmList();
 
 				break;
 
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_MODIFY_FINISH_CODE :
-				vo = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
+				Bundle bundle = data.getExtras();
+				vo = (AlarmVO) bundle.getSerializable(Const.PARAM.ALARM_VO);
+				long oriAlarmId = vo.getId();
+				String fromPath = bundle.getString(Const.PARAM.FILE_PATH, null);
 				// 알람 추가
 				if(!mAlarmDataManager.modifyItem(vo) == true)
 					Toast.makeText(mCtx, getString(R.string.msg_failed_modify), Toast.LENGTH_LONG).show();
+				else if (vo.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
+					//String oriPath = CommonUtils.getRecordFullPath(mCtx, oriAlarmId);
 
+					if(fromPath == null){
+						Toast.makeText(mCtx, "음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
+						return ;
+					}
+					boolean result = getRecorderDataManager().saveFile(fromPath, vo.getId() + ".3gp");
+					if(result){
+						Log.d(this.toString(), "미디어 복사 성공");
+						getRecorderDataManager().deleteRecordFile(oriAlarmId);
+					}
+				}
+				//type 변경으로 기존 파일 제거
+				else if(fromPath != null){
+					mRecorderDataManager.deleteRecordFile(oriAlarmId);
+				}
 				// 수정일 경우 date type이 변경 될 수도 있기 때문에 두개 모두 갱신
 				mAlarmDataManager.resetMinAlarmCall();
 				refreshAlarmList();
@@ -863,7 +911,7 @@ public class AlarmFragment extends Fragment{
 
 
 		}
-		super.onActivityResult(requestCode, resultCode, data);
+
 	}
 
 	public void showMemo(long alarmId){

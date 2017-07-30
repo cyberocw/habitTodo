@@ -1,5 +1,6 @@
 package com.cyberocw.habittodosecretary.alaram.ui;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -7,19 +8,17 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v13.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.ScrollingTabContainerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,23 +39,24 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
 import com.cyberocw.habittodosecretary.intro.Intro;
-import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
+import com.cyberocw.habittodosecretary.record.RecorderCustomView;
+import com.cyberocw.habittodosecretary.record.RecorderDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.cyberocw.habittodosecretary.record.RecorderDialog;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 
 import butterknife.ButterKnife;
 
@@ -75,7 +75,7 @@ import static android.util.Log.d;
  *
  */
 
-public class AlarmDialogNew extends DialogFragment{
+public class AlarmDialogNew extends DialogFragment implements RecorderDialog.recordDialogInterface {
 	private View mView;
 	private Dialog mDialog;
 	private AlarmVO mAlarmVO = null;
@@ -97,10 +97,11 @@ public class AlarmDialogNew extends DialogFragment{
 	private CheckBox mCbHolidayAll = null;
 	private CheckBox mCbHolidayNone = null;
 	private CheckBox mCbTTS = null;
-
+	private boolean mPrevRecord = false;
+    private RecorderCustomView mRecorderCustomView;
 
 	//private RadioGroup mRgAlarmOption;
-	private LinearLayout mAlarmList, llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap, llHolidayOptionWrap;
+	private LinearLayout mAlarmList, llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap, llHolidayOptionWrap, llRecorderWrap;
 	private HashMap<Integer, Button> mMapDay = new HashMap<>();
 	private int[] mArrDayString = {Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY};//{"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
 	private int[] mArrDayId = {R.id.btnRepeatSun, R.id.btnRepeatMon, R.id.btnRepeatTue, R.id.btnRepeatWed, R.id.btnRepeatThur, R.id.btnRepeatFri, R.id.btnRepeatSat};
@@ -109,6 +110,7 @@ public class AlarmDialogNew extends DialogFragment{
 	private String mEtcType = "";
 	private Object mTemp;
 	private Calendar mCalendar;
+	private boolean isRecord;
 
 	//private String[] mArrDayBtn = {"btnRepeatMon", "btnRepeatThue", "btnRepeat"}
 
@@ -154,6 +156,7 @@ public class AlarmDialogNew extends DialogFragment{
 
 		//mCbTTS = (CheckBox) view.findViewById(R.id.cbTTS);
 		mSpSoundType = (Spinner) view.findViewById(R.id.spVoiceType);
+        mRecorderCustomView = (RecorderCustomView) view.findViewById(R.id.recorderCustomView);
 
 		mTvEtcTitle = (Button) view.findViewById(R.id.etcTitle);
 
@@ -205,8 +208,21 @@ public class AlarmDialogNew extends DialogFragment{
 		if(arguments != null) {
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.PARAM.ALARM_VO);
 
-			if(mAlarmVO != null)
+			if(mAlarmVO != null) {
 				mModifyMode = 1;
+				if(mAlarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
+					//mPrevRecord = true;
+					String fromPath = CommonUtils.getRecordFullPath(mCtx, mAlarmVO);
+					Log.d(Const.DEBUG_TAG, "isModifyMode = 1 and mAlarmVO not null fromPath = " + fromPath);
+					mRecorderCustomView.setRecordFile(fromPath);
+				}
+			}
+			/*
+			if(mModifyMode == 1){
+				if(mAlarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
+					isRecord = true;
+				}
+			}*/
 
             if(arguments.containsKey(Const.PARAM.MEMO_VO))
 			    mMemoVO = (MemoVO) arguments.getSerializable(Const.PARAM.MEMO_VO);
@@ -252,6 +268,10 @@ public class AlarmDialogNew extends DialogFragment{
 		/* alarmTitle, alarmType(진동,소리 등), alarmOption(타이머,시간지정), hour, minute, mArrAlarmCall(몇분전 알림 목록)
 		 , mDataRepeatDay, mAlarmDateType, ArrayList<Calendar> alarmDate = null;
 		*/
+		String [] permissions = {Manifest.permission.RECORD_AUDIO};
+		int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+		ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+
 		mCalendar = Calendar.getInstance();
 		//수정 모드
 		if(mModifyMode == 1) {
@@ -393,6 +413,18 @@ public class AlarmDialogNew extends DialogFragment{
 			return;
 		}
 
+		int soundType = CommonUtils.getAlarmOptionValue(mSpSoundType.getSelectedItemPosition());
+
+		isRecord = mRecorderCustomView.isRecord();
+		//false - 이지만 기존 레코드가 있으면 통과 -> 기존거인지 신규인지 구분 필요 > 기존것도 신규로 전환시키면 됨 , 기존건 무조건 삭제
+
+		String voiceFile = mRecorderCustomView.getFilePath();
+
+		if(soundType == Const.ALARM_OPTION_TO_SOUND.RECORD && voiceFile == null){
+			Toast.makeText(mCtx, "녹음을 해주세요", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
 		int hour, minute;
 
 		hour = (int) mTvAlarmTime.getTag(R.id.timeHourId);
@@ -424,7 +456,8 @@ public class AlarmDialogNew extends DialogFragment{
 
 		vo.setAlarmTitle(alarmTitle);
 		vo.setAlarmType(alarmType);
-		vo.setAlarmOption(CommonUtils.getAlarmOptionValue(mSpSoundType.getSelectedItemPosition()));//mCbTTS.isChecked() == true ? 1 : 0);
+
+		vo.setAlarmOption(soundType);//mCbTTS.isChecked() == true ? 1 : 0);
 		vo.setHour(hour);
 		vo.setMinute(minute);
 		vo.setAlarmCallList(mArrAlarmCall);
@@ -441,7 +474,10 @@ public class AlarmDialogNew extends DialogFragment{
 
 		Bundle bundle = new Bundle();
 		bundle.putSerializable(Const.PARAM.ALARM_VO, vo);
-
+		//녹음을 한 경우만 true가 됨.
+		//bundle.putBoolean(Const.PARAM.IS_RECORD , isRecord);
+		if(voiceFile != null)
+			bundle.putString(Const.PARAM.FILE_PATH, voiceFile);
         if(mMemoVO != null)
         	vo.setRfid(mMemoVO.getId());
             //bundle.putSerializable(Const.MEMO_VO, mMemoVO);
@@ -465,6 +501,7 @@ public class AlarmDialogNew extends DialogFragment{
 		llRepeatDayWrap = (LinearLayout) v.findViewById(R.id.llRepeatDayWrap);
 		llAlertTimeWrap = (LinearLayout) v.findViewById(R.id.alertTimeWrap);
 		llHolidayOptionWrap = (LinearLayout) v.findViewById(R.id.holidayOptionWrap);
+        llRecorderWrap = (LinearLayout) v.findViewById(R.id.recorderWrap);
 	}
 
 	@Override
@@ -641,8 +678,8 @@ public class AlarmDialogNew extends DialogFragment{
 		ArrayList<String> arrayList = new ArrayList<String>();
 		arrayList.add(getString(R.string.none));
 		arrayList.add(getString(R.string.dialog_alarm_sp_sound_tts));
-		/*arrayList.add(getString(R.string.dialog_alarm_sp_sound_record));
-		arrayList.add(getString(R.string.dialog_alarm_sp_sound_file));*/
+		arrayList.add(getString(R.string.dialog_alarm_sp_sound_record));
+		arrayList.add(getString(R.string.dialog_alarm_sp_sound_file));
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
 				R.layout.simple_spinner_item_small, arrayList);
@@ -651,17 +688,6 @@ public class AlarmDialogNew extends DialogFragment{
 		//스피너 속성
 		//mSpAlarmType.setPrompt("알람 종류"); // 스피너 제목
 		mSpSoundType.setAdapter(adapter);
-		mSpSoundType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-
-			}
-		});
 	}
 	public void makeSpinnerAppList(){
 		//mSpAppList
@@ -679,6 +705,15 @@ public class AlarmDialogNew extends DialogFragment{
 		mSpAppList.setAdapter(adapter);
 		mSpAppList.setEnabled(false);
 
+	}
+
+	private void showRecordDialog(){
+		Log.d(this.toString(), "showRecordDialog start");
+		RecorderDialog dialog = new RecorderDialog();
+		dialog.setContext(mCtx);
+		dialog.setListener(this);
+		//isRecord
+		dialog.show(getFragmentManager(), "RecorderDialog");
 	}
 
 	private void showCategory(){
@@ -880,8 +915,10 @@ public class AlarmDialogNew extends DialogFragment{
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if(CommonUtils.getAlarmOptionValue(position) == Const.ALARM_OPTION_TO_SOUND.RECORD){
-
-				}
+                    showRecordWrap(true);
+				}else{
+                    showRecordWrap(false);
+                }
 			}
 
 			@Override
@@ -891,9 +928,12 @@ public class AlarmDialogNew extends DialogFragment{
 		});
     }
 
-    private void renderRecorder(){
-
-	}
+    private void showRecordWrap(boolean isShow){
+        if(isShow)
+            llRecorderWrap.setVisibility(View.VISIBLE);
+        else
+            llRecorderWrap.setVisibility(View.GONE);
+    }
 
 	private void txTimeSet(int hourOfDay, int minute){
 		boolean isPm = false;
@@ -1109,4 +1149,20 @@ public class AlarmDialogNew extends DialogFragment{
 				mTvEtcTitle.setVisibility(View.VISIBLE);
 		}
 	}
+
+	@Override
+	public void onDialogPositiveClick(boolean isRecord) {
+		this.isRecord = isRecord;
+	}
+
+	@Override
+	public void onDialogNegativeClick() {
+
+	}
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mRecorderCustomView.onStop();
+    }
 }

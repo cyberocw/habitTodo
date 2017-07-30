@@ -153,7 +153,6 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		adView.loadAd(adRequest);
 
 		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-
 		Fabric.with(this, new Crashlytics());
 		mStartedTimeInMilis = Calendar.getInstance().getTimeInMillis();
 
