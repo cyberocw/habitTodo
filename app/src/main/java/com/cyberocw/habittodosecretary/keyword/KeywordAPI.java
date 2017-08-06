@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -33,20 +36,34 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class KeywordAPI extends AsyncTask<String, Void, String> {
 
-    private ProgressDialog asyncDialog;
+    private ProgressDialog asyncDialog = null;
+    private ProgressBar asyncProgressbar = null;
     KeywordDataManager keywordDataManager;
     KeywordListAdapter keywordListAdapter;
     String mUrl;
     private Context mCtx;
     SharedPreferences mPrefs;
     private ArrayList<KeywordVO> dataList;
-
+    private boolean bDialog = true;
+    
+    
     public KeywordAPI(Context context, KeywordDataManager keywordDataManager, KeywordListAdapter keywordListAdapter){
+        bDialog = true;
+        this.initAPI(context, keywordDataManager, keywordListAdapter, new ProgressDialog(context), null);
+    }
+    public KeywordAPI(Context context, KeywordDataManager keywordDataManager, KeywordListAdapter keywordListAdapter, ProgressBar progressBar){
+        bDialog = false;
+        this.initAPI(context, keywordDataManager, keywordListAdapter, null, progressBar);
+    }
+
+    private void initAPI(Context context, KeywordDataManager keywordDataManager, KeywordListAdapter keywordListAdapter, ProgressDialog progressDialog, ProgressBar progressBar){
         mCtx = context;
         dataList = new ArrayList<>();
+
         this.keywordDataManager = keywordDataManager;
         this.keywordListAdapter = keywordListAdapter;
-        asyncDialog = new ProgressDialog(mCtx);
+        asyncDialog = progressDialog;//new ProgressDialog(mCtx);
+        asyncProgressbar = progressBar;
         mPrefs = mCtx.getSharedPreferences(Const.KEYWORD.PARAM.PREFS_CACHE, Context.MODE_PRIVATE);
         Map<String, ?> map = mPrefs.getAll();
         Crashlytics.log(Log.DEBUG, this.toString(), "keyword cache size="+map.size());
@@ -56,12 +73,24 @@ public class KeywordAPI extends AsyncTask<String, Void, String> {
         }
     }
 
+    public void noProgress(){
+        bDialog = false;
+    }
+
     @Override
     protected void onPreExecute() {
-        asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        asyncDialog.setMessage("데이터 수신중..");
-        asyncDialog.show();
-
+        if(bDialog) {
+            asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            asyncDialog.setMessage("데이터 수신중..");
+            asyncDialog.show();
+        }
+        if(!bDialog) {
+            ListView lv = keywordListAdapter.getListVIew();
+            if(lv != null)
+                lv.setVisibility(View.GONE);
+            if(asyncProgressbar != null)
+                asyncProgressbar.setVisibility(View.VISIBLE);
+        }
         // show dialog
         //asyncDialog.show();
         super.onPreExecute();
@@ -192,10 +221,20 @@ public class KeywordAPI extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        asyncDialog.dismiss();
-
+        if(bDialog && asyncDialog != null) {
+            asyncDialog.dismiss();
+        }
+        else if(!bDialog) {
+            ListView lv = keywordListAdapter.getListVIew();
+            if(lv != null)
+                lv.setVisibility(View.VISIBLE);
+            if(asyncProgressbar != null)
+                asyncProgressbar.setVisibility(View.GONE);
+            Log.d(this.toString(), "asyncProgressbar="+asyncProgressbar);
+        }
         if(result.equals("실패")) {
-            Toast.makeText(mCtx, result, Toast.LENGTH_LONG).show();
+            if(mCtx != null)
+                Toast.makeText(mCtx, "데이터를 불러오는데 실패했습니다", Toast.LENGTH_LONG).show();
             return;
         }
         keywordDataManager.setDataList(this.dataList);

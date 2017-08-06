@@ -157,6 +157,8 @@ public class TimerListAdapter extends BaseAdapter {
 					intent = new Intent(mCtx, TimerService.class);
 					intent.putExtra("remainTime", remainTime);
 					intent.putExtra("position", position);
+					intent.putExtra("alarmOption", vo.getAlarmSoundOption());
+					intent.putExtra("alarmType", vo.getAlarmType());
 					intent.putExtra("title", vo.getAlarmTitle());
 					mCtx.startService(intent);
 					mCtx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);

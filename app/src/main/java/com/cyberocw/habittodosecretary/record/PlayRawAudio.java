@@ -1,11 +1,17 @@
 package com.cyberocw.habittodosecretary.record;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.util.TTSNoti;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -17,10 +23,10 @@ import java.io.FileInputStream;
  */
 
 public class PlayRawAudio extends AsyncTask<Void, Void, Void> {
-    int frequency = 44100, channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
-    int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
     String mPlayFileName;
-    public PlayRawAudio(String fileName) {
+    Context mCtx;
+    public PlayRawAudio(Context ctx, String fileName) {
+        mCtx = ctx;
         mPlayFileName = fileName;
     }
 
@@ -33,15 +39,22 @@ public class PlayRawAudio extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         Log.d(this.toString(), " audiotrack  mPlayFileName="+ mPlayFileName);
         File fPlay = new File(mPlayFileName);
-
-        int bufferSize = AudioTrack.getMinBufferSize(frequency,channelConfiguration, audioEncoding);
+        if(!fPlay.isFile()){
+            //Toast.makeText(, "couldn't found voice file", Toast.LENGTH_SHORT).show();
+            Intent ttsIntent = new Intent(mCtx, TTSNoti.class);
+            ttsIntent.putExtra("alaramTitle", "couldn't found voice file");
+            ttsIntent.putExtra("alarmId", 1);
+            mCtx.startService(ttsIntent);
+            return null;
+        }
+        int bufferSize = AudioTrack.getMinBufferSize(Const.RECORDER.FREQUENCY, Const.RECORDER.CHANNEL_CONFIGURATION_OUT, Const.RECORDER.AUDIO_ENCODING);
         short[] audiodata = new short[bufferSize / 4];
 
         try {
             DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fPlay)));
             AudioTrack audioTrack = new AudioTrack(
-            AudioManager.STREAM_MUSIC, frequency,
-            channelConfiguration, audioEncoding, bufferSize,
+            AudioManager.STREAM_MUSIC, Const.RECORDER.FREQUENCY,
+                    Const.RECORDER.CHANNEL_CONFIGURATION_OUT, Const.RECORDER.AUDIO_ENCODING, bufferSize,
             AudioTrack.MODE_STREAM);
 
             audioTrack.play();

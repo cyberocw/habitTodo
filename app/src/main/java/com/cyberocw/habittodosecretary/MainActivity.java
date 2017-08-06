@@ -49,6 +49,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -88,8 +89,13 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	    mDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
 	    mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
 	    mNavigationView.setNavigationItemSelectedListener(this);
-		if(!CommonUtils.isLocaleKo(getResources().getConfiguration()))
-			mNavigationView.getMenu().findItem(R.id.nav_item_keyword).setVisible(false);
+
+		MobileAds.initialize(this, "ca-app-pub-8072677228798230~8421474102"); // real
+		if(!CommonUtils.isLocaleKo(getResources().getConfiguration())) {
+            MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.nav_item_keyword);
+            if(menuItem != null)
+                menuItem.setVisible(false);
+        }
 		AdView adView = (AdView) findViewById(R.id.adView);
 		AdRequest adRequest = new AdRequest.Builder()
 				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
@@ -187,10 +193,14 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			}
 			fragment.setArguments(bundle);
 		}else {
-			fragment = new DashboardFragment();
-			actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
+			if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
+				fragment = new DashboardFragment();
+				actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
+			}else{
+				fragment = new AlarmFragment();
+				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
+			}
 		}
-
 
 		fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.replace(R.id.main_container, fragment).commit();
@@ -277,6 +287,9 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			if(!prefsSavedVersion.equals("0")){
 				//showUpdateLog();
 			}
+			File rootDir = new File(getApplicationContext().getFilesDir(), "voice");
+			if(!rootDir.isDirectory())
+				rootDir.mkdirs();
 
 			SharedPreferences.Editor editor = setPrefs.edit();
 			editor.putString(Const.SETTING.VERSION, versionName);
@@ -288,13 +301,15 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	private void showUpdateLog(){
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("기능 업데이트 안내");
-		alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+		alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();     //닫기
 			}
 		});
-		alert.setMessage("대시보드 화면과 여러 포털 사이트의 시간대별 인기 키워드 종합 순위를 볼 수 있는 기능이 업데이트 되었습니다.\n\n앞으로도 기능들이 업데이트 될 예정입니다. 많은 이용 바랍니다.");
+		alert.setMessage("1. 알림 시 음성을 녹음해두었다가 재생하는 기능이 추가되었습니다. 좋아하는 사람의 음성을 들으면서 잠들거나 일어나면 더 좋겠지요?\n연인 혹은 좋아하는 연예인의 음성을 녹음해보세요\n\n" +
+				"2. 미리 알림(X분 전/후)에 대해 상태바 알림 혹은 끌때까지 알림으로 별도 지정하는 옵션을 추가했습니다." +
+		"\n\n3. 타이머에서도 상태바 1회 알림 혹은 끌때까지 알람 지정 옵션과 TTS 재생 여부 옵션이 추가되었습니다.");
 		alert.show();
 	}
 

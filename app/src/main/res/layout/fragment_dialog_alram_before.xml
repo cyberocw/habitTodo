@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-
-    >
-
-    <NumberPicker
-        android:id="@+id/numberPicker"
+    android:gravity="center">
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        />
+        >
+        <NumberPicker
+            android:id="@+id/numberPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            />
 
-    <Button
-        android:id="@+id/button"
-        style="@style/button_primary"
-        android:layout_height="35dp"
-        android:layout_width="wrap_content"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:padding="10dp"
-        android:text=" 이전" />
+        <Button
+            android:id="@+id/button"
+            style="@style/button_primary"
+            android:layout_height="35dp"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:padding="10dp"
+            android:text=" 이전" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            >
+        </LinearLayout>
 </LinearLayout>

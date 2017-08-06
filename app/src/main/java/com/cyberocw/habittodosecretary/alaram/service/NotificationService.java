@@ -59,12 +59,13 @@ public class NotificationService extends Service{
 		SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 		boolean isAlarmNoti = prefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
 
-		String noti_title = intent.getExtras().getString("title");
-		String etcType = intent.getExtras().getString(Const.PARAM.ETC_TYPE_KEY, "");
+		Bundle bundle = intent.getExtras();
+		String noti_title = bundle.getString("title");
+		String etcType = bundle.getString(Const.PARAM.ETC_TYPE_KEY, "");
 		//String noti_message = intent.getExtras().getString("notes");
-		int reqCode = intent.getExtras().getInt(Const.PARAM.REQ_CODE);
+		int reqCode = bundle.getInt(Const.PARAM.REQ_CODE, -1);
 		//나중에 reqCode 가 int 범위를 넘어설것 같을때 별도 처리해주기 noti id는 int만 가능해서
-		long alarmId = intent.getExtras().getLong(Const.PARAM.ALARM_ID);
+		long alarmId = bundle.getLong(Const.PARAM.ALARM_ID, -1);
 
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Intent intent1 = new Intent(this, MainActivity.class);
@@ -100,7 +101,8 @@ public class NotificationService extends Service{
 			remoteView.setViewVisibility(R.id.tvAlarmSubTitle, View.VISIBLE);
 			remoteView.setTextViewText(R.id.tvAlarmSubTitle, getString(R.string.service_noti_msg_view_memo_touch));
 			mCompatBuilder.setContentText(getString(R.string.service_noti_msg_view_memo_touch));
-		}else{
+		}else if(alarmId > -1){
+			// alarmId 가 -1 이면 timer에서 보낸 noti임
 			mCompatBuilder.setContentText(getString(R.string.service_noti_msg_scroll_postpone));
 		}
         Calendar now = Calendar.getInstance();
@@ -111,17 +113,18 @@ public class NotificationService extends Service{
 		PendingIntent pendingCloseButtonIntent = PendingIntent.getBroadcast(this, (int) reqCode, closeButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		remoteView.setOnClickPendingIntent(R.id.btnCloseNoti, pendingCloseButtonIntent);
 
-		Intent intentAlarm = new Intent(this, MainActivity.class);
-		intentAlarm.putExtra(Const.PARAM.ALARM_ID, alarmId);
-		intentAlarm.putExtra(Const.PARAM.MODE, Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG);
-		intentAlarm.putExtra(Const.PARAM.REQ_CODE, reqCode);
+		if(alarmId > -1) {
+			Intent intentAlarm = new Intent(this, MainActivity.class);
+			intentAlarm.putExtra(Const.PARAM.ALARM_ID, alarmId);
+			intentAlarm.putExtra(Const.PARAM.MODE, Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG);
+			intentAlarm.putExtra(Const.PARAM.REQ_CODE, reqCode);
 
-		intentAlarm.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_NO_HISTORY);
-		PendingIntent pendingIntentAlarm = PendingIntent.getActivity(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
+			intentAlarm.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_NO_HISTORY);
+			PendingIntent pendingIntentAlarm = PendingIntent.getActivity(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		remoteView.setOnClickPendingIntent(R.id.btnPostpone, pendingIntentAlarm);
-		mCompatBuilder.addAction(R.drawable.ic_add_alert_black_24dp, getString(R.string.service_noti_postpone), pendingIntentAlarm);
-
+			remoteView.setOnClickPendingIntent(R.id.btnPostpone, pendingIntentAlarm);
+			mCompatBuilder.addAction(R.drawable.ic_add_alert_black_24dp, getString(R.string.service_noti_postpone), pendingIntentAlarm);
+		}
 		//mCompatBuilder.setCustomContentView(remoteView);
 
 
@@ -130,7 +133,7 @@ public class NotificationService extends Service{
 
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " noti reqCode="+reqCode);
 		nm.notify(reqCode, mCompatBuilder.build());
-
+		CommonUtils.logCustomEvent("NotificationService", "1");
 		/*
 		try {
 

@@ -12,6 +12,7 @@ public class TimerVO implements Serializable {
 	private int minute;
 	private int second;
 	private int alarmType;
+	private int alarmSoundOption;
 	private String alarmTitle;
 	private Calendar createDt;
 	private Calendar updateDt;
@@ -87,6 +88,14 @@ public class TimerVO implements Serializable {
 
 	public void setAlarmContents(String alarmContents) {
 		this.alarmContents = alarmContents;
+	}
+
+	public int getAlarmSoundOption() {
+		return alarmSoundOption;
+	}
+
+	public void setAlarmSoundOption(int alarmSoundOption) {
+		this.alarmSoundOption = alarmSoundOption;
 	}
 
 	@Override

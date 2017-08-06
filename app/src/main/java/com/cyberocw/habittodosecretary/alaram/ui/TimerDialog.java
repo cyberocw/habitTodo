@@ -40,7 +40,7 @@ public class TimerDialog extends DialogFragment {
 	private View mView = null;
 	private TimerVO mTimerVO = null;
 	private EditText mTxAlarmTitle = null;
-	private Spinner mSpAlarmType = null;
+	private Spinner mSpAlarmType = null, mSpSoundType = null;
 	private NumberPicker mNpHour = null;
 	private NumberPicker mNpMinute = null;
 	private NumberPicker mNpSecond = null;
@@ -127,7 +127,8 @@ public class TimerDialog extends DialogFragment {
 		mNpHour = (NumberPicker) mView.findViewById(R.id.addAlarmHourPicker);
 		mNpMinute = (NumberPicker) mView.findViewById(R.id.addAlarmMinutePicker);
 		mNpSecond = (NumberPicker) mView.findViewById(R.id.addAlarmSecondPicker);
-
+		mSpAlarmType = ButterKnife.findById(mView, R.id.spAlarmType);
+		mSpSoundType = ButterKnife.findById(mView, R.id.spVoiceType);
 		mNpHour.setMaxValue(10);
 		mNpHour.setMinValue(0);
 		mNpMinute.setMaxValue(59);
@@ -135,11 +136,19 @@ public class TimerDialog extends DialogFragment {
 		mNpSecond.setMaxValue(59);
 		mNpSecond.setMinValue(0);
 
+		makeSpinnerAlarmType();
+		makeSpinnerSoundType();
+
 		if(mModifyMode == 1){
 			mTxAlarmTitle.setText(mTimerVO.getAlarmTitle());
 			mNpHour.setValue(mTimerVO.getHour());
 			mNpMinute.setValue(mTimerVO.getMinute());
 			mNpSecond.setValue(mTimerVO.getSecond());
+			mSpAlarmType.setSelection(mTimerVO.getAlarmType());
+			mSpSoundType.setSelection(mTimerVO.getAlarmSoundOption());
+		}else{
+			mSpAlarmType.setSelection(1);
+			mSpSoundType.setSelection(1);
 		}
 
 		mBtnSave.setOnClickListener(new View.OnClickListener() {
@@ -150,6 +159,34 @@ public class TimerDialog extends DialogFragment {
 		});
 	}
 
+	public void makeSpinnerAlarmType(){
+		ArrayList<String> arrayList = new ArrayList<String>();
+		arrayList.add(getString(R.string.dialog_alarm_sp_notification));
+		arrayList.add(getString(R.string.dialog_alarm_sp_user_stop));
+
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+				R.layout.simple_spinner_item_small, arrayList);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		//스피너 속성
+		//mSpAlarmType.setPrompt("알람 종류"); // 스피너 제목
+		mSpAlarmType.setAdapter(adapter);
+
+	}
+	public void makeSpinnerSoundType(){
+		ArrayList<String> arrayList = new ArrayList<String>();
+		arrayList.add(getString(R.string.none));
+		arrayList.add(getString(R.string.dialog_alarm_sp_sound_tts));
+		//arrayList.add(getString(R.string.dialog_alarm_sp_sound_record));
+
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+				R.layout.simple_spinner_item_small, arrayList);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		//스피너 속성
+		//mSpAlarmType.setPrompt("알람 종류"); // 스피너 제목
+		mSpSoundType.setAdapter(adapter);
+	}
 
 	private void returnData(){
 		int hour = mNpHour.getValue();
@@ -165,6 +202,9 @@ public class TimerDialog extends DialogFragment {
 		mTimerVO.setHour(hour);
 		mTimerVO.setMinute(minute);
 		mTimerVO.setSecond(second);
+
+		mTimerVO.setAlarmType(mSpAlarmType.getSelectedItemPosition());
+		mTimerVO.setAlarmSoundOption(mSpSoundType.getSelectedItemPosition());
 
 		String alarmTitle = mTxAlarmTitle.getText().toString();
 

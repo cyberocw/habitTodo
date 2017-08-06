@@ -140,17 +140,33 @@
                 android:orientation="horizontal"
                 android:id="@+id/keywordWrap2"
                 >
+                <ProgressBar
+                    android:id="@+id/progressKeywordListTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    />
                 <ListView android:id="@+id/keywordListViewTime"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     android:orientation="vertical"
                     android:layout_weight="1"
                     tools:listitem="@layout/keyword_dashbaord_view"
                     >
                 </ListView>
+                <ProgressBar
+                    android:id="@+id/progressKeywordList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    />
                 <ListView android:id="@+id/keywordListViewSum"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     android:orientation="vertical"
                     android:layout_weight="1"
                     tools:listitem="@layout/keyword_dashbaord_view"

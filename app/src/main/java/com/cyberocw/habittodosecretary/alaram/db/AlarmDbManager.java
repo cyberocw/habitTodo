@@ -62,6 +62,7 @@ public class AlarmDbManager extends DbHelper{
 		values.put(KEY_HOLIDAY_ALL, vo.getIsHolidayALL());
 		values.put(KEY_HOLIDAY_NONE, vo.getIsHolidayNone());
 		values.put(KEY_TYPE, vo.getEtcType());
+		values.put(KEY_ALARM_CALL_TYPE, vo.getAlarmCallType());
 
 		Calendar c = vo.getCreateDt();
 
@@ -176,7 +177,7 @@ public class AlarmDbManager extends DbHelper{
 	public ArrayList<AlarmTimeVO> getMinAlarmTime(long nowTime){
 		String selectQuery =
 				"SELECT B." + KEY_ID + ", A." + KEY_TIME_STAMP + ", A." + KEY_CALL_TIME + ", B." + KEY_ALARM_TITLE + ", A." + KEY_F_ALARM_ID +
-						", B." + KEY_ALARM_TYPE + ", B." + KEY_ALARM_OPTION + ", B." + KEY_TYPE +
+						", B." + KEY_ALARM_TYPE + ", B." + KEY_ALARM_OPTION + ", B." + KEY_TYPE + ", B." + KEY_ALARM_CALL_TYPE +
 						" FROM " + TABLE_ALARM_ORDER +" AS A INNER JOIN " + TABLE_ALARM + " AS B ON " +
 						" A." + KEY_F_ALARM_ID + " = B." + KEY_ID + " WHERE  B." + KEY_USE_YN + " = 1 AND A." + KEY_TIME_STAMP + " = " +
 						" (SELECT MIN(" + KEY_TIME_STAMP + " ) FROM " + TABLE_ALARM_ORDER + " AS C INNER JOIN " + TABLE_ALARM +
@@ -203,6 +204,7 @@ public class AlarmDbManager extends DbHelper{
 				vo.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
 				vo.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
 				vo.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
+				vo.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
 
 				alarmTimeVOList.add(vo);
 			} while (c.moveToNext());
@@ -352,7 +354,7 @@ public class AlarmDbManager extends DbHelper{
 		//오늘 기준 7번 반복하면서 최소값 찾으면 +1 일 더 찾아보고 중지
 		for(int i = 0; i < arrDayResult.length; i++) {
 			queryString = "SELECT B." + KEY_ID + ", B." + KEY_ALARM_CALL_LIST + ", B." + KEY_ALARM_TITLE + ", B."+KEY_HOUR + ", B." + KEY_MINUTE + ", A." + KEY_F_ALARM_ID +
-					", B." + KEY_ALARM_OPTION + ", B." + KEY_ALARM_TYPE + ", B." + KEY_HOLIDAY_ALL + ", B." + KEY_HOLIDAY_NONE + ", B." + KEY_TYPE +
+					", B." + KEY_ALARM_OPTION + ", B." + KEY_ALARM_TYPE + ", B." + KEY_HOLIDAY_ALL + ", B." + KEY_HOLIDAY_NONE + ", B." + KEY_TYPE + ", B." + KEY_ALARM_CALL_TYPE +
 					" FROM " + TABLE_ALARM_REPEAT + " A INNER JOIN " + TABLE_ALARM + " B ON A." + KEY_F_ALARM_ID + " = B." + KEY_ID  +
 					" WHERE B." + KEY_USE_YN + " = 1 AND (A." + arrDayResult[i] + " = 1 ";
 
@@ -442,6 +444,7 @@ public class AlarmDbManager extends DbHelper{
 							alarmTimeVO.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
 							alarmTimeVO.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
 							alarmTimeVO.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
+							alarmTimeVO.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
 							arrList.add(alarmTimeVO);
 						}
 					}
@@ -659,10 +662,10 @@ public class AlarmDbManager extends DbHelper{
 				vo.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
 				vo.setHour(c.getInt(c.getColumnIndex(KEY_HOUR)));
 				vo.setMinute(c.getInt(c.getColumnIndex(KEY_MINUTE)));
-
 				vo.setIsHolidayALL((c.getInt(c.getColumnIndex(KEY_HOLIDAY_ALL))));
 				vo.setIsHolidayNone((c.getInt(c.getColumnIndex(KEY_HOLIDAY_NONE))));
 				vo.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
+				vo.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
 
 				tempData = c.getString(c.getColumnIndex(KEY_ALARM_CALL_LIST));
 
@@ -716,6 +719,8 @@ public class AlarmDbManager extends DbHelper{
 		values.put(KEY_HOUR, vo.getHour());
 		values.put(KEY_MINUTE, vo.getMinute());
 		values.put(KEY_SECOND, vo.getSecond());
+		values.put(KEY_ALARM_OPTION, vo.getAlarmSoundOption());
+
 
 		Calendar c = vo.getCreateDt();
 
@@ -761,6 +766,7 @@ public class AlarmDbManager extends DbHelper{
 				vo.setMinute(c.getInt(c.getColumnIndex(KEY_MINUTE)));
 				vo.setSecond(c.getInt(c.getColumnIndex(KEY_SECOND)));
 				vo.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
+				vo.setAlarmSoundOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
 				//vo.setCreateDt(c.getInt(c.getColumnIndex(KEY_CREATE_DATE)));
 				//vo.setUpdateDt(c.getInt(c.getColumnIndex(KEY_UPDATE_DATE)));
 
@@ -781,6 +787,7 @@ public class AlarmDbManager extends DbHelper{
 		values.put(KEY_MINUTE, vo.getMinute());
 		values.put(KEY_SECOND, vo.getSecond());
 		values.put(KEY_ALARM_CONTENTS, vo.getAlarmContents());
+		values.put(KEY_ALARM_OPTION, vo.getAlarmSoundOption());
 		Calendar c = Calendar.getInstance();
 		values.put(KEY_UPDATE_DATE, c.getTimeInMillis());
 		int result = db.update(TABLE_TIMER, values, KEY_ID + "=?", new String[]{Long.toString(vo.getId())});

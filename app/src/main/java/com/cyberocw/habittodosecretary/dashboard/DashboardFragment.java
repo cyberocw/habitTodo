@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -65,6 +66,7 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     KeywordDataManager mKeywordDataManagerTime, mKeywordDataManagerSum;
     KeywordListAdapter mKeywordListAdapterTime, mKeywordListAdapterSum;
     KeywordAPI mKeywordAPI;
+    ProgressBar mProgressKeyword, mProgressKeywordTime;
 
     private boolean isEtcMode;
 
@@ -208,6 +210,9 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     }
     public void makeKeywordList(){
         mTvTime = ButterKnife.findById(mView, R.id.tvTime);
+        mProgressKeyword = ButterKnife.findById(mView, R.id.progressKeywordList);
+        mProgressKeywordTime = ButterKnife.findById(mView, R.id.progressKeywordListTime);
+
         Button btnRefresh = ButterKnife.findById(mView, R.id.btnRefresh);
         btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,24 +236,12 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
                 ((MainActivity) getActivity()).onNavigationItemSelected(R.id.nav_item_keyword);
             }
         });
-        /*listViewTime.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mScrollView.requestDisallowInterceptTouchEvent(true);
-                return false;
-            }
-        });*/
-        getKeywordData(Const.KEYWORD.API.MODE.TIME, mKeywordDataManagerTime, mKeywordListAdapterTime);
+
+        mKeywordListAdapterTime.setListVIew(listViewTime);
+        getKeywordData(Const.KEYWORD.API.MODE.TIME, mKeywordDataManagerTime, mKeywordListAdapterTime, mProgressKeywordTime);
     }
     public void makeKeywordListSum(){
         ListView listViewSum = ButterKnife.findById(mView, R.id.keywordListViewSum);
-        /*listViewSum.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mScrollView.requestDisallowInterceptTouchEvent(true);
-                return false;
-            }
-        });*/
         listViewSum.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -259,9 +252,10 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
         });
 
         listViewSum.setAdapter(mKeywordListAdapterSum);
-        getKeywordData(Const.KEYWORD.API.MODE.SUM, mKeywordDataManagerSum, mKeywordListAdapterSum);
+        mKeywordListAdapterSum.setListVIew(listViewSum);
+        getKeywordData(Const.KEYWORD.API.MODE.SUM, mKeywordDataManagerSum, mKeywordListAdapterSum, mProgressKeyword);
     }
-    private void getKeywordData(String mode, KeywordDataManager dataManager, KeywordListAdapter adapter){
+    private void getKeywordData(String mode, KeywordDataManager dataManager, KeywordListAdapter adapter, ProgressBar progressBar){
         Calendar cal = Calendar.getInstance();
         if(cal.get(Calendar.MINUTE) < 30)
             cal.set(Calendar.MINUTE, 0);
@@ -273,11 +267,11 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
         if(mode.equals(Const.KEYWORD.API.MODE.SUM)){
             typeCode = 1;
         }
+        mKeywordAPI = new KeywordAPI(getContext(), dataManager, adapter, progressBar);
         String url = Const.KEYWORD.API.LIST + "?simpleDate=" + CommonUtils.convertKeywordSimpleDateType(cal) + "&typeCode=" + typeCode + "&mode=" + mode;
         Crashlytics.log(Log.DEBUG, this.toString(), " url = = " + url);
         //getData(url);
         //async task 여러번 실행되게 하는 법 찾아야 함
-        mKeywordAPI = new KeywordAPI(getContext(), dataManager, adapter);
         mKeywordAPI.execute(url);
     }
     private void refreshDate(Calendar cal){

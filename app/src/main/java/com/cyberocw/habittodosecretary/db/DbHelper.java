@@ -17,7 +17,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static DbHelper sInstance;
 
 	private static final String DB_NME = "habit_todo";
-	private static final int DB_VERSION = 16;
+	private static final int DB_VERSION = 18;
 
 	private static final String ARRAY_DIV = "_ho8c7wt_";
 
@@ -36,6 +36,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String KEY_DATE_ID = "_mid";
 	public static final String KEY_ALARM_TITLE = "alarm_title";
 	public static final String KEY_ALARM_TYPE = "alarm_type";
+	public static final String KEY_ALARM_CALL_TYPE = "alarm_call_type";
 	public static final String KEY_ALARM_DATE_TYPE = "alarm_date_type";
 	public static final String KEY_ALARM_OPTION = "alarm_option";
 	public static final String KEY_HOUR = "hour";
@@ -121,7 +122,8 @@ public class DbHelper extends SQLiteOpenHelper {
 				KEY_CREATE_DATE + " integer, " +
 				KEY_UPDATE_DATE + " integer, " +
 				KEY_HOLIDAY_ALL + " integer, " +
-				KEY_HOLIDAY_NONE + " integer " +
+				KEY_HOLIDAY_NONE + " integer, " +
+				KEY_ALARM_CALL_TYPE  + " integer" +
 				");";
 
 		String sql2 = "create table " + TABLE_ALARM_DATE + " (" +
@@ -155,6 +157,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				KEY_ID + " integer primary key autoincrement, " +
 				KEY_ALARM_TITLE + " text, " +
 				KEY_ALARM_TYPE + " integer, " +
+				KEY_ALARM_OPTION + " integer, " +
 				KEY_HOUR + " integer, " +
 				KEY_MINUTE + " integer, " +
 				KEY_SECOND + " integer, " +
@@ -268,6 +271,20 @@ public class DbHelper extends SQLiteOpenHelper {
 			values.put(KEY_USE_YN, 1);
 			values.put(KEY_SORT, 0);
 			db.insert(TABLE_CATEGORY, null, values);
+		}
+		if(oldVersion <= 16){
+			String sql = "ALTER TABLE " + TABLE_ALARM + " ADD COLUMN " + KEY_ALARM_CALL_TYPE  + " integer DEFAULT 0 ;";
+			db.execSQL(sql);
+			String sql2 = "UPDATE " + TABLE_ALARM + " SET " + KEY_ALARM_CALL_TYPE + " = 1 where " + KEY_ALARM_TYPE  + " = 1 ; ";
+			db.execSQL(sql2);
+		}
+		if(oldVersion <=17){
+			//sound - alarm option , alarm type = 끌때
+			String sql = "ALTER TABLE " + TABLE_TIMER + " ADD COLUMN " + KEY_ALARM_OPTION + " integer DEFAULT 0 ;";
+			db.execSQL(sql);
+			String sql2 = "UPDATE " + TABLE_TIMER + " SET " + KEY_ALARM_TYPE + " = 1 ; ";
+			db.execSQL(sql2);
+
 		}
 	}
 

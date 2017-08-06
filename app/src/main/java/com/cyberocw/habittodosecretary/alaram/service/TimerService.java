@@ -4,6 +4,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -21,8 +23,13 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.TimerListAdapter;
-import com.cyberocw.habittodosecretary.AlarmNotiActivity;
+import com.cyberocw.habittodosecretary.alaram.AlarmNotiActivity;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
+import com.cyberocw.habittodosecretary.record.PlayRawAudio;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -37,7 +44,7 @@ public class TimerService extends Service {
 	private final IBinder mBinder = new LocalBinder();
 	private CountDownTimer mCountDownTimer = null;
 	public long mMillisRemainTime = -1;
-	private int mPosition = -1;
+	private int mPosition = -1, mAlarmType = 0, mAlarmOption = 0;
 	private String mTitle = "";
 	public TextView mTv;
 	public ToggleButton mBtnToggle;
@@ -65,6 +72,8 @@ public class TimerService extends Service {
 			mPosition = (Integer) extras.get("position");
 			mMillisRemainTime = (Long) extras.get("remainTime");
 			mTitle = (String) extras.get("title");
+			mAlarmOption = extras.getInt("alarmOption", 0);
+			mAlarmType = extras.getInt("alarmType", 1);
 		}
 		return mBinder;
 	}
@@ -172,13 +181,58 @@ public class TimerService extends Service {
 			}
 		}.start();
 	}
+
 	private void startAleart(){
-		Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
-		myIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+		if(mAlarmType < 1)
+			startNotibar();
+		else
+			alarmNotiActivity();
+	}
+	private void startNotibar(){
+		SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+		boolean isTTS = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
+		boolean isTTSManner = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
+
+		if(isTTS && !isTTSManner){
+			AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+			switch (am.getRingerMode()) {
+				case AudioManager.RINGER_MODE_SILENT:
+				case AudioManager.RINGER_MODE_VIBRATE:
+					isTTS = false;
+					break;
+				case AudioManager.RINGER_MODE_NORMAL:
+					break;
+			}
+		}
+		Intent myIntent = new Intent(mCtx, NotificationService.class);
 		myIntent.putExtra("title", mTitle);
+		//myIntent.putExtra(Const.PARAM.ETC_TYPE_KEY, mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
+		//myIntent.putExtra(Const.PARAM.REQ_CODE, mArrAlarmVOList.get(mMinRemainPosition).getReqCode());
+		myIntent.putExtra(Const.PARAM.ALARM_ID, -1);
+		mCtx.startService(myIntent);
+
+		//mAlarmOption - 개별 알람 tts
+		if(mAlarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS) {
+			//알람 id는 현재 의미 없는 상태임
+			startTTS(mTitle, -1);
+		}
+	}
+	private void startTTS(String title, long id){
+		Intent ttsIntent = new Intent(mCtx, TTSNotiActivity.class);
+		ttsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		ttsIntent.putExtra("alaramTitle", title);
+		ttsIntent.putExtra("alarmId", id);
+		mCtx.startActivity(ttsIntent);
+	}
+	private void alarmNotiActivity(){
+		Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);
+		myIntent.putExtra("title", mTitle);
+		myIntent.putExtra(Const.PARAM.ALARM_OPTION, mAlarmOption);
+		myIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+		Crashlytics.log(Log.DEBUG, this.toString(), "start alarmNotiActivity mTitle=" + mTitle);
+
 		mCtx.startActivity(myIntent);
 	}
-
 	public void cancelTimer(){
 		mMillisRemainTime = -1;
 		if(mCountDownTimer != null)

@@ -92,7 +92,6 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
                 break;
             }
         }
-
     }
 
     private void startTTS(String title, long id){

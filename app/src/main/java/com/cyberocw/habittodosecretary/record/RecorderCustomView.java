@@ -75,11 +75,6 @@ public class RecorderCustomView extends LinearLayout {
     File recordingFile;
 
     boolean isRecording = false,isPlaying = false;
-//0xac44
-    int frequency = 44100, channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
-    int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
-
-
 
     private boolean isRecord = false;
     private CountDownTimer mCountDownTimer = null;
@@ -127,6 +122,8 @@ public class RecorderCustomView extends LinearLayout {
 
         addView(mView);
 
+        if(mCtx == null || mCtx.getExternalCacheDir() == null)
+            return;
         mFileName = mCtx.getExternalCacheDir().getAbsolutePath();
         mFileName += File.separator + Const.RECORDER.CACHE_FILE_NAME;
         mBtnRecord = ButterKnife.findById(mView, R.id.btnRecord);
@@ -169,7 +166,7 @@ public class RecorderCustomView extends LinearLayout {
 
     private void onRecord(boolean start) {
         if(mStartPlaying == false){
-            Toast.makeText(mCtx, "음성을 재생중입니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mCtx, getResources().getString(R.string.customRecorder_playing_voice), Toast.LENGTH_SHORT).show();
             return;
         }
         if (start) {
@@ -245,9 +242,7 @@ public class RecorderCustomView extends LinearLayout {
     }
     private void stopPlaying() {
         mStartPlaying = true;
-
         isPlaying = false;
-
         //mPlayer.release();
         refreshPlayButton();
         cancelTimer();
@@ -351,18 +346,25 @@ public class RecorderCustomView extends LinearLayout {
     }
 
     public void onStop() {
+        isRecord = false;
         if (mRecorder != null) {
             mRecorder.release();
             mRecorder = null;
         }
-
+        isPlaying = false;
         if (mPlayer != null) {
+
             mPlayer.release();
             mPlayer = null;
         }
     }
     public void finish(){
 
+    }
+
+    @Override
+    public boolean isInEditMode() {
+        return false;
     }
 
     public interface recordDialogInterface{
@@ -389,15 +391,15 @@ public class RecorderCustomView extends LinearLayout {
                 DataOutputStream dos = new DataOutputStream(
                         new BufferedOutputStream(new FileOutputStream(
                                 recordingFile)));
-                int bufferSize = AudioRecord.getMinBufferSize(frequency,
-                        channelConfiguration, audioEncoding);
+                int bufferSize = AudioRecord.getMinBufferSize(Const.RECORDER.FREQUENCY,
+                        Const.RECORDER.CHANNEL_CONFIGURATION_IN, Const.RECORDER.AUDIO_ENCODING);
                 AudioRecord audioRecord = new AudioRecord(
-                        MediaRecorder.AudioSource.MIC, frequency,
-                        channelConfiguration, audioEncoding, bufferSize);
+                        MediaRecorder.AudioSource.MIC, Const.RECORDER.FREQUENCY,
+                        Const.RECORDER.CHANNEL_CONFIGURATION_IN, Const.RECORDER.AUDIO_ENCODING, bufferSize);
 
                 short[] buffer = new short[bufferSize];
                 audioRecord.startRecording();
-                double gain = 6.0;
+                double gain = 5.0;
                 while (isRecording) {
                     int bufferReadResult = audioRecord.read(buffer, 0,
                             bufferSize);
@@ -442,14 +444,18 @@ public class RecorderCustomView extends LinearLayout {
             Log.d(this.toString(), " audiotrack  mPlayFileName="+ mPlayFileName);
             File fPlay = new File(mPlayFileName);
 
-            int bufferSize = AudioTrack.getMinBufferSize(frequency,channelConfiguration, audioEncoding);
+            if(!fPlay.isFile()) {
+                Toast.makeText(mCtx, "파일을 찾을수 없습니다", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+            int bufferSize = AudioTrack.getMinBufferSize(Const.RECORDER.FREQUENCY,Const.RECORDER.CHANNEL_CONFIGURATION_OUT, Const.RECORDER.AUDIO_ENCODING);
             short[] audiodata = new short[bufferSize / 4];
 
             try {
                 DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fPlay)));
                 AudioTrack audioTrack = new AudioTrack(
-                        AudioManager.STREAM_MUSIC, frequency,
-                        channelConfiguration, audioEncoding, bufferSize,
+                        AudioManager.STREAM_MUSIC, Const.RECORDER.FREQUENCY,
+                        Const.RECORDER.CHANNEL_CONFIGURATION_OUT, Const.RECORDER.AUDIO_ENCODING, bufferSize,
                         AudioTrack.MODE_STREAM);
 
                 audioTrack.play();

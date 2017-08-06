@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.cyberocw.habittodosecretary.Const;
@@ -28,6 +29,7 @@ public class KeywordListAdapter extends BaseAdapter {
     private Context mCtx;
     private boolean isDashboard = false;
     private CategoryFragment mCategoryFragment;
+    private ListView mListView;
 
     public KeywordListAdapter(Context ctx, KeywordDataManager mManager) {
         this.mManager = mManager;
@@ -85,5 +87,12 @@ public class KeywordListAdapter extends BaseAdapter {
 
         tvTitle.setText(vo.getRank() + " : " + vo.getKeyword());
         return convertView;
+    }
+
+    public void setListVIew(ListView listVIew) {
+        mListView = listVIew;
+    }
+    public ListView getListVIew() {
+        return mListView;
     }
 }

@@ -156,10 +156,13 @@ public class AlarmFragment extends Fragment{
 		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 		initActivity();
 
+
 		File f = new File(mCtx.getFilesDir().getAbsolutePath() + File.separator + "voice");
 		File[] list = f.listFiles();
-		for(int i = 0 ; i < list.length; i++){
-			Log.d(Const.DEBUG_TAG, "fileList = " + list[i].getName() + " size=" + list[i].length()/1000);
+		if(list != null) {
+			for (int i = 0; i < list.length; i++) {
+				Log.d(Const.DEBUG_TAG, "fileList = " + list[i].getName() + " size=" + list[i].length() / 1000);
+			}
 		}
 	}
 

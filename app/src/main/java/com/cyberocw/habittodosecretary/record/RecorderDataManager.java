@@ -28,14 +28,14 @@ public class RecorderDataManager {
     }
     public boolean saveFile(String fromFileName, String targetFileName){
         String FILENAME = targetFileName;
-        File cachedFile = new File(fromFileName);
-        Log.d(this.toString(), "cachedFile is File="+ cachedFile.isFile());
+        File fFromFile = new File(fromFileName);
+        Log.d(this.toString(), "fFromFile is File="+ fFromFile.isFile());
 
-        if(cachedFile.isFile()){
+        if(fFromFile.isFile()){
             FileInputStream fi = null;
             FileOutputStream fos = null;
             try {
-                fi = new FileInputStream(cachedFile);
+                fi = new FileInputStream(fFromFile);
                 File rootDir=new File(mCtx.getFilesDir(), "voice");
                 rootDir.mkdirs();
                 fos = new FileOutputStream(new File(rootDir, FILENAME));
@@ -63,8 +63,10 @@ public class RecorderDataManager {
 
     public void deleteRecordFile(long id) {
         File rootDir = new File(mCtx.getFilesDir(), "voice");
+        Log.d(Const.DEBUG_TAG, "deleteRecordFile start id="+id + " rootDir.isDirectory=" + rootDir.isDirectory());
         if(rootDir.isDirectory()){
             File f = new File(rootDir, id+".wav");
+            Log.d(Const.DEBUG_TAG, "file id is file = ="+ f.isFile());
             if(f.isFile()){
                 Log.d(Const.DEBUG_TAG, "SOUND FILE IS");
                 f.delete();

@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_marginBottom="@dimen/bannerHeight"
     android:orientation="vertical"
-        android:background="@color/background"
-    >
+    android:background="@color/background">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -282,15 +282,24 @@
                 android:id="@+id/recorderWrap"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="80dp"
+                android:layout_margin="5dp"
+                android:orientation="vertical"
                 android:visibility="gone"
                 >
                 <com.cyberocw.habittodosecretary.record.RecorderCustomView
                     android:id="@+id/recorderCustomView"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="70dp"
+                    >
                 </com.cyberocw.habittodosecretary.record.RecorderCustomView>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:textSize="11sp"
+                    android:text="@string/dialog_alarm_record_caution"
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -325,6 +334,39 @@
                 android:layout_marginLeft="90dp"
                 android:layout_toRightOf="@id/timeListLabel"
                 android:orientation="vertical"></LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/alertTimeOptionWrap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/alarm_dialog_textview"
+                    android:text="@string/dialog_alarm_preinformOption"
+                    />
+
+                <belka.us.androidtoggleswitch.widgets.ToggleSwitch
+                    android:id="@+id/toggleCallTimeOption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:layout_marginLeft="8dp"
+                    android:layout_centerVertical="true"
+                    android:textSize="11sp"
+                    custom:toggleWidth="110dp"
+                    custom:activeBgColor="@color/primary_header"
+                    custom:activeTextColor="@android:color/white"
+                    custom:inactiveBgColor="@color/btn_gray_background"
+                    custom:inactiveTextColor="@android:color/black"
+                    custom:separatorColor="@color/gray_very_light"
+                    custom:cornerRadius="2dp"
+                    custom:textToggleLeft="@string/dialog_alarm_sp_notification"
+                    custom:textToggleRight="@string/dialog_alarm_sp_user_stop"
+                    />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"

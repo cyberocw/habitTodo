@@ -1,10 +1,15 @@
-package com.cyberocw.habittodosecretary;
+package com.cyberocw.habittodosecretary.alaram;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.media.AudioTrack;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,15 +20,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
+import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.MainActivity;
+import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
-import com.cyberocw.habittodosecretary.record.PlayRawAudio;
+import com.cyberocw.habittodosecretary.record.RecorderDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.NativeExpressAdView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -43,33 +55,33 @@ public class AlarmNotiActivity extends AppCompatActivity {
 	long mStartedTimeInMilis = 0;
 	boolean isButtonClick = false;
 	Context mCtx;
-	PlayRawAudio mPra = null;
+	PlayAudio mPra = null;
+	private FirebaseAnalytics mFirebaseAnalytics;
+	boolean isPlaying = false;
+	NativeExpressAdView adView;
+	Intent mTTSIntent = null;
+	TTSNoti mTTSNotiService;
+	boolean mBound = false;
 
 	@BindView(R.id.tvAlarmTitle) TextView mTvTitle;
 	@BindView(R.id.btnEtcView) Button mBtnEtcView;
 	@BindView(R.id.btnPostpone) Button mBtnPostpone;
-	@BindView(R.id.adViewFront)	AdView adView;
+
 	//@BindView(R.id.btnTimerStop) Button mBtnStop;
 
 	@OnClick(R.id.btnTimerStop) void submit() {
-		if(mVibe != null)
-			mVibe.cancel();
-		if(mPra != null)
-			mPra.cancel(true);
-
+		stopAll();
 		isButtonClick = true;
 		finish();
 	}
 	@OnClick(R.id.btnPostpone) void clickPostpone(){
-		if(mVibe != null)
-			mVibe.cancel();
+		stopAll();
 		isButtonClick = true;
 		showPostPhone();
 		finish();
 	}
 	@OnClick(R.id.btnEtcView) void clickEtcView(){
-		if(mVibe != null)
-			mVibe.cancel();
+		stopAll();
 		isButtonClick = true;
 		showEtcView();
 		finish();
@@ -111,7 +123,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 				mBtnEtcView.setVisibility(View.VISIBLE);
 			}
 			//개별 알림 TTS 재생 여부 옵션
-			alarmOption = mBundle.getInt(Const.PARAM.ALARM_OPTION, -1);
+			alarmOption = mBundle.getInt(Const.PARAM.ALARM_OPTION, 1);
 		}
 		SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 		boolean isAlarmNoti = prefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
@@ -134,72 +146,86 @@ public class AlarmNotiActivity extends AppCompatActivity {
 
 		//TextView tvTitle = (TextView) findViewById(R.id.tvAlarmTitle);
 
+		adView = (NativeExpressAdView) findViewById(R.id.adViewFront);
+
+        MobileAds.initialize(this, "ca-app-pub-8072677228798230~8421474102"); // real
+
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+				.addTestDevice("048A3A6B542D3DD340272D8C1D80AC18")
+                .build();
+
+        adView.loadAd(adRequest);
+
 		if(!title.equals("")){
 			mTvTitle.setText(title);
 		}
 		if(mAlarmId == -1){
 			mBtnPostpone.setVisibility(View.INVISIBLE);
 		}
-
-		//MobileAds.initialize(this, "ca-app-pub-8072677228798230/5472850905"); // real
-
-		AdRequest adRequest = new AdRequest.Builder()
-				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-				.addTestDevice("048A3A6B542D3DD340272D8C1D80AC18")
-				.build();
-		adView.loadAd(adRequest);
-
-		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+		mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 		Fabric.with(this, new Crashlytics());
 		mStartedTimeInMilis = Calendar.getInstance().getTimeInMillis();
 
 		boolean isTTS = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
 		boolean isTTSManner = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
 
-
-		if(alarmOption == 1 && isTTS && !isTTSManner){
+		//매너/무음모드에서도 재생 여부 결정
+		if(alarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS && !isTTSManner){
 			AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 			switch (am.getRingerMode()) {
 				case AudioManager.RINGER_MODE_SILENT:
-					Log.i(Const.DEBUG_TAG, "Silent mode");
 				case AudioManager.RINGER_MODE_VIBRATE:
-					Log.i(Const.DEBUG_TAG, "Vibrate mode");
 					isTTS = false;
 					break;
 				case AudioManager.RINGER_MODE_NORMAL:
-					Log.i(Const.DEBUG_TAG, "Normal mode");
+					break;
 			}
 		}
+
 		if(alarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS) {
 			startTTS(title, mAlarmId);
 		}else if(alarmOption == Const.ALARM_OPTION_TO_SOUND.RECORD && isTTS){
-			String fileName = mAlarmId + ".wav";
-			//String filePath = mCtx.getFilesDir().getAbsolutePath() + "voice" + File.separator + fileName;
-
-			File rootDir=new File(mCtx.getFilesDir(), "voice");
-			rootDir.mkdirs();
-			File f = new File(rootDir, fileName);
+			File f = new File(CommonUtils.getRecordFullPath(mCtx, mAlarmId));
 			Log.d(this.toString(), "absolute="+f.getAbsolutePath() + " getPaht= " + f.getPath());
 			try {
 				if(f.isFile()){
-					mPra = new PlayRawAudio(f.getAbsolutePath());
+					mPra = new PlayAudio(f.getAbsolutePath());
 					mPra.execute();
 				}
 				else{
-					Toast.makeText(mCtx, "파일 경로가 잘못되었습니다", Toast.LENGTH_SHORT).show();
+					Toast.makeText(mCtx, getResources().getString(R.string.msg_file_not_found), Toast.LENGTH_SHORT).show();
+					startTTS(title, mAlarmId);
 				}
 			}catch (Exception e){
 				e.printStackTrace();
 			}
 		}
+		//소리 옵션 0
+		else{
+
+		}
 		CommonUtils.logCustomEvent("AlarmNotiActivity", "1");
 	}
-	private void startTTS(String title, long id){
-		Intent ttsIntent = new Intent(getApplicationContext(), TTSNoti.class);
+	private void stopAll(){
+		if(mVibe != null)
+			mVibe.cancel();
+		if(mPra != null) {
+			isPlaying = false;
+			mPra.cancel(true);
+		}
+		if (mBound) {
+			unbindService(mConnection);
+			mBound = false;
+		}
+	}
 
-		ttsIntent.putExtra("alaramTitle", title);
-		ttsIntent.putExtra("alarmId", id);
-		getApplicationContext().startService(ttsIntent);
+	private void startTTS(String title, long id){
+		mTTSIntent = new Intent(getApplicationContext(), TTSNoti.class);
+		mTTSIntent.putExtra("alaramTitle", title);
+		mTTSIntent.putExtra("alarmId", id);
+		//getApplicationContext().startService(mTTSIntent);
+		bindService(mTTSIntent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	private void showEtcView(){
@@ -253,14 +279,26 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		//알림 날짜 계산
 		ArrayList<Calendar> alarmDate = new ArrayList<Calendar>();
 		Calendar now = Calendar.getInstance();
-		now.add(Calendar.MINUTE, 1);
+		now.add(Calendar.MINUTE, 3);
 		alarmDate.add(now);
 		alarmVO.setAlarmDateList(alarmDate);
 		alarmVO.setHour(now.get(Calendar.HOUR_OF_DAY));
 		alarmVO.setMinute(now.get(Calendar.MINUTE));
 
-		if(alarmDataManager.addItem(alarmVO) == true)
+		if(alarmDataManager.addItem(alarmVO) == true) {
+			RecorderDataManager rm = new RecorderDataManager(mCtx);
+
+			boolean result = rm.saveFile(CommonUtils.getRecordFullPath(mCtx, mAlarmId), alarmVO.getId() + ".wav");
+			if(result){
+				Log.d(this.toString(), "미디어 복사 성공");
+			}
+			else{
+				Log.e(this.toString(), "미디어 복사 실패");
+			}
+
 			Toast.makeText(mCtx, getString(R.string.noti_activity_msg_postponed), Toast.LENGTH_LONG).show();
+
+		}
 		else
 			Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 
@@ -273,27 +311,106 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		long nowTime = Calendar.getInstance().getTimeInMillis();
 		Log.d(this.toString(), "onStop timeMils = " + (nowTime - mStartedTimeInMilis));
 
-
-		if(nowTime - mStartedTimeInMilis > 500 && isButtonClick == false)
+		if(nowTime - mStartedTimeInMilis > 500 && isButtonClick == false) {
+			stopAll();
 			autoPostpone();
+		}
 	}
 
 	@Override
 	protected void onResume() {
 		Log.d(this.toString(), "onResume");
 		super.onResume();
+		adView.resume();
 	}
 
 	@Override
 	protected void onPause() {
 		Log.d(this.toString(), "onPause");
+		adView.pause();
 		super.onPause();
 	}
 
 	@Override
 	protected void onDestroy() {
-		if(mVibe != null)
-			mVibe.cancel();
+		stopAll();
 		super.onDestroy();
+	}
+
+	/** Defines callbacks for service binding, passed to bindService() */
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className,
+									   IBinder service) {
+			// We've bound to LocalService, cast the IBinder and get LocalService instance
+			TTSNoti.LocalBinder binder = (TTSNoti.LocalBinder) service;
+			mTTSNotiService = binder.getService();
+			mBound = true;
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mBound = false;
+		}
+	};
+
+
+	private class PlayAudio extends AsyncTask<Void, Integer, Void> {
+		String mPlayFileName;
+		public PlayAudio(String fileName) {
+			mPlayFileName = fileName;
+		}
+		@Override
+		protected Void doInBackground(Void... params) {
+			Log.d(this.toString(), " audiotrack  mPlayFileName="+ mPlayFileName);
+			File fPlay = new File(mPlayFileName);
+			if(!fPlay.isFile()){
+				Toast.makeText(mCtx, getResources().getString(R.string.msg_file_not_found), Toast.LENGTH_SHORT).show();
+				return null;
+			}
+			isPlaying = true;
+			int bufferSize = AudioTrack.getMinBufferSize(Const.RECORDER.FREQUENCY, Const.RECORDER.CHANNEL_CONFIGURATION_OUT, Const.RECORDER.AUDIO_ENCODING);
+			short[] audiodata = new short[bufferSize / 4];
+
+			try {
+				DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fPlay)));
+				AudioTrack audioTrack = new AudioTrack(
+						AudioManager.STREAM_MUSIC, Const.RECORDER.FREQUENCY,
+						Const.RECORDER.CHANNEL_CONFIGURATION_OUT, Const.RECORDER.AUDIO_ENCODING, bufferSize,
+						AudioTrack.MODE_STREAM);
+
+				audioTrack.play();
+				while (isPlaying && dis.available() > 0) {
+					int i = 0;
+					while (dis.available() > 0 && i < audiodata.length) {
+						audiodata[i] = dis.readShort();
+						i++;
+					}
+					audioTrack.write(audiodata, 0, audiodata.length);
+				}
+				dis.close();
+			} catch (Throwable t) {
+				Log.e("AudioTrack", "Playback Failed");
+			}
+
+
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void aVoid) {
+			super.onPostExecute(aVoid);
+			try {
+				Thread.sleep(1500);
+			} catch (InterruptedException e) {
+
+			}
+			if(isPlaying){
+				mPra = new PlayAudio(mPlayFileName);
+				mPra.execute();
+			}
+		}
 	}
 }

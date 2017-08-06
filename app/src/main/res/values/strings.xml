@@ -43,7 +43,7 @@
     <!--string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string-->
     <!-- real ad -->
     <string name="banner_ad_unit_id">ca-app-pub-8072677228798230/9898207305</string>
-    <string name="banner_ad_unit_id_front">ca-app-pub-8072677228798230/5472850905</string>
+    <string name="banner_ad_unit_id_front">ca-app-pub-8072677228798230/2762328471</string>
     <string name="banner_ad_unit_id_webview">ca-app-pub-8072677228798230/1453912904</string>
     <string name="alarm_sort_type_time">Time Order</string>
     <string name="alarm_sort_type">Type Order</string>
@@ -103,8 +103,8 @@
     <string name="setting_status_bar_title">Displaying ongoing alarms in the status bar</string>
     <string name="setting_statu_bar_cont">If you enable the status bar, to prevent alarm service from being stopped at low memory, thus lowering the probability that the alarm will not sound</string>
     <string name="setting_use_sound_and_vibe">If you turn off the option, no vibration or sound occurs when the notification. if the option is turned on In manners mode, only vibrate</string>
-    <string name="setting_play_tts">If you turn off the option, the alert will not be read as a voice when the alert sounds.</string>
-    <string name="setting_play_void_manner_mode">Play voice in manners mode</string>
+    <string name="setting_play_tts">If you turn off the option, the alert will not be read as a voice when the alert sounds. Recordings are the same.</string>
+    <string name="setting_play_void_manner_mode">Play voice/recordings in manners mode</string>
     <string name="setting_voice_volume">Voice Volume</string>
     <string name="dialog_alarm_msg_select_repeat">Please choose a day to repeat</string>
     <string name="dialog_alarm_msg_select_memo">Please select a memo</string>
@@ -153,6 +153,11 @@
     <string name="nav_item_dashboard">Dashboard</string>
     <string name="dashboard_title_next_alarm">Next Alarm</string>
     <string name="dashboard_title_memo">Memo List</string>
-    <string name="dashboard_no_alarm">Not exists Next Alarm</string>
+    <string name="dashboard_no_alarm">No next event</string>
+    <string name="minute">Minute</string>
+    <string name="dialog_alarm_preinformOption">pre-inform option</string>
+    <string name="customRecorder_playing_voice">Playing voice</string>
+    <string name="dialog_alarm_record_caution">- For reminders other than the specified time, the TTS engine is used instead of the recording sound</string>
+    <string name="msg_file_not_found">File not found</string>
 
 </resources>

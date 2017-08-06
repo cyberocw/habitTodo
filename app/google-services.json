@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "585806947951-vvadsmls3haaqt8ib9p3bjmj9vn0nbts.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cyberocw.habittodosecretary",
+            "certificate_hash": "eeffdfb513ee1317c376fa056d9b625fb1d910e4"
+          }
+        },
+        {
           "client_id": "585806947951-u5br96gaqtdef06tsq96ldfvf6nu2776.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

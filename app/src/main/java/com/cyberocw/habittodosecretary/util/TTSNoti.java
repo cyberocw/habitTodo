@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
@@ -32,12 +33,16 @@ import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK;
 public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 	private TextToSpeech mTTS = null;
 	private ArrayList<String> mArrText = new ArrayList();
+	private final IBinder mBinder = new LocalBinder();
+
 	private boolean mIsNUll = true;
 	private long mAlarmId = -1;
 	private int mIndex = 0;
 	private  AudioManager mAudioManager;
 	private int mOriginalVolume, mPrefsTTSVol;
-	private String nowPlayingText = "";
+	private String nowPlayingText = "", bindedText = "";
+	private boolean mIsBind = false;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -46,26 +51,24 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Crashlytics.log(Log.DEBUG, this.toString(), "intent="+intent + " extras="+intent.getExtras());
-		if(intent != null && intent.getExtras() != null) {
-			String Noti_title = intent.getExtras().getString("alaramTitle");
-			mAlarmId = intent.getExtras().getLong("alarmId", -1);
-
-			//음악과 동시에 재생할때 재생바 조절에 따른 볼륨 조절을 위해 알람 아이디를 강제 지정하여 if alarmId> -1 조건이 무조건 실행되도록 일단 해둠
-			mAlarmId = 1;
-
-			Crashlytics.log(Log.DEBUG, this.toString(), "mTTS == null=" + (mTTS == null));
-			if(mTTS == null)
-				mTTS = new TextToSpeech(getApplicationContext(), this);
-
-			Crashlytics.log(Log.DEBUG, this.toString(), " add  ");
-			mArrText.add(Noti_title);
-
-			mIsNUll = false;
-		}
+		Crashlytics.log(Log.DEBUG, this.toString(), "tts onstartcommand intent="+intent + " extras="+intent.getExtras());
+		init(intent);
 
 		return START_NOT_STICKY;
 		//return super.onStartCommand(intent, flags, startId);
+	}
+
+	private void init(Intent intent){
+		if(intent != null && intent.getExtras() != null) {
+			//mAlarmId = intent.getExtras().getLong("alarmId", -1);
+			//음악과 동시에 재생할때 재생바 조절에 따른 볼륨 조절을 위해 알람 아이디를 강제 지정하여 if alarmId> -1 조건이 무조건 실행되도록 일단 해둠 (alarmId값 자체는 아직 의미 없음)
+			mAlarmId = 1;
+			mArrText.add(intent.getExtras().getString("alaramTitle"));
+			mIsNUll = false;
+
+			if(mTTS == null)
+				mTTS = new TextToSpeech(getApplicationContext(), this);
+		}
 	}
 
 	@Override
@@ -111,8 +114,16 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 						if(mAlarmId > -1){
 							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
 						}
+						if(mIsBind && mArrText.size() == 0) {
+							mArrText.add(bindedText);
+							try {
+								Thread.sleep(2000);
+							} catch (InterruptedException e) {
 
+							}
+						}
 						speakText();
+
 
 					}
 					@Override
@@ -195,6 +206,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 
 	@Override
 	public void onDestroy() {
+
 		super.onDestroy();
 		if (mTTS != null) {
 			mTTS.stop();
@@ -204,11 +216,36 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 			mAudioManager.abandonAudioFocus(afChangeListener);
 		//unbindService();
 		Crashlytics.log(Log.DEBUG, this.toString(), " tts service on destroy ");
-
 	}
 
 	@Override
-	public IBinder onBind(Intent arg0) {
-		return null;
+	public boolean onUnbind(Intent intent) {
+		Log.d(this.toString(), "tts on unbind");
+		stopSelf();
+		//this.onDestroy();
+		return super.onUnbind(intent);
 	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		Log.d(this.toString(), "tts on bind");
+		mIsBind = true;
+
+		bindedText = intent.getExtras().getString("alaramTitle");
+
+		init(intent);
+		return mBinder;
+	}
+
+	/**
+	 * Class used for the client Binder.  Because we know this service always
+	 * runs in the same process as its clients, we don't need to deal with IPC.
+	 */
+	public class LocalBinder extends Binder {
+		public TTSNoti getService() {
+			// Return this instance of LocalService so clients can call public methods
+			return TTSNoti.this;
+		}
+	}
+
 }

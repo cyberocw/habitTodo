@@ -1,6 +1,7 @@
 package com.cyberocw.habittodosecretary;
 
 import android.content.Context;
+import android.media.AudioFormat;
 
 import java.util.Calendar;
 
@@ -212,5 +213,9 @@ public class Const {
 
 	public class RECORDER {
 		public static final String CACHE_FILE_NAME = "cacheAudio.pcm";
+		public static final int FREQUENCY = 44100;
+		public static final int CHANNEL_CONFIGURATION_OUT = AudioFormat.CHANNEL_OUT_MONO;
+		public static final int CHANNEL_CONFIGURATION_IN = AudioFormat.CHANNEL_IN_MONO;
+		public static final int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 	}
 }

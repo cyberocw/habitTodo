@@ -58,6 +58,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import belka.us.androidtoggleswitch.widgets.ToggleSwitch;
 import butterknife.ButterKnife;
 
 import static android.util.Log.d;
@@ -99,9 +100,11 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 	private CheckBox mCbTTS = null;
 	private boolean mPrevRecord = false;
     private RecorderCustomView mRecorderCustomView;
+	private ToggleSwitch mToggleCallType = null;
+
 
 	//private RadioGroup mRgAlarmOption;
-	private LinearLayout mAlarmList, llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap, llHolidayOptionWrap, llRecorderWrap;
+	private LinearLayout mAlarmList, llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap, llHolidayOptionWrap, llRecorderWrap, llAlertTimeOptionWrap;
 	private HashMap<Integer, Button> mMapDay = new HashMap<>();
 	private int[] mArrDayString = {Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY};//{"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
 	private int[] mArrDayId = {R.id.btnRepeatSun, R.id.btnRepeatMon, R.id.btnRepeatTue, R.id.btnRepeatWed, R.id.btnRepeatThur, R.id.btnRepeatFri, R.id.btnRepeatSat};
@@ -130,6 +133,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		mBtnSave = ButterKnife.findById(mView, R.id.btnSave);
 		mBtnHelp = ButterKnife.findById(mView, R.id.btnHelp);
 		mSpAlarmType = (Spinner) view.findViewById(R.id.spAlarmType);
+		mToggleCallType = ButterKnife.findById(mView, R.id.toggleCallTimeOption);
 		mBtnAddAlarm = (Button) view.findViewById(R.id.btnAddAlarm);
 		mAlarmList = (LinearLayout) view.findViewById(R.id.alarmList);
 		mSpAppList = (Spinner) view.findViewById(R.id.spAppList);
@@ -328,6 +332,8 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 			mSpAlarmType.setSelection(alarmType);
 			mSpSoundType.setSelection(CommonUtils.getAlarmOptionPosition(mAlarmVO.getAlarmOption()));
 
+			mToggleCallType.setCheckedTogglePosition(mAlarmVO.getAlarmCallType());
+
 			ArrayList<Integer> arrAlarmCall = mAlarmVO.getAlarmCallList();
 			int temp;
 			if(arrAlarmCall != null) {
@@ -465,6 +471,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		vo.setAlarmDateType(mAlarmDateType);
 		vo.setAlarmDateList(alarmDate);
 		vo.setEtcType(mEtcType);
+		vo.setAlarmCallType(mToggleCallType.getCheckedTogglePosition());
 
 		if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT || mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
 			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "mCbHolidayAll.isChecked() =" + mCbHolidayAll.isChecked());
@@ -502,6 +509,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		llAlertTimeWrap = (LinearLayout) v.findViewById(R.id.alertTimeWrap);
 		llHolidayOptionWrap = (LinearLayout) v.findViewById(R.id.holidayOptionWrap);
         llRecorderWrap = (LinearLayout) v.findViewById(R.id.recorderWrap);
+		llAlertTimeOptionWrap = (LinearLayout) v.findViewById(R.id.alertTimeOptionWrap);
 	}
 
 	@Override
@@ -543,64 +551,8 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		mSpDateType.setSelection(2);
 	}
 
-
-	private void timeWrapperHide() {
-		View[] arrView = {llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap, llHolidayOptionWrap};
-		for(int i = 0 ; i < arrView.length; i++) {
-			arrView[i].setVisibility(View.GONE);
-		}
-	}
-
-	/*
-	// 시간 미지정 알람
-	private void renderNoTimerUi(){
-		mAlarmOption = Const.ALARM_OPTION.NO_DATE_TIMER;
-
-		//모두 숨김
-		timeWrapperHide();
-
-		llTimePickWrap.setVisibility(View.VISIBLE);
-		llTimerWrap.setVisibility(View.VISIBLE);
-		llRepeatDayWrap.setVisibility(View.VISIBLE);
-		llHolidayOptionWrap.setVisibility(View.VISIBLE);
-		mNpHour.setMaxValue(10);
-		mNpHour.setMinValue(0);
-		mNpMinute.setMaxValue(59);
-		mNpMinute.setMinValue(0);
-		mNpSecond.setMaxValue(59);
-		mNpSecond.setMinValue(0);
-	}
-
-
-	//시간 지정 알람
-	private void renderSetTimeUi(){
-		//timeWrapperHide();
-		llTimerWrap.setVisibility(View.GONE);
-		llAlertTimeWrap.setVisibility(View.VISIBLE);
-		llHolidayOptionWrap.setVisibility(View.GONE);
-		llDatePicWrap.setVisibility(View.VISIBLE);
-		llTimePickWrap.setVisibility(View.VISIBLE);
-		llRepeatDayWrap.setVisibility(View.VISIBLE);
-		llDateTypeWrap.setVisibility(View.VISIBLE);
-		llAlertTimeWrap.setVisibility(View.VISIBLE);
-		mAlarmOption = Const.ALARM_OPTION.SET_DATE_TIMER;
-		//mAddAlarmTimePicker = new TimePicker(mCtx);
-	}
-
-	private void renderDateTypeUi(int alarmDateType) {
-		Calendar c = Calendar.getInstance();
-		renderDateTypeUi(alarmDateType, c);
-
-	}
-	*/
-
 	//날짜 선택 - spinner 선택에 따른 - 내일 , 모레,
 	private void renderDateTypeUi(int alarmDateType, Calendar c) {
-//		llTimerWrap = (LinearLayout) getView().findViewById(R.id.llTimerWrap);
-//		llDateTypeWrap = (LinearLayout) getView().findViewById(R.id.llDateTypeWrap);
-//		llDatePicWrap = (LinearLayout) getView().findViewById(R.id.llDatePicWrap);
-//		llTimePickWrap = (LinearLayout) getView().findViewById(R.id.llTimePickWrap);
-//		llRepeatDayWrap = (LinearLayout) getView().findViewById(R.id.llRepeatDayWrap);
 		llTimePickWrap.setVisibility(View.VISIBLE);
 
 		mAlarmDateType = alarmDateType;
@@ -679,7 +631,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		arrayList.add(getString(R.string.none));
 		arrayList.add(getString(R.string.dialog_alarm_sp_sound_tts));
 		arrayList.add(getString(R.string.dialog_alarm_sp_sound_record));
-		arrayList.add(getString(R.string.dialog_alarm_sp_sound_file));
+		//arrayList.add(getString(R.string.dialog_alarm_sp_sound_file));
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
 				R.layout.simple_spinner_item_small, arrayList);
@@ -705,15 +657,6 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		mSpAppList.setAdapter(adapter);
 		mSpAppList.setEnabled(false);
 
-	}
-
-	private void showRecordDialog(){
-		Log.d(this.toString(), "showRecordDialog start");
-		RecorderDialog dialog = new RecorderDialog();
-		dialog.setContext(mCtx);
-		dialog.setListener(this);
-		//isRecord
-		dialog.show(getFragmentManager(), "RecorderDialog");
 	}
 
 	private void showCategory(){
@@ -1085,28 +1028,37 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		View beforeView = inflater.inflate(R.layout.alaram_before, null);
 
 		TextView tv = ButterKnife.findById(beforeView, R.id.tvBeforeTime);
+		ImageButton bt = ButterKnife.findById(beforeView, R.id.btnRemoveTime);
 
 		if(flag == -1)
 			tv.setText(val + " " + getString(R.string.dialog_alarm_minute_before));
+		else if(val == 0){
+			tv.setText( val + getString(R.string.minute));
+			bt.setVisibility(View.GONE);
+		}
 		else
 			tv.setText(val + " " + getString(R.string.dialog_alarm_minute_after));
-
-		ImageButton bt = ButterKnife.findById(beforeView, R.id.btnRemoveTime);
-		//bt.setText("-");
 		bt.setTag(val * flag);
+
 		if(val != 0) {
 			bt.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-
 					int index = mArrAlarmCall.indexOf(v.getTag());
-
 					mArrAlarmCall.remove(index);
 					((ViewGroup) v.getParent().getParent()).removeView((ViewGroup) v.getParent());
+					if(mArrAlarmCall.size() == 1){
+						llAlertTimeOptionWrap.setVisibility(View.GONE);
+					}
 				}
 			});
 		}
 		mAlarmList.addView(beforeView);
+
+		Log.d(this.toString(), "typeoptionwrap visible");
+
+		if(mArrAlarmCall.size() > 1)
+			llAlertTimeOptionWrap.setVisibility(View.VISIBLE);
 
 		mScvAddAlarm.refreshDrawableState();
 

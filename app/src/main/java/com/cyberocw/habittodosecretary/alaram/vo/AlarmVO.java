@@ -22,6 +22,7 @@ public class AlarmVO implements Serializable {
 	private int hour;
 	private int minute;
 	private int alarmType;
+	private int alarmCallType;
 	private int useYn;
 	private String etcType;
 	private ArrayList<Integer> alarmCallList = null;
@@ -203,5 +204,13 @@ public class AlarmVO implements Serializable {
 
 	public void setRfid(long rfid) {
 		this.rfid = rfid;
+	}
+
+	public int getAlarmCallType() {
+		return alarmCallType;
+	}
+
+	public void setAlarmCallType(int alarmCallType) {
+		this.alarmCallType = alarmCallType;
 	}
 }

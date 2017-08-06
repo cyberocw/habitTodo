@@ -15,14 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
@@ -103,6 +100,7 @@ public class SettingFragment extends Fragment {
         Button btnDbRestore= (Button) mView.findViewById(R.id.btnDbRestore);
         Button btnShowLog = ButterKnife.findById(mView, R.id.btnShowLog);
         Button btnClearLog = ButterKnife.findById(mView, R.id.btnClearLog);
+
         final Switch swAlarmNoti = ButterKnife.findById(mView, R.id.isAlarmNoti);
         final Switch swTTSNoti = ButterKnife.findById(mView, R.id.isTTSNoti);
         final Switch swTTSNotiManner = ButterKnife.findById(mView, R.id.isTTSNotiManner);
