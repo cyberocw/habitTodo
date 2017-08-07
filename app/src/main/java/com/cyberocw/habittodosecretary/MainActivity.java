@@ -104,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		if(Const.IS_DEBUG){
 			adView.setVisibility(View.GONE);
 			//+dimension margin 0 주기
+		}else{
+			adView.setVisibility(View.VISIBLE);
 		}
 		adView.loadAd(adRequest);
 
@@ -285,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				initializeSetting.execute();
 			}
 			if(!prefsSavedVersion.equals("0")){
-				//showUpdateLog();
+				showUpdateLog();
 			}
 			File rootDir = new File(getApplicationContext().getFilesDir(), "voice");
 			if(!rootDir.isDirectory())
@@ -300,16 +302,39 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 	private void showUpdateLog(){
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setTitle("기능 업데이트 안내");
+		alert.setTitle(getString(R.string.update_log));
 		alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();     //닫기
 			}
 		});
-		alert.setMessage("1. 알림 시 음성을 녹음해두었다가 재생하는 기능이 추가되었습니다. 좋아하는 사람의 음성을 들으면서 잠들거나 일어나면 더 좋겠지요?\n연인 혹은 좋아하는 연예인의 음성을 녹음해보세요\n\n" +
-				"2. 미리 알림(X분 전/후)에 대해 상태바 알림 혹은 끌때까지 알림으로 별도 지정하는 옵션을 추가했습니다." +
-		"\n\n3. 타이머에서도 상태바 1회 알림 혹은 끌때까지 알람 지정 옵션과 TTS 재생 여부 옵션이 추가되었습니다.");
+		String msg;
+		if(CommonUtils.isLocaleKo(getResources().getConfiguration())){
+			msg = "1. 음성을 녹음하여 알림 소리로 사용하는 기능이 추가되었습니다. 좋아하는 사람의 음성을 들으면서 잠들거나 일어나면 더 좋겠지요?\n" +
+					"연인 혹은 좋아하는 연예인의 음성을 녹음해보세요.\n" +
+					"\n" +
+					"2. 미리 알림(X분 전/후)에 대해 상태바 알림 혹은 끌때까지 알림으로 별도 알림 옵션을 설정하는 기능을 추가했습니다. 여러 알림 조합을 활용해 보세요.\n" +
+					"\n" +
+					"3. 미리 알림을 최대 23시간 59분까지 지정할 수 있게 변경했습니다.\n" +
+					"\n" +
+					"4. 타이머에서도 상태바 1회 알림 혹은 끌때까지 알람 지정 옵션과 TTS 재생 여부를 지정하는 옵션이 추가되었습니다.\n" +
+					"\n" +
+					"5. 끌때까지 알람의 경우, 사용자가 멈출때까지 소리가 반복 재생되도록 수정했습니다.";
+		}
+		else {
+			msg = "1. Added the function to record voice and use it as notification sound. Would you like to sleep or wake up while listening to your favorite voice?\n" +
+					"Record the voice of a lover or favorite entertainer.\n" +
+					"\n" +
+					"2. Added the ability to set separate notification options for pre-inform reminder(X minutes before / after), either status bar notifications or notifications until they are turned off.\n" +
+					"Take advantage of multiple notification combinations.\n" +
+					"\n" +
+					"3. Changed pre-inform reminder to be up to 23 hours and 59 minutes.\n" +
+					"\n" +
+					"4. In the timer, there is also an option to specify whether to notify the status bar once or whether to turn off the alarm and specify whether to play the TTS.\n\n" +
+					"5. In the case of an alarm until it is turned off, the sound is repeated until the user stops.";
+		}
+		alert.setMessage(msg);
 		alert.show();
 	}
 

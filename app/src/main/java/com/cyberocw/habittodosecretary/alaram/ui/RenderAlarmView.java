@@ -257,9 +257,18 @@ public class RenderAlarmView {
             for(int i = 0 ; i < arrCall.size(); i++){
                 if(arrCall.get(i) == 0)
                     continue;
+                int val = Math.abs(arrCall.get(i));
+                String t;
+
+                if(val > 60){
+                    t = (arrCall.get(i)/60) + "h. " + (val % 60) + "m.";
+                }
+                else {
+                    t = arrCall.get(i) + "m.";
+                }
 
                 TextView tvTime = new TextView(ctx);
-                tvTime.setText(arrCall.get(i) < 0 ? arrCall.get(i).toString() : "+" + arrCall.get(i));
+                tvTime.setText(arrCall.get(i) < 0 ? t : "+" + t);
                 tvTime.setLayoutParams(params);
                 tvTime.setTextColor(ContextCompat.getColor(ctx, R.color.black_semi_transparent));
                 tvTime.setBackground(ContextCompat.getDrawable(ctx, R.drawable.button_alarm_time_round));

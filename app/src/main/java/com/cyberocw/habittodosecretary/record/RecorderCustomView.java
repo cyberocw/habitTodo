@@ -148,6 +148,7 @@ public class RecorderCustomView extends LinearLayout {
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create file on SD card", e);
         }*/
+
     }
 
     private void initUi(){
@@ -265,13 +266,25 @@ public class RecorderCustomView extends LinearLayout {
     }
 
     private void startRecording() {
-            recordTask = new RecordAudio();
-            recordTask.execute();
-            mTvRecording.setText("recording....");
-            mTvRecording.setVisibility(View.VISIBLE);
-            countRecord(false, 10000);
-            refreshRecordButton();
-            mStartRecording = !mStartRecording;
+        CommonUtils.logCustomEvent("startRecording", "1");
+        File path = new File(mFileName);
+        if(path.isFile()) {
+            boolean delResult = path.delete();
+            Log.d(this.toString(), "delResult=" + delResult);
+            try {
+                path.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        recordTask = new RecordAudio();
+        recordTask.execute();
+        mTvRecording.setText("recording....");
+        mTvRecording.setVisibility(View.VISIBLE);
+        countRecord(false, 10000);
+        refreshRecordButton();
+        mStartRecording = !mStartRecording;
     }
 
     private void stopRecording() {

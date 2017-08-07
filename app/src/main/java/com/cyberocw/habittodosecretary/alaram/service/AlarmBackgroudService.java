@@ -158,12 +158,12 @@ public class AlarmBackgroudService extends Service {
             return ;
 
         int callTime = alarmTimeVO.getCallTime();
+        int h = Math.abs(callTime / 60);
+        int m = Math.abs(callTime % 60);
 
-        mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + getString(R.string.dialog_alarm_minute_before) : (callTime > 0 ? callTime + getString(R.string.dialog_alarm_minute_after) : ""));
-
-        int second = (int) (remainTime / 1000) % 60;
-        int minute = (int) ((remainTime / (1000 * 60)) % 60);
-        int hour = (int) ((remainTime / (1000 * 60 * 60)));
+        mTitle = alarmTimeVO.getAlarmTitle() + " " + (h != 0 ? h + getString(R.string.hours) + " " : "") +
+                    (callTime < 0 ?  m + getString(R.string.dialog_alarm_minute_before) : callTime > 0 ?  m + getString(R.string.dialog_alarm_minute_after) : "" );
+        //mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + getString(R.string.dialog_alarm_minute_before) : (callTime > 0 ? callTime + getString(R.string.dialog_alarm_minute_after) : ""));
 
         mAlarmOption = alarmTimeVO.getAlarmOption();
         mAlarmType = alarmTimeVO.getAlarmType();

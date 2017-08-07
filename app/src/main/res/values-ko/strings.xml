@@ -153,8 +153,21 @@
     <string name="dashboard_title_memo">메모 목록</string>
     <string name="dashboard_no_alarm">다음 일정이 없습니다</string>
     <string name="minute">분</string>
+    <string name="minutes">분</string>
     <string name="dialog_alarm_preinformOption">미리 알림 옵션</string>
     <string name="customRecorder_playing_voice">음성을 재생중입니다.</string>
     <string name="dialog_alarm_record_caution">※ 지정시간이 아닌 미리 알림시에는 녹음 소리 대신 TTS 엔진이 사용됩니다</string>
     <string name="msg_file_not_found">파일을 찾을 수 업습니다</string>
+    <string name="hours">시간</string>
+    <string name="reset">초기화</string>
+    <string name="random">랜덤</string>
+    <string name="ten_minute">10분</string>
+    <string name="thirty_minute">30분</string>
+    <string name="twelve_hours">12시간</string>
+    <string name="twenty_minute">20분</string>
+    <string name="after">이후</string>
+    <string name="before">이전</string>
+    <string name="update_log">기능 업데이트 안내</string>
+    <string name="privacy_policy">개인정보처리방침</string>
+    <string name="show">보기</string>
 </resources>

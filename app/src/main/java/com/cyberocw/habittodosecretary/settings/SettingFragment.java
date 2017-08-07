@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
+import com.cyberocw.habittodosecretary.WebViewActivity;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
@@ -100,6 +101,7 @@ public class SettingFragment extends Fragment {
         Button btnDbRestore= (Button) mView.findViewById(R.id.btnDbRestore);
         Button btnShowLog = ButterKnife.findById(mView, R.id.btnShowLog);
         Button btnClearLog = ButterKnife.findById(mView, R.id.btnClearLog);
+        Button btnPrivacy = ButterKnife.findById(mView, R.id.btnPrivacyPolicy);
 
         final Switch swAlarmNoti = ButterKnife.findById(mView, R.id.isAlarmNoti);
         final Switch swTTSNoti = ButterKnife.findById(mView, R.id.isTTSNoti);
@@ -249,6 +251,27 @@ public class SettingFragment extends Fragment {
                     view.setChecked(true);
                 else
                     view.setChecked(false);
+            }
+        });
+
+        btnPrivacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //WebViewDialog dialog = new WebViewDialog();
+                Intent intent = new Intent(mCtx, WebViewActivity.class);
+
+                Bundle bundle = new Bundle();
+                if(CommonUtils.isLocaleKo(getResources().getConfiguration())){
+                    bundle.putSerializable("url", "https://sites.google.com/view/ohreminder/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%B9%A8");
+                }
+                else{
+                    bundle.putSerializable("url", "https://sites.google.com/view/ohreminder/personal-privacy-policy");
+                }
+
+                intent.putExtras(bundle);
+
+                startActivity(intent);
+
             }
         });
     }

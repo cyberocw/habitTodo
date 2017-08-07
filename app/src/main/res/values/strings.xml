@@ -155,9 +155,22 @@
     <string name="dashboard_title_memo">Memo List</string>
     <string name="dashboard_no_alarm">No next event</string>
     <string name="minute">Minute</string>
+    <string name="minutes">minutes</string>
     <string name="dialog_alarm_preinformOption">pre-inform option</string>
     <string name="customRecorder_playing_voice">Playing voice</string>
     <string name="dialog_alarm_record_caution">- For reminders other than the specified time, the TTS engine is used instead of the recording sound</string>
     <string name="msg_file_not_found">File not found</string>
+    <string name="hours">hours</string>
+    <string name="reset">Reset</string>
+    <string name="random">Random</string>
+    <string name="ten_minute">10min.</string>
+    <string name="twenty_minute">20min.</string>
+    <string name="thirty_minute">30min.</string>
+    <string name="twelve_hours">12hours</string>
+    <string name="before">before</string>
+    <string name="after">after</string>
+    <string name="update_log">Update Log</string>
+    <string name="privacy_policy">privacy policy</string>
+    <string name="show">Show</string>
 
 </resources>

@@ -8,6 +8,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -267,14 +269,33 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		CommonUtils.logCustomEvent("AlarmDialogNew", "1");
 
 	}
+	@Override
+	public void onRequestPermissionsResult(int requestCode,
+										   String permissions[], int[] grantResults) {
+		switch (requestCode) {
+			case 200:
+
+				if (grantResults.length > 0
+						&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+				} else {
+					Toast.makeText(mCtx, "녹음 권한을 주지 않으면 녹음 알람 기능을 사용 할 수 없습니다", Toast.LENGTH_SHORT).show();
+				}
+				return;
+		}
+	}
 
 	private void init(){
 		/* alarmTitle, alarmType(진동,소리 등), alarmOption(타이머,시간지정), hour, minute, mArrAlarmCall(몇분전 알림 목록)
 		 , mDataRepeatDay, mAlarmDateType, ArrayList<Calendar> alarmDate = null;
 		*/
-		String [] permissions = {Manifest.permission.RECORD_AUDIO};
-		int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-		ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+
+		if (ContextCompat.checkSelfPermission(mCtx,Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED) {
+			String [] permissions = {Manifest.permission.RECORD_AUDIO};
+			int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+			ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+		}
+
 
 		mCalendar = Calendar.getInstance();
 		//수정 모드
@@ -960,11 +981,15 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		View container = inflater.inflate(R.layout.fragment_dialog_alram_before, null);
 
-		final NumberPicker np = ButterKnife.findById(container, R.id.numberPicker);// new NumberPicker(mCtx);
+		//final NumberPicker np = ButterKnife.findById(container, R.id.numberPicker);// new NumberPicker(mCtx);
+
+		final NumberPicker npHours = ButterKnife.findById(container, R.id.addAlarmHourPicker);
+		final NumberPicker npMinutes = ButterKnife.findById(container, R.id.addAlarmMinutePicker);
+/*
 		np.setMinValue(0);
 		np.setMaxValue(59);
 		np.setValue(5);
-		np.setWrapSelectorWheel(true);
+		np.setWrapSelectorWheel(true);*/
 		/*
 		params.gravity = Gravity.CENTER;
 		np.setLayoutParams(params);
@@ -972,26 +997,32 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		//ll.addView(np);
 
 		Button btn = ButterKnife.findById(container, R.id.button);//new Button(mCtx);
-		btn.setText(getString(R.string.dialog_alarm_minute_before));
+		btn.setText(getString(R.string.before));
 		//params.gravity = Gravity.CENTER_VERTICAL;
 		//btn.setLayoutParams(params);
+		/////////////////////////////////// 시간 단위 추가
+		npHours.setMaxValue(23);
+		npHours.setValue(0);
+		npMinutes.setMaxValue(59);
+		npMinutes.setValue(5);
+		npHours.setWrapSelectorWheel(true);
+		npMinutes.setWrapSelectorWheel(true);
 
 		mTemp = btn;
 		btn.setTag(-1);
 		btn.setOnClickListener(new View.OnClickListener() {
 			int toggle = 0;
-
 			@Override
 			public void onClick(View v) {
 
 				if (toggle == 0) {
 					v.setTag(1);
 					toggle = 1;
-					((Button) v).setText(getString(R.string.dialog_alarm_minute_after));
+					((Button) v).setText(getString(R.string.after));
 				} else {
 					v.setTag(-1);
 					toggle = 0;
-					((Button) v).setText(getString(R.string.dialog_alarm_minute_before));
+					((Button) v).setText(getString(R.string.before));
 				}
 			}
 		});
@@ -1002,7 +1033,10 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 			public void onClick(DialogInterface dialog, int id) {
 				d(Const.DEBUG_TAG, "getTag = " + ((Button) mTemp).getTag());
 				int aa = Integer.parseInt(((Button) mTemp).getTag().toString());
-				appendAlarmRow(np.getValue(), aa);
+				int m = npMinutes.getValue();
+				int h = npHours.getValue();
+				m = h * 60 + m;
+				appendAlarmRow(m, aa);
 			}
 		});
 		builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -1030,15 +1064,19 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		TextView tv = ButterKnife.findById(beforeView, R.id.tvBeforeTime);
 		ImageButton bt = ButterKnife.findById(beforeView, R.id.btnRemoveTime);
 
+		bt.setTag(val * flag);
+
+		int h = val / 60;
+		int m = val % 60;
+
 		if(flag == -1)
-			tv.setText(val + " " + getString(R.string.dialog_alarm_minute_before));
+			tv.setText((h > 0 ? h + getString(R.string.hours) + " " : "") + m + getString(R.string.dialog_alarm_minute_before));
 		else if(val == 0){
 			tv.setText( val + getString(R.string.minute));
 			bt.setVisibility(View.GONE);
 		}
 		else
-			tv.setText(val + " " + getString(R.string.dialog_alarm_minute_after));
-		bt.setTag(val * flag);
+			tv.setText((h > 0 ? h + getString(R.string.hours) + " " : "") + m + getString(R.string.dialog_alarm_minute_after));
 
 		if(val != 0) {
 			bt.setOnClickListener(new View.OnClickListener() {
