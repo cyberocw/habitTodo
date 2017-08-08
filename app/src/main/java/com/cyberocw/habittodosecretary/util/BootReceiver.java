@@ -3,6 +3,7 @@ package com.cyberocw.habittodosecretary.util;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 
@@ -18,7 +19,7 @@ public class BootReceiver extends BroadcastReceiver
 	public void onReceive(Context context, Intent intent) {
 		if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
 			AlarmDataManager alarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
-
+			Log.d(this.toString(), "bootReceiver start");
 			alarmDataManager.resetMinAlarmCall();
 		}
 	}

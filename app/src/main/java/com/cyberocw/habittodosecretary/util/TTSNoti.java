@@ -150,6 +150,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 	}
 
 	private void speakText(){
+		Log.d(this.toString(), "speakText start");
 		if(mArrText.size() == 0) {
 			stopSelf();
 			return;
@@ -158,6 +159,8 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 		nowPlayingText = spokenText;
 		mIndex++;
 		mArrText.remove(0);
+
+		Log.d(this.toString(), "speakText ttsgreater");
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			ttsGreater21(spokenText, mIndex);

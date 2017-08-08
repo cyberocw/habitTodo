@@ -95,6 +95,7 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
     }
 
     private void startTTS(String title, long id){
+        Log.d(this.toString(), "ttsnotiactivity start TTS ");
         Intent ttsIntent = new Intent(getApplicationContext(), TTSNoti.class);
         ttsIntent.putExtra("alaramTitle", title);
         ttsIntent.putExtra("alarmId", id);

@@ -201,9 +201,10 @@ public class AlarmBackgroudService extends Service {
 
     private void startCountDownTimer(long remainTime){
         // 음수면 바로 울림
+        final Calendar ccc = Calendar.getInstance();
         mCountDownTimer = new CountDownTimer(remainTime, 1000) {
             public void onTick(long millisUntilFinished) {
-                mMillisRemainTime = millisUntilFinished;
+                //mMillisRemainTime = millisUntilFinished;
 
                 int second = (int) (millisUntilFinished / 1000) % 60;
                 int minute = (int) ((millisUntilFinished / (1000 * 60)) % 60);
@@ -214,6 +215,16 @@ public class AlarmBackgroudService extends Service {
                     CommonUtils.putLogPreference(mCtx, this.toString() + "on tinck =" + hour + " hour " + minute + " minute " + second + " second");
                 }
                 else if(hour == 0 && minute == 0 && second < 10){
+                    if(second == 5) {
+                        long timeStamp = mArrAlarmVOList.get(mMinRemainPosition).getTimeStamp();
+                        ccc.setTimeInMillis(timeStamp);
+                        Calendar nowCal = Calendar.getInstance();
+
+                        if (Math.abs(ccc.getTimeInMillis() - nowCal.getTimeInMillis() - millisUntilFinished) > 1000) {
+                            mCountDownTimer.cancel();
+                            startCountDownTimer(ccc.getTimeInMillis() - Calendar.getInstance().getTimeInMillis());
+                        }
+                    }
                     Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on tinck =" + hour + " hour " + minute + " minute " + second + " second");
                 }
             }

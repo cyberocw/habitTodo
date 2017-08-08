@@ -42,11 +42,15 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
 		AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
 
-		try { Thread.sleep(500);
+		try { Thread.sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 
+		/*Intent myIntent1 = new Intent(context, NotificationService.class);
+		myIntent1.putExtra("title", "receive");
+		context.startService(myIntent1);
+*/
 		log = "receiver after 1sec sleep minAlarmCall start";
 		CommonUtils.putLogPreference(context, log);
 		//Crashlytics.log(Log.DEBUG, this.toString(), log);

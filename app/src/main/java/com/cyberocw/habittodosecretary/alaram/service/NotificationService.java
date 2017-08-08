@@ -93,7 +93,7 @@ public class NotificationService extends Service{
         RemoteViews remoteView = new RemoteViews(this.getPackageName(), R.layout.alarm_notification);
 		remoteView.setOnClickPendingIntent(R.id.notiWrap, pendingIntent);
 
-        remoteView.setTextViewText(R.id.tvAlarmTitle, noti_title);
+		remoteView.setTextViewText(R.id.tvAlarmTitle, noti_title);
 		mCompatBuilder.setContentIntent(pendingIntent);
 		mCompatBuilder.setAutoCancel(true);
 
@@ -105,7 +105,7 @@ public class NotificationService extends Service{
 			// alarmId 가 -1 이면 timer에서 보낸 noti임
 			mCompatBuilder.setContentText(getString(R.string.service_noti_msg_scroll_postpone));
 		}
-        Calendar now = Calendar.getInstance();
+		Calendar now = Calendar.getInstance();
         remoteView.setTextViewText(R.id.tvAlarmTime, CommonUtils.numberDigit(2, now.get(Calendar.HOUR_OF_DAY)) + ":" + CommonUtils.numberDigit(2, now.get(Calendar.MINUTE)));
 
 		Intent closeButtonIntent = new Intent(this, CloseButtonListener.class);
