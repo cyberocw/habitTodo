@@ -601,16 +601,15 @@ public class AlarmDataManager {
 
 
 		//Log.d(this.toString(), " calendar diff ccc=" +CommonUtils.convertFullDateType(ccc) + "  now = " + CommonUtils.convertFullDateType(nowCal));
-		//15분 이내일 경우 setAlarmClock으로 예정시간 5초전에 울리도록 함
+		//15분 이내일 경우 setAlarmClock으로 예정시간 10초전에 울리도록 함
 		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			isSetAlarmClock = true;
 			ccc.add(Calendar.MINUTE, 14);
-			//ccc.add(Calendar.SECOND, 50);
+			ccc.set(Calendar.SECOND, 50);
 		}else{
 			ccc.add(Calendar.MINUTE, 2);
 			//ccc.add(Calendar.SECOND, 55);
 		}
-
 
 		//myIntent.putExtra("title", alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + "분 전" : (callTime > 0 ? callTime + "분 후" : "")));
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(mCtx, reqCode, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
