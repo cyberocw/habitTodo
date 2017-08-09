@@ -69,7 +69,7 @@ public class AlarmBackgroudService extends Service {
     }
     @Override
     public void onCreate() {
-
+        Fabric.with(this, new Crashlytics());
         pm = ((PowerManager)getSystemService(Context.POWER_SERVICE));
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "backgroundService");
         // wakelock 사용
@@ -77,7 +77,7 @@ public class AlarmBackgroudService extends Service {
         wakeLock.acquire();
         Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "wakeLock acquire");
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
+
     }
 
     @Override
@@ -412,10 +412,20 @@ public class AlarmBackgroudService extends Service {
             mHandler.removeCallbacksAndMessages(null);
         }
         stopForeground(true);
-        if (wakeLock.isHeld()) {
-            wakeLock.release();
-            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "wakeLock release");
+        if(mHandler == null) {
+            mHandler = new Handler();
         }
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (wakeLock.isHeld()) {
+                        wakeLock.release();
+                        Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "wakeLock release");
+                    }
+                }
+            }, 5000);
+
+
         super.onDestroy();
     }
 

@@ -9,7 +9,9 @@ import android.media.AudioManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -49,6 +51,13 @@ public class TimerService extends Service {
 	public TextView mTv;
 	public ToggleButton mBtnToggle;
 	private TimerListAdapter mTimerListAdapter = null;
+
+	private Handler mHandler = null;
+	private static PowerManager.WakeLock mCpuWakeLock;
+	private static boolean isScreenLock;
+
+	private PowerManager pm;
+	private PowerManager.WakeLock wakeLock;
 
 	NumberFormat mNumberFormat = new DecimalFormat("##00");
 	/**
@@ -106,10 +115,15 @@ public class TimerService extends Service {
 
 	@Override
 	public void onCreate() {
-
+		Fabric.with(mCtx, new Crashlytics());
 		super.onCreate();
-		Fabric.with(this, new Crashlytics());
 
+		pm = ((PowerManager) mCtx.getSystemService(Context.POWER_SERVICE));
+		wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "receive");
+		// wakelock 사용
+
+		wakeLock.acquire();
+		Crashlytics.log(Log.DEBUG, this.toString(), "timerservice wakeLock acquire");
 	}
 
 	public void startTimer(){
@@ -266,6 +280,18 @@ public class TimerService extends Service {
 	@Override
 	public void onDestroy() {
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onDestroy Service");
+		if(mHandler == null) {
+			mHandler = new Handler();
+		}
+		mHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (wakeLock.isHeld()) {
+					wakeLock.release();
+					Crashlytics.log(Log.DEBUG, this.toString(), " timerservice wakeLock release");
+				}
+			}
+		}, 5000);
 		super.onDestroy();
 	}
 

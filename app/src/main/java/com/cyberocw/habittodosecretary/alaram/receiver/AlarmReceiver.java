@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.PowerManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 import android.widget.Toast;
@@ -33,12 +35,29 @@ import io.fabric.sdk.android.Fabric;
 public class AlarmReceiver extends WakefulBroadcastReceiver {
 	private AlarmBackgroudService mService;
 	private boolean mBound;
+	private Handler mHandler = null;
+	private static PowerManager.WakeLock mCpuWakeLock;
+	private static boolean isScreenLock;
+
+	private PowerManager pm;
+	private PowerManager.WakeLock wakeLock;
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		Fabric.with(context, new Crashlytics());
+		pm = ((PowerManager) context.getSystemService(Context.POWER_SERVICE));
+		wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "receive");
+		// wakelock 사용
+
+		wakeLock.acquire();
+		Crashlytics.log(Log.DEBUG, this.toString(), "receive wakeLock acquire");
+
 		String log = "onReceive start";
 		Fabric.with(context, new Crashlytics());
 		CommonUtils.putLogPreference(context, log);
 		//Crashlytics.log(Log.DEBUG, this.toString(), log);
+
+
 
 		AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
 
@@ -62,6 +81,20 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 		//Crashlytics.log(Log.DEBUG, this.toString(), log);
 
 		//onReceiveOri(context, intent);
+
+		mHandler = new Handler();
+		mHandler.postDelayed(new Runnable()
+		{
+			@Override public void run()
+			{
+				if(wakeLock.isHeld()) {
+					wakeLock.release();
+					Crashlytics.log(Log.DEBUG, this.toString(), "receive wakeLock release");
+				}
+
+			}
+		}, 2500);
+
 
 		if(1==1)
 			return;
