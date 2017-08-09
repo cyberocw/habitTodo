@@ -562,8 +562,8 @@ public class AlarmDataManager {
 		ccc.setTimeInMillis(timeStamp);
 		alarmTimeVO.setReqCode(reqCode);
 		// ----------------------- Doze 모드 때문에 제공되는 API만 사용
-		ccc.add(Calendar.MINUTE, -1);
-		//1분 이내일 경우 service 돌림
+		ccc.add(Calendar.SECOND, -30);
+		//30초 이내일 경우 service 돌림
 		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
 
@@ -595,19 +595,20 @@ public class AlarmDataManager {
 			}
 		}
 
-		//-15분 만들어줌
+		//-14분 30초 만들어줌
 		ccc.add(Calendar.MINUTE, -14);
 		boolean isSetAlarmClock = false;
 
 
 		//Log.d(this.toString(), " calendar diff ccc=" +CommonUtils.convertFullDateType(ccc) + "  now = " + CommonUtils.convertFullDateType(nowCal));
-		//15분 이내일 경우 setAlarmClock으로 예정시간 10초전에 울리도록 함
+		//14분 30초 이내일 경우 setAlarmClock으로 예정시간 10초전에 울리도록 함
 		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			isSetAlarmClock = true;
 			ccc.add(Calendar.MINUTE, 14);
-			ccc.set(Calendar.SECOND, 50);
+			ccc.set(Calendar.SECOND, 51);
 		}else{
-			ccc.add(Calendar.MINUTE, 2);
+			//그냥 -14분 30초전에 울리도록
+			//ccc.add(Calendar.MINUTE, 1);
 			//ccc.add(Calendar.SECOND, 55);
 		}
 

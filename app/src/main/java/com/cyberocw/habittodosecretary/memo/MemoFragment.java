@@ -205,7 +205,10 @@ public class MemoFragment extends Fragment {
 
 		CommonUtils.logCustomEvent("MemoFragment", "1", "memo Count", mMemoDataManager.getCount());
 	}
-
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+	}
 	private void bindEvent(){
 		FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fabAddAlarm);
 		fab.setOnClickListener(new View.OnClickListener() {

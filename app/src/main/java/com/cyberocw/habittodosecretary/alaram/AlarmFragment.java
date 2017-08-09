@@ -894,7 +894,7 @@ public class AlarmFragment extends Fragment{
 				}
 				//type 변경으로 기존 파일 제거
 				else if(fromPath != null){
-					mRecorderDataManager.deleteRecordFile(oriAlarmId);
+					getRecorderDataManager().deleteRecordFile(oriAlarmId);
 				}
 				// 수정일 경우 date type이 변경 될 수도 있기 때문에 두개 모두 갱신
 				mAlarmDataManager.resetMinAlarmCall();

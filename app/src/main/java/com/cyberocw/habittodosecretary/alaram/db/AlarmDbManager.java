@@ -209,6 +209,10 @@ public class AlarmDbManager extends DbHelper{
 				alarmTimeVOList.add(vo);
 			} while (c.moveToNext());
 		}
+		if(c != null && !c.isClosed())
+			c.close();
+
+		closeDB();
 		return alarmTimeVOList;
 	}
 
@@ -703,6 +707,9 @@ public class AlarmDbManager extends DbHelper{
 				voMap.put(vo.getId(), vo);
 			} while (c.moveToNext());
 		}
+		if(c != null && !c.isClosed())
+			c.close();
+
 		closeDB();
 		return alarmVOList;
 	}

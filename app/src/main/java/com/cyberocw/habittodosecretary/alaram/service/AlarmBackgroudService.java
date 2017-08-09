@@ -1,5 +1,6 @@
 package com.cyberocw.habittodosecretary.alaram.service;
 
+import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -8,7 +9,9 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -55,11 +58,24 @@ public class AlarmBackgroudService extends Service {
     private int mAlarmOption = -1;
     private int mAlarmType = -1;
     private String mAppTitle = "";
+    private Handler mHandler = null;
+    private static PowerManager.WakeLock mCpuWakeLock;
+    private static boolean isScreenLock;
+
+    private PowerManager pm;
+    private PowerManager.WakeLock wakeLock;
 
     public AlarmBackgroudService() {
     }
     @Override
     public void onCreate() {
+
+        pm = ((PowerManager)getSystemService(Context.POWER_SERVICE));
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "backgroundService");
+        // wakelock 사용
+
+        wakeLock.acquire();
+        Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "wakeLock acquire");
         super.onCreate();
         Fabric.with(this, new Crashlytics());
     }
@@ -198,8 +214,20 @@ public class AlarmBackgroudService extends Service {
             startForeground(Const.ONGOING_TIMER_NOTI_ID, mCompatBuilder.build());
         }
     }
+    private void startCountDownTimer(long millisRemainTime){
+        if(mHandler == null)
+            mHandler = new Handler();
+        mHandler.postDelayed(new Runnable()
+        {
+            @Override public void run()
+            {
+                startAleart();
+                cancelTimer();
+            }
+        }, millisRemainTime);
+    }
 
-    private void startCountDownTimer(long remainTime){
+    private void startCountDownTimer2(long remainTime){
         // 음수면 바로 울림
         final Calendar ccc = Calendar.getInstance();
         mCountDownTimer = new CountDownTimer(remainTime, 1000) {
@@ -208,24 +236,26 @@ public class AlarmBackgroudService extends Service {
 
                 int second = (int) (millisUntilFinished / 1000) % 60;
                 int minute = (int) ((millisUntilFinished / (1000 * 60)) % 60);
-                int hour = (int) ((millisUntilFinished / (1000 * 60 * 60)));
+                //int hour = (int) ((millisUntilFinished / (1000 * 60 * 60)));
+                //사실 30초 이상 될 일 없도록 만들었음
 
                 if(second % 30 == 0) {
-                    Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on tinck =" + hour + " hour " + minute + " minute " + second + " second");
-                    CommonUtils.putLogPreference(mCtx, this.toString() + "on tinck =" + hour + " hour " + minute + " minute " + second + " second");
+                    Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on tinck =" + minute + " minute " + second + " second");
+                    CommonUtils.putLogPreference(mCtx, this.toString() + "on tinck =" + minute + " minute " + second + " second");
                 }
-                else if(hour == 0 && minute == 0 && second < 10){
-                    if(second == 5) {
+                // 9초 맞춰서 알림이 들어오기 때문에 최소 10 이상이어야 함
+                else if(minute == 0 && second <= 10){
+                    if(second == 12) {
                         long timeStamp = mArrAlarmVOList.get(mMinRemainPosition).getTimeStamp();
                         ccc.setTimeInMillis(timeStamp);
                         Calendar nowCal = Calendar.getInstance();
-
+                        //1초 이상 오차나면 다시 남은시간 계산해도 돌림
                         if (Math.abs(ccc.getTimeInMillis() - nowCal.getTimeInMillis() - millisUntilFinished) > 1000) {
                             mCountDownTimer.cancel();
                             startCountDownTimer(ccc.getTimeInMillis() - Calendar.getInstance().getTimeInMillis());
                         }
                     }
-                    Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on tinck =" + hour + " hour " + minute + " minute " + second + " second");
+                    Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on tinck =" + minute + " minute " + second + " second");
                 }
             }
             public void onFinish() {
@@ -348,6 +378,9 @@ public class AlarmBackgroudService extends Service {
         mMillisRemainTime = -1;
         if(mCountDownTimer != null)
             mCountDownTimer.cancel();
+        if(mHandler != null){
+            mHandler.removeCallbacksAndMessages(null);
+        }
         mArrAlarmVOList.remove(mMinRemainPosition);
         mCountDownTimer = null;
 
@@ -375,7 +408,14 @@ public class AlarmBackgroudService extends Service {
         Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onDestroy Service");
         if(mCountDownTimer != null)
             mCountDownTimer.cancel();
+        if(mHandler != null){
+            mHandler.removeCallbacksAndMessages(null);
+        }
         stopForeground(true);
+        if (wakeLock.isHeld()) {
+            wakeLock.release();
+            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "wakeLock release");
+        }
         super.onDestroy();
     }
 

@@ -312,6 +312,7 @@ public class CategoryFragment extends Fragment {
 		fragmentManager.beginTransaction()
 				.addToBackStack(null)
 				.add(R.id.main_container, f).commit();
+
 	}
 
 	public void setActionBar(ActionBar actionBar){

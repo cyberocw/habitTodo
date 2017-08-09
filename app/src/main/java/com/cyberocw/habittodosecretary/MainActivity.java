@@ -43,6 +43,8 @@ import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.settings.InitializeSetting;
 import com.cyberocw.habittodosecretary.settings.SettingFragment;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.cyberocw.habittodosecretary.util.TTSNoti;
+import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -279,6 +281,17 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			i.putExtra(Const.PARAM.MODE, "intro");
 			i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 			startActivity(i);
+
+			/*Intent i = new Intent(this, Intro.class);
+			i.putExtra(Const.PARAM.MODE, "intro");
+			i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+			startActivity(i);*/
+
+			Intent ttsIntent = new Intent(getApplicationContext(), TTSNotiActivity.class);
+			ttsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+			ttsIntent.putExtra("alaramTitle", "TTS Test");
+			ttsIntent.putExtra("alarmId", -1L);
+			startActivity(ttsIntent);
 
 		}
 		if (prefsSavedVersion.equals("0") || !prefsSavedVersion.equals(versionName)) {
