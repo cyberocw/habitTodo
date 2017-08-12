@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Random;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -41,7 +43,7 @@ public class AlarmDataManager {
 	Context mCtx = null;
 	AlarmDbManager mDb;
 	public Calendar mCalendar = null;
-
+	final int mSdkVersion = Build.VERSION.SDK_INT;
 	// 각각의 알람이 저장 됨
 	private ArrayList<AlarmVO> dataList = new ArrayList<>();
 
@@ -426,7 +428,34 @@ public class AlarmDataManager {
 	public void resetMinAlarmCall(int type) {
 		resetMinAlarm();
 	}
+	public void resetMinAlarm(boolean isReceiver){
+		PowerManager pm;
+		PowerManager.WakeLock wakeLock = null;
+		if(isReceiver){
+			pm = ((PowerManager) mCtx.getSystemService(Context.POWER_SERVICE));
+			wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "resetMin wakeLock");
+			// wakelock 사용
+			wakeLock.acquire();
+			Crashlytics.log(Log.DEBUG, this.toString(), "resetMin wakeLock acquire");
+		}
+		try {
+			this.resetMinAlarm();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		finally {
+			if(isReceiver && wakeLock.isHeld()) {
+				wakeLock.release();
+				Crashlytics.log(Log.DEBUG, this.toString(), "resetMin wakeLock release");
+			}
+		}
+
+	}
 	public void resetMinAlarm(){
+		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
+		stopAllAlarm(prefs);
+
 		ArrayList<AlarmTimeVO> alarmTimeList1 = null;
 		ArrayList<AlarmTimeVO> alarmTimeList2 = null;
 		ArrayList<AlarmTimeVO> alarmTimeList = null;
@@ -437,6 +466,8 @@ public class AlarmDataManager {
 		Calendar cal = Calendar.getInstance();
 		int dayNum = cal.get(Calendar.DAY_OF_WEEK); //sun 1 mon 2 ...
 		alarmTimeList2 = mDb.getMinRepeatAlarm(dayNum);
+
+		//Log.d(this.toString(), "alarmTimeList2="+alarmTimeList2 + " alarmTimeList2 size="+alarmTimeList2.size());
 
 		int minList = 0;
 		long minTimeStamp = 0;
@@ -460,34 +491,24 @@ public class AlarmDataManager {
 			alarmTimeList.addAll(alarmTimeList2);
 		}
 
-		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
-		stopAllAlarm(prefs);
+		//SharedPreferences prefsSetting = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 
-		SharedPreferences prefsSetting = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
-		boolean isUseNotibar = prefsSetting.getBoolean(Const.SETTING.IS_NOTIBAR_USE, true);
-
-		Crashlytics.log(Log.DEBUG, this.toString(), "isUseNotibar=="+isUseNotibar);
-
-		if(!isUseNotibar){
-			SharedPreferences.Editor editor = prefs.edit();
-			editor.remove(reqCode);
-			editor.commit();
+		//새로 등록
+		if(alarmTimeList == null || alarmTimeList.size() == 0) {
+			//Toast.makeText(mCtx, mCtx.getString(R.string.dashboard_no_alarm), Toast.LENGTH_SHORT).show();
 			return;
 		}
 
-		//새로 등록
-		if(alarmTimeList == null)
-			return ;
+		Crashlytics.log(Log.DEBUG, this.toString(), "alarmTimeList.size()="+alarmTimeList.size());
 
 		String[] arrReq = new String[alarmTimeList.size()];
 		Long[] arrAlarmId = new Long[alarmTimeList.size()];
 
-		Crashlytics.log(Log.DEBUG, this.toString(), "alarmTimeList.size()="+alarmTimeList.size());
 		Calendar tempCal =  Calendar.getInstance();
 
 		for(int i = 0; i < alarmTimeList.size(); i++){
 			tempCal.setTimeInMillis(alarmTimeList.get(i).getTimeStamp());
-			arrReq[i] = String.valueOf(setAlarm(alarmTimeList.get(i)));
+			arrReq[i] = String.valueOf(this.setAlarm(alarmTimeList.get(i)));
 			arrAlarmId[i] = alarmTimeList.get(i).getId();
 			String aa = "다음 알람은 " + alarmTimeList.get(i).getAlarmTitle()
 					+ " 시간:" + CommonUtils.convertFullDateType(tempCal) + " 입니다. id=" + alarmTimeList.get(i).getId();
@@ -500,8 +521,6 @@ public class AlarmDataManager {
 		String newReqCode = TextUtils.join("," , arrReq);
 		String alarmIds = TextUtils.join("," , arrAlarmId);
 
-
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "newReqCode=" + newReqCode);
 		//등록된 code 저장해둠
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(reqCode);
@@ -511,6 +530,7 @@ public class AlarmDataManager {
 		editor.putLong(Const.PARAM.ALARM_ID_TIME_STAMP, alarmTimeList.get(0).getTimeStamp());
 
 		editor.commit();
+
 	}
 
 	public void stopAllAlarm(SharedPreferences prefs){
@@ -550,12 +570,24 @@ public class AlarmDataManager {
 	}
 
 	public long setAlarm(AlarmTimeVO alarmTimeVO) {
+		Random mRand = new Random();
+		int rand = mRand.nextInt(10000);
+
+		int BACKGROUND_LIMIT_TIME = 1;
+		int EXACT_LIMIT_TIME = 15;
+		if(mSdkVersion < Build.VERSION_CODES.M && mSdkVersion >= Build.VERSION_CODES.KITKAT) {
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "BACKGROUND_LIMIT_TIME = 5");
+			BACKGROUND_LIMIT_TIME = 5;
+		}
+
 		Calendar ccc = Calendar.getInstance();
 		Calendar nowCal = Calendar.getInstance();
 		long reqResult = (alarmTimeVO.getId() + nowCal.get(Calendar.MILLISECOND));
-		if(reqResult >= Integer.MAX_VALUE)
-			reqResult = reqResult / 10000;
-		int reqCode = (int) reqResult;
+
+		int reqCode = (int) reqResult + nowCal.get(Calendar.HOUR_OF_DAY) + nowCal.get(Calendar.MINUTE) + rand;
+		if(reqCode >= Integer.MAX_VALUE)
+			reqCode = reqCode / 10000;
+
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "reqCode=" + reqCode + " alarmTimeVO= getTimeStamp = " + alarmTimeVO.getTimeStamp());
 		//myIntent.removeExtra("title");
 		long timeStamp = alarmTimeVO.getTimeStamp();
@@ -565,8 +597,8 @@ public class AlarmDataManager {
 
 		alarmTimeVO.setReqCode(reqCode);
 		// ----------------------- Doze 모드 때문에 제공되는 API만 사용
-		ccc.add(Calendar.MINUTE, -1);
-		//30초 이내일 경우 service 돌림
+		ccc.add(Calendar.MINUTE, -1 * BACKGROUND_LIMIT_TIME);
+		//1분 혹은 lollipop 5분 초 이내일 경우 service 돌림
 		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
 
@@ -598,20 +630,23 @@ public class AlarmDataManager {
 			}
 		}
 
-		//-14분 30초 만들어줌
-		ccc.add(Calendar.MINUTE, -14);
+		//총 -15분 만들어줌
+		ccc.add(Calendar.MINUTE, -1 * (EXACT_LIMIT_TIME - BACKGROUND_LIMIT_TIME));
 		boolean isSetAlarmClock = false;
 
-
 		//Log.d(this.toString(), " calendar diff ccc=" +CommonUtils.convertFullDateType(ccc) + "  now = " + CommonUtils.convertFullDateType(nowCal));
-		//14분 30초 이내일 경우 setAlarmClock으로 예정시간 10초전에 울리도록 함
+
+		ccc.set(Calendar.SECOND, 1);
+		//15분 이내일 경우 setAlarmClock으로 원래 알람의 1분 전(BACKGROUND_LIMIT_TIME) 울리도록 함
 		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			isSetAlarmClock = true;
-			ccc.add(Calendar.MINUTE, 14);
-			ccc.set(Calendar.SECOND, 0);
+			ccc.add(Calendar.MINUTE, (EXACT_LIMIT_TIME - BACKGROUND_LIMIT_TIME));
+			if(mSdkVersion >= Build.VERSION_CODES.M) {
+				ccc.set(Calendar.SECOND, 45);
+			}
 		}else{
-			//그냥 -14분 30초전에 울리도록
-			ccc.add(Calendar.MINUTE, 2);
+			//그냥 -14분 전에 울리도록
+			ccc.add(Calendar.MINUTE, 1);
 			//ccc.add(Calendar.SECOND, 55);
 		}
 

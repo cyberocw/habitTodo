@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				initializeSetting.execute();
 			}
 			if(!prefsSavedVersion.equals("0")){
-				showUpdateLog();
+				//showUpdateLog();
 			}
 			File rootDir = new File(getApplicationContext().getFilesDir(), "voice");
 			if(!rootDir.isDirectory())

@@ -423,8 +423,7 @@ public class AlarmBackgroudService extends Service {
                         Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "wakeLock release");
                     }
                 }
-            }, 5000);
-
+            }, 15000);
 
         super.onDestroy();
     }

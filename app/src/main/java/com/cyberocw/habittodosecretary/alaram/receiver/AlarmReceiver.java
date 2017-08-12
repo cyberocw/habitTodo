@@ -61,11 +61,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
 		AlarmDataManager mAlarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
 
-		try { Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
 		/*Intent myIntent1 = new Intent(context, NotificationService.class);
 		myIntent1.putExtra("title", "receive");
 		context.startService(myIntent1);
@@ -74,7 +69,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 		CommonUtils.putLogPreference(context, log);
 		//Crashlytics.log(Log.DEBUG, this.toString(), log);
 
-		mAlarmDataManager.resetMinAlarmCall();
+		mAlarmDataManager.resetMinAlarm(true);
 
 		log = "receiver resetMinAlarm end";
 		CommonUtils.putLogPreference(context, log);
@@ -93,7 +88,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 				}
 
 			}
-		}, 2500);
+		}, 10000);
 
 
 		if(1==1)

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -54,43 +55,73 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
     @Override
     public void onInit(int status) {
         Crashlytics.log(Log.DEBUG, this.toString(), "oninit start  status="+ status);
-        if (status == TextToSpeech.SUCCESS) {
-            int result = mTTS.setLanguage(Locale.getDefault());
 
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Toast.makeText(this,
-                        "This Language is not supported", Toast.LENGTH_LONG).show();
+        if (status == TextToSpeech.SUCCESS) {
+
+            ///int result = mTTS.setLanguage(Locale.getDefault());
+            int result = mTTS.isLanguageAvailable(Locale.getDefault());
+            if (mTTS != null) {
+                mTTS.stop();
+                mTTS.shutdown();
             }
-            else {
-                Toast.makeText(this,
-                        "Text-To-Speech engine is initialized", Toast.LENGTH_LONG).show();
+            switch (result)
+            {
+                case TextToSpeech.LANG_AVAILABLE:
+                case TextToSpeech.LANG_COUNTRY_AVAILABLE:
+                case TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE:
+                    //mTTS.setLanguage(Locale.getDefault());
+
+                    startTTS(spokenText, mAlarmId);
+
+                    break;
+                case TextToSpeech.LANG_MISSING_DATA:
+                    Crashlytics.log(Log.DEBUG, this.toString(),  "MISSING_DATA");
+                    // missing data, install it
+                    Intent installIntent = new Intent();
+                    installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                    startActivity(installIntent);
+                    break;
+                case TextToSpeech.LANG_NOT_SUPPORTED:
+                    Crashlytics.log(Log.DEBUG, this.toString(), "NOT SUPPORTED");
+                    Toast.makeText(this, "TTS LANG_NOT_SUPPORTED", Toast.LENGTH_SHORT).show();
+                    return;
             }
         }
         else if (status == TextToSpeech.ERROR) {
             Toast.makeText(this,
                     "Error occurred while initializing Text-To-Speech engine", Toast.LENGTH_LONG).show();
         }
+        if (mTTS != null) {
+            mTTS.stop();
+            mTTS.shutdown();
+        }
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case MY_DATA_CHECK_CODE: {
-                Crashlytics.log(Log.DEBUG, this.toString(), "resultCode="+resultCode);
-                if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                    // the user has the necessary data - create the TTS
-                    //myTTS = new TextToSpeech(this, this);
-                    startTTS(spokenText, mAlarmId);
-                    finish();
-                } else {
-                    // no data - install it now
-                    Intent installTTSIntent = new Intent();
-                    installTTSIntent
-                            .setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                    startActivity(installTTSIntent);
+        try {
+            switch (requestCode) {
+                case MY_DATA_CHECK_CODE: {
+                    Crashlytics.log(Log.DEBUG, this.toString(), "resultCode=" + resultCode);
+                    if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                        // the user has the necessary data - create the TTS
+                        mTTS = new TextToSpeech(this, this);
+
+
+                    } else {
+                        // no data - install it now
+                        Intent installTTSIntent = new Intent();
+                        installTTSIntent
+                                .setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                        startActivity(installTTSIntent);
+                    }
+                    break;
                 }
-                break;
             }
+        }catch (Exception e){}
+        finally {
+
+            finish();
         }
     }
 

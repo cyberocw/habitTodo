@@ -65,9 +65,12 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 			mAlarmId = 1;
 			mArrText.add(intent.getExtras().getString("alaramTitle"));
 			mIsNUll = false;
-
+			Log.d(this.toString(), "mTTS  = " + mTTS );
 			if(mTTS == null)
-				mTTS = new TextToSpeech(getApplicationContext(), this);
+				mTTS = new TextToSpeech(this, this);
+			else{
+				speakText();
+			}
 		}
 	}
 
@@ -146,6 +149,9 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 				}
 
 			}
+		}
+		else{
+			stopSelf();
 		}
 	}
 
