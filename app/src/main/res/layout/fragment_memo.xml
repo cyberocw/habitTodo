@@ -66,17 +66,44 @@
                 android:clickable="true"
                 />
         </LinearLayout>
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAddAlarm"
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:id="@+id/multiple_actions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_icon="@drawable/ic_add"
-            fab:fab_colorNormal="@color/pink"
-            fab:fab_colorPressed="@color/pink_pressed"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            fab:fab_addButtonColorNormal="@color/pink"
+            fab:fab_addButtonColorPressed="@color/pink_pressed"
+            fab:fab_addButtonPlusIconColor="@color/white"
+            fab:fab_labelStyle="@style/menu_labels_style"
             android:layout_marginBottom="10dp"
-            android:layout_alignParentEnd="false"
-            android:layout_alignParentRight="true"/>
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp">
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabAddMemo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_title="Memo"
+                fab:fab_icon="@drawable/ic_event_note_white_24dp"
+                fab:fab_colorNormal="@color/sub_header"
+                fab:fab_size="mini"
+                fab:fab_colorPressed="@color/sub_header_pressed"/>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabAddTodo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_title="Todo"
+                fab:fab_size="mini"
+                fab:fab_icon="@drawable/ic_format_list_bulleted_white_24dp"
+                fab:fab_colorNormal="@color/primary"
+                fab:fab_colorPressed="@color/primary_dark"
+                />
+
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
 
     </RelativeLayout>
 

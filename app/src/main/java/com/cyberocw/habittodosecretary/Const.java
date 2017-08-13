@@ -19,7 +19,7 @@ public class Const {
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
 	public static final int ONGOING_ALARM_NOTI_ID = 999999998;
 
-    public static final boolean IS_DEBUG = false;
+    public static final boolean IS_DEBUG = true;
 
 	public class PARAM{
 		public static final String MODE = "mode";
@@ -36,6 +36,8 @@ public class Const {
 		public static final String ALARM_ID_TIME_STAMP = "alarmIdTimeStamp";
 		public static final String IS_RECORD = "isRecord";
 		public static final String FILE_PATH = "filePath";
+
+		public static final String IS_TODO = "isTodo";
     }
 
 	public class ALARM_INTERFACE_CODE{
@@ -157,6 +159,7 @@ public class Const {
 			public static final int ADD_MEMO_ETC_CODE = 1114;
 			public static final int VIEW_MEMO_ETC_CODE = 1115;
 			public static final int DEL_MEMO_FINISH_CODE = 1116;
+			public static final int PICK_FILE_RESULT_CODE = 1117;
 			public static final String ADD_MEMO_ETC_KEY = "memoEtc";
 			public static final String VIEW_MEMO_ETC_KEY = "viewMemoEtc";
 			public static final String SHARE_MEMO_MODE = "MEMO_MODE";

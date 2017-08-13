@@ -85,6 +85,7 @@ public class MemoDbManager extends DbHelper{
 				vo = new MemoVO();
 				vo.setId(c.getLong((c.getColumnIndex(KEY_ID))));
 				vo.setTitle((c.getString(c.getColumnIndex(KEY_TITLE))));
+				vo.setType((c.getString(c.getColumnIndex(KEY_TYPE))));
 				vo.setContents(c.getString(c.getColumnIndex(KEY_CONTENTS)));
 				vo.setCategoryId(c.getLong(c.getColumnIndex(KEY_CATEGORY_ID)));
 				vo.setUrl(c.getString(c.getColumnIndex(KEY_URL)));
@@ -108,7 +109,7 @@ public class MemoDbManager extends DbHelper{
 		ContentValues values = new ContentValues();
 		values.put(KEY_TITLE, item.getTitle());
 		values.put(KEY_CONTENTS, item.getContents());
-		values.put(KEY_TYPE, "MEMO");
+		values.put(KEY_TYPE, item.getType());
 		values.put(KEY_VIEW_CNT, 0);
 		values.put(KEY_USE_YN, item.getUseYn());
 		values.put(KEY_URL, item.getUseYn());
@@ -166,7 +167,7 @@ public class MemoDbManager extends DbHelper{
 		ContentValues values = new ContentValues();
 		values.put(KEY_TITLE, item.getTitle());
 		values.put(KEY_CONTENTS, item.getContents());
-		values.put(KEY_TYPE, "MEMO");
+		values.put(KEY_TYPE, item.getType());
 		values.put(KEY_USE_YN, 1);
 		values.put(KEY_VIEW_CNT, 0);
 		values.put(KEY_URL, item.getUrl());

@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <EditText
+                <com.neopixl.pixlui.components.edittext.EditText
                     android:id="@+id/txMemoTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -103,12 +103,11 @@
                     android:id="@+id/spCategory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/btnEdit"
-                    android:layout_toRightOf="@+id/btnEdit"
-                    android:layout_toEndOf="@+id/btnEdit"
+                    android:layout_marginLeft="9dp"
+                    android:layout_marginStart="9dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="31dp"
-                    android:layout_marginStart="30dp" />
+                    android:layout_toRightOf="@+id/btnTodo"
+                    android:layout_toEndOf="@+id/btnTodo" />
 
                 <Button
                     android:id="@+id/btnAddAlarm"
@@ -124,17 +123,16 @@
                     android:textSize="13sp"
                     android:text="@string/btn_memo_alarm" />
 
-                <ImageButton
-                    android:id="@+id/btnAttachFile"
-                    style="?android:attr/buttonStyleSmall"
+                <ImageView
+                    android:id="@+id/attachmentIcon"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_toLeftOf="@+id/btnInfo"
-                    android:layout_toStartOf="@+id/btnInfo"
                     android:src="@drawable/ic_action_attachment"
-                    android:text="F"
-                    android:visibility="gone" />
+                    android:layout_marginRight="21dp"
+                    android:layout_marginEnd="21dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/btnAddAlarm"
+                    android:layout_toStartOf="@+id/btnAddAlarm" />
 
                 <ImageButton
                     android:id="@+id/btnInfo"
@@ -157,10 +155,26 @@
                     android:layout_centerVertical="true"
                     android:minWidth="60dp"
                     android:padding="8dp"
-                    android:text="@string/btn_memo_modify" />
+                    android:text="@string/btn_memo_modify"
+                    android:visibility="gone"
+                    />
+                <Button
+                    android:id="@+id/btnTodo"
+                    style="@style/button_primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:visibility="gone"
+                    android:minWidth="40dp"
+                    android:padding="8dp"
+                    android:text="todo"
+                    android:layout_marginLeft="11dp"
+                    android:layout_marginStart="11dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/btnEdit"
+                    android:layout_toEndOf="@+id/btnEdit" />
             </RelativeLayout>
 
-            <EditText xmlns:android="http://schemas.android.com/apk/res/android"
+            <com.neopixl.pixlui.components.edittext.EditText
                 android:id="@+id/etMemoEditor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -169,8 +183,7 @@
                 android:padding="15dip"
                 android:scrollbars="vertical"
                 android:textSize="16sp"
-                android:visibility="gone" />
-
+                 />
             <TextView
                 android:id="@+id/tvMemoEditor"
                 android:layout_width="match_parent"
@@ -183,7 +196,7 @@
                 android:padding="15dip"
                 android:scrollbars="vertical"
                 android:textSize="16sp"
-                android:visibility="visible" />
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

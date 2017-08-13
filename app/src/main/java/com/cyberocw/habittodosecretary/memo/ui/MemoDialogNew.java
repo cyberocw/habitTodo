@@ -1,9 +1,15 @@
 package com.cyberocw.habittodosecretary.memo.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.inputmethodservice.Keyboard;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -20,8 +26,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+
+import com.cyberocw.habittodosecretary.WebViewActivity;
+import com.cyberocw.habittodosecretary.util.KeyboardUtils;
+import com.neopixl.pixlui.components.edittext.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -40,35 +50,48 @@ import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
+
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
+import it.feio.android.checklistview.Settings;
+import it.feio.android.checklistview.exceptions.ViewNotSupportedException;
+import it.feio.android.checklistview.interfaces.Constants;
+import it.feio.android.checklistview.models.ChecklistManager;
+import it.feio.android.pixlui.links.TextLinkClickListener;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by cyberocw on 2015-12-14.
  */
 public class MemoDialogNew extends Fragment{
 	View mView;
+	View switchView;
 	Context mCtx;
 	EditText mTvTitle;
 	Spinner mSpCategory;
 	EditText mEtMemoEditor;
 	TextView mTvMemoEditor;
 	RatingBar mRatingBar;
-	Button mBtnSave, mBtnEdit;
+	Button mBtnSave, mBtnEdit, mBtnTodo;
 	Button mBtnAddAlarm;
 	MemoVO mMemoVO;
 	AlarmVO mAlarmVO, mAlarmOriginalVO = null;
 	CategoryDataManager mCateDataManager;
 	CategoryListAdapter mCateAdapter;
 	ArrayList<CategoryVO> mArrayCategoryVOList = null;
+	ImageView mBtnAttach;
 	boolean mShareMode = false;
-
+	SharedPreferences mPrefs;
 	long mSelectedCateId = -1;
 	boolean isMemoEditable = true;
 	boolean isModifyAlarm = false;
 	int mModifyMode = 0;
 	long mInitAlarmId = -1;
+
+	boolean isChecklist;
+	private ChecklistManager mChecklistManager;
 
 	public MemoDialogNew() {
 	}
@@ -128,15 +151,19 @@ public class MemoDialogNew extends Fragment{
 				mModifyMode = 1;
 			else
 				mMemoVO = new MemoVO();
+
+			isChecklist = arguments.getBoolean(Const.PARAM.IS_TODO, false);
 		}
 		else{
 			Toast.makeText(mCtx, getString(R.string.dialog_memo_msg_category_id_not), Toast.LENGTH_SHORT).show();
 			getFragmentManager().popBackStackImmediate();
 		}
 
+		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, mCtx.MODE_PRIVATE);
+
 		initActivity();
 
-		//mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, mCtx.MODE_PRIVATE);
+
 
 		/*
 		mActionBar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_action_back));
@@ -152,12 +179,15 @@ public class MemoDialogNew extends Fragment{
 	public void initActivity(){
 		mTvTitle = (EditText) mView.findViewById(R.id.txMemoTitle);
 		mSpCategory = (Spinner) mView.findViewById(R.id.spCategory);
-		mEtMemoEditor = (EditText) mView.findViewById(R.id.etMemoEditor);
+		switchView = mEtMemoEditor = (EditText) mView.findViewById(R.id.etMemoEditor);
 		mTvMemoEditor = (TextView) mView.findViewById(R.id.tvMemoEditor);
 		mRatingBar = (RatingBar) mView.findViewById(R.id.ratingBar);
 		mBtnSave = (Button) mView.findViewById(R.id.btnMemoSave);
 		mBtnEdit = (Button) mView.findViewById(R.id.btnEdit);
 		mBtnAddAlarm = (Button) mView.findViewById(R.id.btnAddAlarm);
+		mBtnTodo = ButterKnife.findById(mView, R.id.btnTodo);
+		mBtnAttach = ButterKnife.findById(mView, R.id.attachmentIcon);
+
 		if(mAlarmVO != null)
 			mBtnAddAlarm.setText(getResources().getText(R.string.btn_memo_alarm_edit));
 
@@ -166,6 +196,7 @@ public class MemoDialogNew extends Fragment{
 		bindEvent();
 		init();
 
+
 		CommonUtils.logCustomEvent("MemoDialogNew", "1");
 	}
 
@@ -173,8 +204,9 @@ public class MemoDialogNew extends Fragment{
 		if(mModifyMode == 1 || mShareMode){
 			mTvTitle.setText(mMemoVO.getTitle());
 			mEtMemoEditor.setText(mMemoVO.getContents());
-			mTvMemoEditor.setText(mMemoVO.getContents());
+			//mTvMemoEditor.setText(mMemoVO.getContents());
 			isMemoEditable = false;
+			isChecklist = mMemoVO.getType().equals("TODO");
 			mRatingBar.setRating((float) mMemoVO.getRank());
 			mSelectedCateId = mMemoVO.getCategoryId();
 		}
@@ -187,11 +219,84 @@ public class MemoDialogNew extends Fragment{
 				}
 			}
 		}
-
-		bindEventSaveAndEdit();
+		if (isChecklist) {
+			isChecklist = false;
+			toggleCheckList();
+		}
+		initViewContent();
+		//bindEventSaveAndEdit();
 
 	}
+	private void toggleCheckList() {
+		View newView;
 
+		/*
+		 * Here is where the job is done. By simply calling an instance of the
+		 * ChecklistManager we can call its methods.
+		 */
+		try {
+			// Getting instance
+			mChecklistManager = mChecklistManager == null ? new ChecklistManager(mCtx) : mChecklistManager;
+
+			/*
+			 * These method are useful when converting from EditText to
+			 * ChecklistView (but can be set anytime, they'll be used at
+			 * appropriate moment)
+			 */
+
+			// Setting new entries hint text (if not set no hint
+			// will be used)
+			mChecklistManager.newEntryHint(mPrefs.getString("settings_hint", "Input Text"));
+			// Let checked items are moved on bottom
+
+			mChecklistManager.moveCheckedOnBottom(Integer.valueOf(mPrefs.getString("settings_checked_items_behavior",
+					String.valueOf(Settings.CHECKED_HOLD))));
+
+			// Is also possible to set a general changes listener
+			//mChecklistManager.setCheckListChangedListener(this);
+
+
+			/*
+			 * These method are useful when converting from ChecklistView to
+			 * EditText (but can be set anytime, they'll be used at appropriate
+			 * moment)
+			 */
+
+			// Decide if keep or remove checked items when converting
+			// back to simple text from checklist
+			mChecklistManager.linesSeparator(mPrefs.getString("settings_lines_separator", Constants.LINES_SEPARATOR));
+
+			// Decide if keep or remove checked items when converting
+			// back to simple text from checklist
+			mChecklistManager.keepChecked(mPrefs.getBoolean("settings_keep_checked", Constants.KEEP_CHECKED));
+
+			// I want to make checks symbols visible when converting
+			// back to simple text from checklist
+			mChecklistManager.showCheckMarks(mPrefs.getBoolean("settings_show_checks", true));
+
+			// Enable or disable drag & drop
+			mChecklistManager.dragEnabled(true);
+			mChecklistManager.dragVibrationEnabled(true);
+
+			// Converting actual EditText into a View that can
+			// replace the source or viceversa
+			newView = mChecklistManager.convert(switchView);
+
+			// Replacing view in the layout
+			mChecklistManager.replaceViews(switchView, newView);
+
+			// Updating the instance of the pointed view for
+			// eventual reverse conversion
+			switchView = newView;
+
+			isChecklist = !isChecklist;
+
+			KeyboardUtils.hideKeyboard(mView);
+		} catch (ViewNotSupportedException e) {
+			// This exception is fired if the source view class is not supported
+			e.printStackTrace();
+		}
+	}
 	private void makeCategoryList(){
 		ArrayList<String> arrayList = new ArrayList<String>();
 		mCateDataManager = new CategoryDataManager(mCtx);
@@ -320,6 +425,33 @@ public class MemoDialogNew extends Fragment{
 				}
 			});
 		}
+
+		mBtnTodo.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				toggleCheckList();
+			}
+		});
+		mBtnAttach.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+				intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+				intent.addCategory(Intent.CATEGORY_OPENABLE);
+				intent.setType("file/*");
+				startActivityForResult(intent,Const.MEMO.MEMO_INTERFACE_CODE.PICK_FILE_RESULT_CODE);
+			}
+		});
+	}
+
+	private void initViewContent() {
+
+		//mEtMemoEditor.setText(noteTmp.getContent());
+		mEtMemoEditor.gatherLinksForText();
+		mEtMemoEditor.setOnTextLinkClickListener(textLinkClickListener);
+		// Avoids focused line goes under the keyboard
+		//mEtMemoEditor.addTextChangedListener(this);
+
 	}
 
 	public void deleteItemAlertDialog(){
@@ -425,8 +557,20 @@ public class MemoDialogNew extends Fragment{
 		String title =  mTvTitle.getText().toString();
 		mMemoVO.setCategoryId(mSelectedCateId);
 		mMemoVO.setTitle(title);
-		mMemoVO.setContents(mEtMemoEditor.getText().toString());
+		String text = "";
+		if(isChecklist) {
+			try {
+				text = ((EditText) mChecklistManager.convert(switchView)).getText().toString();
+			} catch (ViewNotSupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		else{
+			text = mEtMemoEditor.getText().toString();
+		}
+		mMemoVO.setContents(text);
 		mMemoVO.setRank((int) mRatingBar.getRating());
+		mMemoVO.setType(isChecklist ? "TODO" : "MEMO");
 	}
 
 	private boolean validate(){
@@ -444,6 +588,7 @@ public class MemoDialogNew extends Fragment{
 	}
 
 	private void returnData(){
+		KeyboardUtils.hideKeyboard(mView);
 		dataBind();
 		if(validate() == false){
 			return ;
@@ -478,9 +623,96 @@ public class MemoDialogNew extends Fragment{
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		isModifyAlarm = true;
-		mAlarmVO = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
-		mBtnAddAlarm.setText(getResources().getText(R.string.btn_memo_alarm_edit));
+		switch (requestCode){
+			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE :
+				isModifyAlarm = true;
+				mAlarmVO = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
+				mBtnAddAlarm.setText(getResources().getText(R.string.btn_memo_alarm_edit));
+				break;
+			case Const.MEMO.MEMO_INTERFACE_CODE.PICK_FILE_RESULT_CODE :
+				if(resultCode == RESULT_OK){
+					String FilePath = data.getData().getPath();
+					//textFile.setText(FilePath);
+				}
+				break;
+		}
+
 		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	TextLinkClickListener textLinkClickListener = new TextLinkClickListener() {
+		@Override
+		public void onTextLinkClick(View view, final String clickedString, final String url) {
+			AlertDialog.Builder alert_confirm = new AlertDialog.Builder(mCtx);
+			alert_confirm.setMessage(clickedString).setCancelable(false).setPositiveButton("open",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							boolean error = false;
+							//Intent intent = null;
+							try {
+								//intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+								//intent.addCategory(Intent.CATEGORY_BROWSABLE);
+								//intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+								openWebView(url);
+
+
+							} catch (NullPointerException e) {
+								error = true;
+							}
+
+							/*if (intent == null
+									|| error
+									|| !IntentChecker
+									.isAvailable(
+											mainActivity,
+											intent,
+											new String[]{PackageManager.FEATURE_CAMERA})) {
+								mainActivity.showMessage(R.string.no_application_can_perform_this_action,
+										ONStyle.ALERT);*/
+
+							//} else {
+								//startActivity(intent);
+							//}
+
+							dialog.dismiss();
+						}
+					}).setNegativeButton("copy",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// 'No'
+							android.content.ClipboardManager clipboard = (android.content.ClipboardManager) mCtx.getSystemService(Activity.CLIPBOARD_SERVICE);
+							android.content.ClipData clip = android.content.ClipData.newPlainText("text label", clickedString);
+							clipboard.setPrimaryClip(clip);
+							dialog.dismiss();
+						}
+					});
+			AlertDialog alert = alert_confirm.create();
+			alert.show();
+
+			View clickedView = isChecklist ? switchView : mEtMemoEditor;
+			clickedView.clearFocus();
+			KeyboardUtils.hideKeyboard(clickedView);
+			new Handler().post(new Runnable() {
+				@Override
+				public void run() {
+					View clickedView = isChecklist ? switchView : mEtMemoEditor;
+					KeyboardUtils.hideKeyboard(clickedView);
+				}
+			});
+
+		}
+	};
+	public void openWebView(String url) {
+		//WebViewDialog dialog = new WebViewDialog();
+		Intent intent = new Intent(mCtx, WebViewActivity.class);
+
+		Bundle bundle = new Bundle();
+
+		bundle.putSerializable("url", url);
+		intent.putExtras(bundle);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
 	}
 }

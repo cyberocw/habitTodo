@@ -17,7 +17,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static DbHelper sInstance;
 
 	private static final String DB_NME = "habit_todo";
-	private static final int DB_VERSION = 18;
+	private static final int DB_VERSION = 19;
 
 	private static final String ARRAY_DIV = "_ho8c7wt_";
 
@@ -284,7 +284,11 @@ public class DbHelper extends SQLiteOpenHelper {
 			db.execSQL(sql);
 			String sql2 = "UPDATE " + TABLE_TIMER + " SET " + KEY_ALARM_TYPE + " = 1 ; ";
 			db.execSQL(sql2);
-
+		}
+		if(oldVersion <=18) {
+			//sound - alarm option , alarm type = 끌때
+			String sql = "UPDATE " + TABLE_MEMO + " SET " + KEY_TYPE + " = 'MEMO' WHERE " + KEY_TYPE + " IS NULL";
+			db.execSQL(sql);
 		}
 	}
 

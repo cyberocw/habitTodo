@@ -72,6 +72,7 @@ public class MemoListAdapter extends BaseAdapter {
 		ImageView ivAlarm = (ImageView) convertView.findViewById(R.id.ivAlarm);
 		ImageView ivAttachFile = (ImageView) convertView.findViewById(R.id.ivAttachFile);
 		ImageView ivInfo = (ImageView) convertView.findViewById(R.id.ivInfo);
+		TextView tvTodo = (TextView) convertView.findViewById(R.id.tvTodo);
 		r.setRating((float) vo.getRank());
 
 		LinearLayout listViewTextWrap = (LinearLayout) convertView.findViewById(R.id.listViewTextWrap);
@@ -92,6 +93,13 @@ public class MemoListAdapter extends BaseAdapter {
 
 		if(vo.getAlarmId() > -1){
 			ivAlarm.setVisibility(View.VISIBLE);
+		}
+
+		if(vo.getType() != null && vo.getType().equals("TODO")){
+			tvTodo.setVisibility(View.VISIBLE);
+		}
+		else{
+			tvTodo.setVisibility(View.GONE);
 		}
 
 		ImageButton ibtn = (ImageButton) convertView.findViewById(R.id.memoOptionButton);

@@ -76,7 +76,10 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		Fabric.with(this, new Crashlytics());
+		Crashlytics cr = new Crashlytics();
+		cr.setDebugMode(true);
+
+		Fabric.with(this, cr);
 
 		mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 

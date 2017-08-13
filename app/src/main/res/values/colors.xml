@@ -53,6 +53,7 @@
     <color name="background_postphone_date">#808eef6a</color>
     <color name="background_repeat_day">#80decfae</color>
     <color name="sub_header">#61c0bf</color>
+    <color name="sub_header_pressed">#258f8e</color>
 
     <color name="black_overlay">#66000000</color>
 

@@ -2,6 +2,7 @@ package com.cyberocw.habittodosecretary.dashboard;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -276,5 +277,12 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     }
     private void refreshDate(Calendar cal){
         mTvTime.setText(cal.get(Calendar.DAY_OF_MONTH) + "일 " + CommonUtils.numberDigit(2, cal.get(Calendar.HOUR_OF_DAY)) + ":" + CommonUtils.numberDigit(2, cal.get(Calendar.MINUTE)));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mKeywordAPI != null && mKeywordAPI.getStatus() == AsyncTask.Status.RUNNING)
+            mKeywordAPI.cancel(true);
     }
 }

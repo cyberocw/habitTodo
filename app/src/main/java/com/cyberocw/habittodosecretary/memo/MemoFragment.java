@@ -39,6 +39,7 @@ import com.cyberocw.habittodosecretary.memo.ui.MemoDialogNew;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.util.Locale;
 
@@ -210,14 +211,21 @@ public class MemoFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 	private void bindEvent(){
-		FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fabAddAlarm);
+		FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fabAddMemo);
+		FloatingActionButton fabTodo = ButterKnife.findById(mView, R.id.fabAddTodo);
+		final FloatingActionsMenu menuMultipleActions = (FloatingActionsMenu) ButterKnife.findById(mView, R.id.multiple_actions);
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				showNewMemoDialog();
 			}
 		});
-
+		fabTodo.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showNewMemoDialog(true);
+			}
+		});
 		mEtSearchKeyword.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -323,8 +331,13 @@ public class MemoFragment extends Fragment {
 	public void showNewMemoDialog(){
 		showNewMemoDialog(-1);
 	}
-
+	public void showNewMemoDialog(boolean b){
+		showNewMemoDialog(-1, b);
+	}
 	public void showNewMemoDialog(long id) {
+		this.showNewMemoDialog(id, false);
+	}
+	public void showNewMemoDialog(long id, boolean isTodo) {
 
 		MemoDialogNew dialogNew = new MemoDialogNew();
 		Bundle bundle = new Bundle();
@@ -347,6 +360,10 @@ public class MemoFragment extends Fragment {
 		else if(mIsShareMode){
 			bundle.putSerializable(Const.PARAM.MEMO_VO, (MemoVO) getArguments().get(Const.PARAM.MEMO_VO));
 			bundle.putSerializable(Const.MEMO.MEMO_INTERFACE_CODE.SHARE_MEMO_MODE, mIsShareMode);
+		}
+
+		if(isTodo){
+			bundle.putBoolean(Const.PARAM.IS_TODO, true);
 		}
 
 		bundle.putSerializable(Const.CATEGORY.CATEGORY_ID, mCateId);
@@ -444,7 +461,7 @@ public class MemoFragment extends Fragment {
 					mAlarmDataManager.deleteItemById(bundle.getLong(Const.MEMO.ORIGINAL_ALARM_ID_KEY));
 					mAlarmDataManager.resetMinAlarmCall();
 				}
-				Toast.makeText(mCtx, getString(R.string.success), Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), getString(R.string.success), Toast.LENGTH_SHORT).show();
 				break;
 		}
 

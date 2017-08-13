@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 public class MemoVO implements Serializable {
 	private long id;
+	private String type = "";
 	private String title;
 	private String contents;
 	private long categoryId;
@@ -104,6 +105,14 @@ public class MemoVO implements Serializable {
 
 	public void setUseYn(int useYn) {
 		this.useYn = useYn;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Override

@@ -270,7 +270,7 @@ public class KeywordFragment extends Fragment {
 
         bundle.putSerializable("url", url);
         intent.putExtras(bundle);
-
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
