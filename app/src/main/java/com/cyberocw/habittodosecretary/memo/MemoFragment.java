@@ -369,7 +369,7 @@ public class MemoFragment extends Fragment {
 		bundle.putSerializable(Const.CATEGORY.CATEGORY_ID, mCateId);
 
 		dialogNew.setArguments(bundle);
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 		FragmentTransaction ft = fragmentManager.beginTransaction();
 		ft.add(R.id.warpContainer, dialogNew);
 		ft.addToBackStack(null).commit();

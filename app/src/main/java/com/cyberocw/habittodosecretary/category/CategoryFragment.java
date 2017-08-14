@@ -54,6 +54,8 @@ public class CategoryFragment extends Fragment {
 	private AlertDialog mCatePopupBilder;
 	private EditText mEtCateTitle;
 
+
+
 	public CategoryFragment() {
 		// Required empty public constructor
 	}
@@ -276,17 +278,6 @@ public class CategoryFragment extends Fragment {
 	}
 
 	@Override
-	public void onAttach(Context activity) {
-		super.onAttach(activity);
-		try {
-			mListener = (OnFragmentInteractionListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnFragmentInteractionListener");
-		}
-	}
-
-	@Override
 	public void onDetach() {
 		super.onDetach();
 		mListener = null;
@@ -311,7 +302,7 @@ public class CategoryFragment extends Fragment {
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 		fragmentManager.beginTransaction()
 				.addToBackStack(null)
-				.add(R.id.main_container, f).commit();
+				.add(R.id.main_container, f, "MemoFragment").commit();
 
 	}
 
@@ -328,7 +319,17 @@ public class CategoryFragment extends Fragment {
 				break;
 		}
 	}
+	@Override
+	public void onAttach(Context context) {
 
+		super.onAttach(context);
+
+		MemoFragment fragment = (MemoFragment) getFragmentManager().findFragmentByTag("MemoFragment");
+
+		if (fragment != null) {
+			fragment.setTargetFragment(this, 0);
+		}
+	}
 	/**
 	 * This interface must be implemented by activities that contain this
 	 * fragment to allow an interaction in this fragment to be communicated

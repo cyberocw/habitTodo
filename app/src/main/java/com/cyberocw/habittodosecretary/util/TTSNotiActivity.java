@@ -60,10 +60,6 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
 
             ///int result = mTTS.setLanguage(Locale.getDefault());
             int result = mTTS.isLanguageAvailable(Locale.getDefault());
-            if (mTTS != null) {
-                mTTS.stop();
-                mTTS.shutdown();
-            }
             switch (result)
             {
                 case TextToSpeech.LANG_AVAILABLE:
@@ -93,9 +89,26 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
         }
         if (mTTS != null) {
             mTTS.stop();
-            mTTS.shutdown();
+            try {
+                mTTS.shutdown();
+            }catch (Exception e){
+                Crashlytics.log(Log.ERROR, this.toString(), e.getMessage() + " " + e.getCause());
+                e.printStackTrace();
+            }
+            mTTS = null;
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mTTS != null) {
+            mTTS.stop();
+            mTTS.shutdown();
+            mTTS = null;
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

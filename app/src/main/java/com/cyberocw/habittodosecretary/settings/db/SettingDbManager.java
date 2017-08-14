@@ -79,7 +79,8 @@ public class SettingDbManager extends DbHelper {
         ArrayList<HolidayVO> list;
         list = bindVO(c);
 
-        c.close();
+        if(c != null)
+            c.close();
         this.close();
 
         return list;
@@ -134,8 +135,7 @@ public class SettingDbManager extends DbHelper {
 
     private ArrayList<HolidayVO> bindVO(Cursor c){
         ArrayList<HolidayVO> list = new ArrayList<HolidayVO>();
-
-        if(c == null || c.getCount() == 0)
+        if(c == null || c.isClosed() ||c.getCount() == 0)
             return list;
 
         if (c.moveToFirst()) {
