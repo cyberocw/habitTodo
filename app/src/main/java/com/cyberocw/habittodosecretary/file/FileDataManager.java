@@ -30,6 +30,9 @@ public class FileDataManager {
             this.dataList = dataList;
         }
     }
+    public void add(FileVO vo){
+        this.dataList.add(vo);
+    }
 
     public int getCount(){
         return this.dataList.size();

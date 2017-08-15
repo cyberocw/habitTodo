@@ -165,8 +165,10 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 			getFragmentManager().popBackStackImmediate();
 		}
 
-		/*mFileDataManager = new FileDataManager(mCtx);
-		mFileListAdapter = new FileListAdapter();*/
+		mFileDataManager = new FileDataManager(mCtx);
+		mFileListAdapter = new FileListAdapter(mCtx, mFileDataManager, 0);
+		ListView lv = ButterKnife.findById(mView, R.id.lvFiles);
+		lv.setAdapter(mFileListAdapter);
 
 		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, mCtx.MODE_PRIVATE);
 
@@ -728,6 +730,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 	@Override
 	public void onAttachingFileFinished(FileVO mAttachment) {
 		Crashlytics.log(Log.DEBUG, this.toString(), "mAttachment="+mAttachment.toString());
-
+		mFileDataManager.add(mAttachment);
+		mFileListAdapter.notifyDataSetChanged();
 	}
 }

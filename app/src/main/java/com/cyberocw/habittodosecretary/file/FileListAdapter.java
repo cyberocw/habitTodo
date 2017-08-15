@@ -2,6 +2,7 @@ package com.cyberocw.habittodosecretary.file;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.common.vo.FileVO;
@@ -31,7 +33,7 @@ public class FileListAdapter extends BaseAdapter{
     private LayoutInflater mInflater;
     private FileDataManager mManager;
 
-    FileListAdapter(Context ctx, FileDataManager dataManager, int fileType){
+    public FileListAdapter(Context ctx, FileDataManager dataManager, int fileType){
         mCtx = ctx;
         this.mInflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mManager = dataManager;
@@ -39,6 +41,7 @@ public class FileListAdapter extends BaseAdapter{
     }
     @Override
     public int getCount() {
+        Crashlytics.log(Log.DEBUG, this.toString(), "mManager.getCount="+mManager.getCount());
         return mManager.getCount();
     }
 
@@ -55,7 +58,7 @@ public class FileListAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         FileVO vo = mManager.getItem(position);
-
+        Crashlytics.log(Log.DEBUG, this.toString(), "vo="+vo.toString());
         if(convertView == null){
             convertView = mInflater.inflate(R.layout.view_file, parent, false);
         }
