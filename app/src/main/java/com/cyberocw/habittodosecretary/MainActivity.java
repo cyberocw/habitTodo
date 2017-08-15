@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				initializeSetting.execute();
 			}
 			if(!prefsSavedVersion.equals("0")){
-				//showUpdateLog();
+				showUpdateLog();
 			}
 			File rootDir = new File(getApplicationContext().getFilesDir(), "voice");
 			if(!rootDir.isDirectory())
@@ -327,14 +327,11 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		});
 		String msg;
 		if(CommonUtils.isLocaleKo(getResources().getConfiguration())){
-			msg = "1. 사양이 부족하거나 낮은 버젼의 안드로이드 혹은 최신 안드로이드 버젼의 수면 모드에서 발생하던 알람이 딜레이 되던 현상 수정 - 알람 정확도가 향상되었습니다.\n\n" +
-					"2. 어플 최초 설치 후 간혹 발생하던 오류 수정\n\n" +
-					"3. 타이머 서비스 정확도 향상";
+			msg = "1. 메모 메뉴에 할일 입력 기능이 추가되었습니다. \n\n" + "2. TTS 재생 기능 버그 수정";
 		}
 		else {
-			msg = "1. Fixed the problem that the alarm was delayed in sleep mode of low specification or low version of Android or latest Android version - Alarm accuracy was improved.\n\n" +
-					"2. Fixed a rare error that occurred after installing the application for the first time\n\n" +
-					"3. Improved Timer Service Accuracy";
+			msg = "1. Added to-do list function for memo menu.\n\n" +
+					"2. TTS playback function bug fix" ;
 		}
 		alert.setMessage(msg);
 		alert.show();

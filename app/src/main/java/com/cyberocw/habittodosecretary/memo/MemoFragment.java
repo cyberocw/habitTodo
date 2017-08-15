@@ -81,6 +81,7 @@ public class MemoFragment extends Fragment {
 	private Context mCtx;
 	SharedPreferences mPrefs;
 	private long mCateId = -1, mMemoId = -1;
+	FloatingActionsMenu mFab;
 
 	private OnFragmentInteractionListener mListener;
 
@@ -155,6 +156,7 @@ public class MemoFragment extends Fragment {
 
 		mEtSearchKeyword = ButterKnife.findById(mView, R.id.etSearchKeyword);
 		btnSortMemo = ButterKnife.findById(mView, R.id.btnSortMemo);
+		mFab = ButterKnife.findById(mView, R.id.multiple_actions);
 		return mView;
 	}
 
@@ -211,10 +213,10 @@ public class MemoFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 	private void bindEvent(){
-		FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fabAddMemo);
+		FloatingActionButton fabMemo = (FloatingActionButton) mView.findViewById(R.id.fabAddMemo);
 		FloatingActionButton fabTodo = ButterKnife.findById(mView, R.id.fabAddTodo);
-		final FloatingActionsMenu menuMultipleActions = (FloatingActionsMenu) ButterKnife.findById(mView, R.id.multiple_actions);
-		fab.setOnClickListener(new View.OnClickListener() {
+
+		fabMemo.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				showNewMemoDialog();
@@ -338,6 +340,8 @@ public class MemoFragment extends Fragment {
 		this.showNewMemoDialog(id, false);
 	}
 	public void showNewMemoDialog(long id, boolean isTodo) {
+		if(mFab != null)
+			mFab.collapse();
 
 		MemoDialogNew dialogNew = new MemoDialogNew();
 		Bundle bundle = new Bundle();

@@ -80,7 +80,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 		if (status == TextToSpeech.SUCCESS && mIsNUll == false) {
 			int result = mTTS.setLanguage(Locale.getDefault());
 			if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
-				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "tts start");
+				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onitit tts start");
 				mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
 				int focusResult = mAudioManager.requestAudioFocus(afChangeListener,
@@ -89,7 +89,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 						// Request permanent focus.
 						AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
-				Crashlytics.log(Log.DEBUG, this.toString(), "mAlarmId="+mAlarmId);
+				Crashlytics.log(Log.DEBUG, this.toString(), "mAlarmId="+mAlarmId +  " focusResult="+focusResult);
 
 				if(mAlarmId > -1) {
 
@@ -158,6 +158,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 	private void speakText(){
 		Log.d(this.toString(), "speakText start");
 		if(mArrText.size() == 0) {
+			Log.d(this.toString(), "speakText size = 0 stopself start");
 			stopSelf();
 			return;
 		}
@@ -194,7 +195,10 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 						//mTTS.stop();
 					} else if (focusChange == AudioManager.AUDIOFOCUS_GAIN || focusChange == AudioManager.AUDIOFOCUS_GAIN_TRANSIENT) {
 						//// Your app has been granted audio focus again
-						speakText();
+						if(!mTTS.isSpeaking()){
+							speakText();
+						}
+
 						// Raise volume to normal, restart playback if necessary
 					}
 				}

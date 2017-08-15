@@ -93,7 +93,7 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
                 mTTS.shutdown();
             }catch (Exception e){
                 Crashlytics.log(Log.ERROR, this.toString(), e.getMessage() + " " + e.getCause());
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             mTTS = null;
         }

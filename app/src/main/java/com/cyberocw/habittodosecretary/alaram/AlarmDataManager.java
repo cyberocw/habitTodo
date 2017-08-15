@@ -680,6 +680,16 @@ public class AlarmDataManager {
 			am.set(type, time, it);
 		}
 	}
+
+	public boolean hasContext(Context ctx){
+		if(mCtx == null){
+			mCtx = ctx;
+			return false;
+		}
+		else
+			return true;
+	}
+
 	public void close(){
 		mDb.closeDB();
 	}

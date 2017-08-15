@@ -1,13 +1,13 @@
 package com.cyberocw.habittodosecretary.memo.ui;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.inputmethodservice.Keyboard;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -22,15 +22,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import com.cyberocw.habittodosecretary.WebViewActivity;
+import com.cyberocw.habittodosecretary.common.vo.FileVO;
+import com.cyberocw.habittodosecretary.file.AttachmentTask;
+import com.cyberocw.habittodosecretary.file.FileDataManager;
+import com.cyberocw.habittodosecretary.file.FileHelper;
+import com.cyberocw.habittodosecretary.file.FileListAdapter;
 import com.cyberocw.habittodosecretary.util.KeyboardUtils;
+import com.cyberocw.habittodosecretary.file.OnAttachingFileListener;
 import com.neopixl.pixlui.components.edittext.EditText;
-import android.widget.ImageButton;
+
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -52,6 +57,7 @@ import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import it.feio.android.checklistview.Settings;
@@ -60,12 +66,10 @@ import it.feio.android.checklistview.interfaces.Constants;
 import it.feio.android.checklistview.models.ChecklistManager;
 import it.feio.android.pixlui.links.TextLinkClickListener;
 
-import static android.app.Activity.RESULT_OK;
-
 /**
  * Created by cyberocw on 2015-12-14.
  */
-public class MemoDialogNew extends Fragment{
+public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosecretary.file.OnAttachingFileListener{
 	View mView;
 	View switchView;
 	Context mCtx;
@@ -82,6 +86,8 @@ public class MemoDialogNew extends Fragment{
 	CategoryListAdapter mCateAdapter;
 	ArrayList<CategoryVO> mArrayCategoryVOList = null;
 	ImageView mBtnAttach;
+	FileDataManager mFileDataManager;
+	FileListAdapter mFileListAdapter;
 	boolean mShareMode = false;
 	SharedPreferences mPrefs;
 	long mSelectedCateId = -1;
@@ -159,6 +165,9 @@ public class MemoDialogNew extends Fragment{
 			getFragmentManager().popBackStackImmediate();
 		}
 
+		/*mFileDataManager = new FileDataManager(mCtx);
+		mFileListAdapter = new FileListAdapter();*/
+
 		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, mCtx.MODE_PRIVATE);
 
 		initActivity();
@@ -225,6 +234,7 @@ public class MemoDialogNew extends Fragment{
 		}
 		initViewContent();
 		//bindEventSaveAndEdit();
+		//CommonUtils.setupUI(mView, getActivity());
 
 	}
 	private void toggleCheckList() {
@@ -250,7 +260,7 @@ public class MemoDialogNew extends Fragment{
 			// Let checked items are moved on bottom
 
 			mChecklistManager.moveCheckedOnBottom(Integer.valueOf(mPrefs.getString("settings_checked_items_behavior",
-					String.valueOf(Settings.CHECKED_HOLD))));
+					String.valueOf(Settings.CHECKED_ON_BOTTOM))));
 
 			// Is also possible to set a general changes listener
 			//mChecklistManager.setCheckListChangedListener(this);
@@ -275,8 +285,8 @@ public class MemoDialogNew extends Fragment{
 			mChecklistManager.showCheckMarks(mPrefs.getBoolean("settings_show_checks", true));
 
 			// Enable or disable drag & drop
-			mChecklistManager.dragEnabled(true);
-			mChecklistManager.dragVibrationEnabled(true);
+			mChecklistManager.dragEnabled(false);
+			mChecklistManager.dragVibrationEnabled(false);
 
 			// Converting actual EditText into a View that can
 			// replace the source or viceversa
@@ -438,7 +448,7 @@ public class MemoDialogNew extends Fragment{
 				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 				intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 				intent.addCategory(Intent.CATEGORY_OPENABLE);
-				intent.setType("file/*");
+				intent.setType("*/*");
 				startActivityForResult(intent,Const.MEMO.MEMO_INTERFACE_CODE.PICK_FILE_RESULT_CODE);
 			}
 		});
@@ -622,22 +632,39 @@ public class MemoDialogNew extends Fragment{
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		switch (requestCode){
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE :
 				isModifyAlarm = true;
-				mAlarmVO = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
+				mAlarmVO = (AlarmVO) intent.getExtras().getSerializable(Const.PARAM.ALARM_VO);
 				mBtnAddAlarm.setText(getResources().getText(R.string.btn_memo_alarm_edit));
 				break;
 			case Const.MEMO.MEMO_INTERFACE_CODE.PICK_FILE_RESULT_CODE :
-				if(resultCode == RESULT_OK){
-					String FilePath = data.getData().getPath();
+				if(resultCode == Activity.RESULT_OK){
+					onActivityResultManageReceivedFiles(intent);
+
 					//textFile.setText(FilePath);
 				}
 				break;
 		}
 
-		super.onActivityResult(requestCode, resultCode, data);
+		super.onActivityResult(requestCode, resultCode, intent);
+	}
+
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	private void onActivityResultManageReceivedFiles(Intent intent) {
+		List<Uri> uris = new ArrayList<>();
+		if (Build.VERSION.SDK_INT > 16 && intent.getClipData() != null) {
+			for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
+				uris.add(intent.getClipData().getItemAt(i).getUri());
+			}
+		} else {
+			uris.add(intent.getData());
+		}
+		for (Uri uri : uris) {
+			String name = FileHelper.getNameFromUri(getActivity(), uri);
+			new AttachmentTask(mCtx, this, uri, name, this).execute();
+		}
 	}
 
 	TextLinkClickListener textLinkClickListener = new TextLinkClickListener() {
@@ -648,33 +675,10 @@ public class MemoDialogNew extends Fragment{
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							boolean error = false;
-							//Intent intent = null;
 							try {
-								//intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-								//intent.addCategory(Intent.CATEGORY_BROWSABLE);
-								//intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 								openWebView(url);
-
-
 							} catch (NullPointerException e) {
-								error = true;
 							}
-
-							/*if (intent == null
-									|| error
-									|| !IntentChecker
-									.isAvailable(
-											mainActivity,
-											intent,
-											new String[]{PackageManager.FEATURE_CAMERA})) {
-								mainActivity.showMessage(R.string.no_application_can_perform_this_action,
-										ONStyle.ALERT);*/
-
-							//} else {
-								//startActivity(intent);
-							//}
-
 							dialog.dismiss();
 						}
 					}).setNegativeButton("copy",
@@ -714,5 +718,16 @@ public class MemoDialogNew extends Fragment{
 		intent.putExtras(bundle);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(intent);
+	}
+
+	@Override
+	public void onAttachingFileErrorOccurred(FileVO mAttachment) {
+
+	}
+
+	@Override
+	public void onAttachingFileFinished(FileVO mAttachment) {
+		Crashlytics.log(Log.DEBUG, this.toString(), "mAttachment="+mAttachment.toString());
+
 	}
 }

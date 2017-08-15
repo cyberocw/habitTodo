@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -128,6 +129,7 @@
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_action_attachment"
+                    android:visibility="gone"
                     android:layout_marginRight="21dp"
                     android:layout_marginEnd="21dp"
                     android:layout_alignParentTop="true"
@@ -173,7 +175,27 @@
                     android:layout_toRightOf="@+id/btnEdit"
                     android:layout_toEndOf="@+id/btnEdit" />
             </RelativeLayout>
-
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                >
+                <ListView
+                    android:id="@+id/lvFiles"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/view_file"
+                    >
+                </ListView>
+                <ListView
+                    android:id="@+id/lvImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/view_image"
+                    >
+                </ListView>
+            </LinearLayout>
             <com.neopixl.pixlui.components.edittext.EditText
                 android:id="@+id/etMemoEditor"
                 android:layout_width="match_parent"

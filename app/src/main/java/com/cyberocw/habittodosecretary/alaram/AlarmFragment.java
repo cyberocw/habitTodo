@@ -841,6 +841,9 @@ public class AlarmFragment extends Fragment{
 		super.onActivityResult(requestCode, resultCode, data);
 		AlarmVO vo;
 		TimerVO tvo;
+
+		mAlarmDataManager.hasContext(getActivity().getApplicationContext());
+
 		switch(resultCode) {
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE :
 				try {
@@ -924,8 +927,6 @@ public class AlarmFragment extends Fragment{
 				//vo = (AlarmVO) data.getExtras().getSerializable(Const.PARAM.ALARM_VO);
 				getActivity().getSupportFragmentManager().popBackStackImmediate();
 				showMemo(data.getExtras().getLong(Const.PARAM.ALARM_ID));
-
-
 		}
 
 	}

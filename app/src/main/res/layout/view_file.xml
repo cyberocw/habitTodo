@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border_set"
+    >
+    <ImageView
+        android:id="@+id/ivImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxHeight="250dp"
+        android:layout_gravity="center"
+        android:src="@drawable/eng_intro3"
+        android:visibility="visible"
+        android:adjustViewBounds= "true"
+        android:layout_centerHorizontal="true" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lvImage"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/attachmentIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_action_attachment"
+            android:visibility="visible"
+            android:layout_marginRight="21dp"
+            android:layout_marginEnd="21dp"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/btnAddAlarm"
+            android:layout_toStartOf="@+id/btnAddAlarm" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvTitle"
+            android:layout_marginRight="65dp"
+            android:layout_marginLeft="65dp"
+            android:textSize="11sp"
+            android:text="abcdfkjasdfkj.zip"
+            android:layout_gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+             />
+        <ImageButton
+            android:id="@+id/btnClose"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="left"
+            android:layout_marginRight="13dp"
+            android:background="@drawable/ic_close_black_24dp"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="13dp" />
+
+    </RelativeLayout>
+</RelativeLayout>

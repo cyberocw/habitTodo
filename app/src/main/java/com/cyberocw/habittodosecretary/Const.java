@@ -19,7 +19,7 @@ public class Const {
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
 	public static final int ONGOING_ALARM_NOTI_ID = 999999998;
 
-    public static final boolean IS_DEBUG = true;
+    public static final boolean IS_DEBUG = false;
 
 	public class PARAM{
 		public static final String MODE = "mode";
@@ -164,6 +164,10 @@ public class Const {
 			public static final String VIEW_MEMO_ETC_KEY = "viewMemoEtc";
 			public static final String SHARE_MEMO_MODE = "MEMO_MODE";
 		}
+	}
+	public class FILE{
+		public static final int TYPE_FILE = 0;
+		public static final int TYPE_IMAGE = 1;
 	}
 
 	public class ETC_TYPE{

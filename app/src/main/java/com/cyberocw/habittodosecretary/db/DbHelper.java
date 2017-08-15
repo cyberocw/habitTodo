@@ -30,6 +30,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String TABLE_CATEGORY = "category";
 	public static final String TABLE_ALARAM_RELATION = "alarm_relation";
 	public static final String TABLE_HOLIDAY = "holiday";
+	public static final String TABLE_FILE_INFO = "file_info";
 
 	public static final String KEY_ID = "_id";
 	public static final String KEY_REPEAT_ID = "_rid";
@@ -87,6 +88,13 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String KEY_MONTH = "month";
 	public static final String KEY_DAY = "day";
 	public static final String KEY_FULL_DATE = "full_date";
+
+	//file
+	public static final String KEY_URI = "uri";
+	public static final String KEY_SIZE = "size";
+	public static final String KEY_LENGTH = "length";
+	public static final String KEY_MIME_TYPE = "MIME_TYPE";
+
 
 	public static synchronized DbHelper getInstance(Context context) {
 
@@ -295,65 +303,81 @@ public class DbHelper extends SQLiteOpenHelper {
 	private String getCreateTableQuery(String tableName){
 		String sql = "";
 
-		if(tableName.equals(TABLE_CATEGORY)) {
-			sql = "create table if not exists " + TABLE_CATEGORY + " (" +
-					KEY_ID + " integer primary key autoincrement, " +
-					KEY_TITLE + " text, " +
-					KEY_TYPE + " text, " +
-					KEY_SORT + " integer, " +
-					KEY_USE_YN + " integer " +
-					");CREATE INDEX if not exists " + TABLE_CATEGORY + " category_sort_order ON " + TABLE_CATEGORY + "(" + KEY_SORT + ");";
-			sql += "CREATE INDEX if not exists " + TABLE_CATEGORY + " category_title ON " + TABLE_CATEGORY + "(" + KEY_TITLE + ");";
+		switch (tableName) {
+			case TABLE_CATEGORY:
+				sql = "create table if not exists " + TABLE_CATEGORY + " (" +
+						KEY_ID + " integer primary key autoincrement, " +
+						KEY_TITLE + " text, " +
+						KEY_TYPE + " text, " +
+						KEY_SORT + " integer, " +
+						KEY_USE_YN + " integer " +
+						");CREATE INDEX if not exists " + TABLE_CATEGORY + " category_sort_order ON " + TABLE_CATEGORY + "(" + KEY_SORT + ");";
+				sql += "CREATE INDEX if not exists " + TABLE_CATEGORY + " category_title ON " + TABLE_CATEGORY + "(" + KEY_TITLE + ");";
+				break;
+			case TABLE_MEMO:
+				sql = "create table if not exists " + TABLE_MEMO + " (" +
+						KEY_ID + " integer primary key autoincrement, " +
+						KEY_TYPE + " text, " +
+						KEY_TITLE + " text, " +
+						KEY_CONTENTS + " text, " +
+						KEY_URL + " text, " +
+						KEY_VIEW_CNT + " integer, " +
+						KEY_RANK + " integer, " +
+						KEY_CATEGORY_ID + " integer, " +
+						KEY_USE_YN + " integer, " +
+						KEY_CREATE_DATE + " integer, " +
+						KEY_UPDATE_DATE + " integer " +
+						");CREATE INDEX if not exists " + TABLE_MEMO + " memo_create_date_idx ON " + TABLE_MEMO + "(" + KEY_CREATE_DATE + ");";
+				sql += "CREATE INDEX if not exists " + TABLE_MEMO + " memo_rank ON " + TABLE_MEMO + "(" + KEY_RANK + ");";
+				break;
+			case TABLE_TIMER:
+				sql = "create table if not exists " + TABLE_TIMER + " (" +
+						KEY_ID + " integer primary key autoincrement, " +
+						KEY_ALARM_TITLE + " text, " +
+						KEY_ALARM_TYPE + " integer, " +
+						KEY_HOUR + " integer, " +
+						KEY_MINUTE + " integer, " +
+						KEY_SECOND + " integer, " +
+						KEY_ALARM_CONTENTS + " text, " +
+						KEY_CREATE_DATE + " integer, " +
+						KEY_UPDATE_DATE + " integer " +
+						");CREATE INDEX if not exists " + TABLE_TIMER + " timer_create_date_idx ON " + TABLE_TIMER + "(" + KEY_CREATE_DATE + ");";
+				sql += "CREATE INDEX if not exists " + TABLE_ALARM_DATE + " alarm_date_idx ON " + TABLE_ALARM_DATE + "(" + KEY_ALARM_DATE + ");";
+				break;
+			case TABLE_ALARAM_RELATION:
+				sql = "create table if not exists " + TABLE_ALARAM_RELATION + " (" +
+						KEY_TYPE + " text , " +
+						KEY_F_ALARM_ID + " integer , " +
+						KEY_F_ID + " integer, " +
+						"PRIMARY KEY ([" + KEY_TYPE + "],[" + KEY_F_ALARM_ID + "],[" + KEY_F_ID + "]))";
+				break;
+			case TABLE_HOLIDAY:
+				sql = "create table if not exists " + TABLE_HOLIDAY + " (" +
+						KEY_ID + " integer primary key autoincrement, " +
+						KEY_YEAR + " integer , " +
+						KEY_MONTH + " integer , " +
+						KEY_DAY + " integer , " +
+						KEY_TYPE + " text, " +
+						KEY_NAME + " text," +
+						KEY_FULL_DATE + " integer )" +
+						";CREATE INDEX if not exists " + TABLE_HOLIDAY + " holiday_idx ON " + TABLE_HOLIDAY +
+						"(" + KEY_YEAR + ", " + KEY_MONTH + "," + KEY_DAY + "," + KEY_FULL_DATE + ");";
+				break;
+			case TABLE_FILE_INFO :
+				sql = "create table if not exists " + TABLE_FILE_INFO + " (" +
+						KEY_ID + " integer primary key autoincrement, " +
+						KEY_URI + " text , " +
+						KEY_NAME + " text , " +
+						KEY_SIZE + " integer , " +
+						KEY_LENGTH + " integer, " +
+						KEY_MIME_TYPE + " text," +
+						KEY_TYPE + " text," +
+						KEY_F_ID + " integer )" +
+						";CREATE INDEX if not exists " + TABLE_FILE_INFO + " fileinfo_idx ON " + TABLE_FILE_INFO +
+						"(" + KEY_F_ID + ");";
+				break;
 		}
-		else if(tableName.equals(TABLE_MEMO)){
-			sql = "create table if not exists " + TABLE_MEMO + " (" +
-					KEY_ID + " integer primary key autoincrement, " +
-					KEY_TYPE + " text, " +
-					KEY_TITLE + " text, " +
-					KEY_CONTENTS + " text, " +
-					KEY_URL + " text, " +
-					KEY_VIEW_CNT + " integer, " +
-					KEY_RANK + " integer, " +
-					KEY_CATEGORY_ID + " integer, " +
-					KEY_USE_YN + " integer, " +
-					KEY_CREATE_DATE + " integer, " +
-					KEY_UPDATE_DATE + " integer " +
-					");CREATE INDEX if not exists " + TABLE_MEMO + " memo_create_date_idx ON " + TABLE_MEMO + "(" + KEY_CREATE_DATE + ");";
-			sql += "CREATE INDEX if not exists " + TABLE_MEMO + " memo_rank ON " + TABLE_MEMO + "(" + KEY_RANK + ");";
-		}
-		else if(tableName.equals(TABLE_TIMER)){
-			sql = "create table if not exists " + TABLE_TIMER + " (" +
-					KEY_ID + " integer primary key autoincrement, " +
-					KEY_ALARM_TITLE + " text, " +
-					KEY_ALARM_TYPE + " integer, " +
-					KEY_HOUR + " integer, " +
-					KEY_MINUTE + " integer, " +
-					KEY_SECOND + " integer, " +
-					KEY_ALARM_CONTENTS + " text, " +
-					KEY_CREATE_DATE + " integer, " +
-					KEY_UPDATE_DATE + " integer " +
-					");CREATE INDEX if not exists " + TABLE_TIMER + " timer_create_date_idx ON " + TABLE_TIMER + "(" + KEY_CREATE_DATE + ");";
-			sql += "CREATE INDEX if not exists " + TABLE_ALARM_DATE + " alarm_date_idx ON " + TABLE_ALARM_DATE + "(" + KEY_ALARM_DATE + ");";
-		}
-		else if(tableName.equals(TABLE_ALARAM_RELATION)) {
-			sql = "create table if not exists " + TABLE_ALARAM_RELATION + " (" +
-					KEY_TYPE + " text , " +
-					KEY_F_ALARM_ID + " integer , " +
-					KEY_F_ID + " integer, " +
-					"PRIMARY KEY ([" + KEY_TYPE + "],[" + KEY_F_ALARM_ID + "],[" + KEY_F_ID + "]))";
-		}
-		else if(tableName.equals(TABLE_HOLIDAY)) {
-			sql = "create table if not exists " + TABLE_HOLIDAY + " (" +
-					KEY_ID + " integer primary key autoincrement, " +
-					KEY_YEAR + " integer , " +
-					KEY_MONTH + " integer , " +
-					KEY_DAY + " integer , " +
-					KEY_TYPE + " text, " +
-					KEY_NAME + " text," +
-					KEY_FULL_DATE + " integer )" +
-					";CREATE INDEX if not exists " + TABLE_HOLIDAY + " holiday_idx ON " + TABLE_HOLIDAY +
-					"(" + KEY_YEAR + ", " + KEY_MONTH + "," + KEY_DAY + "," + KEY_FULL_DATE + ");";
-		}
+
 		return sql;
 	}
 
