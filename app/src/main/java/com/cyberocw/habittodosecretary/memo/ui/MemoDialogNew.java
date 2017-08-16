@@ -26,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
+import com.bumptech.glide.Glide;
 import com.cyberocw.habittodosecretary.WebViewActivity;
 import com.cyberocw.habittodosecretary.common.vo.FileVO;
 import com.cyberocw.habittodosecretary.file.AttachmentTask;
@@ -36,6 +37,7 @@ import com.cyberocw.habittodosecretary.util.KeyboardUtils;
 import com.cyberocw.habittodosecretary.file.OnAttachingFileListener;
 import com.neopixl.pixlui.components.edittext.EditText;
 
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -72,6 +74,7 @@ import it.feio.android.pixlui.links.TextLinkClickListener;
 public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosecretary.file.OnAttachingFileListener{
 	View mView;
 	View switchView;
+	LinearLayout mFileWrap;
 	Context mCtx;
 	EditText mTvTitle;
 	Spinner mSpCategory;
@@ -95,6 +98,8 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 	boolean isModifyAlarm = false;
 	int mModifyMode = 0;
 	long mInitAlarmId = -1;
+
+	LayoutInflater inflater;
 
 	boolean isChecklist;
 	private ChecklistManager mChecklistManager;
@@ -167,9 +172,10 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 
 		mFileDataManager = new FileDataManager(mCtx);
 		mFileListAdapter = new FileListAdapter(mCtx, mFileDataManager, 0);
+		/*
 		ListView lv = ButterKnife.findById(mView, R.id.lvFiles);
 		lv.setAdapter(mFileListAdapter);
-
+*/
 		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, mCtx.MODE_PRIVATE);
 
 		initActivity();
@@ -198,7 +204,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		mBtnAddAlarm = (Button) mView.findViewById(R.id.btnAddAlarm);
 		mBtnTodo = ButterKnife.findById(mView, R.id.btnTodo);
 		mBtnAttach = ButterKnife.findById(mView, R.id.attachmentIcon);
-
+		mFileWrap = ButterKnife.findById(mView, R.id.llFileWrap);
 		if(mAlarmVO != null)
 			mBtnAddAlarm.setText(getResources().getText(R.string.btn_memo_alarm_edit));
 
@@ -206,7 +212,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 
 		bindEvent();
 		init();
-
+		inflater = getActivity().getLayoutInflater();
 
 		CommonUtils.logCustomEvent("MemoDialogNew", "1");
 	}
@@ -731,6 +737,28 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 	public void onAttachingFileFinished(FileVO mAttachment) {
 		Crashlytics.log(Log.DEBUG, this.toString(), "mAttachment="+mAttachment.toString());
 		mFileDataManager.add(mAttachment);
-		mFileListAdapter.notifyDataSetChanged();
+		attachFileView(mAttachment);
+
+		//llFileWrap
+		//mFileListAdapter.notifyDataSetChanged();
+	}
+
+	public void attachFileView(FileVO vo){
+
+		View iv = inflater.inflate(R.layout.view_file, null);
+		TextView tv = ButterKnife.findById(iv, R.id.tvTitle);
+		tv.setText(vo.getName());
+
+		//ButterKnife.findById(convertView, R.id.ivImage).setVisibility(View.GONE);
+
+		ImageView imageView = ButterKnife.findById(iv, R.id.ivImage);
+		imageView.setVisibility(View.VISIBLE);
+		Uri thumbnailUri = vo.getUri();
+		Glide.with(mCtx)
+				.load(thumbnailUri)
+				.centerCrop()
+				.crossFade()
+				.into(imageView);
+		mFileWrap.addView(iv);
 	}
 }

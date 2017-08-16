@@ -128,6 +128,7 @@ public class AlarmDataManager {
 			//this.dataList.add(vo);
 		}
 	}
+/*
 
 	public void makeDataListDashboard_backup(){
 		int MAX_ALARM_CNT = 1;
@@ -182,6 +183,7 @@ public class AlarmDataManager {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		return mDb.getAlarmList(calendar);
 	}
+*/
 
 	private void makeGroupDataList(){
 		resetGroupData();

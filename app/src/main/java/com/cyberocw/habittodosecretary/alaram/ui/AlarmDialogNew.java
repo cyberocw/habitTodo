@@ -219,7 +219,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 				if(mAlarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
 					//mPrevRecord = true;
 					String fromPath = CommonUtils.getRecordFullPath(mCtx, mAlarmVO);
-					Log.d(Const.DEBUG_TAG, "isModifyMode = 1 and mAlarmVO not null fromPath = " + fromPath);
+					Log.d(this.toString(), "isModifyMode = 1 and mAlarmVO not null fromPath = " + fromPath);
 					mRecorderCustomView.setRecordFile(fromPath);
 				}
 			}
@@ -339,7 +339,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 					toggleBtnRepeatDay(view, index);
 				}
 
-				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "mAlarmVO.getIsHolidayALL() " + mAlarmVO.getIsHolidayALL()  + " true = " + (mAlarmVO.getIsHolidayALL() == 1));
+				Crashlytics.log(Log.DEBUG, this.toString(), "mAlarmVO.getIsHolidayALL() " + mAlarmVO.getIsHolidayALL()  + " true = " + (mAlarmVO.getIsHolidayALL() == 1));
 				if(mAlarmVO.getIsHolidayALL() == 1)
 					mCbHolidayAll.setChecked(true);
 				if(mAlarmVO.getIsHolidayNone() == 1)
@@ -389,7 +389,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		Object[] arrkeys = mEtcMap.keySet().toArray();
 		for(int i = 0 ; i < arrkeys.length; i++){
 			if(arrkeys[i].equals(mEtcType)){
-				Crashlytics.log(Log.DEBUG, this.toString(), "selected start");
+				Crashlytics.log(Log.DEBUG, this.toString(), "etc selected start");
 				mSpAppList.setTag(R.id.spAppList, i);
 				mSpAppList.setSelection(i, false);
 
@@ -495,7 +495,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		vo.setAlarmCallType(mToggleCallType.getCheckedTogglePosition());
 
 		if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT || mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
-			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "mCbHolidayAll.isChecked() =" + mCbHolidayAll.isChecked());
+			Crashlytics.log(Log.DEBUG, this.toString(), "mCbHolidayAll.isChecked() =" + mCbHolidayAll.isChecked());
 			vo.setIsHolidayALL(mCbHolidayAll.isChecked() ? 1 : 0);
 			vo.setIsHolidayNone(mCbHolidayNone.isChecked() ? 1 : 0);
 		}
@@ -731,9 +731,9 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				mEtcType = (String) values[position];
 				if(mEtcType.equals(Const.ETC_TYPE.MEMO)){
-					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " onitem selected ");
+					Crashlytics.log(Log.DEBUG, this.toString(), " onitem selected ");
 					//if(mIsInitMemoMode == false)
-					//Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "(int) mSpAppList.getTag(R.id.spAppList) = "+(int) mSpAppList.getTag(R.id.spAppList) + " posi = " +position);
+					//Crashlytics.log(Log.DEBUG, this.toString(), "(int) mSpAppList.getTag(R.id.spAppList) = "+(int) mSpAppList.getTag(R.id.spAppList) + " posi = " +position);
 
 					if(mSpAppList.getTag(R.id.spAppList) != null && (Integer) mSpAppList.getTag(R.id.spAppList) != position)
 						showCategory();
@@ -751,7 +751,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 			}
 		});
 
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " onitem selected listener end ");
+		Crashlytics.log(Log.DEBUG, this.toString(), " onitem selected listener end ");
 
 		mBtnAddAlarm.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -1031,7 +1031,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 
 		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				d(Const.DEBUG_TAG, "getTag = " + ((Button) mTemp).getTag());
+				d(this.toString(), "getTag = " + ((Button) mTemp).getTag());
 				int aa = Integer.parseInt(((Button) mTemp).getTag().toString());
 				int m = npMinutes.getValue();
 				int h = npHours.getValue();
@@ -1108,11 +1108,11 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		if (!(view instanceof EditText)) {
 			view.setOnTouchListener(new View.OnTouchListener() {
 				public boolean onTouch(View v, MotionEvent event) {
-					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on thuch");
+					Crashlytics.log(Log.DEBUG, this.toString(), "on thuch");
 					InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
 					inputManager.hideSoftInputFromWindow(mDialog.getWindow().getCurrentFocus().getWindowToken(), 0);
-					Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "hideSoftKeyboard");
+					Crashlytics.log(Log.DEBUG, this.toString(), "hideSoftKeyboard");
 					return false;
 				}
 			});

@@ -372,6 +372,7 @@ public class DbHelper extends SQLiteOpenHelper {
 						KEY_LENGTH + " integer, " +
 						KEY_MIME_TYPE + " text," +
 						KEY_TYPE + " text," +
+						KEY_CREATE_DATE + " integer, " +
 						KEY_F_ID + " integer )" +
 						";CREATE INDEX if not exists " + TABLE_FILE_INFO + " fileinfo_idx ON " + TABLE_FILE_INFO +
 						"(" + KEY_F_ID + ");";

@@ -10,21 +10,22 @@ import java.io.Serializable;
 
 public class FileVO implements Serializable{
     private static final long serialVersionUID = 1242L;
-    private Long id;
+    private Long id, fId;
     private String uriPath;
-    private String name;
+    private String name, type;
     private long size;
     private long length;
-    private String mime_type;
+    private String mimeType;
+    private long createDt;
     private Uri uri;
 
-    public FileVO(Long id, String uri, String name, long size, long length, String mime_type) {
+    public FileVO(Long id, String uri, String name, long size, long length, String mimeType) {
         this.id = id;
         this.uriPath = uri;
         this.name = name;
         this.size = size;
         this.length = length;
-        this.setMime_type(mime_type);
+        this.setMimeType(mimeType);
     }
 
     public FileVO(Uri uri, String mimeTypeInternal) {
@@ -72,12 +73,12 @@ public class FileVO implements Serializable{
         this.length = length;
     }
 
-    public String getMime_type() {
-        return mime_type;
+    public String getMimeType() {
+        return mimeType;
     }
 
-    public void setMime_type(String mime_type) {
-        this.mime_type = mime_type;
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
     }
 
     public Uri getUri() {
@@ -88,15 +89,45 @@ public class FileVO implements Serializable{
         this.uri = uri;
     }
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public Long getfId() {
+        return fId;
+    }
+
+    public void setfId(Long fId) {
+        this.fId = fId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public long getCreateDt() {
+        return createDt;
+    }
+
+    public void setCreateDt(long createDt) {
+        this.createDt = createDt;
+    }
+
     @Override
     public String toString() {
         return "FileVO{" +
                 "id=" + id +
+                ", fId=" + fId +
                 ", uriPath='" + uriPath + '\'' +
                 ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
                 ", size=" + size +
                 ", length=" + length +
-                ", mime_type='" + mime_type + '\'' +
+                ", mimeType='" + mimeType + '\'' +
                 ", uri=" + uri +
                 '}';
     }

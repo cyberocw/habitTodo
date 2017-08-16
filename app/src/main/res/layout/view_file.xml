@@ -13,13 +13,18 @@
         android:src="@drawable/eng_intro3"
         android:visibility="visible"
         android:adjustViewBounds= "true"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/relativeLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="9dp" />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/lvImage"
         android:orientation="horizontal"
-        >
+
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/relativeLayout">
 
         <ImageView
             android:id="@+id/attachmentIcon"

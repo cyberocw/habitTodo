@@ -82,7 +82,7 @@ public class AlarmDbManager extends DbHelper{
 		long id = db.insert(TABLE_ALARM, null, values);
 
 		if(id == -1){
-			Log.e(Const.DEBUG_TAG, "DB Alarm INSERT ERROR");
+			Log.e(this.toString(), "DB Alarm INSERT ERROR");
 			throw new Error("DB Alarm INSERT ERROR");
 		}
 		vo.setId(id);
@@ -123,7 +123,7 @@ public class AlarmDbManager extends DbHelper{
 		closeDB();
 
 		if(affRow < 1){
-			Log.e(Const.DEBUG_TAG, "DB Alarm USE UPDATE ERROR");
+			Log.e(this.toString(), "DB Alarm USE UPDATE ERROR");
 			return false;
 		}
 
@@ -183,7 +183,7 @@ public class AlarmDbManager extends DbHelper{
 						" (SELECT MIN(" + KEY_TIME_STAMP + " ) FROM " + TABLE_ALARM_ORDER + " AS C INNER JOIN " + TABLE_ALARM +
 						" AS D ON C." + KEY_F_ALARM_ID + " = D." + KEY_ID + " WHERE D." + KEY_USE_YN + " = 1 AND " + KEY_TIME_STAMP + " > " + nowTime + ")";
 
-		Log.e(Const.DEBUG_TAG, selectQuery);
+		Log.e(this.toString(), selectQuery);
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);
@@ -232,7 +232,7 @@ public class AlarmDbManager extends DbHelper{
 		long _id = db.insert(TABLE_ALARM_DATE, null, values);
 
 		if(_id == -1){
-			Log.e(Const.DEBUG_TAG, "DB Date INSERT ERROR");
+			Log.e(this.toString(), "DB Date INSERT ERROR");
 			throw new Error("DB Date INSERT ERROR");
 		}
 	}
@@ -246,7 +246,7 @@ public class AlarmDbManager extends DbHelper{
 		long _id = db.insert(TABLE_ALARM_REPEAT, null, values);
 
 		if(_id == -1){
-			Log.e(Const.DEBUG_TAG, "DB Date INSERT ERROR");
+			Log.e(this.toString(), "DB Date INSERT ERROR");
 			throw new Error("DB Date INSERT ERROR");
 		}
 	}
@@ -281,7 +281,7 @@ public class AlarmDbManager extends DbHelper{
 		long _id = db.insert(TABLE_ALARM_REPEAT, null, values);
 
 		if(_id == -1){
-			Log.e(Const.DEBUG_TAG, "DB Date INSERT ERROR");
+			Log.e(this.toString(), "DB Date INSERT ERROR");
 			throw new Error("DB Date INSERT ERROR");
 		}
 	}
@@ -333,7 +333,7 @@ public class AlarmDbManager extends DbHelper{
 
 		long nowTimeInMil = nowCal.getTimeInMillis();
 
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " today month = " + nowCal.get(Calendar.MONTH));
+		Crashlytics.log(Log.DEBUG, this.toString(), " today month = " + nowCal.get(Calendar.MONTH));
 
 		// get holiday list for week
 
@@ -373,12 +373,12 @@ public class AlarmDbManager extends DbHelper{
 			//평일일 경우에만 holiday 여부 체크
 			if(dayofWeek != 1 && dayofWeek != 7){
 				String strCal = String.valueOf(cal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
-				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "strCal = " + strCal);
+				Crashlytics.log(Log.DEBUG, this.toString(), "strCal = " + strCal);
 				if (holidayMap.containsKey(strCal)) {
 					ArrayList<HolidayVO> arrHoliday = holidayMap.get(strCal);
 					for (int m = 0; m < arrHoliday.size(); m++) {
 						HolidayVO hVO = arrHoliday.get(m);
-						Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "hVO type = " + hVO.getType());
+						Crashlytics.log(Log.DEBUG, this.toString(), "hVO type = " + hVO.getType());
 						if (hVO.getType().equals("h") || hVO.getType().equals("i")) {
 							queryString += " or B." + KEY_HOLIDAY_ALL + " = 1 ) and (B." + KEY_HOLIDAY_NONE + " <> 1";
 							break;
@@ -503,16 +503,16 @@ public class AlarmDbManager extends DbHelper{
 	 * */
 	public ArrayList<AlarmVO> getAlarmList(Calendar date){
 		int[] day = {date.get(Calendar.DAY_OF_WEEK)};
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "getAlarmList only startDate");
+		Crashlytics.log(Log.DEBUG, this.toString(), "getAlarmList only startDate");
 		return getAlarmList(-1, date, null, day);
 	}
 	public ArrayList<AlarmVO> getAlarmList(Calendar startDate, Calendar endDate){
 		//1주일치 불러와서 아래 o 아이콘 삽입을 위한 용도
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "getAlarmList start, end date is not null");
+		Crashlytics.log(Log.DEBUG, this.toString(), "getAlarmList start, end date is not null");
 		return getAlarmList(-1, startDate, endDate, null);
 	}
 	public AlarmVO getAlarmById(long id){
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "getAlarmList getAlarmById");
+		Crashlytics.log(Log.DEBUG, this.toString(), "getAlarmList getAlarmById");
 		ArrayList<AlarmVO> arrayList = getAlarmList(id, null, null, null);
 		if(arrayList.size() == 0){
 			return null;
@@ -604,7 +604,7 @@ public class AlarmDbManager extends DbHelper{
 
 		selectQuery += " ORDER BY A." + KEY_HOUR + " ASC, A." + KEY_MINUTE + " ASC";
 
-		Log.e(Const.DEBUG_TAG, selectQuery);
+		Log.e(this.toString(), selectQuery);
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);
@@ -746,7 +746,7 @@ public class AlarmDbManager extends DbHelper{
 		long id = db.insert(TABLE_TIMER, null, values);
 
 		if(id == -1){
-			Log.e(Const.DEBUG_TAG, "DB Alarm INSERT ERROR");
+			Log.e(this.toString(), "DB Alarm INSERT ERROR");
 			throw new Error("DB Alarm INSERT ERROR");
 		}
 		vo.setId(id);
@@ -827,7 +827,7 @@ public class AlarmDbManager extends DbHelper{
 		long _id = db.insert(TABLE_HOLIDAY, null, values);
 
 		if(_id == -1){
-			Log.e(Const.DEBUG_TAG, "DB Date INSERT ERROR");
+			Log.e(this.toString(), "DB Date INSERT ERROR");
 			throw new Error("DB Date INSERT ERROR");
 		}
 	}

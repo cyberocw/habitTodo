@@ -842,7 +842,7 @@ public class AlarmFragment extends Fragment{
 		AlarmVO vo;
 		TimerVO tvo;
 
-		mAlarmDataManager.hasContext(getActivity().getApplicationContext());
+		mAlarmDataManager.hasContext(getActivity());
 
 		switch(resultCode) {
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE :

@@ -183,13 +183,13 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 					if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
 						// Permanent loss of audio focus
 						// Pause playback immediately
-						//mTTS.stop();
-
+						mTTS.stop();
+						mArrText.add(nowPlayingText);
 					}
 					else if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT) {
 						mTTS.stop();
 						mArrText.add(nowPlayingText);
-						speakText();
+
 					} else if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
 						// Lower the volume, keep playing
 						//mTTS.stop();
