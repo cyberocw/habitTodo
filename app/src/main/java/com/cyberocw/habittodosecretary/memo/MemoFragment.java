@@ -308,6 +308,8 @@ public class MemoFragment extends Fragment {
 			if(mIsEtcMode == false)
 				showNewMemoDialog(mMemoDataManager.getItem(position).getId());
 			else{
+				// 알람화면에서 메모를 등록하는 방식일때 사용
+				/*
 				MemoVO memoVO = mMemoDataManager.getItem(position);
 				if(memoVO.getAlarmId() > -1){
 					Toast.makeText(mCtx, getString(R.string.fragment_memo_already_alarm), Toast.LENGTH_LONG).show();
@@ -322,7 +324,7 @@ public class MemoFragment extends Fragment {
 				//int returnCode = mModifyMode == 1 ? Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE : Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE;
 
 				getActivity().getSupportFragmentManager().popBackStackImmediate();
-				getTargetFragment().onActivityResult(getTargetRequestCode(), Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE, intent);
+				getTargetFragment().onActivityResult(getTargetRequestCode(), Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE, intent);*/
 			}
 
 		}
@@ -375,10 +377,12 @@ public class MemoFragment extends Fragment {
 		dialogNew.setArguments(bundle);
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 		FragmentTransaction ft = fragmentManager.beginTransaction();
-		ft.add(R.id.warpContainer, dialogNew);
+		ft.add(R.id.warpContainer, dialogNew, Const.FRAGMENT_TAG.MEMO_DIALOG);
 		ft.addToBackStack(null).commit();
 		dialogNew.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
 	}
+
+
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -530,20 +534,31 @@ public class MemoFragment extends Fragment {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		try {
-			mListener = (OnFragmentInteractionListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnFragmentInteractionListener");
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		MemoDialogNew fragment = (MemoDialogNew) getFragmentManager().findFragmentByTag(Const.FRAGMENT_TAG.MEMO_DIALOG);
+		if (fragment != null) {
+			fragment.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
 		}
+
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Crashlytics.log(Log.DEBUG, this.toString(), "onDestroy");
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		mListener = null;
+		Crashlytics.log(Log.DEBUG, this.toString(), "onDetach");
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		Crashlytics.log(Log.DEBUG, this.toString(), "onStop");
 	}
 
 	/**

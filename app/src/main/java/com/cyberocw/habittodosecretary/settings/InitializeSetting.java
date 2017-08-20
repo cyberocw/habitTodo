@@ -31,10 +31,13 @@ public class InitializeSetting extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPreExecute() {
-        asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        asyncDialog.setMessage("공휴일 데이터 생성중입니다..");
-        asyncDialog.show();
+        try {
+            asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            asyncDialog.setMessage("공휴일 데이터 생성중입니다..");
+            asyncDialog.show();
+        }catch(Exception e){
 
+        }
         // show dialog
         //asyncDialog.show();
         super.onPreExecute();
@@ -61,9 +64,10 @@ public class InitializeSetting extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        asyncDialog.dismiss();
-
-        Toast.makeText(mCtx, result, Toast.LENGTH_LONG).show();
+        if(asyncDialog != null)
+            asyncDialog.dismiss();
+        if(mCtx != null)
+            Toast.makeText(mCtx, result, Toast.LENGTH_LONG).show();
 
         /*Intent i = new Intent(mCtx, Intro.class);
         mCtx.startActivity(i);

@@ -70,14 +70,12 @@ public class FileListAdapter extends BaseAdapter{
 
         ImageView imageView = ButterKnife.findById(convertView, R.id.ivImage);
         imageView.setVisibility(View.VISIBLE);
-        Uri thumbnailUri = vo.getUri();
+        Uri thumbnailUri = Uri.parse(vo.getUri());
         Glide.with(mCtx)
                 .load(thumbnailUri)
                 .centerCrop()
                 .crossFade()
                 .into(imageView);
-
-
         return convertView;
     }
 }

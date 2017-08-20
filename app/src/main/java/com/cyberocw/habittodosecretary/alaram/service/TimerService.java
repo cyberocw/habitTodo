@@ -29,6 +29,7 @@ import com.cyberocw.habittodosecretary.alaram.AlarmNotiActivity;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.record.PlayRawAudio;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.cyberocw.habittodosecretary.util.TTSNoti;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
 import java.io.File;
@@ -222,7 +223,7 @@ public class TimerService extends Service {
 		myIntent.putExtra("title", mTitle);
 		//myIntent.putExtra(Const.PARAM.ETC_TYPE_KEY, mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
 		//myIntent.putExtra(Const.PARAM.REQ_CODE, mArrAlarmVOList.get(mMinRemainPosition).getReqCode());
-		myIntent.putExtra(Const.PARAM.ALARM_ID, -1);
+		myIntent.putExtra(Const.PARAM.ALARM_ID, -1l);
 		mCtx.startService(myIntent);
 
 		//mAlarmOption - 개별 알람 tts
@@ -232,11 +233,11 @@ public class TimerService extends Service {
 		}
 	}
 	private void startTTS(String title, long id){
-		Intent ttsIntent = new Intent(mCtx, TTSNotiActivity.class);
-		ttsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		Intent ttsIntent = new Intent(getApplicationContext(), TTSNoti.class);
 		ttsIntent.putExtra("alaramTitle", title);
 		ttsIntent.putExtra("alarmId", id);
-		mCtx.startActivity(ttsIntent);
+		getApplicationContext().startService(ttsIntent);
+		//mCtx.startActivity(ttsIntent);
 	}
 	private void alarmNotiActivity(){
 		Intent myIntent = new Intent(mCtx, AlarmNotiActivity.class);

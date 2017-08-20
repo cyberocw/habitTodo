@@ -1,5 +1,6 @@
 package com.cyberocw.habittodosecretary.alaram.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -22,6 +23,7 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -248,7 +250,7 @@ public class RenderAlarmView {
         //TextView tvTimeTitle = ButterKnife.findById(convertView, R.id.tvTimeTitle);
         ArrayList<Integer> arrCall = vo.getAlarmCallList();
 
-        LinearLayout linearLayout = ButterKnife.findById(convertView, R.id.alarmOptionWrap);
+        FlexboxLayout linearLayout = ButterKnife.findById(convertView, R.id.alarmOptionWrap);
         linearLayout.removeAllViewsInLayout();
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(5, 0, 5, 0);
@@ -266,14 +268,16 @@ public class RenderAlarmView {
                 else {
                     t = arrCall.get(i) + "m.";
                 }
+                LayoutInflater inflater = ((Activity)ctx).getLayoutInflater();
+                View v = inflater.inflate(R.layout.alarm_before_view, null);
 
-                TextView tvTime = new TextView(ctx);
+                TextView tvTime = (TextView) v;
                 tvTime.setText(arrCall.get(i) < 0 ? t : "+" + t);
-                tvTime.setLayoutParams(params);
+                //tvTime.setLayoutParams(params);
                 tvTime.setTextColor(ContextCompat.getColor(ctx, R.color.black_semi_transparent));
                 tvTime.setBackground(ContextCompat.getDrawable(ctx, R.drawable.button_alarm_time_round));
-                tvTime.setPadding(8, 5, 8, 5);
-                tvTime.setTextSize(ctx.getResources().getDimension(R.dimen.alarmViewTopGroupTextSize));
+                //tvTime.setPadding(5, 2, 5, 2);
+                //tvTime.setTextSize(ctx.getResources().getDimension(R.dimen.alarmViewTopGroupTextSize));
                 linearLayout.addView(tvTime);
                 headerVisible = true;
             }

@@ -17,7 +17,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static DbHelper sInstance;
 
 	private static final String DB_NME = "habit_todo";
-	private static final int DB_VERSION = 19;
+	private static final int DB_VERSION = 20;
 
 	private static final String ARRAY_DIV = "_ho8c7wt_";
 
@@ -165,7 +165,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				KEY_ID + " integer primary key autoincrement, " +
 				KEY_ALARM_TITLE + " text, " +
 				KEY_ALARM_TYPE + " integer, " +
-				KEY_ALARM_OPTION + " integer, " +
+				KEY_ALARM_OPTION + " integer DEFAULT 0 , " +
 				KEY_HOUR + " integer, " +
 				KEY_MINUTE + " integer, " +
 				KEY_SECOND + " integer, " +
@@ -298,6 +298,9 @@ public class DbHelper extends SQLiteOpenHelper {
 			String sql = "UPDATE " + TABLE_MEMO + " SET " + KEY_TYPE + " = 'MEMO' WHERE " + KEY_TYPE + " IS NULL";
 			db.execSQL(sql);
 		}
+		if(oldVersion <=19){
+			db.execSQL(getCreateTableQuery(TABLE_FILE_INFO));
+		}
 	}
 
 	private String getCreateTableQuery(String tableName){
@@ -329,20 +332,6 @@ public class DbHelper extends SQLiteOpenHelper {
 						KEY_UPDATE_DATE + " integer " +
 						");CREATE INDEX if not exists " + TABLE_MEMO + " memo_create_date_idx ON " + TABLE_MEMO + "(" + KEY_CREATE_DATE + ");";
 				sql += "CREATE INDEX if not exists " + TABLE_MEMO + " memo_rank ON " + TABLE_MEMO + "(" + KEY_RANK + ");";
-				break;
-			case TABLE_TIMER:
-				sql = "create table if not exists " + TABLE_TIMER + " (" +
-						KEY_ID + " integer primary key autoincrement, " +
-						KEY_ALARM_TITLE + " text, " +
-						KEY_ALARM_TYPE + " integer, " +
-						KEY_HOUR + " integer, " +
-						KEY_MINUTE + " integer, " +
-						KEY_SECOND + " integer, " +
-						KEY_ALARM_CONTENTS + " text, " +
-						KEY_CREATE_DATE + " integer, " +
-						KEY_UPDATE_DATE + " integer " +
-						");CREATE INDEX if not exists " + TABLE_TIMER + " timer_create_date_idx ON " + TABLE_TIMER + "(" + KEY_CREATE_DATE + ");";
-				sql += "CREATE INDEX if not exists " + TABLE_ALARM_DATE + " alarm_date_idx ON " + TABLE_ALARM_DATE + "(" + KEY_ALARM_DATE + ");";
 				break;
 			case TABLE_ALARAM_RELATION:
 				sql = "create table if not exists " + TABLE_ALARAM_RELATION + " (" +

@@ -65,7 +65,7 @@ public class NotificationService extends Service{
 		//String noti_message = intent.getExtras().getString("notes");
 		int reqCode = bundle.getInt(Const.PARAM.REQ_CODE, -1);
 		//나중에 reqCode 가 int 범위를 넘어설것 같을때 별도 처리해주기 noti id는 int만 가능해서
-		long alarmId = bundle.getLong(Const.PARAM.ALARM_ID, -1);
+		long alarmId = bundle.getLong(Const.PARAM.ALARM_ID, -1l);
 
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Intent intent1 = new Intent(this, MainActivity.class);

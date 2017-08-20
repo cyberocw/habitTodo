@@ -106,6 +106,8 @@ public class SettingFragment extends Fragment {
         final Switch swAlarmNoti = ButterKnife.findById(mView, R.id.isAlarmNoti);
         final Switch swTTSNoti = ButterKnife.findById(mView, R.id.isTTSNoti);
         final Switch swTTSNotiManner = ButterKnife.findById(mView, R.id.isTTSNotiManner);
+        final Switch swDisturb = ButterKnife.findById(mView, R.id.isDisturb);
+
 
         final TextView tvLog = ButterKnife.findById(mView, R.id.tvLog);
         /*
@@ -121,6 +123,7 @@ public class SettingFragment extends Fragment {
         boolean isAlarmNoti = mPrefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
         boolean isTTSNoti = mPrefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
         boolean isTTSNotiManner = mPrefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
+        boolean isDisturb = mPrefs.getBoolean(Const.SETTING.IS_DISTURB_MODE, false);
 
         if(isUseNotibar)
             mCbAllAlarm.setChecked(true);
@@ -134,7 +137,8 @@ public class SettingFragment extends Fragment {
             swTTSNotiManner.setEnabled(false);
         if(isTTSNotiManner)
             swTTSNotiManner.setChecked(true);
-
+        if(isDisturb)
+            swDisturb.setChecked(true);
 
 
         cbBackgroundNoti.setOnClickListener(new View.OnClickListener() {
@@ -253,7 +257,25 @@ public class SettingFragment extends Fragment {
                     view.setChecked(false);
             }
         });
+        swDisturb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Switch view = (Switch) v;
+                toggleAlarmPreference(Const.SETTING.IS_DISTURB_MODE);
 
+                if(mAlarmDataManager == null)
+                    mAlarmDataManager = new AlarmDataManager(mCtx);
+
+                if(getAlarmPreference(Const.SETTING.IS_DISTURB_MODE)) {
+                    view.setChecked(true);
+                    mAlarmDataManager.stopAllAlarm();
+                }
+                else {
+                    view.setChecked(false);
+                    mAlarmDataManager.resetMinAlarm();
+                }
+            }
+        });
         btnPrivacy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

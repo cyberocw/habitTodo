@@ -36,6 +36,8 @@
     <string name="setting">설정</string>
     <string name="setting_menu_title_use_alarm">알림 소리/진동 켜기</string>
     <string name="setting_menu_title_use_tts">알림 음성 재생 켜기</string>
+    <string name="setting_menu_title_toggle_alarm">방해 금지 모드 켜기</string>
+
 
     <!-- test ad -->
     <!--string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string-->
@@ -48,6 +50,7 @@
     <string name="alarm_date_today">오늘</string>
     <string name="edit">편집</string>
     <string name="delete">삭제</string>
+    <string name="share">공유</string>
     <string name="dialog_title_datepick">날짜 선택</string>
     <string name="option">옵션</string>
     <string name="delete_all">모두 삭제</string>
@@ -104,6 +107,8 @@
     <string name="setting_play_tts">해당 옵션을 꺼두면, 알림이 울릴 때 알림 제목을 음성으로 읽어주지 않습니다. 녹음 파일도 재생하지 않습니다.</string>
     <string name="setting_play_void_manner_mode">매너모드에서도 음성/녹음 재생</string>
     <string name="setting_voice_volume">음성 볼륨</string>
+    <string name="setting_disturb_title">방해금지모드 켜기</string>
+    <string name="setting_disturb_cont">해당 옵션이 켜져 있는동안, 모든 알림을 받지 않습니다.</string>
     <string name="dialog_alarm_msg_select_repeat">반복할 요일을 선택하세요</string>
     <string name="dialog_alarm_msg_select_memo">메모를 선택해 주세요</string>
     <string name="dialog_alarm_msg_duplication_call">중복되는 알림이 있습니다.</string>

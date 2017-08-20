@@ -6,6 +6,8 @@ import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
+import com.cyberocw.habittodosecretary.common.vo.FileVO;
+import com.cyberocw.habittodosecretary.file.FileDataManager;
 import com.cyberocw.habittodosecretary.memo.db.MemoDbManager;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
@@ -22,6 +24,7 @@ public class MemoDataManager {
 	String mSortOption = "";
 	long mCateId = -1;
     int mCnt = 0;
+	FileDataManager mFileDataManager = null;
 
 	public MemoDataManager(Context ctx) {
 		mCtx = ctx;
@@ -65,6 +68,11 @@ public class MemoDataManager {
 
 	public void makeDataList(Long cateId, String sortOption, int cnt){
 		dataList = mDb.getListByCate(cateId, sortOption, cnt);
+		FileDataManager fdm = new FileDataManager(mCtx);
+		for(int i = 0 ; i < dataList.size(); i++){
+			fdm.makeDataList(dataList.get(i).getId());
+			dataList.get(i).setFileList(fdm.getDataList());
+		}
 		cachedDataList = (ArrayList) dataList.clone();
 	}
 
@@ -108,6 +116,11 @@ public class MemoDataManager {
 		if(delResult == false)
 			return false;
 
+		MemoVO vo = this.getItemById(id);
+		mFileDataManager = new FileDataManager(mCtx);
+		mFileDataManager.addDeleteItem(vo.getFileList());
+		mFileDataManager.addDeleteItem(vo.getDelFileList());
+		mFileDataManager.deleteAll();
 		for(int i = 0 ; i < dataList.size() ; i++){
 			if(dataList.get(i).getId() == id){
 				dataList.remove(i);
@@ -133,7 +146,6 @@ public class MemoDataManager {
 
 	public boolean modifyItem(MemoVO item) {
 		int nAffRow = mDb.update(item);
-
 		if (nAffRow < 1){
 			Toast.makeText(mCtx, mCtx.getString(R.string.msg_failed_modify), Toast.LENGTH_LONG).show();
 			return false;

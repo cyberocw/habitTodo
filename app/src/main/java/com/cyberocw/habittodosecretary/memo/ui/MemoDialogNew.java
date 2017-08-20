@@ -10,9 +10,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -22,17 +24,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import com.bumptech.glide.Glide;
+import com.cyberocw.habittodosecretary.BuildConfig;
 import com.cyberocw.habittodosecretary.WebViewActivity;
 import com.cyberocw.habittodosecretary.common.vo.FileVO;
 import com.cyberocw.habittodosecretary.file.AttachmentTask;
 import com.cyberocw.habittodosecretary.file.FileDataManager;
 import com.cyberocw.habittodosecretary.file.FileHelper;
 import com.cyberocw.habittodosecretary.file.FileListAdapter;
+import com.cyberocw.habittodosecretary.file.StorageHelper;
+import com.cyberocw.habittodosecretary.memo.MemoFragment;
+import com.cyberocw.habittodosecretary.util.IntentChecker;
 import com.cyberocw.habittodosecretary.util.KeyboardUtils;
 import com.cyberocw.habittodosecretary.file.OnAttachingFileListener;
 import com.neopixl.pixlui.components.edittext.EditText;
@@ -58,6 +65,7 @@ import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +86,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 	Context mCtx;
 	EditText mTvTitle;
 	Spinner mSpCategory;
+
 	EditText mEtMemoEditor;
 	TextView mTvMemoEditor;
 	RatingBar mRatingBar;
@@ -99,7 +108,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 	int mModifyMode = 0;
 	long mInitAlarmId = -1;
 
-	LayoutInflater inflater;
+	LayoutInflater mInflater;
 
 	boolean isChecklist;
 	private ChecklistManager mChecklistManager;
@@ -114,11 +123,22 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		}
 	}
 
+	public void checkFileList(){
+		File dir = mCtx.getExternalFilesDir(null);
+		if(dir.isDirectory()){
+			for(File file : dir.listFiles()){
+				Log.d(this.toString(), "list name="+file.getName());
+				//file.delete();
+			}
+		}
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		mView = inflater.inflate(R.layout.fragment_dialog_memo, container, false);
+		mInflater = inflater;
 		Toolbar toolbar = (Toolbar) mView.findViewById(R.id.toolbar);
 		toolbar.setVisibility(View.VISIBLE);
 		toolbar.setTitle(getResources().getString(R.string.dialog_title_memo));
@@ -142,7 +162,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		super.onActivityCreated(savedInstanceState);
 		mCtx = getActivity();
 		Bundle arguments = getArguments();
-
+		checkFileList();
 		if(arguments != null) {
 			mMemoVO = (MemoVO) arguments.getSerializable(Const.PARAM.MEMO_VO);
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.PARAM.ALARM_VO);
@@ -212,7 +232,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 
 		bindEvent();
 		init();
-		inflater = getActivity().getLayoutInflater();
+		//mInflater = getActivity().getLayoutInflater();
 
 		CommonUtils.logCustomEvent("MemoDialogNew", "1");
 	}
@@ -226,6 +246,15 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 			isChecklist = mMemoVO.getType().equals("TODO");
 			mRatingBar.setRating((float) mMemoVO.getRank());
 			mSelectedCateId = mMemoVO.getCategoryId();
+			ArrayList<FileVO> fileList = mMemoVO.getFileList();
+			Log.d(this.toString(), "fileList.size()="+fileList.size());
+			if(fileList != null && fileList.size() > 0) {
+				mFileDataManager.setDataList(fileList);
+				for (int i = 0; i < fileList.size(); i++) {
+					this.attachFileView(fileList.get(i));
+				}
+			}
+
 		}
 
 		if(mSelectedCateId != -1){
@@ -419,7 +448,6 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		mBtnEdit.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//returnData();
 				isMemoEditable = !isMemoEditable;
 				bindEventSaveAndEdit();
 			}
@@ -565,7 +593,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		// for the fragment, which is always the root view for the activity
 		alarmDialogNew.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE);
 
-		transaction.add(R.id.warpContainer, alarmDialogNew, "fragment_dialog_alarm_add")
+		transaction.add(R.id.warpContainer, alarmDialogNew, Const.FRAGMENT_TAG.ALARM_DIALOG)
 				.addToBackStack(null).commit();
 
 
@@ -611,6 +639,19 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		if(validate() == false){
 			return ;
 		}
+
+        ArrayList<FileVO> fileVOList =  mFileDataManager.getDataList();
+        if(fileVOList != null && fileVOList.size() > 0) {
+            //bundle.putSerializable(Const.PARAM.FILE_VO_LIST, fileVOList);
+            mMemoVO.setFileList(fileVOList);
+        }
+
+		ArrayList<FileVO> delFileVOList =  mFileDataManager.getDelDataList();
+		if(delFileVOList != null && delFileVOList.size() > 0) {
+			//bundle.putSerializable(Const.PARAM.FILE_VO_LIST, fileVOList);
+			mMemoVO.setDelFileList(delFileVOList);
+		}
+
 		Bundle bundle = new Bundle();
 		bundle.putSerializable(Const.PARAM.MEMO_VO, mMemoVO);
 
@@ -621,10 +662,13 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		if(isModifyAlarm && mAlarmVO != null)
 			bundle.putSerializable(Const.PARAM.ALARM_VO, mAlarmVO);
 
+
 		Intent intent = new Intent();
 		intent.putExtras(bundle);
 
 		int returnCode = mModifyMode == 1 ? Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_MODIFY_FINISH_CODE : Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_FINISH_CODE;
+
+		Log.d(this.toString(), "getTargetFragment()="+getTargetFragment() + " getTargetRequestCode()="+getTargetRequestCode());
 
 		getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
 		getActivity().getSupportFragmentManager().popBackStackImmediate();
@@ -670,8 +714,8 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 			uris.add(intent.getData());
 		}
 		for (Uri uri : uris) {
-			String name = FileHelper.getNameFromUri(getActivity(), uri);
-			new AttachmentTask(mCtx, this, uri, name, this).execute();
+			String fileName = FileHelper.getNameFromUri(getActivity(), uri);
+			new AttachmentTask(mCtx, this, uri, fileName, this).execute();
 		}
 	}
 
@@ -734,31 +778,166 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 	}
 
 	@Override
-	public void onAttachingFileFinished(FileVO mAttachment) {
-		Crashlytics.log(Log.DEBUG, this.toString(), "mAttachment="+mAttachment.toString());
-		mFileDataManager.add(mAttachment);
-		attachFileView(mAttachment);
+	public void onAttachingFileFinished(FileVO vo) {
+
+		mFileDataManager.addItem(vo);
+
+		attachFileView(vo);
 
 		//llFileWrap
 		//mFileListAdapter.notifyDataSetChanged();
 	}
 
-	public void attachFileView(FileVO vo){
-
-		View iv = inflater.inflate(R.layout.view_file, null);
+	public void attachFileView(final FileVO vo){
+		Crashlytics.log(Log.DEBUG, this.toString(), "mAttachment="+vo.toString());
+		View iv = mInflater.inflate(R.layout.view_file, null);
 		TextView tv = ButterKnife.findById(iv, R.id.tvTitle);
 		tv.setText(vo.getName());
+		iv.setLongClickable(true);
+        iv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                longClickPopup(vo.getId(), v);
+                return true;
+            }
+        });
+		iv.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				FileVO attachment = vo;
+				//Uri uri = Uri.parse(attachment.getUri());
+				Intent attachmentIntent;
+
+				Uri uri = FileProvider.getUriForFile(mCtx, BuildConfig.APPLICATION_ID + ".provider", new File(attachment.getUriPath()));
+
+				if (Const.MIME_TYPE_FILES.equals(attachment.getMimeType())) {
+
+					attachmentIntent = new Intent(Intent.ACTION_VIEW);
+					attachmentIntent.setDataAndType(uri, StorageHelper.getMimeType(mCtx,
+							Uri.parse(attachment.getUri())));
+					attachmentIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent
+							.FLAG_GRANT_WRITE_URI_PERMISSION);
+					if (IntentChecker.isAvailable(mCtx, attachmentIntent, null)) {
+						startActivity(attachmentIntent);
+					} else {
+						//mCtx.showMessage(R.string.feature_not_available_on_this_device, ONStyle.WARN);
+						v.performLongClick();
+					}
+					// Media files will be opened in internal gallery
+				} else if (Const.MIME_TYPE_IMAGE.equals(attachment.getMimeType())
+						|| Const.MIME_TYPE_SKETCH.equals(attachment.getMimeType())
+						|| Const.MIME_TYPE_VIDEO.equals(attachment.getMimeType())) {
+					int clickedImage = 0;
+					attachmentIntent = new Intent(Intent.ACTION_VIEW);
+					attachmentIntent.setDataAndType(uri, StorageHelper.getMimeType(mCtx,
+							Uri.parse(attachment.getUri())));
+					attachmentIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent
+							.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+					startActivity(attachmentIntent);
+
+				/*
+				ArrayList<FileVO> images = new ArrayList<>();
+				for (FileVO mAttachment : mMemoVO.getFileList()) {
+					if (Const.MIME_TYPE_IMAGE.equals(mAttachment.getMimeType())
+							|| Const.MIME_TYPE_SKETCH.equals(mAttachment.getMimeType())
+							|| Const.MIME_TYPE_VIDEO.equals(mAttachment.getMimeType())) {
+						images.add(mAttachment);
+						if (mAttachment.equals(attachment)) {
+							clickedImage = images.size() - 1;
+						}
+					}
+				}*/
+
+
+
+					// Intent
+				/*attachmentIntent = new Intent(mCtx, GalleryActivity.class);
+				attachmentIntent.putExtra(Constants.GALLERY_TITLE, title1);
+				attachmentIntent.putParcelableArrayListExtra(Constants.GALLERY_IMAGES, images);
+				attachmentIntent.putExtra(Constants.GALLERY_CLICKED_IMAGE, clickedImage);
+				startActivity(attachmentIntent);*/
+
+				} else if (Const.MIME_TYPE_AUDIO.equals(attachment.getMimeType())) {
+					//playback(v, attachment.getUri());
+				}
+
+			}
+		});
 
 		//ButterKnife.findById(convertView, R.id.ivImage).setVisibility(View.GONE);
+		Uri uri = Uri.parse(vo.getUri());
 
-		ImageView imageView = ButterKnife.findById(iv, R.id.ivImage);
-		imageView.setVisibility(View.VISIBLE);
-		Uri thumbnailUri = vo.getUri();
-		Glide.with(mCtx)
-				.load(thumbnailUri)
-				.centerCrop()
-				.crossFade()
-				.into(imageView);
+		if(vo.getMimeType().equals(Const.MIME_TYPE_IMAGE)){
+			ImageView imageView = ButterKnife.findById(iv, R.id.ivImage);
+			imageView.setVisibility(View.VISIBLE);
+			Uri thumbnailUri = uri;
+
+			Glide.with(mCtx)
+					.load(thumbnailUri)
+					.centerCrop()
+					.crossFade()
+					.into(imageView);
+		}
 		mFileWrap.addView(iv);
+	}
+
+    private void longClickPopup(final long _id, final View iv){
+        String names[] ={mCtx.getString(R.string.share), mCtx.getString(R.string.delete)};
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mCtx);
+
+        ListView lv = new ListView(mCtx);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        alertDialog.setView(lv);
+        alertDialog.setTitle(mCtx.getString(R.string.option));
+
+        lv.setLayoutParams(params);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mCtx,android.R.layout.simple_list_item_1,names);
+        lv.setAdapter(adapter);
+
+        final DialogInterface dialogInterface = alertDialog.show();
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        //mFragment.showNewMemoDialog(_id);
+                        break;
+                    case 1:
+                        if(mModifyMode == 0){
+                            mFileDataManager.delete(_id);
+                        }
+                        else{
+							mFileDataManager.deleteInList(_id);
+							mFileDataManager.addDeleteItem(_id);
+
+						}
+						//ui에서 지워주는 부분 해야함
+
+						((ViewGroup) iv.getParent()).removeView((ViewGroup)iv);
+                        break;
+                }
+                dialogInterface.dismiss();
+            }
+        });
+    }
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		Log.d(this.toString(), "onSaveInstanceState");
+		//setTargetFragment(null, -1);
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+		super.onViewStateRestored(savedInstanceState);
+		MemoFragment fragment = (MemoFragment) getFragmentManager().findFragmentByTag(Const.FRAGMENT_TAG.MEMO);
+		Log.d(this.toString(), "on attach fragment="+fragment);
+		if (fragment != null) {
+			setTargetFragment(fragment, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
+			Log.d(this.toString(), "settargetFragment ok");
+		}
 	}
 }

@@ -97,19 +97,10 @@
                     android:textColor="@color/btn_gray_font_color"
                     android:layout_marginLeft="35dp"
                     android:layout_marginStart="35dp"
-                    android:layout_alignBaseline="@+id/textView3"
-                    android:layout_alignBottom="@+id/textView3"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="누적 순위  |  실시간 순위"
-                    android:textSize="11sp"
                     android:layout_alignBaseline="@+id/tvTime"
                     android:layout_alignBottom="@+id/tvTime"
-                    android:layout_centerInParent="true"
-                    android:id="@+id/textView3" />
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
                     <TextView
                         android:id="@+id/tvTime"
                         android:layout_width="wrap_content"
@@ -134,6 +125,24 @@
                         android:layout_marginEnd="12dp"
                         android:id="@+id/btnRefresh" />
             </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:id="@+id/keywordWrap3"
+                >
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/tvTime"
+                    android:layout_alignBottom="@+id/tvTime"
+                    android:layout_centerInParent="true"
+                    android:text="누적 순위  |  실시간 순위"
+
+                    android:textSize="11sp" />
+
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
@@ -199,8 +208,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
+
                 android:layout_marginBottom="15dp"
                 android:background="@color/white"
                 android:orientation="vertical">

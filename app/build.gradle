@@ -32,8 +32,8 @@ android {
         applicationId "com.cyberocw.habittodosecretary"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 19
-        versionName "1.1.7"
+        versionCode 21
+        versionName "1.1.9"
     }
     buildTypes {
         release {
@@ -61,6 +61,7 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'commons-io:commons-io:2.5'
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.google.android:flexbox:0.3.0'
 
     compile 'com.google.firebase:firebase-ads:10.2.1'
     compile 'com.google.firebase:firebase-crash:10.2.1'

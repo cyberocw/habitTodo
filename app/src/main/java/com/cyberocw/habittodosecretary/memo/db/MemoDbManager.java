@@ -4,16 +4,21 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
+import com.cyberocw.habittodosecretary.common.vo.FileVO;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
 import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
 import com.cyberocw.habittodosecretary.db.DbHelper;
+import com.cyberocw.habittodosecretary.file.FileDbManager;
+import com.cyberocw.habittodosecretary.file.StorageHelper;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -105,21 +110,62 @@ public class MemoDbManager extends DbHelper{
 	}
 
 	public int update(MemoVO item) {
-		SQLiteDatabase db = this.getReadableDatabase();
-		ContentValues values = new ContentValues();
-		values.put(KEY_TITLE, item.getTitle());
-		values.put(KEY_CONTENTS, item.getContents());
-		values.put(KEY_TYPE, item.getType());
-		values.put(KEY_VIEW_CNT, 0);
-		values.put(KEY_USE_YN, item.getUseYn());
-		values.put(KEY_URL, item.getUseYn());
-		values.put(KEY_RANK, item.getRank());
-		values.put(KEY_CATEGORY_ID, item.getCategoryId());
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.beginTransaction();
+		int result = 0;
+		try {
+			ContentValues values = new ContentValues();
+			values.put(KEY_TITLE, item.getTitle());
+			values.put(KEY_CONTENTS, item.getContents());
+			values.put(KEY_TYPE, item.getType());
+			values.put(KEY_VIEW_CNT, 0);
+			values.put(KEY_USE_YN, item.getUseYn());
+			values.put(KEY_URL, item.getUseYn());
+			values.put(KEY_RANK, item.getRank());
+			values.put(KEY_CATEGORY_ID, item.getCategoryId());
 
-		Calendar c = Calendar.getInstance();
-		values.put(KEY_UPDATE_DATE, c.getTimeInMillis());
+			Calendar c = Calendar.getInstance();
+			values.put(KEY_UPDATE_DATE, c.getTimeInMillis());
 
-		int result = db.update(TABLE_MEMO, values, KEY_ID + "=?", new String[]{Long.toString(item.getId())});
+			result = db.update(TABLE_MEMO, values, KEY_ID + "=?", new String[]{Long.toString(item.getId())});
+
+			ArrayList<FileVO> fileList = item.getFileList();
+			if (fileList != null) {
+				FileDbManager fdb = FileDbManager.getInstance(mCtx);
+				FileVO fvo;
+				for (int i = 0; i < fileList.size(); i++) {
+					fvo = fileList.get(i);
+					fvo.setfId(item.getId());
+					fdb.update(fileList.get(i), db);
+				}
+			}
+			fileList = item.getDelFileList();
+			if (fileList != null) {
+				FileDbManager fdb = FileDbManager.getInstance(mCtx);
+				FileVO vo;
+				for (int i = 0; i < fileList.size(); i++) {
+					vo = fileList.get(i);
+					fdb.delete(fileList.get(i).getId(), db);
+				}
+			}
+			db.setTransactionSuccessful();
+			//db 삭제 성공 후 실제 파일 지움
+			if (fileList != null) {
+				FileVO vo;
+				for (int i = 0; i < fileList.size(); i++) {
+					vo = fileList.get(i);
+					StorageHelper.deleteExternalStoragePrivateFile(mCtx, Uri.parse(vo.getUriPath()).getLastPathSegment());
+				}
+			}
+		}
+		catch (Exception e){
+			Crashlytics.log(Log.ERROR, this.toString(), e.getStackTrace().toString() + " mess" + e.getMessage());
+			result = 0;
+		}
+		finally {
+			db.endTransaction();
+		}
+
 		closeDB();
 		return result;
 	}
@@ -142,10 +188,10 @@ public class MemoDbManager extends DbHelper{
 				alarmDbManager.deleteAlarm(alarmId, db);
 				commonRelationDbManager.deleteByTypeAndId(Const.ETC_TYPE.MEMO, id, db);
 			}
-			//db.delete(TABLE_MEMO, KEY_ID + "=?", new String[]{String.valueOf(id)});
-			ContentValues values = new ContentValues();
+			db.delete(TABLE_MEMO, KEY_ID + "=?", new String[]{String.valueOf(id)});
+			/*ContentValues values = new ContentValues();
 			values.put(KEY_USE_YN, 0);
-			db.update(TABLE_MEMO, values, KEY_ID + " =?", new String[]{String.valueOf(id)});
+			db.update(TABLE_MEMO, values, KEY_ID + " =?", new String[]{String.valueOf(id)});*/
 			db.setTransactionSuccessful();
 		}
 		catch (Exception e){
@@ -159,31 +205,54 @@ public class MemoDbManager extends DbHelper{
 		return result;
 	}
 
-	public void insert(MemoVO item) {
+	public boolean insert(MemoVO item) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
-		long now = Calendar.getInstance().getTimeInMillis();
+		db.beginTransaction();
+		boolean result = true;
+		try {
+			long now = Calendar.getInstance().getTimeInMillis();
 
-		ContentValues values = new ContentValues();
-		values.put(KEY_TITLE, item.getTitle());
-		values.put(KEY_CONTENTS, item.getContents());
-		values.put(KEY_TYPE, item.getType());
-		values.put(KEY_USE_YN, 1);
-		values.put(KEY_VIEW_CNT, 0);
-		values.put(KEY_URL, item.getUrl());
-		values.put(KEY_RANK, item.getRank());
-		values.put(KEY_CATEGORY_ID, item.getCategoryId());
-		values.put(KEY_CREATE_DATE, now);
-		values.put(KEY_UPDATE_DATE, now);
+			ContentValues values = new ContentValues();
+			values.put(KEY_TITLE, item.getTitle());
+			values.put(KEY_CONTENTS, item.getContents());
+			values.put(KEY_TYPE, item.getType());
+			values.put(KEY_USE_YN, 1);
+			values.put(KEY_VIEW_CNT, 0);
+			values.put(KEY_URL, item.getUrl());
+			values.put(KEY_RANK, item.getRank());
+			values.put(KEY_CATEGORY_ID, item.getCategoryId());
+			values.put(KEY_CREATE_DATE, now);
+			values.put(KEY_UPDATE_DATE, now);
 
-		long _id = db.insert(TABLE_MEMO, null, values);
+			long _id = db.insert(TABLE_MEMO, null, values);
 
-		if(_id == -1){
-			Log.e(Const.DEBUG_TAG, "DB memo INSERT ERROR");
-			throw new Error("DB memo INSERT ERROR");
+			if (_id == -1) {
+				Log.e(Const.DEBUG_TAG, "DB memo INSERT ERROR");
+				throw new Error("DB memo INSERT ERROR");
+			} else
+				item.setId(_id);
+
+			ArrayList<FileVO> fileList = item.getFileList();
+			if (fileList != null) {
+				FileDbManager fdb = FileDbManager.getInstance(mCtx);
+				FileVO fvo;
+				for (int i = 0; i < fileList.size(); i++) {
+					fvo = fileList.get(i);
+					fvo.setfId(item.getId());
+					fdb.update(fileList.get(i), db);
+				}
+			}
+			db.setTransactionSuccessful();
 		}
-		else
-			item.setId(_id);
-
+		catch (Exception e){
+			Crashlytics.log(Log.ERROR, this.toString(), e.getStackTrace().toString() + " mess" + e.getMessage());
+			result = false;
+		}
+		finally {
+			db.endTransaction();
+		}
+		closeDB();
+		return result;
 	}
 }

@@ -389,7 +389,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		Object[] arrkeys = mEtcMap.keySet().toArray();
 		for(int i = 0 ; i < arrkeys.length; i++){
 			if(arrkeys[i].equals(mEtcType)){
-				Crashlytics.log(Log.DEBUG, this.toString(), "etc selected start");
+				Crashlytics.log(Log.DEBUG, this.toString(), " etc selected start");
 				mSpAppList.setTag(R.id.spAppList, i);
 				mSpAppList.setSelection(i, false);
 
@@ -415,6 +415,8 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		}
 		ArrayList<Calendar> alarmDate = new ArrayList<Calendar>();
 
+		Log.d(this.toString(), "return data mAlarmDateType="+mAlarmDateType);
+
 		// 반복이 아닐 경우 날짜 지정 데이터 삽입
 		if(mAlarmDateType == Const.ALARM_DATE_TYPE.REPEAT){
 			if(mDataRepeatDay.size() == 0){
@@ -435,10 +437,11 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 			alarmDate.add(c);
 		}
 
+		/*
 		if(mEtcType.equals(Const.ETC_TYPE.MEMO) && mMemoVO == null){
 			Toast.makeText(mCtx, getString(R.string.dialog_alarm_msg_select_repeat), Toast.LENGTH_LONG).show();
 			return;
-		}
+		}*/
 
 		int soundType = CommonUtils.getAlarmOptionValue(mSpSoundType.getSelectedItemPosition());
 
@@ -560,7 +563,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				int code = Const.ALARM_DATE_TYPE.getNumByPosition(position);
-
+				Log.d(this.toString(), "position= " + position + " code="+code);
 				renderDateTypeUi(code, mCalendar);
 			}
 
@@ -577,6 +580,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		llTimePickWrap.setVisibility(View.VISIBLE);
 
 		mAlarmDateType = alarmDateType;
+
 
 		if(c == null)
 			c = Calendar.getInstance();
@@ -621,6 +625,8 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 				mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE;
 				break;
 		}
+
+		Log.d(this.toString(), "renderDateTypeUi mAlarmDateType="+mAlarmDateType);
 	}
 
 	public void makeSpinnerAlarmType(){
@@ -750,9 +756,6 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 
 			}
 		});
-
-		Crashlytics.log(Log.DEBUG, this.toString(), " onitem selected listener end ");
-
 		mBtnAddAlarm.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

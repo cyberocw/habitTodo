@@ -68,7 +68,7 @@ public class AttachmentTask extends AsyncTask<Void, Void, FileVO> {
             }
         } else {
             if (mAttachment != null) {
-                StorageHelper.delete(mCtx, mAttachment.getUri().getPath());
+                StorageHelper.delete(mCtx, mAttachment.getUriPath());
             }
         }
     }

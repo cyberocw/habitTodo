@@ -8,6 +8,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -151,7 +152,7 @@ public class CalendarManager {
 		});
 
 		TextView tvTitle = new TextView(mCtx);
-		LinearLayout.LayoutParams paramsTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, pixelsHeight, 1f);
+		LinearLayout.LayoutParams paramsTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
 		tvTitle.setLayoutParams(paramsTv);
 		tvTitle.setText(dayText[index]);
 		tvTitle.setGravity(Gravity.CENTER);
@@ -167,7 +168,7 @@ public class CalendarManager {
 		arrTextViewDayNum[index] = tvDayNum;
 
 		LinearLayout iconWrap = new LinearLayout(mCtx);
-		LinearLayout.LayoutParams paramsIconWrap = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, pixelsIconWrapHeight, 1f);
+		LinearLayout.LayoutParams paramsIconWrap = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, pixelsIcon * 2, 1f);
 		iconWrap.setOrientation(LinearLayout.VERTICAL);
 		paramsIconWrap.gravity = Gravity.CENTER;
 		iconWrap.setLayoutParams(paramsIconWrap);
@@ -177,9 +178,8 @@ public class CalendarManager {
 
 		LinearLayout.LayoutParams paramsIv = new LinearLayout.LayoutParams(pixelsIcon, pixelsIcon);
 		paramsIv.gravity = Gravity.CENTER;
-
+		//iv.setPadding(0,2,0,2);
 		iv.setLayoutParams(paramsIv);
-
 		arrImageView[index] = iv;
 		iconWrap.addView(iv);
 
@@ -189,7 +189,7 @@ public class CalendarManager {
 		TextView tvDayName = new TextView(mCtx);
 		//LinearLayout.LayoutParams paramsDayName = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
 		tvDayName.setLayoutParams(paramsTv);
-		tvDayName.setHeight(pixelsDayName);
+		//tvDayName.setHeight(pixelsDayName);
 		tvDayName.setGravity(Gravity.CENTER);
 
 		tvDayName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
@@ -295,8 +295,10 @@ public class CalendarManager {
 			//일정이 있으면 날짜 아래에 o 표시
 			if(mArrAlarmList.contains(fDay)){
 				arrImageView[i].setImageResource(R.drawable.dot);
+
 			}else{
 				arrImageView[i].setImageResource(0);
+
 			}
 			cal2.add(Calendar.DAY_OF_MONTH, 1);
 		}

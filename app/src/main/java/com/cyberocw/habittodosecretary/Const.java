@@ -19,7 +19,7 @@ public class Const {
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
 	public static final int ONGOING_ALARM_NOTI_ID = 999999998;
 
-    public static final boolean IS_DEBUG = false;
+    public static final boolean IS_DEBUG = true;
 
 	public class PARAM{
 		public static final String MODE = "mode";
@@ -31,6 +31,8 @@ public class Const {
 		public static final String VIEW_TYPE = "viewType";
 		public static final String MEMO_VO = "memoVO";
 		public static final String ALARM_VO = "alarmVO";
+		public static final String FILE_VO = "fileVO";
+		public static final String FILE_VO_LIST = "fileVOList";
 		public static final String ALARM_TIME_VO = "alarmTimeVO";
 		public static final String ALARM_OPTION = "alarmOption";
 		public static final String ALARM_ID_TIME_STAMP = "alarmIdTimeStamp";
@@ -53,6 +55,17 @@ public class Const {
 
 		public static final int SELECT_CALENDAR_DATE = 224;
 
+	}
+
+	public class FRAGMENT_TAG{
+		public static final String DASHBOARD= "DASHBOARD_FRAGMENT";
+		public static final String MEMO= "MEMO_FRAGMENT";
+		public static final String MEMO_DIALOG= "MEMO_DIALOG";
+		public static final String ALARM= "ALARM_FRAGMENT";
+		public static final String ALARM_DIALOG= "ALARM_DIALOG";
+		public static final String SETTING= "SETTING_FRAGMENT";
+		public static final String CATEGORY= "CATEGORY_FRAGMENT";
+		public static final String KEYWORD= "KEYWORD_FRAGMENT";
 	}
 
 	public class KEY_FIELD{
@@ -183,6 +196,7 @@ public class Const {
 		public static final String IS_ALARM_NOTI = "isAlarmNoti";
 		public static final String IS_TTS_NOTI = "isTTSNoti";
 		public static final String IS_TTS_NOTI_MANNER = "isTTSNotiManner";
+		public static final String IS_DISTURB_MODE = "isDisturbMode";
 		public static final String IS_NOTIBAR_USE = "isNotibarUse";
 		public static final String IS_BACKGROUND_NOTI_USE = "isBackgroundNotibarUse";
 		public static final String IS_SHOW_UPDATE_LOG = "isUpdateLog";
@@ -225,4 +239,10 @@ public class Const {
 		public static final int CHANNEL_CONFIGURATION_IN = AudioFormat.CHANNEL_IN_MONO;
 		public static final int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 	}
+
+	public static String MIME_TYPE_IMAGE = "image/jpeg";
+	public static String MIME_TYPE_AUDIO = "audio/amr";
+	public static String MIME_TYPE_VIDEO = "video/mp4";
+	public static String MIME_TYPE_SKETCH = "image/png";
+	public static String MIME_TYPE_FILES = "file/*";
 }

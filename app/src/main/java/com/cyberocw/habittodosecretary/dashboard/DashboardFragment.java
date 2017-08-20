@@ -127,6 +127,7 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
             ButterKnife.findById(mView, R.id.keywordWrap0).setVisibility(View.GONE);
             ButterKnife.findById(mView, R.id.keywordWrap1).setVisibility(View.GONE);
             ButterKnife.findById(mView, R.id.keywordWrap2).setVisibility(View.GONE);
+            ButterKnife.findById(mView, R.id.keywordWrap3).setVisibility(View.GONE);
         }
         makeMemoList();
 

@@ -11,7 +11,7 @@
         android:maxHeight="250dp"
         android:layout_gravity="center"
         android:src="@drawable/eng_intro3"
-        android:visibility="visible"
+        android:visibility="gone"
         android:adjustViewBounds= "true"
         android:layout_below="@+id/relativeLayout"
         android:layout_centerHorizontal="true"

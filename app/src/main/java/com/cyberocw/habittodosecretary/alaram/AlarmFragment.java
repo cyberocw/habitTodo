@@ -88,6 +88,7 @@ public class AlarmFragment extends Fragment{
 	private int mListViewType = Const.ALARM_LIST_VIEW_TYPE.EXPENDABLE_LIST; // 1: listview 2: expendable view
 	private int mMode = -1;
 	private long mAlarmId = -1;
+	private int mCallOnClick = 0;
 
 
 	private OnFragmentInteractionListener mListener;
@@ -530,17 +531,25 @@ public class AlarmFragment extends Fragment{
 	}
 
 	public void expandGroupView(){
-		ExpandableListView newLv = (ExpandableListView) mView.findViewById(R.id.alramListView);
+		try {
+			ExpandableListView newLv = (ExpandableListView) mView.findViewById(R.id.alramListView);
 
-		boolean isExpandRepeat = mPrefs.getBoolean(Const.ALARM_LIST_VIEW_TYPE.TAG_REPEAT_EXPAND, true);
+			boolean isExpandRepeat = mPrefs.getBoolean(Const.ALARM_LIST_VIEW_TYPE.TAG_REPEAT_EXPAND, true);
 
-		int cnt = ((ExpandableListAdapter) mAlarmAdapter).getGroupCount();
+			int cnt = ((ExpandableListAdapter) mAlarmAdapter).getGroupCount();
 
-		for(int i = 0 ; i < cnt; i++) {
-			if(i == 0 && cnt > 1 && mAlarmDataManager.positionToGroupCode(0).equals(String.valueOf(Const.ALARM_DATE_TYPE.REPEAT)) && isExpandRepeat == false)
-				newLv.collapseGroup(0);
-			else
-				newLv.expandGroup(i);
+			for (int i = 0; i < cnt; i++) {
+				if (i == 0 && cnt > 1 && mAlarmDataManager.positionToGroupCode(0).equals(String.valueOf(Const.ALARM_DATE_TYPE.REPEAT)) && isExpandRepeat == false)
+					newLv.collapseGroup(0);
+				else
+					newLv.expandGroup(i);
+			}
+		}
+		catch(Exception e){
+			if(mCallOnClick < 3) {
+				ButterKnife.findById(mView, R.id.btnViewMode).callOnClick();
+				mCallOnClick++;
+			}
 		}
 	}
 
@@ -842,7 +851,8 @@ public class AlarmFragment extends Fragment{
 		AlarmVO vo;
 		TimerVO tvo;
 
-		mAlarmDataManager.hasContext(getActivity());
+		if(mAlarmDataManager.mCtx != null && getActivity() != null)
+			mAlarmDataManager.hasContext(getActivity());
 
 		switch(resultCode) {
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE :
@@ -961,6 +971,7 @@ public class AlarmFragment extends Fragment{
 	public void onDestroy() {
 		if(mAlarmDataManager != null)
 			mAlarmDataManager.close();
+		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on destroy");
 		super.onDestroy();
 	}
 

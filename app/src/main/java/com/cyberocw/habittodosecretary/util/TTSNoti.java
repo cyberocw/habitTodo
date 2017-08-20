@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
+import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -66,6 +67,15 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 			mArrText.add(intent.getExtras().getString("alaramTitle"));
 			mIsNUll = false;
 			Log.d(this.toString(), "mTTS  = " + mTTS );
+
+
+			AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+			switch (am.getRingerMode()) {
+				case AudioManager.RINGER_MODE_NORMAL:
+					try{Thread.sleep(1000);}catch (Exception e){}
+					break;
+			}
+
 			if(mTTS == null)
 				mTTS = new TextToSpeech(this, this);
 			else{

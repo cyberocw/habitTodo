@@ -278,9 +278,15 @@ public class CategoryFragment extends Fragment {
 	}
 
 	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Crashlytics.log(Log.DEBUG, this.toString(), "onDestroy");
+	}
+
+	@Override
 	public void onDetach() {
 		super.onDetach();
-		mListener = null;
+		Crashlytics.log(Log.DEBUG, this.toString(), "onDetach");
 	}
 
 	public void showMemoList(long id) {
@@ -294,7 +300,7 @@ public class CategoryFragment extends Fragment {
 		b.putLong(Const.CATEGORY.CATEGORY_ID, id);
 		b.putString(Const.CATEGORY.CATEGORY_TITLE_KEY, mCateDataManager.getItemById(id).getTitle());
 		b.putBoolean(Const.MEMO.SHOW_TOOLBAR, true);
-		f.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE);
+		//f.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_CODE);
 
 		mActionBar.setTitle(mCateDataManager.getItemById(id).getTitle());
 
@@ -302,14 +308,14 @@ public class CategoryFragment extends Fragment {
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 		fragmentManager.beginTransaction()
 				.addToBackStack(null)
-				.add(R.id.main_container, f, "MemoFragment").commit();
+				.add(R.id.main_container, f, Const.FRAGMENT_TAG.MEMO).commit();
 
 	}
 
 	public void setActionBar(ActionBar actionBar){
 		mActionBar = actionBar;
 	}
-
+/*
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch(resultCode) {
@@ -318,18 +324,14 @@ public class CategoryFragment extends Fragment {
 				getActivity().getSupportFragmentManager().popBackStackImmediate();
 				break;
 		}
-	}
+	}*/
 	@Override
 	public void onAttach(Context context) {
-
 		super.onAttach(context);
-
-		MemoFragment fragment = (MemoFragment) getFragmentManager().findFragmentByTag("MemoFragment");
-
-		if (fragment != null) {
-			fragment.setTargetFragment(this, 0);
-		}
 	}
+
+
+
 	/**
 	 * This interface must be implemented by activities that contain this
 	 * fragment to allow an interaction in this fragment to be communicated

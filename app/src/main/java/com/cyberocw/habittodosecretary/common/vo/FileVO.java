@@ -9,15 +9,17 @@ import java.io.Serializable;
  */
 
 public class FileVO implements Serializable{
-    private static final long serialVersionUID = 1242L;
-    private Long id, fId;
+    //private static final long serialVersionUID = 1242L;
+    private long id, fId = -1l;
     private String uriPath;
     private String name, type;
     private long size;
     private long length;
     private String mimeType;
     private long createDt;
-    private Uri uri;
+    private String uri;
+
+    public FileVO(){}
 
     public FileVO(Long id, String uri, String name, long size, long length, String mimeType) {
         this.id = id;
@@ -30,14 +32,14 @@ public class FileVO implements Serializable{
 
     public FileVO(Uri uri, String mimeTypeInternal) {
         this(-1L, uri.getPath(), null, 0, 0, mimeTypeInternal);
-        setUri(uri);
+        setUri(uri.toString());
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -81,16 +83,11 @@ public class FileVO implements Serializable{
         this.mimeType = mimeType;
     }
 
-    public Uri getUri() {
+    public String getUri() {
         return uri;
     }
-
-    public void setUri(Uri uri) {
+    public void setUri(String uri) {
         this.uri = uri;
-    }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
     }
 
     public Long getfId() {

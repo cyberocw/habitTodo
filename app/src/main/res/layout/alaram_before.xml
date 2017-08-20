@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/tvBeforeTime"
         android:layout_width="wrap_content"
-        android:layout_height="20dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="TextView" />
 
@@ -17,7 +17,7 @@
         android:id="@+id/btnRemoveTime"
         android:layout_width="20dp"
         android:layout_height="20dp"
-
+        android:layout_gravity="center"
         android:layout_marginLeft="4dp"
         android:background="@drawable/ic_remove_circle_outline_black_24dp" />
 </LinearLayout>

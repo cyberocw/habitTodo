@@ -71,14 +71,14 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	private long backPressedTime = 0;
 	private MenuItem mHelpMenu = null;
 
+	private AlarmDataManager mAlarmDataManager;
+
 	FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		Crashlytics cr = new Crashlytics();
-		cr.setDebugMode(true);
-
 		Fabric.with(this, cr);
 
 		mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -122,15 +122,11 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-
-
 		super.onRestoreInstanceState(savedInstanceState);
-
 	}
 
 	@Override
@@ -146,17 +142,6 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "reqCode=" + reqCode);
 				manager.cancel(reqCode);
 				initMainActivity(intent);
-				/*
-
-				FragmentManager fragmentManager = getSupportFragmentManager();
-
-				Fragment alarmFragment = new AlarmFragment();
-
-				alarmFragment.setArguments(intent.getExtras());
-				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
-				fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-						.replace(R.id.main_container, alarmFragment).commit();
-*/
 
 				//afterUpdateVersion();
 			} else {
@@ -169,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	public void initMainActivity(Intent intent){
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		Fragment fragment;
-
+		String tag;
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "ocw vintent = " + intent + " get extras = " + intent.getExtras());
 		//시작하는 경우는 최초 실행, 메모보기, 알림 연장 의 경우로 아 래 로직을 탐
 		if(intent != null && intent.getExtras() != null) {
@@ -187,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				Crashlytics.log(Log.DEBUG, this.toString(), "bundle.getString(Const.PARAM.ETC_TYPE_KEY)="+bundle.getString(Const.PARAM.ETC_TYPE_KEY));
 				if(bundle.getString(Const.PARAM.ETC_TYPE_KEY).equals(Const.ETC_TYPE.MEMO)){
 					fragment = new MemoFragment();
+					tag = Const.FRAGMENT_TAG.MEMO;
 					actionBar.setTitle(getResources().getString(R.string.nav_item_memo));
 					if(mHelpMenu != null)
 						mHelpMenu.setVisible(false);
@@ -194,23 +180,27 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 					Toast.makeText(getApplicationContext(), getString(R.string.main_activity_etctype_invalid), Toast.LENGTH_LONG).show();
 					Log.e(this.toString(), "버그! etcType이 잘못 되었습니다 etcType="+ bundle.getString("etcType"));
 					fragment = new AlarmFragment();
+					tag = Const.FRAGMENT_TAG.ALARM;
 				}
 			}else{
 				fragment = new AlarmFragment();
+				tag = Const.FRAGMENT_TAG.ALARM;
 			}
 			fragment.setArguments(bundle);
 		}else {
 			if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
 				fragment = new DashboardFragment();
+				tag = Const.FRAGMENT_TAG.DASHBOARD;
 				actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
 			}else{
 				fragment = new AlarmFragment();
+				tag = Const.FRAGMENT_TAG.ALARM;
 				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
 			}
 		}
 
 		fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-				.replace(R.id.main_container, fragment).commit();
+				.replace(R.id.main_container, fragment, tag).commit();
 
 		afterUpdateVersion();
 
@@ -280,6 +270,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			cateVO.setUseYn('Y');
 			cdm.addItem(cateVO);
 
+			putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);
+
 			Intent i = new Intent(this, Intro.class);
 			i.putExtra(Const.PARAM.MODE, "intro");
 			i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
@@ -303,7 +295,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				initializeSetting.execute();
 			}
 			if(!prefsSavedVersion.equals("0")){
-				showUpdateLog();
+				//showUpdateLog();
+				putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);
 			}
 			File rootDir = new File(getApplicationContext().getFilesDir(), "voice");
 			if(!rootDir.isDirectory())
@@ -327,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		});
 		String msg;
 		if(CommonUtils.isLocaleKo(getResources().getConfiguration())){
-			msg = "1. 메모 메뉴에 할일 입력 기능이 추가되었습니다. \n\n" + "2. TTS 재생 기능 버그 수정";
+			msg = "1. 특정 상황에서 앱이 강제종료되는 현상에 대한 안정화 \n\n" + "2. 작은 화면 혹은 큰 글씨를 사용하는 경우에 대한 최적화 작업";
 		}
 		else {
 			msg = "1. Added to-do list function for memo menu.\n\n" +
@@ -349,11 +342,13 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		SharedPreferences prefs = getApplicationContext().getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 		return prefs.getBoolean(key, true);
 	}
-
+	private boolean getAlarmPreference(String key, boolean defaultVal){
+		SharedPreferences prefs = getApplicationContext().getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+		return prefs.getBoolean(key, defaultVal);
+	}
 	private boolean toggleAlarmPreference(String key){
 		return putAlarmPreference(key, !getAlarmPreference(key));
 	}
-
 
 	public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -385,6 +380,19 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				else
 					item.setChecked(false);
 				return true;
+			case R.id.isDisturbMode :
+				toggleAlarmPreference(Const.SETTING.IS_DISTURB_MODE);
+				if(mAlarmDataManager == null)
+					mAlarmDataManager = new AlarmDataManager(getApplicationContext());
+				if(getAlarmPreference(Const.SETTING.IS_DISTURB_MODE)) {
+					item.setChecked(true);
+					mAlarmDataManager.stopAllAlarm();
+				}
+				else {
+					item.setChecked(false);
+					mAlarmDataManager.resetMinAlarm();
+				}
+				return true;
 			case R.id.setting:
 				this.onNavigationItemSelected(R.id.nav_item_setting);
         }
@@ -411,6 +419,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			menu.findItem(R.id.isAlarmNoti).setChecked(true);
 		if(getAlarmPreference(Const.SETTING.IS_TTS_NOTI))
 			menu.findItem(R.id.isTTSNoti).setChecked(true);
+		if(getAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false))
+			menu.findItem(R.id.isDisturbMode).setChecked(true);
 		return true;
 	}
 
@@ -427,16 +437,19 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	public boolean onNavigationItemSelected(int id){
 		// update the main content by replacing fragments
 		Fragment fragment = null;
+		String tag = "";
 		//int id = item.getItemId();
 		switch (id) {
 			case R.id.nav_item_dashboard:
 				fragment = new DashboardFragment();
+				tag = Const.FRAGMENT_TAG.DASHBOARD;
 				actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
 				if(mHelpMenu != null)
 					mHelpMenu.setVisible(false);
 				break;
 			case R.id.nav_item_alaram:
 				fragment = new AlarmFragment();
+				tag = Const.FRAGMENT_TAG.ALARM;
 				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
 				//한글일때만 나옴
 				if(mHelpMenu != null && CommonUtils.isLocaleKo(getResources().getConfiguration()))
@@ -444,12 +457,14 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				break;
 			case R.id.nav_item_memo:
 				fragment = new MemoFragment();
+				tag = Const.FRAGMENT_TAG.MEMO;
 				actionBar.setTitle(getResources().getString(R.string.nav_item_memo));
 				if(mHelpMenu != null)
 					mHelpMenu.setVisible(false);
 				break;
 			case R.id.nav_item_cate:
 				fragment = new CategoryFragment();
+				tag = Const.FRAGMENT_TAG.CATEGORY;
 				((CategoryFragment) fragment).setActionBar(actionBar);
 				actionBar.setTitle(getResources().getString(R.string.nav_item_cate));
 				if(mHelpMenu != null)
@@ -457,12 +472,14 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				break;
 			case R.id.nav_item_setting:
 				fragment = new SettingFragment();
+				tag = Const.FRAGMENT_TAG.SETTING;
 				actionBar.setTitle(getResources().getString(R.string.nav_item_setting));
 				if(mHelpMenu != null)
 					mHelpMenu.setVisible(false);
 				break;
 			case R.id.nav_item_keyword:
 				fragment = new KeywordFragment();
+				tag = Const.FRAGMENT_TAG.KEYWORD;
 				actionBar.setTitle(getResources().getString(R.string.nav_item_keyword));
 				if(mHelpMenu != null)
 					mHelpMenu.setVisible(false);
@@ -473,9 +490,16 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				break;
 		}
 		if (fragment != null) {
-			FragmentManager fragmentManager = getSupportFragmentManager();
-			fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-					.replace(R.id.main_container, fragment).commit();
+
+			int top = getSupportFragmentManager().getFragments().size()-1;
+			while (top > 0 && getSupportFragmentManager().getFragments().get(top) == null) {
+				top--;
+			}
+			getSupportFragmentManager().beginTransaction()
+					.remove(getSupportFragmentManager().getFragments().get(top)).commit();
+
+			getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+					.replace(R.id.main_container, fragment, tag).commit();
 			// update selected item and title, then close the drawer
 
 			mDrawer.closeDrawer(GravityCompat.START);

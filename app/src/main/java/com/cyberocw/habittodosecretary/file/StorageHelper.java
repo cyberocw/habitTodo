@@ -26,8 +26,10 @@ import android.os.StatFs;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.common.vo.FileVO;
 import com.cyberocw.habittodosecretary.util.Constants;
 import com.cyberocw.habittodosecretary.file.FileHelper;
@@ -111,9 +113,10 @@ public class StorageHelper {
 
         // Checks for external storage availability
         if (!checkStorage()) {
-            //Toast.makeText(mContext, mContext.getString(R.string.storage_not_available), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "storage_not_available", Toast.LENGTH_SHORT).show();
             return null;
         }
+        //날짜로 파일 이름 만들어옴 getExternalFilesDir 경로로
         File file = createNewAttachmentFile(mContext, extension);
 
         InputStream is = null;
@@ -166,7 +169,7 @@ public class StorageHelper {
      */
     public static FileVO createAttachmentFromUri(Context mContext, Uri uri, boolean moveSource) {
         String name = FileHelper.getNameFromUri(mContext, uri);
-        String extension = FileHelper.getFileExtension(FileHelper.getNameFromUri(mContext, uri)).toLowerCase(
+        String extension = FileHelper.getFileExtension(name).toLowerCase(
                 Locale.getDefault());
         File f;
         if (moveSource) {
@@ -176,7 +179,9 @@ public class StorageHelper {
             } catch (IOException e) {
                 //Log.e(Constants.TAG, "Can't move file " + uri.getPath());
             }
-        } else {
+        }
+        else {
+            //getExternalFilesDir 경로로 날짜 파일 생성 복사
             f = StorageHelper.createExternalStoragePrivateFile(mContext, uri, extension);
         }
         FileVO mAttachment = null;
@@ -248,7 +253,11 @@ public class StorageHelper {
         }
 
         File file = new File(mContext.getExternalFilesDir(null), name);
-        file.delete();
+        if(file.isFile())
+            file.delete();
+        else{
+            Toast.makeText(mContext, "Not Found file", Toast.LENGTH_SHORT).show();
+        }
 
         return true;
     }

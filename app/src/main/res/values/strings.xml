@@ -38,6 +38,7 @@
     <string name="setting">Settings</string>
     <string name="setting_menu_title_use_alarm">Alarm Sound/Vibration On</string>
     <string name="setting_menu_title_use_tts">Alarm TTS On</string>
+    <string name="setting_menu_title_toggle_alarm">Turn on Do Not Disturb mode</string>
 
     <!-- test ad -->
     <!--string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string-->
@@ -50,6 +51,7 @@
     <string name="alarm_date_today">Today</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="share">share</string>
     <string name="dialog_title_datepick">Date Pick</string>
     <string name="option">option</string>
     <string name="delete_all">Delete all</string>
@@ -106,6 +108,8 @@
     <string name="setting_play_tts">If you turn off the option, the alert will not be read as a voice when the alert sounds. Recordings are the same.</string>
     <string name="setting_play_void_manner_mode">Play voice/recordings in manners mode</string>
     <string name="setting_voice_volume">Voice Volume</string>
+    <string name="setting_disturb_title">Do Not Disturb Mode On</string>
+    <string name="setting_disturb_cont">While this option is on, you will not receive any notifications.</string>
     <string name="dialog_alarm_msg_select_repeat">Please choose a day to repeat</string>
     <string name="dialog_alarm_msg_select_memo">Please select a memo</string>
     <string name="dialog_alarm_msg_duplication_call">There are duplicate times</string>

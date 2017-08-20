@@ -458,6 +458,11 @@ public class AlarmDataManager {
 		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 		stopAllAlarm(prefs);
 
+		SharedPreferences prefsSetting = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+		if(prefsSetting.getBoolean(Const.SETTING.IS_DISTURB_MODE, false)){
+			return;
+		}
+
 		ArrayList<AlarmTimeVO> alarmTimeList1 = null;
 		ArrayList<AlarmTimeVO> alarmTimeList2 = null;
 		ArrayList<AlarmTimeVO> alarmTimeList = null;
@@ -534,7 +539,9 @@ public class AlarmDataManager {
 		editor.commit();
 
 	}
-
+	public void stopAllAlarm(){
+		stopAllAlarm(null);
+	}
 	public void stopAllAlarm(SharedPreferences prefs){
 		if(prefs == null)
 			prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
@@ -566,8 +573,6 @@ public class AlarmDataManager {
 			Intent intentAlarmbackground = new Intent(mCtx, AlarmBackgroudService.class);
 			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "background Service stop");
 			mCtx.stopService(intentAlarmbackground);
-
-			CommonUtils.putLogPreference(mCtx, "기존 알람 모두 취소 완료");
 		}
 	}
 

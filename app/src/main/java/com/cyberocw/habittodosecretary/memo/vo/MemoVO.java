@@ -1,6 +1,9 @@
 package com.cyberocw.habittodosecretary.memo.vo;
 
+import com.cyberocw.habittodosecretary.common.vo.FileVO;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by cyberocw on 2015-12-06.
@@ -18,6 +21,8 @@ public class MemoVO implements Serializable {
 	private int rank;
 	private int useYn;
 	private long alarmId = -1;
+	private ArrayList<FileVO> fileList;
+	private ArrayList<FileVO> delFileList;
 
 	public long getAlarmId() {
 		return alarmId;
@@ -130,4 +135,21 @@ public class MemoVO implements Serializable {
 				", alarmId=" + alarmId +
 				'}';
 	}
+
+    public void setFileList(ArrayList<FileVO> fileList) {
+        this.fileList = fileList;
+    }
+
+	public ArrayList<FileVO> getFileList() {
+		return fileList;
+	}
+
+	public void setDelFileList(ArrayList<FileVO> fileList) {
+		this.delFileList = fileList;
+	}
+
+	public ArrayList<FileVO> getDelFileList() {
+		return delFileList;
+	}
+
 }

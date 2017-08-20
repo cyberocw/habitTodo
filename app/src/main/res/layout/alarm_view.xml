@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="horizontal"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:padding="10dp"
-              android:clickable="true"
-              android:longClickable="true"
-            android:background="@drawable/border_set"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:clickable="true"
+    android:longClickable="true"
+    android:background="@drawable/border_set"
 
     >
     <LinearLayout
@@ -16,32 +17,32 @@
         android:layout_marginRight="40dp"
         android:orientation="horizontal"
         android:layout_gravity="center"
+        android:gravity="center"
         >
+
         <ToggleButton
             android:id="@+id/timeText"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@null"
             android:checked="false"
             android:drawableLeft="@drawable/toggle_timer"
             android:padding="5dp"
-            android:textColor="@color/toggle_text"
             android:text="00:53"
+            android:textColor="@color/toggle_text"
             android:textOff="00:53"
             android:textOn="" />
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="28dp"
             android:orientation="vertical"
             android:gravity="center_vertical"
             >
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/alarmViewTitleWrap"
-                android:orientation="horizontal"
-                >
+                android:id="@+id/alarmViewTitleWrap">
                 <TextView
                     android:id="@+id/tvDayTitle"
                     android:layout_width="wrap_content"
@@ -82,26 +83,30 @@
                     android:background="@drawable/button_light_round"
                     android:textColor="@color/white"
                     android:maxLines="1"/>
-                <LinearLayout
+                <com.google.android.flexbox.FlexboxLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/alarmOptionWrap"
                     android:orientation="horizontal"
+                    app:flexWrap="wrap"
+                    app:alignItems="stretch"
+                    app:justifyContent="space_between"
+                    app:alignContent="space_between"
                     >
                     <TextView
-                        android:id="@+id/tvTimeTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="2dp"
-                        android:text="-10"
-                        android:visibility="visible"
-                        android:textSize="8sp"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:background="@drawable/button_alarm_time_round"
-                        android:textColor="@color/black_semi_transparent"
-                        />
-                </LinearLayout>
+                    android:id="@+id/tvTimeTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2dp"
+                    android:text="-10"
+                    android:visibility="visible"
+                    android:textSize="8sp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:background="@drawable/button_alarm_time_round"
+                    android:textColor="@color/black_semi_transparent"
+                    />
+                </com.google.android.flexbox.FlexboxLayout>
 
             </LinearLayout>
 

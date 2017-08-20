@@ -318,11 +318,11 @@
                 <Button
                     android:id="@+id/btnAddAlarm"
                     style="@style/button_primary"
-                    android:layout_width="50dp"
-                    android:layout_height="25dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="15dp"
-                    android:padding="5dp"
+                    android:padding="8dp"
                     android:text="@string/add" />
             </LinearLayout>
 

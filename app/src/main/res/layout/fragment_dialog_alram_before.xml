@@ -61,9 +61,9 @@
         <Button
             android:id="@+id/button"
             style="@style/button_primary"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginLeft="10dp"
             android:padding="10dp"
             android:text=" 이전" />
         </LinearLayout>

@@ -46,7 +46,7 @@
                         android:id="@+id/btnHolidaySync"
                         style="@style/button_primary"
                         android:layout_width="wrap_content"
-                        android:layout_height="28dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:padding="5dp"
                         android:text="공휴일 동기화" />
@@ -91,7 +91,7 @@
                         android:id="@+id/btnDbBackup"
                         style="@style/button_primary"
                         android:layout_width="wrap_content"
-                        android:layout_height="28dp"
+                        android:layout_height="wrap_content"
                         android:padding="5dp"
                         android:layout_gravity="center_horizontal"
                         android:text="@string/setting_btn_backup"
@@ -100,7 +100,7 @@
                         android:id="@+id/btnDbRestore"
                         style="@style/button_primary"
                         android:layout_width="wrap_content"
-                        android:layout_height="28dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginLeft="@dimen/margin_small"
                         android:padding="5dp"
@@ -302,6 +302,37 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical"
+                android:padding="@dimen/margin_small"
+                android:background="@drawable/border_set"
+                >
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <Switch
+                        android:id="@+id/isDisturb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:text="@string/setting_disturb_title" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/half_black"
+                        android:text="@string/setting_disturb_cont"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:padding="@dimen/margin_small"
                 android:orientation="vertical"
                 android:background="@drawable/border_set"
@@ -321,7 +352,7 @@
                         android:id="@+id/btnPrivacyPolicy"
                         style="@style/button_primary"
                         android:layout_width="wrap_content"
-                        android:layout_height="28dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:padding="5dp"
                         android:text="@string/show" />
