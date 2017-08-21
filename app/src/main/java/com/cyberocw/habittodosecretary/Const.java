@@ -173,20 +173,24 @@ public class Const {
 			public static final int VIEW_MEMO_ETC_CODE = 1115;
 			public static final int DEL_MEMO_FINISH_CODE = 1116;
 			public static final int PICK_FILE_RESULT_CODE = 1117;
+			public static final int TAKE_PHOTO = 1118;
+			public static final int TAKE_VIDEO = 1119;
+
 			public static final String ADD_MEMO_ETC_KEY = "memoEtc";
 			public static final String VIEW_MEMO_ETC_KEY = "viewMemoEtc";
 			public static final String SHARE_MEMO_MODE = "MEMO_MODE";
 		}
 	}
 	public class FILE{
-		public static final int TYPE_FILE = 0;
-		public static final int TYPE_IMAGE = 1;
+		//public static final String TYPE_ALARM = "ALARM";
+		//public static final String TYPE_MEMO = "MEMO";
 	}
 
 	public class ETC_TYPE{
 		public static final String NONE = "";
 		public static final String WEATHER = "WEATHER";
 		public static final String MEMO = "MEMO";
+		public static final String ALARM = "ALARM";
 	}
 
 	public class SETTING{

@@ -34,8 +34,8 @@ public class FileDataManager {
     public ArrayList<FileVO> getDataList(){
         return this.dataList;
     }
-    public void makeDataList(long memoId){
-        this.dataList = mDb.getAttachList(memoId);
+    public void makeDataList(String type, long memoId){
+        this.dataList = mDb.getAttachList(type, memoId);
     }
 
     public ArrayList<FileVO> getDelDataList(){

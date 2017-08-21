@@ -177,4 +177,11 @@
     <string name="privacy_policy">privacy policy</string>
     <string name="show">Show</string>
 
+    <string name="record">Record</string>
+    <string name="camera">Camera</string>
+    <string name="video">Video</string>
+    <string name="files">Files</string>
+    <string name="pictures">Pictures</string>
+    <string name="error">Error</string>
+
 </resources>

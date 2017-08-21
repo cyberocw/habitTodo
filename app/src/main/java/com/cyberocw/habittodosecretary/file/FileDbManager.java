@@ -49,8 +49,8 @@ public class FileDbManager extends DbHelper {
         return sInstance;
     }
 
-    public ArrayList<FileVO> getAttachList(long fId){
-        String selectQuery = " SELECT * FROM " + TABLE_FILE_INFO + " where " + KEY_F_ID + " = " + fId;
+    public ArrayList<FileVO> getAttachList(String type, long fId){
+        String selectQuery = " SELECT * FROM " + TABLE_FILE_INFO + " where " + KEY_TYPE + "='" + type + "' AND " + KEY_F_ID + " = " + fId;
         Log.d(this.toString(), "selectQuery="+selectQuery);
         return getQuery(selectQuery);
     }

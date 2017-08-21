@@ -70,7 +70,7 @@ public class MemoDataManager {
 		dataList = mDb.getListByCate(cateId, sortOption, cnt);
 		FileDataManager fdm = new FileDataManager(mCtx);
 		for(int i = 0 ; i < dataList.size(); i++){
-			fdm.makeDataList(dataList.get(i).getId());
+			fdm.makeDataList(Const.ETC_TYPE.MEMO, dataList.get(i).getId());
 			dataList.get(i).setFileList(fdm.getDataList());
 		}
 		cachedDataList = (ArrayList) dataList.clone();
