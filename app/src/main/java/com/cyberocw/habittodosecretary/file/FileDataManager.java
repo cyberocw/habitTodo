@@ -2,8 +2,10 @@ package com.cyberocw.habittodosecretary.file;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.common.vo.FileVO;
 import com.cyberocw.habittodosecretary.keyword.vo.KeywordVO;
@@ -36,6 +38,17 @@ public class FileDataManager {
     }
     public void makeDataList(String type, long memoId){
         this.dataList = mDb.getAttachList(type, memoId);
+    }
+
+    public void deleteTrash(){
+        Crashlytics.log(Log.DEBUG, this.toString(), "trash start");
+        ArrayList<FileVO> deleteList = mDb.deleteTrash();
+        if(deleteList != null) {
+            for (int i = 0; i < deleteList.size(); i++) {
+                deleteFile(deleteList.get(i));
+            }
+        }
+        Crashlytics.log(Log.DEBUG, this.toString(), "trash end");
     }
 
     public ArrayList<FileVO> getDelDataList(){
@@ -73,6 +86,7 @@ public class FileDataManager {
     }
 
     public void deleteFile(FileVO vo){
+        Crashlytics.log(Log.DEBUG, this.toString(), " deleteFile realFile ="+vo.toString());
         //StorageHelper.delete(mCtx, vo.getUri().getPath());
         StorageHelper.deleteExternalStoragePrivateFile(mCtx, Uri.parse(vo.getUriPath())
                 .getLastPathSegment());

@@ -159,4 +159,15 @@ public class FileDbManager extends DbHelper {
 
         return result;
     }
+    public ArrayList<FileVO> deleteTrash() {
+
+        String selectQuery = " SELECT * FROM " + TABLE_FILE_INFO + " where "  + KEY_F_ID + " = -1" ;
+        Log.d(this.toString(), "selectQuery="+selectQuery);
+        ArrayList<FileVO> list =  getQuery(selectQuery);
+
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_FILE_INFO, KEY_F_ID  + "=?", new String[]{"-1"});
+        db.close();
+        return list;
+    }
 }

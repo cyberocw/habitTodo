@@ -288,12 +288,16 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			ttsIntent.putExtra("alarmId", -1L);
 			startActivity(ttsIntent);
 
+			InitializeSetting initializeSetting = new InitializeSetting(this);
+			initializeSetting.execute();
+
 		}
+		//최초 + 업그레이드 시
 		if (prefsSavedVersion.equals("0") || !prefsSavedVersion.equals(versionName)) {
 			if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
-				InitializeSetting initializeSetting = new InitializeSetting(this);
-				initializeSetting.execute();
+
 			}
+			//업그레이드시
 			if(!prefsSavedVersion.equals("0")){
 				//showUpdateLog();
 				putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);

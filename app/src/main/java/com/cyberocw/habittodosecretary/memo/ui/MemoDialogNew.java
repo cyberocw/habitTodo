@@ -242,6 +242,11 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		//mInflater = getActivity().getLayoutInflater();
 
 		CommonUtils.logCustomEvent("MemoDialogNew", "1");
+		try {
+			mFileDataManager.deleteTrash();
+		}catch(Exception e){
+			Crashlytics.log(Log.DEBUG, this.toString(), " trash error " + e.getMessage());
+		}
 	}
 
 	private void init(){
@@ -253,13 +258,16 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 			isChecklist = mMemoVO.getType().equals("TODO");
 			mRatingBar.setRating((float) mMemoVO.getRank());
 			mSelectedCateId = mMemoVO.getCategoryId();
-			ArrayList<FileVO> fileList = mMemoVO.getFileList();
-			Log.d(this.toString(), "fileList.size()="+fileList.size());
-			if(fileList != null && fileList.size() > 0) {
-				mFileDataManager.setDataList(fileList);
-				for (int i = 0; i < fileList.size(); i++) {
-					this.attachFileView(fileList.get(i));
+			if(mMemoVO.getFileList() != null) {
+				ArrayList<FileVO> fileList = (ArrayList<FileVO>) mMemoVO.getFileList().clone();
+				Log.d(this.toString(), "fileList.size()=" + fileList.size());
+				if (fileList != null && fileList.size() > 0) {
+					mFileDataManager.setDataList(fileList);
+					for (int i = 0; i < fileList.size(); i++) {
+						this.attachFileView(fileList.get(i));
+					}
 				}
+
 			}
 
 		}
@@ -631,8 +639,8 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		android.widget.TextView cameraSelection = (android.widget.TextView) layout.findViewById(R.id.camera);
 		cameraSelection.setOnClickListener(new AttachmentOnClickListener());
 		// Audio recording
-		android.widget.TextView recordingSelection = (android.widget.TextView) layout.findViewById(R.id.recording);
-		recordingSelection.setOnClickListener(new AttachmentOnClickListener());
+		/*android.widget.TextView recordingSelection = (android.widget.TextView) layout.findViewById(R.id.recording);
+		recordingSelection.setOnClickListener(new AttachmentOnClickListener());*/
 		// Video recording
 		/*android.widget.TextView videoSelection = (android.widget.TextView) layout.findViewById(R.id.video);
 		videoSelection.setOnClickListener(new AttachmentOnClickListener());*/
@@ -694,22 +702,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 					takePhoto();
 					//attachmentDialog.dismiss();
 					break;
-				case R.id.recording:
-					/*
-					if (!isRecording) {
-						startRecording(v);
-					} else {
-						isRecording = false;
-						stopRecording();
-						Attachment attachment = new Attachment(Uri.fromFile(new File(recordName)), Constants.MIME_TYPE_AUDIO);
-						attachment.setLength(audioRecordingTime);
-						addAttachment(attachment);
-						mAttachmentAdapter.notifyDataSetChanged();
-						mGridView.autoresize();
-						//attachmentDialog.dismiss();
-					}
-					*/
-					break;
+
 				case R.id.files:
 					Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 					intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
@@ -775,7 +768,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
             mMemoVO.setFileList(fileVOList);
         }
 
-		ArrayList<FileVO> delFileVOList =  mFileDataManager.getDelDataList();
+		ArrayList<FileVO> delFileVOList = mFileDataManager.getDelDataList();
 		if(delFileVOList != null && delFileVOList.size() > 0) {
 			//bundle.putSerializable(Const.PARAM.FILE_VO_LIST, fileVOList);
 			mMemoVO.setDelFileList(delFileVOList);
@@ -952,7 +945,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 
 				Uri uri = FileProvider.getUriForFile(mCtx, BuildConfig.APPLICATION_ID + ".provider", new File(attachment.getUriPath()));
 
-				if (Const.MIME_TYPE_FILES.equals(attachment.getMimeType())) {
+				if (Const.MIME_TYPE_FILES.equals(attachment.getMimeType()) || Const.MIME_TYPE_AUDIO.equals(attachment.getMimeType())) {
 
 					attachmentIntent = new Intent(Intent.ACTION_VIEW);
 					attachmentIntent.setDataAndType(uri, StorageHelper.getMimeType(mCtx,
@@ -963,6 +956,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 						startActivity(attachmentIntent);
 					} else {
 						//mCtx.showMessage(R.string.feature_not_available_on_this_device, ONStyle.WARN);
+						Toast.makeText(mCtx, "feature_not_available_on_this_device", Toast.LENGTH_SHORT).show();
 						v.performLongClick();
 					}
 					// Media files will be opened in internal gallery

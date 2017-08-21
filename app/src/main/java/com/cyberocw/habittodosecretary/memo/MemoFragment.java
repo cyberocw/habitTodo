@@ -178,6 +178,7 @@ public class MemoFragment extends Fragment {
 		initActivity();
 	}
 
+
 	private void initActivity(){
 		mMemoDataManager = new MemoDataManager(mCtx, mCateId);
 		mMemoAdapter = new MemoListAdapter(this, mCtx, mMemoDataManager);
@@ -208,6 +209,9 @@ public class MemoFragment extends Fragment {
 
 		CommonUtils.logCustomEvent("MemoFragment", "1", "memo Count", mMemoDataManager.getCount());
 	}
+
+
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);

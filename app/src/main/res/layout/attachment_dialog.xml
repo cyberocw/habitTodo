@@ -27,6 +27,7 @@
     android:paddingTop="8dp"
     android:scrollbarSize="4dp"
     android:scrollbarStyle="insideInset"
+    android:background="@color/white"
 >
 
     <LinearLayout
@@ -45,7 +46,6 @@
             android:padding="6dp"
             android:text="@string/camera"
             android:textSize="16sp"
-            pixlui:typeface="Roboto-Regular.ttf"
             />
 
         <!--<com.neopixl.pixlui.components.textview.TextView
@@ -71,25 +71,7 @@
             android:padding="5dp"
             android:text="@string/files"
             android:textSize="16sp"
-            pixlui:typeface="Roboto-Regular.ttf"
              />
-
-        <com.neopixl.pixlui.components.textview.TextView
-            android:id="@+id/recording"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/icon_selector"
-            android:drawableLeft="@drawable/ic_mic_black_24dp"
-            android:drawablePadding="10dp"
-            android:padding="5dp"
-            android:text="@string/record"
-            android:textSize="16sp"
-            pixlui:typeface="Roboto-Regular.ttf"
-            />
-
-
-
-
     </LinearLayout>
 
 </ScrollView>

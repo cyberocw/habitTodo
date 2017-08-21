@@ -74,6 +74,7 @@ public class MemoDataManager {
 			dataList.get(i).setFileList(fdm.getDataList());
 		}
 		cachedDataList = (ArrayList) dataList.clone();
+
 	}
 
 	public void makeDataList(Long cateId, String sortOption){
