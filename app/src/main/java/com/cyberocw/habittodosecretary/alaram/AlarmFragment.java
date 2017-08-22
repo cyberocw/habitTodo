@@ -43,6 +43,7 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
 import com.cyberocw.habittodosecretary.calendar.CalendarManager;
+import com.cyberocw.habittodosecretary.file.StorageHelper;
 import com.cyberocw.habittodosecretary.memo.MemoDataManager;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.record.RecorderDataManager;
@@ -325,11 +326,13 @@ public class AlarmFragment extends Fragment{
 				if(mAlarmDataManager.addItem(alarmVO) == true) {
 					//copyFile하자
 					Log.d(Const.DEBUG_TAG, "id ocwocw = " + id + " fullpath ="+CommonUtils.getRecordFullPath(mCtx, id));
-					boolean result = getRecorderDataManager().saveFile(CommonUtils.getRecordFullPath(mCtx, id), alarmVO.getId() + ".wav");
+
+					//연기된 알람은 audio 파일 재생성하지 않고, 기존것을 사용하도록 만들기
+					/*boolean result = getRecorderDataManager().saveFile(CommonUtils.getRecordFullPath(mCtx, id), alarmVO.getId() + ".wav");
 					if(result){
 						Log.d(this.toString(), "미디어 복사 성공");
 						//getRecorderDataManager().deleteRecordFile(oriAlarmId);
-					}
+					}*/
 
 					Toast.makeText(mCtx, getString(R.string.success), Toast.LENGTH_LONG).show();
 				}
@@ -870,9 +873,12 @@ public class AlarmFragment extends Fragment{
 							Toast.makeText(mCtx, "음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
 							return ;
 						}
-						boolean result = getRecorderDataManager().saveFile(fromPath, vo.getId() + ".wav");
+						File targetFile = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");
+						boolean result = getRecorderDataManager().saveFile(fromPath, targetFile);
 						if(result){
 							Log.d(this.toString(), "미디어 복사 성공");
+							getRecorderDataManager().deleteRecordFile(fromPath);
+							mAlarmDataManager.saveFile(vo, targetFile);
 						}
 					}
 				}catch(Exception e){
@@ -900,15 +906,17 @@ public class AlarmFragment extends Fragment{
 						Toast.makeText(mCtx, "음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
 						return ;
 					}
-					boolean result = getRecorderDataManager().saveFile(fromPath);
+					File targetFile = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");
+					boolean result = getRecorderDataManager().saveFile(fromPath, targetFile);
 					if(result){
 						Log.d(this.toString(), "미디어 복사 성공");
-						getRecorderDataManager().deleteRecordFile(oriAlarmId);
+						getRecorderDataManager().deleteRecordFile(fromPath);
+						mAlarmDataManager.saveFile(vo, targetFile);
 					}
 				}
 				//type 변경으로 기존 파일 제거
 				else if(fromPath != null){
-					getRecorderDataManager().deleteRecordFile(oriAlarmId);
+					getRecorderDataManager().deleteRecordFile(fromPath);
 				}
 				// 수정일 경우 date type이 변경 될 수도 있기 때문에 두개 모두 갱신
 				mAlarmDataManager.resetMinAlarmCall();

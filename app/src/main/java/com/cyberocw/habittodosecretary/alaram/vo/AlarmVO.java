@@ -1,5 +1,7 @@
 package com.cyberocw.habittodosecretary.alaram.vo;
 
+import com.cyberocw.habittodosecretary.common.vo.FileVO;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,12 +35,15 @@ public class AlarmVO implements Serializable, Cloneable {
 	private Calendar createDt = null;
 	private Calendar updateDt = null;
 
+	private ArrayList<FileVO> fileList = null;
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		AlarmVO vo = (AlarmVO) super.clone();
 		vo.repeatDay = repeatDay != null ? (ArrayList) repeatDay.clone() : null;
 		vo.alarmDateList = alarmDateList != null ? (ArrayList) alarmDateList.clone() : null;
 		vo.alarmCallList = alarmCallList != null ? (ArrayList) alarmCallList.clone() : null;
+		vo.fileList = fileList != null ? (ArrayList<FileVO>) fileList.clone() : null;
 		return vo;
 	}
 
@@ -220,5 +225,13 @@ public class AlarmVO implements Serializable, Cloneable {
 
 	public void setAlarmCallType(int alarmCallType) {
 		this.alarmCallType = alarmCallType;
+	}
+
+	public ArrayList<FileVO> getFileList() {
+		return fileList;
+	}
+
+	public void setFileList(ArrayList<FileVO> fileList) {
+		this.fileList = fileList;
 	}
 }

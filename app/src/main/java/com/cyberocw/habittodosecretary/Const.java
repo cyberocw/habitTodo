@@ -246,6 +246,8 @@ public class Const {
 
 	public static String MIME_TYPE_IMAGE = "image/jpeg";
 	public static String MIME_TYPE_AUDIO = "audio/amr";
+	public static String MIME_TYPE_AUDIO_WAV = "audio/x-wav";
+
 	public static String MIME_TYPE_VIDEO = "video/mp4";
 	public static String MIME_TYPE_SKETCH = "image/png";
 	public static String MIME_TYPE_FILES = "file/*";

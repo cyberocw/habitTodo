@@ -24,14 +24,15 @@ public class RecorderDataManager {
         this.mCtx = mCtx;
     }
 
-    public boolean saveFile(String fromFileName){
-        File f = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");//Const.RECORDER.CACHE_FILE_NAME;
+    public boolean saveFile(String fromFileName, File targetFile){
+        //File f = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");//Const.RECORDER.CACHE_FILE_NAME;
         File fFromFile = new File(fromFileName);
-        return StorageHelper.copyFile(fFromFile, f);
+
+        return StorageHelper.copyFile(fFromFile, targetFile);
         //return this.saveFile(mCtx.getExternalCacheDir().getAbsolutePath() + File.separator  + fromFileName, targetFileName);
     }
     //fromFileName 은 mPlayingFile 인 경우만 있음
-    public boolean saveFile(String fromFileName, String targetFileName){
+    public boolean saveFile(String fromFileName, String targetFileName, boolean aa){
         String FILENAME = targetFileName;
         File fFromFile = new File(fromFileName);
         Log.d(this.toString(), "fFromFile is File="+ fFromFile.isFile());
@@ -64,6 +65,10 @@ public class RecorderDataManager {
             }
         }
         return false;
+    }
+
+    public void deleteRecordFile(String filePath) {
+        StorageHelper.delete(mCtx, filePath);
     }
 
     public void deleteRecordFile(long id) {

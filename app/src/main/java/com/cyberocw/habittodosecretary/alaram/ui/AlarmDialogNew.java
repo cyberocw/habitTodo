@@ -46,6 +46,7 @@ import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
+import com.cyberocw.habittodosecretary.common.vo.FileVO;
 import com.cyberocw.habittodosecretary.intro.Intro;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.record.RecorderCustomView;
@@ -223,9 +224,12 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 				mModifyMode = 1;
 				if(mAlarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
 					//mPrevRecord = true;
-					String fromPath = CommonUtils.getRecordFullPath(mCtx, mAlarmVO);
-					Log.d(this.toString(), "isModifyMode = 1 and mAlarmVO not null fromPath = " + fromPath);
-					mRecorderCustomView.setRecordFile(fromPath);
+					//String fromPath = CommonUtils.getRecordFullPath(mCtx, mAlarmVO);
+					ArrayList<FileVO> fileList = mAlarmVO.getFileList();
+					if(fileList != null) {
+						Log.d(this.toString(), "isModifyMode = 1 and mAlarmVO not null fromPath = " + fileList.get(0).getUriPath());
+						mRecorderCustomView.setRecordFile(fileList.get(0).getUriPath());
+					}
 				}
 			}
 			/*

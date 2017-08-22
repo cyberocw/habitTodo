@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.text.TextUtils;
@@ -20,11 +21,14 @@ import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
 import com.cyberocw.habittodosecretary.alaram.service.AlarmBackgroudService;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.common.vo.FileVO;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
 import com.cyberocw.habittodosecretary.db.CommonRelationDBManager;
+import com.cyberocw.habittodosecretary.file.FileDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -40,6 +44,7 @@ import io.fabric.sdk.android.Fabric;
  */
 public class AlarmDataManager {
 	AlarmManager mManager;
+	FileDataManager mFdm;
 	Context mCtx = null;
 	AlarmDbManager mDb;
 	public Calendar mCalendar = null;
@@ -66,8 +71,18 @@ public class AlarmDataManager {
 		mManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
 		mCalendar = cal;
 		this.dataList = mDb.getAlarmList(cal);
+		bindRecordFile();
 	}
+	public void bindRecordFile(){
+		if(this.dataList == null)
+			return;
 
+		FileDataManager fdm = new FileDataManager(mCtx);
+		for(int i = 0 ; i < dataList.size(); i++){
+			fdm.makeDataList(Const.ETC_TYPE.ALARM, dataList.get(i).getId());
+			dataList.get(i).setFileList(fdm.getDataList());
+		}
+	}
 	public ArrayList<AlarmVO> getDataList() {
 		return dataList;
 	}
@@ -699,5 +714,20 @@ public class AlarmDataManager {
 
 	public void close(){
 		mDb.closeDB();
+	}
+
+	private FileDataManager getFileDataManager(){
+		if(mFdm == null)
+			mFdm = new FileDataManager(mCtx);
+		return mFdm;
+	}
+
+	public void saveFile(AlarmVO vo, File targetFile) {
+		FileVO fileVO = new FileVO(Uri.fromFile(targetFile), Const.MIME_TYPE_AUDIO_WAV);
+		fileVO.setName(targetFile.getName());
+		fileVO.setSize(targetFile.length());
+		fileVO.setfId(vo.getId());
+		fileVO.setType(Const.ETC_TYPE.ALARM);
+		getFileDataManager().addItem(fileVO);
 	}
 }
