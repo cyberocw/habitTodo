@@ -309,6 +309,14 @@ public class StorageHelper {
         return f;
     }
 
+    public static File createNewAttachmentFile(Context mContext, String folder, String extension) {
+        File f = null;
+        if (checkStorage()) {
+            f = new File(mContext.getExternalFilesDir(folder), createNewAttachmentName(extension));
+        }
+        return f;
+    }
+
 
     public static synchronized String createNewAttachmentName(String extension) {
         Calendar now = Calendar.getInstance();

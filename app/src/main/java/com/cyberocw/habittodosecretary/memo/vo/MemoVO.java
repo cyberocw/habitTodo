@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by cyberocw on 2015-12-06.
  */
-public class MemoVO implements Serializable {
+public class MemoVO implements Serializable, Cloneable {
 	private long id;
 	private String type = "";
 	private String title;
@@ -118,6 +118,14 @@ public class MemoVO implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		MemoVO vo = (MemoVO) super.clone();
+		vo.fileList = fileList != null ? (ArrayList<FileVO>) fileList.clone() : null;
+		vo.delFileList = delFileList != null ? (ArrayList<FileVO>) delFileList.clone() : null;
+		return vo;
 	}
 
 	@Override

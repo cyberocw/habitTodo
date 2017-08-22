@@ -7,7 +7,7 @@ import java.util.Calendar;
 /**
  * Created by cyberocw on 2015-08-16.
  */
-public class AlarmVO implements Serializable {
+public class AlarmVO implements Serializable, Cloneable {
 
 	private long id = -1;
 	private long rfid = -1;
@@ -33,6 +33,14 @@ public class AlarmVO implements Serializable {
 	private Calendar createDt = null;
 	private Calendar updateDt = null;
 
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		AlarmVO vo = (AlarmVO) super.clone();
+		vo.repeatDay = repeatDay != null ? (ArrayList) repeatDay.clone() : null;
+		vo.alarmDateList = alarmDateList != null ? (ArrayList) alarmDateList.clone() : null;
+		vo.alarmCallList = alarmCallList != null ? (ArrayList) alarmCallList.clone() : null;
+		return vo;
+	}
 
 	@Override
 	public String toString() {

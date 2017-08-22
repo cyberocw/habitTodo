@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -158,7 +159,7 @@ public class AlarmFragment extends Fragment{
 		initActivity();
 
 
-		File f = new File(mCtx.getFilesDir().getAbsolutePath() + File.separator + "voice");
+		File f = new File(mCtx.getFilesDir().getAbsolutePath() + File.separator + Environment.DIRECTORY_RINGTONES);
 		File[] list = f.listFiles();
 		if(list != null) {
 			for (int i = 0; i < list.length; i++) {
@@ -899,7 +900,7 @@ public class AlarmFragment extends Fragment{
 						Toast.makeText(mCtx, "음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
 						return ;
 					}
-					boolean result = getRecorderDataManager().saveFile(fromPath, vo.getId() + ".wav");
+					boolean result = getRecorderDataManager().saveFile(fromPath);
 					if(result){
 						Log.d(this.toString(), "미디어 복사 성공");
 						getRecorderDataManager().deleteRecordFile(oriAlarmId);

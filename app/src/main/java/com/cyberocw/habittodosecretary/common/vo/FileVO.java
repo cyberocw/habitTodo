@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by cyber on 2017-08-15.
  */
 
-public class FileVO implements Serializable{
+public class FileVO implements Serializable, Cloneable{
     //private static final long serialVersionUID = 1242L;
     private long id, fId = -1l;
     private String uriPath;
@@ -96,6 +96,11 @@ public class FileVO implements Serializable{
 
     public void setfId(Long fId) {
         this.fId = fId;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     public String getType() {

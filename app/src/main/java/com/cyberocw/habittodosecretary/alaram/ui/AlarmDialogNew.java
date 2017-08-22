@@ -215,6 +215,11 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.PARAM.ALARM_VO);
 
 			if(mAlarmVO != null) {
+				try {
+					mAlarmVO = (AlarmVO) mAlarmVO.clone();
+				}catch (CloneNotSupportedException e){
+					e.printStackTrace();
+				}
 				mModifyMode = 1;
 				if(mAlarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
 					//mPrevRecord = true;
@@ -315,7 +320,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 			mSpDateType.setSelection(Const.ALARM_DATE_TYPE.getPositionByCode(mAlarmDateType), false);
 
 			int alarmType = mAlarmVO.getAlarmType();
-			mDataRepeatDay = mAlarmVO.getRepeatDay();
+			mDataRepeatDay = mAlarmVO.getRepeatDay()	;
 
 			ArrayList<Calendar> arrAlarmDate = mAlarmVO.getAlarmDateList();
 

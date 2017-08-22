@@ -100,7 +100,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 	Button mBtnSave, mBtnEdit, mBtnTodo;
 	Button mBtnAddAlarm;
 	MemoVO mMemoVO;
-	AlarmVO mAlarmVO, mAlarmOriginalVO = null;
+	AlarmVO mAlarmVO;
 	CategoryDataManager mCateDataManager;
 	CategoryListAdapter mCateAdapter;
 	ArrayList<CategoryVO> mArrayCategoryVOList = null;
@@ -116,6 +116,8 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 	long mInitAlarmId = -1;
 	Uri mFileUri;
 	LayoutInflater mInflater;
+
+	public PopupWindow mAttachmentDialog;
 
 	boolean isChecklist;
 	private ChecklistManager mChecklistManager;
@@ -173,9 +175,15 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		if(arguments != null) {
 			mMemoVO = (MemoVO) arguments.getSerializable(Const.PARAM.MEMO_VO);
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.PARAM.ALARM_VO);
+
 			if(mAlarmVO != null){
+				try{
+					mAlarmVO = (AlarmVO) mAlarmVO.clone();
+				}catch(CloneNotSupportedException e){
+					e.printStackTrace();
+				}
 				mInitAlarmId = mAlarmVO.getId();
-				mAlarmOriginalVO = mAlarmVO;
+
 			}
 			mSelectedCateId = (long) arguments.getSerializable(Const.CATEGORY.CATEGORY_ID);
 
@@ -185,8 +193,14 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 			if(mShareMode == true){
 
 			}
-			else if(mMemoVO != null)
+			else if(mMemoVO != null) {
+				try {
+					mMemoVO = (MemoVO) mMemoVO.clone();
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
 				mModifyMode = 1;
+			}
 			else
 				mMemoVO = new MemoVO();
 
@@ -286,7 +300,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		}
 		initViewContent();
 		//bindEventSaveAndEdit();
-		//CommonUtils.setupUI(mView, getActivity());
+		CommonUtils.setupUI(mView, getActivity());
 
 	}
 	private void toggleCheckList() {
@@ -620,12 +634,12 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		View layout = inflater.inflate(R.layout.attachment_dialog, null);
 
 		// Creating the PopupWindow
-		PopupWindow attachmentDialog = new PopupWindow(mCtx);
-		attachmentDialog.setContentView(layout);
-		attachmentDialog.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-		attachmentDialog.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-		attachmentDialog.setFocusable(true);
-		/*attachmentDialog.setOnDismissListener(() -> {
+		mAttachmentDialog = new PopupWindow(mCtx);
+		mAttachmentDialog.setContentView(layout);
+		mAttachmentDialog.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+		mAttachmentDialog.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+		mAttachmentDialog.setFocusable(true);
+		/*mAttachmentDialog.setOnDismissListener(() -> {
 			if (isRecording) {
 				isRecording = false;
 				stopRecording();
@@ -633,7 +647,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		});*/
 
 		// Clear the default translucent background
-		attachmentDialog.setBackgroundDrawable(new BitmapDrawable());
+		mAttachmentDialog.setBackgroundDrawable(new BitmapDrawable());
 
 		// Camera
 		android.widget.TextView cameraSelection = (android.widget.TextView) layout.findViewById(R.id.camera);
@@ -662,15 +676,10 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		}*/
 
 		try {
-			attachmentDialog.showAsDropDown(anchor);
+			mAttachmentDialog.showAsDropDown(anchor);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private void attachListener(){
-
-
 	}
 	public void takePhoto() {
 		// Checks for camera app available
@@ -700,7 +709,8 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 				// Photo from camera
 				case R.id.camera:
 					takePhoto();
-					//attachmentDialog.dismiss();
+					//mAttachmentDialog.dismiss();
+					mAttachmentDialog.dismiss();
 					break;
 
 				case R.id.files:
@@ -709,10 +719,11 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 					intent.addCategory(Intent.CATEGORY_OPENABLE);
 					intent.setType("*/*");
 					startActivityForResult(intent,Const.MEMO.MEMO_INTERFACE_CODE.PICK_FILE_RESULT_CODE);
-					//attachmentDialog.dismiss();
+					mAttachmentDialog.dismiss();
 					break;
 				default:
 					Log.e(Constants.TAG, "Wrong element choosen: " + v.getId());
+					mAttachmentDialog.dismiss();
 			}
 		}
 	}

@@ -1,11 +1,6 @@
 package com.cyberocw.habittodosecretary.record;
 
-import android.Manifest;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
@@ -13,27 +8,19 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v13.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.content.res.AppCompatResources;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
-import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
@@ -45,21 +32,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
 
 import butterknife.ButterKnife;
 
 /**
  * Created by cyber on 2017-07-24.
+ * 이전에 녹음했던 파일 혹은 cache 파일을 가지고만 진행
  */
 
 public class RecorderCustomView extends LinearLayout {
     private Context mCtx;
     private static final String LOG_TAG = "AudioRecordTest";
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-    private String mFileName = null, mPlayFileName = null;
     private View mView;
     private TextView mTvRecording, mTvTime;
     private MediaRecorder mRecorder = null;
@@ -73,6 +57,7 @@ public class RecorderCustomView extends LinearLayout {
     RecordAudio recordTask;
     PlayAudio playTask;
     File recordingFile;
+    private String mRecrodCacheFileName = null, mPlayFileName = null;
 
     boolean isRecording = false,isPlaying = false;
 
@@ -80,6 +65,7 @@ public class RecorderCustomView extends LinearLayout {
     private CountDownTimer mCountDownTimer = null;
 
     private recordDialogInterface mListener;
+
 
     public RecorderCustomView(Context context) {
         super(context);
@@ -124,8 +110,8 @@ public class RecorderCustomView extends LinearLayout {
 
         if(mCtx == null || mCtx.getExternalCacheDir() == null)
             return;
-        mFileName = mCtx.getExternalCacheDir().getAbsolutePath();
-        mFileName += File.separator + Const.RECORDER.CACHE_FILE_NAME;
+        mRecrodCacheFileName = mCtx.getExternalCacheDir().getAbsolutePath();
+        mRecrodCacheFileName += File.separator + Const.RECORDER.CACHE_FILE_NAME;
         mBtnRecord = ButterKnife.findById(mView, R.id.btnRecord);
         mBtnStart = ButterKnife.findById(mView, R.id.btnPlay);
         mBtnStop = ButterKnife.findById(mView, R.id.btnStop);
@@ -141,7 +127,7 @@ public class RecorderCustomView extends LinearLayout {
     }
 
     private void initRecorder(){
-        File path = new File(mFileName);
+        File path = new File(mRecrodCacheFileName);
         recordingFile = path;
         /*try {
             //recordingFile = path;//File.createTempFile("recording", ".pcm", path);
@@ -259,6 +245,7 @@ public class RecorderCustomView extends LinearLayout {
     public String getFilePath(){
         return mPlayFileName;
     }
+
     public void setRecordFile(String path){
         Log.d(this.toString(), "setRecordFile = " + path);
         mPlayFileName = path;
@@ -267,7 +254,7 @@ public class RecorderCustomView extends LinearLayout {
 
     private void startRecording() {
         CommonUtils.logCustomEvent("startRecording", "1");
-        File path = new File(mFileName);
+        File path = new File(mRecrodCacheFileName);
         if(path.isFile()) {
             boolean delResult = path.delete();
             Log.d(this.toString(), "delResult=" + delResult);
@@ -295,7 +282,7 @@ public class RecorderCustomView extends LinearLayout {
         mTvRecording.setVisibility(View.GONE);
         mTvTime.setVisibility(View.GONE);
         //녹음 된 파일 등록 - mPlayFileName
-        setRecordFile(mFileName);
+        setRecordFile(mRecrodCacheFileName);
         isRecord = true;
         refreshRecordButton();
         mStartRecording = true;

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -193,9 +194,9 @@ public class CommonUtils {
 	}
 
     public static String getRecordFullPath(Context mCtx, AlarmVO mAlarmVO) {
-		return mCtx.getFilesDir().getAbsolutePath() + File.separator + "voice" + File.separator +  mAlarmVO.getId() + ".wav";
+		return mCtx.getFilesDir().getAbsolutePath() + File.separator + Environment.DIRECTORY_RINGTONES + File.separator +  mAlarmVO.getId() + ".wav";
     }
 	public static String getRecordFullPath(Context mCtx, long id) {
-		return mCtx.getFilesDir().getAbsolutePath() + File.separator + "voice" + File.separator +  id + ".wav";
+		return mCtx.getFilesDir().getAbsolutePath() + File.separator + Environment.DIRECTORY_RINGTONES + File.separator +  id + ".wav";
 	}
 }

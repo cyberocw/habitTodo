@@ -226,7 +226,7 @@ public class CalendarDialog extends DialogFragment implements RobotoCalendarView
 
         for(int i = 0 ; i < mArrAlarmList.size(); i++){
             //tempCal.set(Calendar.DAY_OF_MONTH, );
-            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "arrAlarmList.get(i).getAlarmDateList().get(0))="+CommonUtils.convertDateType(mArrAlarmList.get(i).getAlarmDateList().get(0)));
+            //Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "arrAlarmList.get(i).getAlarmDateList().get(0))="+CommonUtils.convertDateType(mArrAlarmList.get(i).getAlarmDateList().get(0)));
             day = mArrAlarmList.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH);
             if(mArrAlarmList.get(i).getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
                 continue;

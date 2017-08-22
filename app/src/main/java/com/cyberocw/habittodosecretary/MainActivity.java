@@ -11,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -302,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				//showUpdateLog();
 				putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);
 			}
-			File rootDir = new File(getApplicationContext().getFilesDir(), "voice");
+			File rootDir = new File(getApplicationContext().getFilesDir(), Environment.DIRECTORY_RINGTONES);
 			if(!rootDir.isDirectory())
 				rootDir.mkdirs();
 

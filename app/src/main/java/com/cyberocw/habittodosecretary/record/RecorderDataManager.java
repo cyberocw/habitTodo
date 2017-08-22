@@ -1,10 +1,12 @@
 package com.cyberocw.habittodosecretary.record;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.file.StorageHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,10 +24,13 @@ public class RecorderDataManager {
         this.mCtx = mCtx;
     }
 
-    public boolean saveFile(String targetFileName){
-        String fromFileName = Const.RECORDER.CACHE_FILE_NAME;
-        return this.saveFile(mCtx.getExternalCacheDir().getAbsolutePath() + File.separator  + fromFileName, targetFileName);
+    public boolean saveFile(String fromFileName){
+        File f = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");//Const.RECORDER.CACHE_FILE_NAME;
+        File fFromFile = new File(fromFileName);
+        return StorageHelper.copyFile(fFromFile, f);
+        //return this.saveFile(mCtx.getExternalCacheDir().getAbsolutePath() + File.separator  + fromFileName, targetFileName);
     }
+    //fromFileName 은 mPlayingFile 인 경우만 있음
     public boolean saveFile(String fromFileName, String targetFileName){
         String FILENAME = targetFileName;
         File fFromFile = new File(fromFileName);
@@ -36,7 +41,7 @@ public class RecorderDataManager {
             FileOutputStream fos = null;
             try {
                 fi = new FileInputStream(fFromFile);
-                File rootDir=new File(mCtx.getFilesDir(), "voice");
+                File rootDir = new File(mCtx.getFilesDir(), Environment.DIRECTORY_RINGTONES);
                 rootDir.mkdirs();
                 fos = new FileOutputStream(new File(rootDir, FILENAME));
                 byte[] buffer = new byte[16384];
@@ -62,7 +67,7 @@ public class RecorderDataManager {
     }
 
     public void deleteRecordFile(long id) {
-        File rootDir = new File(mCtx.getFilesDir(), "voice");
+        File rootDir = new File(mCtx.getFilesDir(), Environment.DIRECTORY_RINGTONES);
         Log.d(Const.DEBUG_TAG, "deleteRecordFile start id="+id + " rootDir.isDirectory=" + rootDir.isDirectory());
         if(rootDir.isDirectory()){
             File f = new File(rootDir, id+".wav");
