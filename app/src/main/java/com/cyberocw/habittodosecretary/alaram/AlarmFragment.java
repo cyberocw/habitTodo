@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -32,8 +31,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
@@ -43,9 +40,10 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
 import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
 import com.cyberocw.habittodosecretary.calendar.CalendarManager;
+import com.cyberocw.habittodosecretary.common.vo.FileVO;
+import com.cyberocw.habittodosecretary.file.FileDataManager;
 import com.cyberocw.habittodosecretary.file.StorageHelper;
 import com.cyberocw.habittodosecretary.memo.MemoDataManager;
-import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.record.RecorderDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -74,6 +72,7 @@ public class AlarmFragment extends Fragment{
 	public Context mCtx;
 	private AlarmDataManager mAlarmDataManager;
 	private TimerDataManager mTimerDataManager;
+	private FileDataManager mFileDataManager;
 	private RecorderDataManager mRecorderDataManager;
 	private LinearLayout llWeekOfDayWrap;
 	private String mParam1;
@@ -289,13 +288,24 @@ public class AlarmFragment extends Fragment{
 			}
 		});
 
-		final AlarmVO alarmVO = mAlarmDataManager.getItemByIdInDB(id);
+		AlarmVO getVO = null;
+		try {
+			getVO = (AlarmVO) mAlarmDataManager.getItemByIdInDB(id).clone();
+			mFileDataManager.makeDataList(Const.ETC_TYPE.ALARM, getVO.getId());
+			getVO.setFileList(mFileDataManager.getDataList());
 
-		if(alarmVO == null){
+		}catch (CloneNotSupportedException e){
+			e.printStackTrace();
+		}
+
+		if(getVO == null){
 			Log.e(Const.DEBUG_TAG, "Alarm Id가 잘못되었습니다. 데이터를 가져올 수 없습니다 id=" + id);
 			Toast.makeText(mCtx, getString(R.string.alarm_postpone_msg_invalid_id) + " id=" + id, Toast.LENGTH_LONG);
 			return;
 		}
+
+		final AlarmVO alarmVO = getVO;
+
 		alarmVO.setId(-1);
 
 		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -320,19 +330,21 @@ public class AlarmFragment extends Fragment{
 				alarmVO.setHour(now.get(Calendar.HOUR_OF_DAY));
 				alarmVO.setMinute(now.get(Calendar.MINUTE));
 
-				alarmVO.setAlarmTitle(alarmVO.getAlarmTitle());
-
 				// 알람 추가
 				if(mAlarmDataManager.addItem(alarmVO) == true) {
-					//copyFile하자
-					Log.d(Const.DEBUG_TAG, "id ocwocw = " + id + " fullpath ="+CommonUtils.getRecordFullPath(mCtx, id));
+					Log.d(this.toString(), "id ocwocw = " + id + " fullpath ="+CommonUtils.getRecordFullPath(mCtx, id));
 
-					//연기된 알람은 audio 파일 재생성하지 않고, 기존것을 사용하도록 만들기
-					/*boolean result = getRecorderDataManager().saveFile(CommonUtils.getRecordFullPath(mCtx, id), alarmVO.getId() + ".wav");
-					if(result){
-						Log.d(this.toString(), "미디어 복사 성공");
-						//getRecorderDataManager().deleteRecordFile(oriAlarmId);
-					}*/
+					File targetFile = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");
+					if(alarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD) {
+						boolean result = getRecorderDataManager().saveFile(alarmVO.getFileList().get(0).getUriPath(), targetFile);
+						if (result) {
+							Log.d(this.toString(), "미디어 복사 성공");
+							//연기이기 때문에 기존파일 삭제 안함
+							//getRecorderDataManager().deleteRecordFile(fromPath);
+							//db저장
+							mAlarmDataManager.saveFile(alarmVO, targetFile);
+						}
+					}
 
 					Toast.makeText(mCtx, getString(R.string.success), Toast.LENGTH_LONG).show();
 				}
@@ -635,10 +647,12 @@ public class AlarmFragment extends Fragment{
 			Toast.makeText(mCtx, "알람 데이터가 없습니다", Toast.LENGTH_SHORT).show();
 			return;
 		}
-
+		//알람을 지우고 파일 지움
 		mAlarmDataManager.deleteItemById(id);
 		if(vo.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
-			getRecorderDataManager().deleteRecordFile(vo.getId());
+			//getRecorderDataManager().deleteRecordFile(vo.getId());
+			//Avo.getFileList()
+			mAlarmDataManager.deleteItemFileDbReal(vo);
 		}
 		mAlarmDataManager.resetMinAlarmCall();
 		refreshAlarmList();
@@ -865,7 +879,7 @@ public class AlarmFragment extends Fragment{
 					vo = (AlarmVO) bundle.getSerializable(Const.PARAM.ALARM_VO);
 
 					// 알람 추가
-					if (!mAlarmDataManager.addItem(vo) == true)
+					if(!mAlarmDataManager.addItem(vo) == true)
 						Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 					else if (vo.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
 						String fromPath = bundle.getString(Const.PARAM.FILE_PATH);
@@ -873,11 +887,13 @@ public class AlarmFragment extends Fragment{
 							Toast.makeText(mCtx, "음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
 							return ;
 						}
+						//신규 파일 만들고 복사하고 기존파일 삭제
 						File targetFile = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");
 						boolean result = getRecorderDataManager().saveFile(fromPath, targetFile);
 						if(result){
 							Log.d(this.toString(), "미디어 복사 성공");
 							getRecorderDataManager().deleteRecordFile(fromPath);
+							//db저장
 							mAlarmDataManager.saveFile(vo, targetFile);
 						}
 					}
@@ -894,29 +910,36 @@ public class AlarmFragment extends Fragment{
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_MODIFY_FINISH_CODE :
 				Bundle bundle = data.getExtras();
 				vo = (AlarmVO) bundle.getSerializable(Const.PARAM.ALARM_VO);
-				long oriAlarmId = vo.getId();
+				//long oriAlarmId = vo.getId();
+				ArrayList<FileVO> oriArrFile = vo.getFileList();
+				vo.setFileList(null);
+
 				String fromPath = bundle.getString(Const.PARAM.FILE_PATH, null);
 				// 알람 추가
 				if(!mAlarmDataManager.modifyItem(vo) == true)
 					Toast.makeText(mCtx, getString(R.string.msg_failed_modify), Toast.LENGTH_LONG).show();
 				else if (vo.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
 					//String oriPath = CommonUtils.getRecordFullPath(mCtx, oriAlarmId);
-
 					if(fromPath == null){
-						Toast.makeText(mCtx, "음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
+						Toast.makeText(mCtx, "오류! 음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
 						return ;
 					}
 					File targetFile = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");
+					//파일 복사해두고 기존 데이터 및 파일 제거 후, 파일 정보 db 등록
 					boolean result = getRecorderDataManager().saveFile(fromPath, targetFile);
 					if(result){
 						Log.d(this.toString(), "미디어 복사 성공");
 						getRecorderDataManager().deleteRecordFile(fromPath);
+						mFileDataManager.addDeleteItem(oriArrFile);
+						mFileDataManager.deleteAll();
 						mAlarmDataManager.saveFile(vo, targetFile);
 					}
 				}
 				//type 변경으로 기존 파일 제거
 				else if(fromPath != null){
 					getRecorderDataManager().deleteRecordFile(fromPath);
+					mFileDataManager.addDeleteItem(oriArrFile);
+					mFileDataManager.deleteAll();
 				}
 				// 수정일 경우 date type이 변경 될 수도 있기 때문에 두개 모두 갱신
 				mAlarmDataManager.resetMinAlarmCall();

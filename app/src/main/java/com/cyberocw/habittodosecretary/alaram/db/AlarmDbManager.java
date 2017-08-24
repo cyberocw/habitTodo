@@ -495,6 +495,7 @@ public class AlarmDbManager extends DbHelper{
 		db.delete(TABLE_ALARM_REPEAT, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
 		db.delete(TABLE_ALARM_DATE, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
 		db.delete(TABLE_ALARM_ORDER, KEY_F_ALARM_ID + "=?", new String[]{String.valueOf(id)});
+		//db.delete(TABLE_FILE_INFO, KEY_F_ALARM_ID + "=? AND " + KEY_TYPE + "=?" , new String[]{String.valueOf(id), Const.ETC_TYPE.ALARM});
 		return db;
 	}
 

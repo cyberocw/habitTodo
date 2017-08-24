@@ -457,6 +457,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		isRecord = mRecorderCustomView.isRecord();
 		//false - 이지만 기존 레코드가 있으면 통과 -> 기존거인지 신규인지 구분 필요 > 기존것도 신규로 전환시키면 됨 , 기존건 무조건 삭제
 
+		//케시파일을 이용한 로직이기 때문에, alarm fragment에서 실제 파일 복사 및 fileVO 등록 과정을 전담함
 		String voiceFile = mRecorderCustomView.getFilePath();
 
 		if(soundType == Const.ALARM_OPTION_TO_SOUND.RECORD && voiceFile == null){

@@ -159,6 +159,17 @@ public class FileDbManager extends DbHelper {
 
         return result;
     }
+
+    public boolean deleteByType(long fId, String type){
+        SQLiteDatabase db = this.getWritableDatabase();
+        if(fId < 0 || type == null || type.equals("")){
+            return false;
+        }
+        int cnt = db.delete(TABLE_FILE_INFO, KEY_F_ALARM_ID + "=? AND " + KEY_TYPE + "=?" , new String[]{String.valueOf(fId), type});
+        db.close();
+        return cnt > 0;
+    }
+
     public ArrayList<FileVO> deleteTrash() {
 
         String selectQuery = " SELECT * FROM " + TABLE_FILE_INFO + " where "  + KEY_F_ID + " = -1" ;

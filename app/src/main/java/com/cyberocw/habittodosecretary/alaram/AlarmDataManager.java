@@ -89,6 +89,7 @@ public class AlarmDataManager {
 
 	public void makeDataList(Calendar cal){
 		this.dataList = mDb.getAlarmList(cal);
+		bindRecordFile();
 		makeGroupDataList();
 	}
 
@@ -327,6 +328,16 @@ public class AlarmDataManager {
 			}
 		}
 		return true;
+	}
+
+	public boolean deleteItemFileDbReal(AlarmVO vo){
+		ArrayList<FileVO> arrFile = vo.getFileList();
+		if(arrFile != null && arrFile.size() > 0){
+			getFileDataManager().addDeleteItem(arrFile);
+			getFileDataManager().deleteAll();
+			return true;
+		}
+		return false;
 	}
 
 	public AlarmVO deleteItemById(int position){
@@ -730,4 +741,5 @@ public class AlarmDataManager {
 		fileVO.setType(Const.ETC_TYPE.ALARM);
 		getFileDataManager().addItem(fileVO);
 	}
+
 }

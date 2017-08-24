@@ -85,6 +85,7 @@ public class FileDataManager {
             delDataList.addAll(arr);
     }
 
+
     public void deleteFile(FileVO vo){
         Crashlytics.log(Log.DEBUG, this.toString(), " deleteFile realFile ="+vo.toString());
         //StorageHelper.delete(mCtx, vo.getUri().getPath());
@@ -111,6 +112,22 @@ public class FileDataManager {
         deleteInList(id);
         return true;
     }
+    public boolean delete(FileVO vo){
+        if(vo == null){
+            return false;
+        }
+        mDb.delete(vo.getId(), null);
+        this.deleteFile(vo);
+        deleteInList(vo.getId());
+        return true;
+    }
+    /*public boolean delete(ArrayList<FileVO> arr){
+        if(arr != null){
+            return mDb.delete(arr);
+        }
+        return false;
+    }*/
+
     public void deleteInList(long id){
         for(int i = 0 ; i < this.delDataList.size(); i++){
             if(this.delDataList.get(i).getId() == id) {
