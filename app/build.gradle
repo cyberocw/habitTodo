@@ -32,8 +32,8 @@ android {
         applicationId "com.cyberocw.habittodosecretary"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 21
-        versionName "1.1.9"
+        versionCode 22
+        versionName "1.1.10"
     }
     buildTypes {
         release {
@@ -62,6 +62,8 @@ dependencies {
     compile 'commons-io:commons-io:2.5'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.google.android:flexbox:0.3.0'
+    // https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j
+    compile group: 'net.lingala.zip4j', name: 'zip4j', version: '1.2.3'
 
     compile 'com.google.firebase:firebase-ads:10.2.1'
     compile 'com.google.firebase:firebase-crash:10.2.1'

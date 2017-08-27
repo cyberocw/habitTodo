@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -73,6 +74,7 @@ import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,6 +118,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 	long mInitAlarmId = -1;
 	Uri mFileUri;
 	LayoutInflater mInflater;
+	String mAlarmFilePath = null;
 
 	public PopupWindow mAttachmentDialog;
 
@@ -586,8 +589,8 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 
 	private void deleteAlarm(){
 		if(mModifyMode == 1 && mAlarmVO.getId() > -1) {
-			mAlarmVO.setId(-2);
-			//mInitAlarmId = -1;
+			//mAlarmVO.setId(-2);
+			mAlarmVO = null;
 		}
 		else {
 			mAlarmVO = null;
@@ -698,6 +701,13 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 		}
 		// Launches intent
 		mFileUri = Uri.fromFile(f);
+
+		List<ResolveInfo> resInfoList = mCtx.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+		for (ResolveInfo resolveInfo : resInfoList) {
+			String packageName = resolveInfo.activityInfo.packageName;
+			mCtx.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		}
+
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 		startActivityForResult(intent, Const.MEMO.MEMO_INTERFACE_CODE.TAKE_PHOTO);
 	}
@@ -792,9 +802,12 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 			bundle.putLong(Const.MEMO.ORIGINAL_ALARM_ID_KEY, mInitAlarmId);
 		}
 
-		if(isModifyAlarm && mAlarmVO != null)
+		if(isModifyAlarm && mAlarmVO != null) {
 			bundle.putSerializable(Const.PARAM.ALARM_VO, mAlarmVO);
-
+		}
+		//알람의 type만 변경한 경우
+		if(isModifyAlarm && mAlarmFilePath != null)
+			bundle.putString(Const.PARAM.FILE_PATH, mAlarmFilePath);
 
 		Intent intent = new Intent();
 		intent.putExtras(bundle);
@@ -823,6 +836,20 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 			case Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE :
 				isModifyAlarm = true;
 				mAlarmVO = (AlarmVO) intent.getExtras().getSerializable(Const.PARAM.ALARM_VO);
+				String fromPath = intent.getExtras().getString(Const.PARAM.FILE_PATH, null);
+				mAlarmFilePath = fromPath;
+
+				if (mAlarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD) {
+					ArrayList<FileVO> arrFile = new ArrayList<>();
+					FileVO fVO = new FileVO();
+					fVO.setUriPath(fromPath);
+					arrFile.add(fVO);
+					mAlarmVO.setFileList(arrFile);
+					if (fromPath == null) {
+						Toast.makeText(mCtx, "음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
+						return;
+					}
+				}
 				mBtnAddAlarm.setText(getResources().getText(R.string.btn_memo_alarm_edit));
 				break;
 			case Const.MEMO.MEMO_INTERFACE_CODE.PICK_FILE_RESULT_CODE :
@@ -1022,7 +1049,8 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 
 			Glide.with(mCtx)
 					.load(thumbnailUri)
-					.thumbnail(0.5f)
+					//.centerCrop()
+					.thumbnail(0.4f)
 					.crossFade()
 					.into(imageView);
 		}

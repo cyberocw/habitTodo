@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.file.StorageHelper;
 
@@ -27,7 +28,7 @@ public class RecorderDataManager {
     public boolean saveFile(String fromFileName, File targetFile){
         //File f = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");//Const.RECORDER.CACHE_FILE_NAME;
         File fFromFile = new File(fromFileName);
-
+        Crashlytics.log(Log.DEBUG, this.toString(), "saveFile from=" + fromFileName + " target=" + targetFile.getAbsolutePath());
         return StorageHelper.copyFile(fFromFile, targetFile);
         //return this.saveFile(mCtx.getExternalCacheDir().getAbsolutePath() + File.separator  + fromFileName, targetFileName);
     }

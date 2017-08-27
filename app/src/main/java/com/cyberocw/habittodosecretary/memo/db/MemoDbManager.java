@@ -76,7 +76,14 @@ public class MemoDbManager extends DbHelper{
 			selectQuery += " limit " + cnt ;
 		return getQuery(selectQuery);
 	}
-
+	public MemoVO getById(long id){
+		String selectQuery = " SELECT * FROM " + TABLE_MEMO + " where " + KEY_USE_YN + " = 1  and " + KEY_ID + " = " + id ;
+		ArrayList<MemoVO> list = getQuery(selectQuery);
+		if(list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
 	public ArrayList<MemoVO> getQuery(String selectQuery) {
 
 		SQLiteDatabase db = this.getReadableDatabase();

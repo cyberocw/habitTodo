@@ -218,7 +218,10 @@ public class RecorderCustomView extends LinearLayout {
     private void startPlaying() {
         playTask = new PlayAudio();
         playTask.execute();
-        countRecord(true, getDuration(new File(mPlayFileName)));
+        try{countRecord(true, getDuration(new File(mPlayFileName)));}
+        catch(Exception e){
+            e.printStackTrace();
+        }
         mTvRecording.setText("playing....");
 
         mTvTime.setVisibility(View.VISIBLE);
@@ -254,15 +257,17 @@ public class RecorderCustomView extends LinearLayout {
 
     private void startRecording() {
         CommonUtils.logCustomEvent("startRecording", "1");
-        File path = new File(mRecrodCacheFileName);
-        if(path.isFile()) {
-            boolean delResult = path.delete();
+        Log.d(this.toString(), "startRecordin");
+        //File path = new File(mRecrodCacheFileName);
+
+        if(recordingFile.isFile()) {
+            boolean delResult = recordingFile.delete();
             Log.d(this.toString(), "delResult=" + delResult);
-            try {
-                path.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        }
+        try {
+            recordingFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         recordTask = new RecordAudio();

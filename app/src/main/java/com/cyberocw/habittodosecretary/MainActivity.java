@@ -36,6 +36,7 @@ import com.cyberocw.habittodosecretary.category.CategoryDataManager;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 import com.cyberocw.habittodosecretary.dashboard.DashboardFragment;
+import com.cyberocw.habittodosecretary.file.FileDataManager;
 import com.cyberocw.habittodosecretary.intro.Intro;
 import com.cyberocw.habittodosecretary.keyword.KeywordFragment;
 import com.cyberocw.habittodosecretary.memo.MemoDataManager;
@@ -213,14 +214,16 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		SharedPreferences setPrefs = ctx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 
 		String prefsSavedVersion = setPrefs.getString(Const.SETTING.VERSION, "0");
+		int prefsSavedVersionCode = setPrefs.getInt(Const.SETTING.VERSION_CODE, 0);
 		//int isShowUpdateLog = setPrefs.getInt(Const.SETTING.IS_SHOW_UPDATE_LOG, 0);
 
 		String versionName = "";
 		PackageInfo info = null;
-
+		int versionCode = 0;
 		try {
 			info = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0);
 			versionName = info.versionName;
+			versionCode = info.versionCode;
 		} catch (PackageManager.NameNotFoundException e) {
 
 		}
@@ -293,22 +296,30 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			initializeSetting.execute();
 
 		}
-		//최초 + 업그레이드 시
+		//최초 || 업그레이드 시
 		if (prefsSavedVersion.equals("0") || !prefsSavedVersion.equals(versionName)) {
+			File rootDir = new File(getApplicationContext().getFilesDir(), Environment.DIRECTORY_RINGTONES);
+			if(!rootDir.isDirectory())
+				rootDir.mkdirs();
+
 			if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
 
 			}
 			//업그레이드시
 			if(!prefsSavedVersion.equals("0")){
 				//showUpdateLog();
-				putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);
+				if(prefsSavedVersionCode < 22) {
+					putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);
+					FileDataManager fdm = new FileDataManager(getApplicationContext());
+					try{fdm.migrationFile(getApplicationContext());}catch(Exception e){
+						Crashlytics.log(Log.ERROR, this.toString(), "migration failed =" + e.getMessage());
+					}
+				}
 			}
-			File rootDir = new File(getApplicationContext().getFilesDir(), Environment.DIRECTORY_RINGTONES);
-			if(!rootDir.isDirectory())
-				rootDir.mkdirs();
 
 			SharedPreferences.Editor editor = setPrefs.edit();
 			editor.putString(Const.SETTING.VERSION, versionName);
+			editor.putInt(Const.SETTING.VERSION_CODE, versionCode);
 			editor.apply();
 		}
 

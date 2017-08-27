@@ -184,33 +184,37 @@ public class AlarmDbManager extends DbHelper{
 						" AS D ON C." + KEY_F_ALARM_ID + " = D." + KEY_ID + " WHERE D." + KEY_USE_YN + " = 1 AND " + KEY_TIME_STAMP + " > " + nowTime + ")";
 
 		Log.e(this.toString(), selectQuery);
-
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor c = db.rawQuery(selectQuery, null);
-
+		Cursor c = null;
 		ArrayList<AlarmTimeVO> alarmTimeVOList = new ArrayList<AlarmTimeVO>();
-		AlarmTimeVO vo;
+		try {
+			SQLiteDatabase db = this.getReadableDatabase();
+			c = db.rawQuery(selectQuery, null);
 
-		Crashlytics.log(Log.DEBUG, this.toString(), " min set time record count=" +  c.getCount());
 
-		if (c.moveToFirst()) {
-			do {
-				vo = new AlarmTimeVO();
-				vo.setId(c.getLong((c.getColumnIndex(KEY_ID))));
-				vo.setAlarmTitle((c.getString(c.getColumnIndex(KEY_ALARM_TITLE))));
-				vo.setTimeStamp(c.getLong(c.getColumnIndex(KEY_TIME_STAMP)));
-				vo.setCallTime(c.getInt(c.getColumnIndex(KEY_CALL_TIME)));
-				vo.setfId(c.getLong(c.getColumnIndex(KEY_F_ALARM_ID)));
-				vo.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
-				vo.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
-				vo.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
-				vo.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
+			AlarmTimeVO vo;
 
-				alarmTimeVOList.add(vo);
-			} while (c.moveToNext());
+			Crashlytics.log(Log.DEBUG, this.toString(), " min set time record count=" + c.getCount());
+
+			if (c.moveToFirst()) {
+				do {
+					vo = new AlarmTimeVO();
+					vo.setId(c.getLong((c.getColumnIndex(KEY_ID))));
+					vo.setAlarmTitle((c.getString(c.getColumnIndex(KEY_ALARM_TITLE))));
+					vo.setTimeStamp(c.getLong(c.getColumnIndex(KEY_TIME_STAMP)));
+					vo.setCallTime(c.getInt(c.getColumnIndex(KEY_CALL_TIME)));
+					vo.setfId(c.getLong(c.getColumnIndex(KEY_F_ALARM_ID)));
+					vo.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
+					vo.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
+					vo.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
+					vo.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
+
+					alarmTimeVOList.add(vo);
+				} while (c.moveToNext());
+			}
+		} finally {
+			if (c != null)
+				c.close();
 		}
-		if(c != null && !c.isClosed())
-			c.close();
 
 		closeDB();
 		return alarmTimeVOList;
@@ -781,6 +785,9 @@ public class AlarmDbManager extends DbHelper{
 				timerList.add(vo);
 			} while (c.moveToNext());
 		}
+
+		if(c != null)
+			c.close();
 		closeDB();
 		return timerList;
 	}

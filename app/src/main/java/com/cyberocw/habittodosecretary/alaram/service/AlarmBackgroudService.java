@@ -22,6 +22,8 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.AlarmNotiActivity;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
+import com.cyberocw.habittodosecretary.common.vo.FileVO;
+import com.cyberocw.habittodosecretary.file.FileDataManager;
 import com.cyberocw.habittodosecretary.record.PlayRawAudio;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
@@ -320,10 +322,16 @@ public class AlarmBackgroudService extends Service {
         if(mAlarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS) {
             startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
         }else if(mAlarmOption == Const.ALARM_OPTION_TO_SOUND.RECORD && isTTS){
-            String fileName = CommonUtils.getRecordFullPath(mCtx, mArrAlarmVOList.get(mMinRemainPosition).getfId());
-            File f = new File(fileName);
-            Log.d(this.toString(), "absolute="+f.getAbsolutePath() + " getPaht= " + f.getPath());
+            //String fileName = CommonUtils.getRecordFullPath(mCtx, mArrAlarmVOList.get(mMinRemainPosition).getfId());
+            FileDataManager fdm = new FileDataManager(mCtx);
+            fdm.makeDataList(Const.ETC_TYPE.ALARM, mArrAlarmVOList.get(mMinRemainPosition).getfId());
+
             try {
+                ArrayList<FileVO> arrFile = fdm.getDataList();
+                FileVO fileVO = arrFile.get(0);
+                File f = new File(fileVO.getUriPath());
+                Log.d(this.toString(), "absolute="+f.getAbsolutePath() + " getPaht= " + f.getPath());
+
                 if(f.isFile()){
                     PlayRawAudio pra = new PlayRawAudio(mCtx, f.getAbsolutePath());
                     pra.execute();
@@ -333,6 +341,7 @@ public class AlarmBackgroudService extends Service {
                     startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
                 }
             }catch (Exception e){
+                startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
                 e.printStackTrace();
             }
         }

@@ -8,7 +8,7 @@
         android:id="@+id/ivImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxHeight="250dp"
+
         android:layout_gravity="center"
         android:src="@drawable/eng_intro3"
         android:visibility="gone"
@@ -30,7 +30,6 @@
             android:id="@+id/attachmentIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_action_attachment"
             android:visibility="visible"
             android:layout_marginRight="21dp"
             android:layout_marginEnd="21dp"

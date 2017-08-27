@@ -49,6 +49,12 @@ public class FileDbManager extends DbHelper {
         return sInstance;
     }
 
+    public ArrayList<FileVO> getAttachListAll(){
+        String selectQuery = " SELECT * FROM " + TABLE_FILE_INFO ;
+        Log.d(this.toString(), "selectQuery="+selectQuery);
+        return getQuery(selectQuery);
+    }
+
     public ArrayList<FileVO> getAttachList(String type, long fId){
         String selectQuery = " SELECT * FROM " + TABLE_FILE_INFO + " where " + KEY_TYPE + "='" + type + "' AND " + KEY_F_ID + " = " + fId;
         Log.d(this.toString(), "selectQuery="+selectQuery);
@@ -69,7 +75,8 @@ public class FileDbManager extends DbHelper {
                 vo.setName((c.getString(c.getColumnIndex(KEY_NAME))));
                 //vo.setUriPath((c.getString(c.getColumnIndex(KEY_URI))));
                 vo.setUri(c.getString(c.getColumnIndex(KEY_URI)));
-                vo.setUriPath(Uri.parse(vo.getUri()).getPath());
+                if(vo.getUri() != null)
+                    vo.setUriPath(Uri.parse(vo.getUri()).getPath());
                 vo.setSize(c.getLong(c.getColumnIndex(KEY_SIZE)));
                 vo.setLength(c.getLong(c.getColumnIndex(KEY_LENGTH)));
                 vo.setMimeType(c.getString(c.getColumnIndex(KEY_MIME_TYPE)));
@@ -79,8 +86,7 @@ public class FileDbManager extends DbHelper {
                 list.add(vo);
             } while (c.moveToNext());
         }
-        Log.d(this.toString(), "list size=" + list.size());
-        closeDB();
+        db.close();
         return list;
     }
     public void insert(FileVO item) {

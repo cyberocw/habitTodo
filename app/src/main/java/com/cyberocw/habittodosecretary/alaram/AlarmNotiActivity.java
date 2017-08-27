@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,9 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.common.vo.FileVO;
+import com.cyberocw.habittodosecretary.file.FileDataManager;
+import com.cyberocw.habittodosecretary.file.StorageHelper;
 import com.cyberocw.habittodosecretary.record.RecorderDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
@@ -186,9 +190,19 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		if(alarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS) {
 			startTTS(title, mAlarmId);
 		}else if(alarmOption == Const.ALARM_OPTION_TO_SOUND.RECORD && isTTS){
-			File f = new File(CommonUtils.getRecordFullPath(mCtx, mAlarmId));
-			Log.d(this.toString(), "absolute="+f.getAbsolutePath() + " getPaht= " + f.getPath());
+
+
+
+			FileDataManager fdm = new FileDataManager(mCtx);
+			fdm.makeDataList(Const.ETC_TYPE.ALARM, mAlarmId);
+
 			try {
+				ArrayList<FileVO> arrFile = fdm.getDataList();
+				FileVO fileVO = arrFile.get(0);
+				File f = new File(fileVO.getUriPath());
+
+				Log.d(this.toString(), "absolute="+f.getAbsolutePath() + " getPaht= " + f.getPath());
+
 				if(f.isFile()){
 					mPra = new PlayAudio(f.getAbsolutePath());
 					mPra.execute();
@@ -198,6 +212,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 					startTTS(title, mAlarmId);
 				}
 			}catch (Exception e){
+				startTTS(title, mAlarmId);
 				e.printStackTrace();
 			}
 		}
@@ -268,6 +283,12 @@ public class AlarmNotiActivity extends AppCompatActivity {
 			return;
 
 		final AlarmVO alarmVO = alarmDataManager.getItemByIdInDB(mAlarmId);
+
+		if(alarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD) {
+			FileDataManager fdm = new FileDataManager(mCtx);
+			fdm.makeDataList(Const.ETC_TYPE.ALARM, mAlarmId);
+			alarmVO.setFileList(fdm.getDataList());
+		}
 		ArrayList<Integer> arrAlarmCall = new ArrayList<Integer>();
 		arrAlarmCall.add(0);
 		alarmVO.setAlarmCallList(arrAlarmCall);
@@ -287,17 +308,19 @@ public class AlarmNotiActivity extends AppCompatActivity {
 
 		if(alarmDataManager.addItem(alarmVO) == true) {
 			RecorderDataManager rm = new RecorderDataManager(mCtx);
-
-			boolean result = rm.saveFile(CommonUtils.getRecordFullPath(mCtx, mAlarmId), alarmVO.getId() + ".wav");
-			if(result){
-				Log.d(this.toString(), "미디어 복사 성공");
+			if(alarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD) {
+				File targetFile = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");
+				boolean result = rm.saveFile(alarmVO.getFileList().get(0).getUriPath(), targetFile);
+				if (result) {
+					Log.d(this.toString(), "미디어 복사 성공");
+					//연기이기 때문에 기존파일 삭제 안함
+					//getRecorderDataManager().deleteRecordFile(fromPath);
+					//db저장
+					alarmDataManager.saveFile(alarmVO, targetFile);
+				}
 			}
-			else{
-				Log.e(this.toString(), "미디어 복사 실패");
-			}
 
-			Toast.makeText(mCtx, getString(R.string.noti_activity_msg_postponed), Toast.LENGTH_LONG).show();
-
+			Toast.makeText(mCtx, getString(R.string.success), Toast.LENGTH_LONG).show();
 		}
 		else
 			Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();

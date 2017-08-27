@@ -86,7 +86,9 @@ public class StorageHelper {
     public static File getAttachmentDir(Context mContext) {
         return mContext.getExternalFilesDir(null);
     }
-
+    public static File getAttachmentDir(Context mContext, String dir) {
+        return mContext.getExternalFilesDir(dir);
+    }
 
     /**
      * Retrieves the folderwhere to store data to sync notes
@@ -256,12 +258,31 @@ public class StorageHelper {
         if(file.isFile())
             file.delete();
         else{
-            Toast.makeText(mContext, "Not Found file", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(mContext, "Not Found file 1", Toast.LENGTH_SHORT).show();
         }
 
         return true;
     }
+    public static boolean deleteExternalStoragePrivateFile(Context mContext, String name, String dir) {
 
+        // Checks for external storage availability
+        if (!checkStorage()) {
+            //Toast.makeText(mContext, mContext.getString(R.string.storage_not_available), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        File file = new File(mContext.getExternalFilesDir(dir), name);
+
+        Log.d("storage helper", "file absolutepaht="+file.getAbsolutePath());
+
+        if(file.isFile())
+            file.delete();
+        else{
+            Toast.makeText(mContext, "Not Found file 2", Toast.LENGTH_SHORT).show();
+        }
+
+        return true;
+    }
 
     public static boolean delete(Context mContext, String name) {
         boolean res = false;

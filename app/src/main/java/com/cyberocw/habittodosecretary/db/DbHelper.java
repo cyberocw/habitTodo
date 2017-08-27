@@ -193,6 +193,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 			db.execSQL(getCreateTableQuery(TABLE_ALARAM_RELATION));
 			db.execSQL(getCreateTableQuery(TABLE_HOLIDAY));
+			db.execSQL(getCreateTableQuery(TABLE_FILE_INFO));
 
 			db.setTransactionSuccessful();
 			Crashlytics.log(Log.DEBUG, Const.DEBUG_DB_TAG, "DB CREATE SUCCESS OCW");
@@ -385,7 +386,8 @@ public class DbHelper extends SQLiteOpenHelper {
 	}
 
 	public void closeDB() {
-		this.close();
+
+		//this.close();
 
 		/*
 		SQLiteDatabase db = this.getReadableDatabase();

@@ -90,7 +90,7 @@ public class AlarmFragment extends Fragment{
 	private int mMode = -1;
 	private long mAlarmId = -1;
 	private int mCallOnClick = 0;
-
+	boolean mFirstExe = true;
 
 	private OnFragmentInteractionListener mListener;
 	private View mView;
@@ -124,7 +124,7 @@ public class AlarmFragment extends Fragment{
 		if (getArguments() != null) {
 			mMode = getArguments().getInt(Const.PARAM.MODE);
 			mAlarmId = getArguments().getLong(Const.PARAM.ALARM_ID);
-            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " alarm fragment mMode = get Arguments = " + mMode + " al id= " + mAlarmId);
+            Crashlytics.log(Log.DEBUG, this.toString(), " alarm fragment mMode = get Arguments = " + mMode + " al id= " + mAlarmId);
 		}
 	}
 
@@ -150,7 +150,6 @@ public class AlarmFragment extends Fragment{
 		if(savedInstanceState != null){
 			mMode = savedInstanceState.getInt(Const.PARAM.MODE);
 			mAlarmId = savedInstanceState.getLong(Const.PARAM.ALARM_ID);
-			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " alarm fragment mMode = get Arguments = " + mMode + " al id= " + mAlarmId);
 		}
 
 		mDateTv = (TextView) mView.findViewById(R.id.dateView);
@@ -158,18 +157,10 @@ public class AlarmFragment extends Fragment{
 		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 		initActivity();
 
-
-		File f = new File(mCtx.getFilesDir().getAbsolutePath() + File.separator + Environment.DIRECTORY_RINGTONES);
-		File[] list = f.listFiles();
-		if(list != null) {
-			for (int i = 0; i < list.length; i++) {
-				Log.d(Const.DEBUG_TAG, "fileList = " + list[i].getName() + " size=" + list[i].length() / 1000);
-			}
-		}
 	}
 
 	private void initActivity() {
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "initActivity started");
+		Crashlytics.log(Log.DEBUG, this.toString(), "initActivity started");
 
 		mCalendar = Calendar.getInstance();
 
@@ -179,11 +170,11 @@ public class AlarmFragment extends Fragment{
 		llWeekOfDayWrap = (LinearLayout) mView.findViewById(R.id.weekOfDayWrap);
 		mAlarmDataManager = new AlarmDataManager(mCtx, mCalendar);
 		mTimerDataManager = new TimerDataManager(mCtx);
-		mMemoDataManager = new MemoDataManager(mCtx, -1l);
+		mMemoDataManager = new MemoDataManager(mCtx);
 		mCalendarManager = new CalendarManager(mCtx, llWeekOfDayWrap, mCalendar, mDateTv);
 		mCalendarManager.setDayClickListener(myDateSetListener);
 		mCalendarManager.init();
-
+		mFileDataManager = new FileDataManager(mCtx);
 
 		mTimerAdapter = new TimerListAdapter(this, mCtx, mTimerDataManager);
 
@@ -212,12 +203,32 @@ public class AlarmFragment extends Fragment{
 		bindEvent();
 
 		CommonUtils.logCustomEvent("AlarmFragment", "1", "today alarmDataCount", mAlarmDataManager.getCount());
-
+		checkFileList();
 	}
 
+
+
+	public void checkFileList(){
+		//mFileDataManager.migrationFile(mCtx);
+
+		File dir = mCtx.getExternalFilesDir(Environment.DIRECTORY_RINGTONES);
+		if(dir.isDirectory()){
+			for(File file : dir.listFiles()){
+				Log.d(this.toString(), "ringtone list name="+file.getName());
+				//file.delete();
+			}
+		}
+
+		mFileDataManager.makeDataListAll();
+		ArrayList arrFiles = mFileDataManager.getDataList();
+		for(Object filese : arrFiles){
+			Log.d(this.toString(), "all file vo path=" + ((FileVO) filese).toString());
+		}
+
+	}
 	private void showPostponeAlarmDialog(final long id){
 
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "makeAlarmPostpone");
+		Crashlytics.log(Log.DEBUG, this.toString(), "makeAlarmPostpone");
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
 		builder.setTitle(getString(R.string.alarm_postpone_title));
@@ -289,10 +300,13 @@ public class AlarmFragment extends Fragment{
 		});
 
 		AlarmVO getVO = null;
+
 		try {
 			getVO = (AlarmVO) mAlarmDataManager.getItemByIdInDB(id).clone();
-			mFileDataManager.makeDataList(Const.ETC_TYPE.ALARM, getVO.getId());
-			getVO.setFileList(mFileDataManager.getDataList());
+			if(getVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD) {
+				mFileDataManager.makeDataList(Const.ETC_TYPE.ALARM, getVO.getId());
+				getVO.setFileList(mFileDataManager.getDataList());
+			}
 
 		}catch (CloneNotSupportedException e){
 			e.printStackTrace();
@@ -334,8 +348,8 @@ public class AlarmFragment extends Fragment{
 				if(mAlarmDataManager.addItem(alarmVO) == true) {
 					Log.d(this.toString(), "id ocwocw = " + id + " fullpath ="+CommonUtils.getRecordFullPath(mCtx, id));
 
-					File targetFile = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");
 					if(alarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD) {
+						File targetFile = StorageHelper.createNewAttachmentFile(mCtx, Environment.DIRECTORY_RINGTONES, ".wav");
 						boolean result = getRecorderDataManager().saveFile(alarmVO.getFileList().get(0).getUriPath(), targetFile);
 						if (result) {
 							Log.d(this.toString(), "미디어 복사 성공");
@@ -360,7 +374,7 @@ public class AlarmFragment extends Fragment{
 				}
 
 				mAlarmDataManager.resetMinAlarmCall();
-				//refreshAlarmList();
+				refreshAlarmList();
 
 			}
 		});
@@ -515,7 +529,6 @@ public class AlarmFragment extends Fragment{
 					//editor.clear();
 					int len = ((ExpandableListAdapter) mAlarmAdapter).getGroupCount();
 					if(len > 0 && mAlarmDataManager.positionToGroupCode(0).equals(String.valueOf(Const.ALARM_DATE_TYPE.REPEAT))){
-						Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " prefs get put boolean = " + !expandableListView.isGroupExpanded(0));
 						editor.putBoolean(Const.ALARM_LIST_VIEW_TYPE.TAG_REPEAT_EXPAND, !expandableListView.isGroupExpanded(0));
 					}
 
@@ -526,7 +539,6 @@ public class AlarmFragment extends Fragment{
 			newLv.setClickable(true);
 			newLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					Log.d(Const.DEBUG_TAG, "ex short click id="+id);
 					showNewAlarmDialog(id);
 				}
 			});
@@ -542,7 +554,7 @@ public class AlarmFragment extends Fragment{
 			});*/
 		}
 
-		//mAlarmAdapter.notifyDataSetChanged();
+		mAlarmAdapter.notifyDataSetChanged();
 		refreshAlarmList();
 	}
 
@@ -638,11 +650,7 @@ public class AlarmFragment extends Fragment{
 	}
 
 	public void deleteAlarm(final long id){
-		Crashlytics.log(Log.DEBUG, this.toString(), " getItemByIdInList id = " + id);
 		AlarmVO vo = mAlarmDataManager.getItemByIdInList(id);
-
-		Crashlytics.log(Log.DEBUG, this.toString(), " getItemByIdInList vo = " + vo);
-
 		if(vo == null) {
 			Toast.makeText(mCtx, "알람 데이터가 없습니다", Toast.LENGTH_SHORT).show();
 			return;
@@ -684,6 +692,7 @@ public class AlarmFragment extends Fragment{
 	}
 
 	public void refreshAlarmList(){
+		Log.d(this.toString(), "refreshAlarmList");
 		mAlarmDataManager.makeDataList(mCalendar);
 		mAlarmAdapter.notifyDataSetChanged();
 		mCalendarManager.renderDayNum();
@@ -839,7 +848,7 @@ public class AlarmFragment extends Fragment{
 				return;
 			}
 			if(alarmVO.getEtcType() != null && alarmVO.getEtcType().equals(Const.ETC_TYPE.MEMO)){
-				bundle.putSerializable(Const.PARAM.MEMO_VO, mMemoDataManager.getItemById(alarmVO.getRfid()));
+				bundle.putSerializable(Const.PARAM.MEMO_VO, mMemoDataManager.getMemoInDb(alarmVO.getRfid()));
 			}
 			bundle.putSerializable(Const.PARAM.ALARM_VO, alarmVO);
 			alarmDialogNew.setArguments(bundle);
@@ -929,17 +938,21 @@ public class AlarmFragment extends Fragment{
 					boolean result = getRecorderDataManager().saveFile(fromPath, targetFile);
 					if(result){
 						Log.d(this.toString(), "미디어 복사 성공");
+						if(oriArrFile != null && oriArrFile.size() > 0) {
+							mFileDataManager.addDeleteItem(oriArrFile);
+							mFileDataManager.deleteAll(Environment.DIRECTORY_RINGTONES);
+						}
 						getRecorderDataManager().deleteRecordFile(fromPath);
-						mFileDataManager.addDeleteItem(oriArrFile);
-						mFileDataManager.deleteAll();
 						mAlarmDataManager.saveFile(vo, targetFile);
 					}
 				}
 				//type 변경으로 기존 파일 제거
 				else if(fromPath != null){
-					getRecorderDataManager().deleteRecordFile(fromPath);
-					mFileDataManager.addDeleteItem(oriArrFile);
-					mFileDataManager.deleteAll();
+					//getRecorderDataManager().deleteRecordFile(fromPath);
+					if(oriArrFile != null && oriArrFile.size() > 0) {
+						mFileDataManager.addDeleteItem(oriArrFile);
+						mFileDataManager.deleteAll(Environment.DIRECTORY_RINGTONES);
+					}
 				}
 				// 수정일 경우 date type이 변경 될 수도 있기 때문에 두개 모두 갱신
 				mAlarmDataManager.resetMinAlarmCall();
@@ -1003,7 +1016,7 @@ public class AlarmFragment extends Fragment{
 	public void onDestroy() {
 		if(mAlarmDataManager != null)
 			mAlarmDataManager.close();
-		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "on destroy");
+		Crashlytics.log(Log.DEBUG, this.toString(), "on destroy");
 		super.onDestroy();
 	}
 

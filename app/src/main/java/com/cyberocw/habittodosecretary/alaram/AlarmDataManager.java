@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -38,6 +39,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import io.fabric.sdk.android.Fabric;
+import io.fabric.sdk.android.services.events.EnabledEventsStrategy;
 
 /**
  * Created by cyberocw on 2015-08-16.
@@ -47,6 +49,7 @@ public class AlarmDataManager {
 	FileDataManager mFdm;
 	Context mCtx = null;
 	AlarmDbManager mDb;
+
 	public Calendar mCalendar = null;
 	final int mSdkVersion = Build.VERSION.SDK_INT;
 	// 각각의 알람이 저장 됨
@@ -334,7 +337,7 @@ public class AlarmDataManager {
 		ArrayList<FileVO> arrFile = vo.getFileList();
 		if(arrFile != null && arrFile.size() > 0){
 			getFileDataManager().addDeleteItem(arrFile);
-			getFileDataManager().deleteAll();
+			getFileDataManager().deleteAll(Environment.DIRECTORY_RINGTONES);
 			return true;
 		}
 		return false;
@@ -740,6 +743,9 @@ public class AlarmDataManager {
 		fileVO.setfId(vo.getId());
 		fileVO.setType(Const.ETC_TYPE.ALARM);
 		getFileDataManager().addItem(fileVO);
+		ArrayList<FileVO> fileList = new ArrayList<FileVO>();
+		fileList.add(fileVO);
+		vo.setFileList(fileList);
 	}
 
 }

@@ -226,7 +226,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 					//mPrevRecord = true;
 					//String fromPath = CommonUtils.getRecordFullPath(mCtx, mAlarmVO);
 					ArrayList<FileVO> fileList = mAlarmVO.getFileList();
-					if(fileList != null) {
+					if(fileList != null && fileList.size() > 0) {
 						Log.d(this.toString(), "isModifyMode = 1 and mAlarmVO not null fromPath = " + fileList.get(0).getUriPath());
 						mRecorderCustomView.setRecordFile(fileList.get(0).getUriPath());
 					}

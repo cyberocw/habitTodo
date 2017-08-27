@@ -33,6 +33,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 /**
  * Created by cyber on 2017-07-09.
  */
@@ -168,6 +170,7 @@ public class WebViewActivity extends AppCompatActivity {
 
     private void openDefaultBrowser(){
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(webView.getUrl()));
+        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
         mCtx.startActivity(intent);
     }
 

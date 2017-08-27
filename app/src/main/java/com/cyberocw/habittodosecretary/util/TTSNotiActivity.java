@@ -88,8 +88,9 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
                     "Error occurred while initializing Text-To-Speech engine", Toast.LENGTH_LONG).show();
         }
         if (mTTS != null) {
-            mTTS.stop();
+
             try {
+                mTTS.stop();
                 mTTS.shutdown();
             }catch (Exception e){
                 Crashlytics.log(Log.ERROR, this.toString(), e.getMessage() + " " + e.getCause());

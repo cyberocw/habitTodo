@@ -101,7 +101,9 @@ public class MemoDataManager {
 		}
 		return null;
 	}
-
+	public MemoVO getMemoInDb(long id){
+		return mDb.getById(id);
+	}
 	public int getItemIndexById(long id){
 		for(int i = 0 ; i < dataList.size() ; i++){
 			if(dataList.get(i).getId() == id){

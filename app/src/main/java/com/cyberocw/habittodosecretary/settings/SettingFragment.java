@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.WebViewActivity;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.cyberocw.habittodosecretary.util.KeyboardUtils;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
 import butterknife.ButterKnife;
@@ -184,7 +186,7 @@ public class SettingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onclick backup");
-                mSettingDataManager.exportDB();
+                showPasswordPopup(false);
             }
         });
 
@@ -298,6 +300,39 @@ public class SettingFragment extends Fragment {
         });
     }
 
+    private void showPasswordPopup(final boolean isDecode) {
+        AlertDialog.Builder ad = new AlertDialog.Builder(mCtx);
+
+        ad.setTitle("Backup Password");       // 제목 설정
+        ad.setMessage("Password");   // 내용 설정
+
+        final EditText et = new EditText(mCtx);
+        ad.setView(et)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Text 값 받아서 로그 남기기
+                String value = et.getText().toString();
+
+                if(isDecode){
+                    mSettingDataManager.fileRestore(value);
+                }
+                else{
+                    mSettingDataManager.fileBackup(value);
+                }
+                dialog.dismiss();
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();     //닫기
+                // Event
+            }
+        }).show();
+
+
+    }
+
     protected boolean putAlarmPreference(String key, boolean value){
         SharedPreferences prefs = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -389,10 +424,15 @@ public class SettingFragment extends Fragment {
         builder.setTitle(mCtx.getString(R.string.caution));
 
         builder.setMessage(getString(R.string.fragment_setting_msg_restore));
-
+        final EditText et = new EditText(mCtx);
+        builder.setView(et);
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                mSettingDataManager.importDB();
+                //mSettingDataManager.importDB();
+                //showPasswordPopup(true);
+
+                mSettingDataManager.fileRestore(et.getText().toString());
+                KeyboardUtils.hideKeyboard(mView);
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
