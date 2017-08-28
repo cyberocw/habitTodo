@@ -220,11 +220,12 @@ public class FileDataManager {
             this.deleteAll(Environment.DIRECTORY_RINGTONES);*/
 
             Log.d(this.toString(), "MIGRATION END time=" + CommonUtils.convertFullDateType(Calendar.getInstance()));
-            Toast.makeText(ctx, "마이그레이션 완료", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, ctx.getString(R.string.setting_data_migration_complete), Toast.LENGTH_SHORT).show();
         }
         else{
             Crashlytics.log(Log.DEBUG, this.toString(), " not a dir");
         }
+        Log.d(this.toString(), "MIGRATION file not found");
     }
 
 }

@@ -288,7 +288,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 						&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
 				} else {
-					Toast.makeText(mCtx, "녹음 권한을 주지 않으면 녹음 알람 기능을 사용 할 수 없습니다", Toast.LENGTH_SHORT).show();
+					Toast.makeText(mCtx, "녹음 권한이 없으면 녹음 알람 기능을 사용 할 수 없습니다", Toast.LENGTH_SHORT).show();
 				}
 				return;
 		}
@@ -303,8 +303,8 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 			String [] permissions = {Manifest.permission.RECORD_AUDIO};
 			int REQUEST_RECORD_AUDIO_PERMISSION = 200;
 			ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
-		}
 
+		}
 
 		mCalendar = Calendar.getInstance();
 		//수정 모드

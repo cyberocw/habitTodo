@@ -12,11 +12,12 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
+import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.vo.HolidayVO;
 import com.cyberocw.habittodosecretary.file.StorageHelper;
 import com.cyberocw.habittodosecretary.settings.db.SettingDbManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
-import com.cyberocw.habittodosecretary.util.ZipUtils;
+
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -52,6 +53,8 @@ public class SettingDataManager {
     public SettingDataManager(Context ctx) {
         mCtx = ctx;
         mDb = SettingDbManager.getInstance(ctx);
+
+
     }
 
     public void removeAll() {
@@ -153,6 +156,12 @@ public class SettingDataManager {
         }else{
             sd = new File(Environment.getExternalStorageDirectory() + "/Documents/");
         }
+        if(!sd.exists()){
+            sd = new File(Environment.getExternalStorageDirectory() + "/Documents/");
+            boolean bMkdir = sd.mkdirs();
+            Log.d(this.toString(), "bMkdir="+bMkdir);
+        }
+
         return sd;
     }
 
@@ -171,12 +180,16 @@ public class SettingDataManager {
             try {
                 FileUtils.deleteDirectory(target);
                 Log.d(this.toString(), "delresult= ok");
+                target.mkdirs();
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.d(this.toString(), "delresult= false");
             }
 
         }
+        source.setReadable(true);
+        Log.d(this.toString(), "source file is File = " + source.isFile() + " readable = " + source.canRead());
+
         try {
             ZipAsync zipAsync = new ZipAsync(mCtx, source, target, pass, true);
             zipAsync.execute();
@@ -195,20 +208,23 @@ public class SettingDataManager {
     public void fileBackup(String pass) {
 
         if(!StorageHelper.checkStorage()){
-            Toast.makeText(mCtx, "파일을 쓸 권한이 없습니다", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mCtx, mCtx.getString(R.string.no_storage_auth), Toast.LENGTH_SHORT).show();
             return;
         }
 
         File sd = getExternalStorage();
 
+
         try {
-            File targetZip = new File(sd, "ohreminder_backup.zip");
+            File targetZip = new File(sd.getAbsolutePath(), "ohreminder_backup.zip");
             if(targetZip.exists()){
+                Log.d(this.toString(), "targetZip="+targetZip.getAbsolutePath());
                 boolean result = targetZip.delete();
                 Log.d(this.toString(), "zip file delete result="+result);
             }else{
-                targetZip.mkdirs();
+
             }
+            //targetZip.createNewFile();
 
             ZipAsync zipAsync = new ZipAsync(mCtx, StorageHelper.getAttachmentDir(mCtx), targetZip, pass, false);
             zipAsync.execute();
@@ -244,9 +260,9 @@ public class SettingDataManager {
             try {
                 asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 if(!mIsDecode)
-                    asyncDialog.setMessage("백업 중입니다..");
+                    asyncDialog.setMessage("Backup ..");
                 else
-                    asyncDialog.setMessage("복구 중입니다..");
+                    asyncDialog.setMessage("Restore ..");
 
                 asyncDialog.show();
             }catch(Exception e){
@@ -276,6 +292,7 @@ public class SettingDataManager {
                     exportDB();
 
                     ZipFile zipFile = new ZipFile(mTargetFile);
+
                     ZipParameters parameters = new ZipParameters();
                     parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE); // set compression method to deflate compression
                     parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
@@ -285,7 +302,8 @@ public class SettingDataManager {
                     parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
                     parameters.setPassword(mPass);
                     //zipFile.createZipFile(mSourceFile, parameters);
-                    zipFile.addFolder(mSourceFile, parameters);
+                    zipFile.createZipFileFromFolder(mSourceFile, parameters, false, 0);
+                    //zipFile.addFolder(mSourceFile, parameters);
 
                     //zipFile.addFolder(mSourceFile, parameters);
                 }
@@ -293,16 +311,13 @@ public class SettingDataManager {
             }catch (ZipException e){
                 e.printStackTrace();
                 if(e.getMessage().indexOf("Pass") > -1)
-                    return "복구 실패 암호를 확인해 주세요.";
+                    return mCtx.getString(R.string.password_are_diff);
                 else{
-                    return "실패했습니다";
+                    return mCtx.getString(R.string.failed);
                 }
             }
+            return mCtx.getString(R.string.complete);
 
-            if(!mIsDecode)
-                return "백업 완료";
-            else
-                return "복구 완료";
         }
 
         @Override
@@ -315,7 +330,7 @@ public class SettingDataManager {
             if(mCtx != null)
                 Toast.makeText(mCtx, result, Toast.LENGTH_LONG).show();
             Log.d(this.toString(), "zip success");
-            //알람 리셋해줘야 함
+            new AlarmDataManager(mCtx).resetMinAlarm();
 
         }
     }

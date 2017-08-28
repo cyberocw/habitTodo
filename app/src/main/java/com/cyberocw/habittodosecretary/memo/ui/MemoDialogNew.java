@@ -846,7 +846,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 					arrFile.add(fVO);
 					mAlarmVO.setFileList(arrFile);
 					if (fromPath == null) {
-						Toast.makeText(mCtx, "음성 파일이 저장 되지 않았습니다", Toast.LENGTH_SHORT).show();
+						Toast.makeText(mCtx, mCtx.getString(R.string.permission_record_cont), Toast.LENGTH_SHORT).show();
 						return;
 					}
 				}

@@ -1,13 +1,19 @@
 package com.cyberocw.habittodosecretary.settings;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v13.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,15 +25,19 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.WebViewActivity;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
+import com.cyberocw.habittodosecretary.file.StorageHelper;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.KeyboardUtils;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
+
+import java.io.File;
 
 import butterknife.ButterKnife;
 import io.fabric.sdk.android.Fabric;
@@ -49,6 +59,8 @@ public class SettingFragment extends Fragment {
     private AudioManager mAudioManager;
     private int mOriginalVolume;
     SharedPreferences mPrefs;
+
+    final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1122;
 
     public SettingFragment() {
         // Required empty public constructor
@@ -86,6 +98,89 @@ public class SettingFragment extends Fragment {
 
         initActivity();
         Fabric.with(mCtx, new Crashlytics());
+
+        if(StorageHelper.getAttachmentDir(mCtx).exists()){
+            for(File f : StorageHelper.getAttachmentDir(mCtx).listFiles()){
+                Log.d(this.toString(), "sd list file="+f.getAbsolutePath());
+            }
+        }
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            checkPermissionReadStorage(mCtx, getActivity());
+
+    }
+    public void checkPermissionReadStorage(Context context, Activity activity){
+        Log.d(this.toString(), "check permission =" + (ContextCompat.checkSelfPermission(context,      Manifest.permission.WRITE_EXTERNAL_STORAGE) !=     PackageManager.PERMISSION_GRANTED));
+        if (ContextCompat.checkSelfPermission(context,      Manifest.permission.WRITE_EXTERNAL_STORAGE) !=     PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                AlertDialog.Builder dialog = new AlertDialog.Builder(mCtx);
+                dialog.setTitle(getString(R.string.need_permission))
+                        .setMessage(getString(R.string.permission_storage_cont))
+                        .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
+                                }
+
+                            }
+                        })
+                        /*.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(mCtx, "기능을 취소했습니다.", Toast.LENGTH_SHORT).show();
+                            }
+                        })*/
+                        .create()
+                        .show();
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_STORAGE: {
+                //premission to read storage
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(mCtx, "We Need permission Storage", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 
     private void initActivity(){
@@ -304,10 +399,10 @@ public class SettingFragment extends Fragment {
         AlertDialog.Builder ad = new AlertDialog.Builder(mCtx);
 
         ad.setTitle("Backup Password");       // 제목 설정
-        ad.setMessage("Password");   // 내용 설정
+        ad.setMessage(mCtx.getString(R.string.setting_password_cont));   // 내용 설정
 
         final EditText et = new EditText(mCtx);
-        ad.setView(et)
+            ad.setView(et)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

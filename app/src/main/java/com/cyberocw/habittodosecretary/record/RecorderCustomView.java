@@ -450,7 +450,7 @@ public class RecorderCustomView extends LinearLayout {
             File fPlay = new File(mPlayFileName);
 
             if(!fPlay.isFile()) {
-                Toast.makeText(mCtx, "파일을 찾을수 없습니다", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mCtx, mCtx.getString(R.string.file_not_found), Toast.LENGTH_SHORT).show();
                 return null;
             }
             int bufferSize = AudioTrack.getMinBufferSize(Const.RECORDER.FREQUENCY,Const.RECORDER.CHANNEL_CONFIGURATION_OUT, Const.RECORDER.AUDIO_ENCODING);

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -12,6 +13,7 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.common.vo.FileVO;
 import com.cyberocw.habittodosecretary.db.DbHelper;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -69,19 +71,39 @@ public class FileDbManager extends DbHelper {
         FileVO vo;
 
         if (c.moveToFirst()) {
+            String baseDir = StorageHelper.getAttachmentDir(mCtx).getAbsolutePath();
+            String recordDir = StorageHelper.getAttachmentDir(mCtx, Environment.DIRECTORY_RINGTONES).getAbsolutePath();
+            String dir;
+            Uri uri;
+
             do {
                 vo = new FileVO();
                 vo.setId(c.getLong((c.getColumnIndex(KEY_ID))));
                 vo.setName((c.getString(c.getColumnIndex(KEY_NAME))));
                 //vo.setUriPath((c.getString(c.getColumnIndex(KEY_URI))));
                 vo.setUri(c.getString(c.getColumnIndex(KEY_URI)));
-                if(vo.getUri() != null)
-                    vo.setUriPath(Uri.parse(vo.getUri()).getPath());
+                vo.setType(c.getString(c.getColumnIndex(KEY_TYPE)));
+
+                if(vo.getUri() != null) {
+                    if(vo.getUri().indexOf(baseDir) == -1){
+                        Log.d(this.toString(), "uri not match");
+                        if(vo.getType().equals(Const.ETC_TYPE.ALARM)){
+                            dir = recordDir;
+                        }
+                        else{
+                            dir = baseDir;
+                        }
+                        uri = Uri.fromFile(new File(dir, vo.getUri().substring(vo.getUri().lastIndexOf(File.separator))));
+                        vo.setUri(uri.toString());
+                        vo.setUriPath(uri.getPath());
+                    }
+                    else
+                        vo.setUriPath(Uri.parse(vo.getUri()).getPath());
+                }
                 vo.setSize(c.getLong(c.getColumnIndex(KEY_SIZE)));
                 vo.setLength(c.getLong(c.getColumnIndex(KEY_LENGTH)));
                 vo.setMimeType(c.getString(c.getColumnIndex(KEY_MIME_TYPE)));
                 vo.setCreateDt(c.getLong(c.getColumnIndex(KEY_CREATE_DATE)));
-                vo.setType(c.getString(c.getColumnIndex(KEY_TYPE)));
                 vo.setfId(c.getLong(c.getColumnIndex(KEY_F_ID)));
                 list.add(vo);
             } while (c.moveToNext());

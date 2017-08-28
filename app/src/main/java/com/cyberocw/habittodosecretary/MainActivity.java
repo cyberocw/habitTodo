@@ -292,8 +292,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			ttsIntent.putExtra("alarmId", -1L);
 			startActivity(ttsIntent);
 
-			InitializeSetting initializeSetting = new InitializeSetting(this);
-			initializeSetting.execute();
+
 
 		}
 		//최초 || 업그레이드 시
@@ -303,15 +302,19 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				rootDir.mkdirs();
 
 			if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
-
+				InitializeSetting initializeSetting = new InitializeSetting(this);
+				initializeSetting.execute();
 			}
 			//업그레이드시
 			if(!prefsSavedVersion.equals("0")){
-				//showUpdateLog();
-				if(prefsSavedVersionCode < 22) {
+				showUpdateLog();
+				if(prefsSavedVersionCode < 25) {
 					putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);
 					FileDataManager fdm = new FileDataManager(getApplicationContext());
-					try{fdm.migrationFile(getApplicationContext());}catch(Exception e){
+					try{
+						Crashlytics.log(Log.ERROR, this.toString(), "migration start ");
+						fdm.migrationFile(getApplicationContext());
+					}catch(Exception e){
 						Crashlytics.log(Log.ERROR, this.toString(), "migration failed =" + e.getMessage());
 					}
 				}
@@ -336,11 +339,16 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		});
 		String msg;
 		if(CommonUtils.isLocaleKo(getResources().getConfiguration())){
-			msg = "1. 특정 상황에서 앱이 강제종료되는 현상에 대한 안정화 \n\n" + "2. 작은 화면 혹은 큰 글씨를 사용하는 경우에 대한 최적화 작업";
+			msg = "1.메모 - 파일 첨부 기능을 추가했습니다.\n\n" +
+					"2.백업 및 복구 기능 - 모든 데이터와 파일을 zip파일로 암호화 압축하여 백업 및 복구 가능합니다.\n\n" +
+					"3.방해금지 모드 추가 - 설정 메뉴에 방해 금지모드가 추가되었습니다. 해당 모드가 켜져있는 동안은 모든 알람이 비활성화 됩니다.\n\n" +
+					"4.기타 버그 수정";
 		}
 		else {
-			msg = "1. Added to-do list function for memo menu.\n\n" +
-					"2. TTS playback function bug fix" ;
+			msg = "1. Memo - Added file attachment function.\n\n" +
+					"2. Backup and recovery function - All data and files can be compressed and encrypted by zip file for backup and recovery.\n\n" +
+					"3. Add DND mode - The DND mode has been added to the setup menu. All alarms are disabled while this mode is on.\n\n" +
+					"4. Other bug fixes" ;
 		}
 		alert.setMessage(msg);
 		alert.show();

@@ -183,5 +183,16 @@
     <string name="files">Files</string>
     <string name="pictures">Pictures</string>
     <string name="error">Error</string>
+    <string name="setting_data_migration_complete">Data migration complete</string>
+    <string name="file_not_found">File not found</string>
+    <string name="complete">Complete</string>
+    <string name="failed">Failed</string>
+    <string name="confirm">Confirm</string>
+    <string name="password_are_diff">Passwords are different</string>
+    <string name="no_storage_auth">No storage rights</string>
+    <string name="need_permission">I need permission</string>
+    <string name="permission_storage_cont">To use the file backup / restore function, need \"storage\" permission</string>
+    <string name="permission_record_cont">If you do not have recording rights, you can not use the recording alarm function</string>
+    <string name="setting_password_cont">Please enter the password to be used for restore data.</string>
 
 </resources>
