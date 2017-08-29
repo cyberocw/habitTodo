@@ -127,7 +127,7 @@ public class SettingDbManager extends DbHelper {
             result = false;
         }finally {
             db.endTransaction();
-            db.close();
+
             return result;
         }
 

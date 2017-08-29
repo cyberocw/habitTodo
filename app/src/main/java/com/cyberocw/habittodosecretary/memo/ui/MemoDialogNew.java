@@ -1086,10 +1086,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
                         else{
 							mFileDataManager.deleteInList(_id);
 							mFileDataManager.addDeleteItem(_id);
-
 						}
-						//ui에서 지워주는 부분 해야함
-
 						((ViewGroup) iv.getParent()).removeView((ViewGroup)iv);
                         break;
                 }

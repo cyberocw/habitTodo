@@ -367,7 +367,6 @@ public class AlarmDataManager {
 	public boolean addItem(AlarmVO item){
 
 		mDb.insertAlarm(item);
-
 		//알람 인던트 등록
 		if(item.getId() == -1){
 			Log.e(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
@@ -376,13 +375,13 @@ public class AlarmDataManager {
 		}
 
 		if(item.getRfid() > -1){
+			Crashlytics.log(Log.DEBUG, this.toString(), "addItem  mctx = " + mCtx);
 			CommonRelationDBManager relationDBManager = CommonRelationDBManager.getInstance(mCtx);
 			RelationVO rvo = new RelationVO();
 			rvo.setAlarmId(item.getId());
 			rvo.setType(item.getEtcType());
 			rvo.setfId(item.getRfid());
 			relationDBManager.insert(rvo);
-
 		}
 
 		this.dataList.add(item);

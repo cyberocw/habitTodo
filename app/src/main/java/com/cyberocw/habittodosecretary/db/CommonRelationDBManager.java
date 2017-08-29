@@ -6,8 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by cyberocw on 2015-12-26.
@@ -18,6 +21,8 @@ import com.cyberocw.habittodosecretary.common.vo.RelationVO;
  */
 public class CommonRelationDBManager extends DbHelper {
 	public static CommonRelationDBManager sInstance = null;
+	private static Context mCtx;
+
 	public CommonRelationDBManager(Context context) {
 		super(context);
 	}
@@ -26,7 +31,8 @@ public class CommonRelationDBManager extends DbHelper {
 		// Use the application context, which will ensure that you
 		// don't accidentally leak an Activity's context.
 		// See this article for more information: http://bit.ly/6LRzfx
-
+		mCtx = context;
+		Fabric.with(context, new Crashlytics());
 		if (sInstance == null) {
 			sInstance = new CommonRelationDBManager(context);
 		}
@@ -106,13 +112,13 @@ public class CommonRelationDBManager extends DbHelper {
 		try{
 			db = this.getWritableDatabase();
 		}catch(Exception e){
-			closeDB();
+
 			try {
 				Thread.sleep(500);
 			}catch (Exception ee){
 
 			}
-			db = this.getWritableDatabase();
+			db = getWritableDatabase();
 		}
 		//기존에 null로 등록된것들이 있어서 삭제
 		deleteByAlarmId(vo.getAlarmId(), db);
