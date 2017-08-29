@@ -292,8 +292,11 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			ttsIntent.putExtra("alarmId", -1L);
 			startActivity(ttsIntent);
 
-
-
+			//최초에만
+			if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
+				InitializeSetting initializeSetting = new InitializeSetting(this);
+				initializeSetting.execute();
+			}
 		}
 		//최초 || 업그레이드 시
 		if (prefsSavedVersion.equals("0") || !prefsSavedVersion.equals(versionName)) {
@@ -301,10 +304,6 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			if(!rootDir.isDirectory())
 				rootDir.mkdirs();
 
-			if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
-				InitializeSetting initializeSetting = new InitializeSetting(this);
-				initializeSetting.execute();
-			}
 			//업그레이드시
 			if(!prefsSavedVersion.equals("0")){
 				showUpdateLog();

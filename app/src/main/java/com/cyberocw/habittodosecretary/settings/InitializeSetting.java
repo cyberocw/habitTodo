@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.cyberocw.habittodosecretary.MainActivity;
@@ -11,7 +12,10 @@ import com.cyberocw.habittodosecretary.intro.Intro;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by cyber on 2017-02-08.
@@ -22,6 +26,8 @@ public class InitializeSetting extends AsyncTask<Void, Void, String> {
     private ProgressDialog asyncDialog;
     private SettingDataManager mSettingDataManager;
     private Context mCtx;
+    //private ArrayList<Map> arrYearData = new ArrayList();
+    HashMap<Integer, JSONObject> mYearMap = new HashMap<Integer, JSONObject>();
 
     public InitializeSetting(Context context){
         mCtx = context;
@@ -53,8 +59,9 @@ public class InitializeSetting extends AsyncTask<Void, Void, String> {
         for(int i = 0 ; i < 4; i++) {
             JSONObject jObj = sync.getHolidayData(year + i);
 
-            if(jObj != null)
-                mSettingDataManager.addItems(jObj, year + i);
+            if(jObj != null) {
+                mYearMap.put(year+i, jObj);
+            }
         }
 
         resultMsg = "공휴일 데이터 동기화 완료";
@@ -65,6 +72,11 @@ public class InitializeSetting extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
+        for(Object year : mYearMap.keySet()){
+            Log.d(this.toString(), "year="+year);
+            mSettingDataManager.addItems(mYearMap.get(year), (Integer) year);
+        }
+
         if(asyncDialog != null)
             asyncDialog.dismiss();
         if(mCtx != null)
