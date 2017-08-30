@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.common.vo.RelationVO;
 
 import io.fabric.sdk.android.Fabric;
@@ -32,9 +33,9 @@ public class CommonRelationDBManager extends DbHelper {
 		// don't accidentally leak an Activity's context.
 		// See this article for more information: http://bit.ly/6LRzfx
 		mCtx = context;
-		Fabric.with(context, new Crashlytics());
+		Fabric.with(mCtx, new Crashlytics());
 		if (sInstance == null) {
-			sInstance = new CommonRelationDBManager(context);
+			sInstance = new CommonRelationDBManager(mCtx);
 		}
 		return sInstance;
 	}

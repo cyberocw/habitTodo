@@ -94,13 +94,14 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String KEY_SIZE = "size";
 	public static final String KEY_LENGTH = "length";
 	public static final String KEY_MIME_TYPE = "MIME_TYPE";
-
+	public static Context mContext;
 
 	public static synchronized DbHelper getInstance(Context context) {
 
 		// Use the application context, which will ensure that you
 		// don't accidentally leak an Activity's context.
 		// See this article for more information: http://bit.ly/6LRzfx
+		mContext= context;
 		if (sInstance == null) {
 			sInstance = new DbHelper(context.getApplicationContext());
 		}
@@ -109,6 +110,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	protected DbHelper(Context context) {
 		super(context, DB_NME, null, DB_VERSION);
+		mContext= context;
 	}
 
 	@Override

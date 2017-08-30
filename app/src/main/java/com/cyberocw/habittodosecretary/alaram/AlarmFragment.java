@@ -203,7 +203,7 @@ public class AlarmFragment extends Fragment{
 		bindEvent();
 
 		CommonUtils.logCustomEvent("AlarmFragment", "1", "today alarmDataCount", mAlarmDataManager.getCount());
-		checkFileList();
+		//checkFileList();
 	}
 
 

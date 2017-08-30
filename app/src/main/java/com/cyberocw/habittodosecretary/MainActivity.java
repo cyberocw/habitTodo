@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		NavigationView.OnNavigationItemSelectedListener {
     public AlarmFragment mMainFragment;
     public static String TAG = "mainActivity";
+	public static Context mContext;
 
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawer;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
         super.onCreate(savedInstanceState);
 		Crashlytics cr = new Crashlytics();
 		Fabric.with(this, cr);
-
+		mContext = getApplicationContext();
 		mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         setContentView(R.layout.activity_main);

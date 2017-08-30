@@ -1077,7 +1077,25 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        //mFragment.showNewMemoDialog(_id);
+						Intent shareIntent = new Intent(Intent.ACTION_SEND);
+						FileVO attachment = mFileDataManager.getById(_id);
+						File shareFile = new File(attachment.getUriPath());
+
+						Uri newUri = FileProvider.getUriForFile(mCtx, BuildConfig.APPLICATION_ID + ".provider", shareFile);
+						if (shareFile == null) {
+							Toast.makeText(mCtx, getString(R.string.error), Toast.LENGTH_SHORT).show();
+							return;
+						}
+						shareIntent.setType(StorageHelper.getMimeType(mCtx, newUri));
+						shareIntent.putExtra(Intent.EXTRA_STREAM, newUri);
+						shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+						if (IntentChecker.isAvailable(mCtx, shareIntent, null)) {
+							startActivity(shareIntent);
+						} else {
+							Toast.makeText(mCtx, "Failed couldn't share on this device" , Toast.LENGTH_SHORT).show();
+						}
+
                         break;
                     case 1:
                         if(mModifyMode == 0){

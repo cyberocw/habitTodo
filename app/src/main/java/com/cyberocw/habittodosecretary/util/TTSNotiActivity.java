@@ -59,6 +59,14 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
         if (status == TextToSpeech.SUCCESS) {
 
             ///int result = mTTS.setLanguage(Locale.getDefault());
+            if(mTTS == null){
+                try {
+                    startTTS(spokenText, mAlarmId);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+                return;
+            }
             int result = mTTS.isLanguageAvailable(Locale.getDefault());
             switch (result)
             {
