@@ -275,7 +275,19 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 			isChecklist = mMemoVO.getType().equals("TODO");
 			mRatingBar.setRating((float) mMemoVO.getRank());
 			mSelectedCateId = mMemoVO.getCategoryId();
-			if(mMemoVO.getFileList() != null) {
+			if(mShareMode && mMemoVO.getFileList() != null){
+				ArrayList<FileVO> fileList = mMemoVO.getFileList();
+				if (fileList != null && fileList.size() > 0) {
+					for (int i = 0; i < fileList.size(); i++) {
+						FileVO fileVO = fileList.get(i);
+						Uri uri = Uri.parse(fileVO.getUri());
+						String fileName = FileHelper.getNameFromUri(getActivity(), uri);
+						new AttachmentTask(mCtx, this, uri, fileName, this).execute();
+					}
+					fileList.clear();
+				}
+			}
+			else if(!mShareMode && mMemoVO.getFileList() != null) {
 				ArrayList<FileVO> fileList = (ArrayList<FileVO>) mMemoVO.getFileList().clone();
 				Log.d(this.toString(), "fileList.size()=" + fileList.size());
 				if (fileList != null && fileList.size() > 0) {
@@ -284,9 +296,7 @@ public class MemoDialogNew extends Fragment implements com.cyberocw.habittodosec
 						this.attachFileView(fileList.get(i));
 					}
 				}
-
 			}
-
 		}
 
 		if(mSelectedCateId != -1){

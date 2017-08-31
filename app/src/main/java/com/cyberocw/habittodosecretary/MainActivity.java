@@ -307,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 			//업그레이드시
 			if(!prefsSavedVersion.equals("0")){
-				showUpdateLog();
+				//showUpdateLog();
 				if(prefsSavedVersionCode < 25) {
 					putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);
 					FileDataManager fdm = new FileDataManager(getApplicationContext());

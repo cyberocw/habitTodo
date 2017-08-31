@@ -42,10 +42,13 @@ public class AttachmentTask extends AsyncTask<Void, Void, FileVO> {
     }
 
 
-    public AttachmentTask(Context ctx, Fragment mFragment, Uri uri, String fileName,
+    public AttachmentTask(Context ctx, Fragment fragment, Uri uri, String fileName,
                           OnAttachingFileListener mOnAttachingFileListener) {
         mCtx = ctx;
-        mFragmentWeakReference = new WeakReference<>(mFragment);
+        if(fragment != null)
+            mFragmentWeakReference = new WeakReference<>(fragment);
+        else
+            mFragmentWeakReference = null;
         this.uri = uri;
         this.fileName = TextUtils.isEmpty(fileName) ? "" : fileName;
         this.mOnAttachingFileListener = mOnAttachingFileListener;
