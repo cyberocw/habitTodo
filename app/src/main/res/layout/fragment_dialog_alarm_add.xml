@@ -6,7 +6,9 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_marginBottom="@dimen/bannerHeight"
     android:orientation="vertical"
-    android:background="@color/background">
+    android:background="@color/background"
+    android:clickable="true"
+    >
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

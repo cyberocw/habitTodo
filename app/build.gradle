@@ -32,8 +32,8 @@ android {
         applicationId "com.cyberocw.habittodosecretary"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 26
-        versionName "1.2.1"
+        versionCode 27
+        versionName "1.2.01"
     }
     buildTypes {
         release {

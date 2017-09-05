@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			AlarmDataManager alarmDataManager = new AlarmDataManager(this, Calendar.getInstance());
 			AlarmVO vo = new AlarmVO();
 			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.MINUTE, 4);
+			cal.add(Calendar.MINUTE, 1);
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);
 			vo.setAlarmTitle(getString(R.string.ex_alarm_title));
@@ -277,11 +277,12 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 			putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);
 
+            /*
 			Intent i = new Intent(this, Intro.class);
 			i.putExtra(Const.PARAM.MODE, "intro");
 			i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 			startActivity(i);
-
+*/
 			/*Intent i = new Intent(this, Intro.class);
 			i.putExtra(Const.PARAM.MODE, "intro");
 			i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
@@ -514,6 +515,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				break;
 		}
 		if (fragment != null) {
+/*
 
 			int top = getSupportFragmentManager().getFragments().size()-1;
 			while (top > 0 && getSupportFragmentManager().getFragments().get(top) == null) {
@@ -521,9 +523,22 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			}
 			getSupportFragmentManager().beginTransaction()
 					.remove(getSupportFragmentManager().getFragments().get(top)).commit();
+*/
 
-			getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-					.replace(R.id.main_container, fragment, tag).commit();
+
+			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+			// For a little polish, specify a transition animation
+			transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+			// To make it fullscreen, use the 'content' root view as the container
+			// for the fragment, which is always the root view for the activity
+
+			//transaction.replace(R.id.main_container, new DashboardFragment(), Const.FRAGMENT_TAG.DASHBOARD).commit();
+
+			//if(!tag.equals(Const.FRAGMENT_TAG.DASHBOARD)){
+				transaction.add(R.id.main_container, fragment, tag).addToBackStack(null).commit();
+			//}
+			//transaction.commit();
+
 			// update selected item and title, then close the drawer
 
 			mDrawer.closeDrawer(GravityCompat.START);

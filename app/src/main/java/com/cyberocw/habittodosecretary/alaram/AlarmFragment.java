@@ -203,6 +203,7 @@ public class AlarmFragment extends Fragment{
 		bindEvent();
 
 		CommonUtils.logCustomEvent("AlarmFragment", "1", "today alarmDataCount", mAlarmDataManager.getCount());
+		//mFirebaseAnalytics.setCurrentScreen(this, screenName, null /* class override */);
 		//checkFileList();
 	}
 
@@ -302,6 +303,11 @@ public class AlarmFragment extends Fragment{
 		AlarmVO getVO = null;
 
 		try {
+			getVO = mAlarmDataManager.getItemByIdInDB(id);
+			if(getVO == null){
+
+			}
+
 			getVO = (AlarmVO) mAlarmDataManager.getItemByIdInDB(id).clone();
 			if(getVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD) {
 				mFileDataManager.makeDataList(Const.ETC_TYPE.ALARM, getVO.getId());

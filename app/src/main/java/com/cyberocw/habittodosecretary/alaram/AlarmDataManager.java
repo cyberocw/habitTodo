@@ -319,6 +319,7 @@ public class AlarmDataManager {
 	}
 
 	public boolean deleteItemById(long id){
+		Crashlytics.log(Log.DEBUG, this.toString(), "alarm delete id="+id);
 		boolean delResult = mDb.deleteAlarm(id);
 
 		if(delResult == false)
