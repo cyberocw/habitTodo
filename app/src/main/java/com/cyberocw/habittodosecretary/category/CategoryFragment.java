@@ -26,6 +26,7 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
@@ -67,6 +68,7 @@ public class CategoryFragment extends Fragment {
 		/*	isEtcMode = getArguments().getBoolean(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY, false);
 			mParam2 = getArguments().getString(ARG_PARAM2);*/
 		}
+		MainActivity.pushActionBarInfo(R.string.nav_item_cate, false);
 	}
 
 	@Override
@@ -281,6 +283,7 @@ public class CategoryFragment extends Fragment {
 	public void onDestroy() {
 		super.onDestroy();
 		Crashlytics.log(Log.DEBUG, this.toString(), "onDestroy");
+		MainActivity.popActionbarInfo();
 	}
 
 	@Override

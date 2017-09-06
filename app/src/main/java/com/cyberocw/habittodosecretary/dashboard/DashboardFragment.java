@@ -89,6 +89,7 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCtx = getActivity();
+        MainActivity.pushActionBarInfo(R.string.nav_item_dashboard, false);
     }
 
     @Override
@@ -282,8 +283,9 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if(mKeywordAPI != null && mKeywordAPI.getStatus() == AsyncTask.Status.RUNNING)
             mKeywordAPI.cancel(true);
+        MainActivity.popActionbarInfo();
+        super.onDestroy();
     }
 }

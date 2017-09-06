@@ -120,6 +120,10 @@ public class AlarmFragment extends Fragment{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		boolean visible = false;
+		if(CommonUtils.isLocaleKo(getResources().getConfiguration()))
+			visible = true;
+		MainActivity.pushActionBarInfo(R.string.nav_item_alaram, visible);
 
 		if (getArguments() != null) {
 			mMode = getArguments().getInt(Const.PARAM.MODE);
@@ -1023,7 +1027,9 @@ public class AlarmFragment extends Fragment{
 		if(mAlarmDataManager != null)
 			mAlarmDataManager.close();
 		Crashlytics.log(Log.DEBUG, this.toString(), "on destroy");
+		MainActivity.popActionbarInfo();
 		super.onDestroy();
+
 	}
 
 	/**

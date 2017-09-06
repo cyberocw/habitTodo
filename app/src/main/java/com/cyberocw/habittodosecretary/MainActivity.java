@@ -56,6 +56,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Stack;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -65,14 +66,16 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
     public AlarmFragment mMainFragment;
     public static String TAG = "mainActivity";
 	public static Context mContext;
+	public static Stack<String> mActionbarTitle = new Stack<>();
+	public static Stack<Boolean> mActionbarHelp = new Stack<>();
 
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawer;
 
-	private ActionBar actionBar;
+	private static ActionBar actionBar;
 	private final long FINISH_INTERVAL_TIME = 2000;
 	private long backPressedTime = 0;
-	private MenuItem mHelpMenu = null;
+	private static MenuItem mHelpMenu = null;
 
 	private AlarmDataManager mAlarmDataManager;
 
@@ -162,6 +165,9 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		//시작하는 경우는 최초 실행, 메모보기, 알림 연장 의 경우로 아 래 로직을 탐
 		if(intent != null && intent.getExtras() != null) {
 			Bundle bundle = intent.getExtras();
+			for(String key : bundle.keySet()){
+				Log.d(this.toString(), "key=" + bundle.get(key));
+			}
 			if (bundle.containsKey(Const.PARAM.REQ_CODE)) {
 				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
 				int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
@@ -186,8 +192,15 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 					tag = Const.FRAGMENT_TAG.ALARM;
 				}
 			}else{
-				fragment = new AlarmFragment();
-				tag = Const.FRAGMENT_TAG.ALARM;
+				if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
+					fragment = new DashboardFragment();
+					tag = Const.FRAGMENT_TAG.DASHBOARD;
+					actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
+				}else{
+					fragment = new AlarmFragment();
+					tag = Const.FRAGMENT_TAG.ALARM;
+					actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
+				}
 			}
 			fragment.setArguments(bundle);
 		}else {
@@ -468,46 +481,43 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			case R.id.nav_item_dashboard:
 				fragment = new DashboardFragment();
 				tag = Const.FRAGMENT_TAG.DASHBOARD;
-				actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
-				if(mHelpMenu != null)
-					mHelpMenu.setVisible(false);
+				//pushActionBarInfo(R.string.nav_item_dashboard, false);
 				break;
 			case R.id.nav_item_alaram:
 				fragment = new AlarmFragment();
 				tag = Const.FRAGMENT_TAG.ALARM;
-				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
 				//한글일때만 나옴
+				/*boolean visible = false;
 				if(mHelpMenu != null && CommonUtils.isLocaleKo(getResources().getConfiguration()))
-					mHelpMenu.setVisible(true);
+					visible = true;
+				pushActionBarInfo(R.string.nav_item_alaram, visible);*/
 				break;
 			case R.id.nav_item_memo:
 				fragment = new MemoFragment();
 				tag = Const.FRAGMENT_TAG.MEMO;
-				actionBar.setTitle(getResources().getString(R.string.nav_item_memo));
-				if(mHelpMenu != null)
-					mHelpMenu.setVisible(false);
+				//pushActionBarInfo(R.string.nav_item_memo, false);
+
 				break;
 			case R.id.nav_item_cate:
 				fragment = new CategoryFragment();
 				tag = Const.FRAGMENT_TAG.CATEGORY;
 				((CategoryFragment) fragment).setActionBar(actionBar);
-				actionBar.setTitle(getResources().getString(R.string.nav_item_cate));
-				if(mHelpMenu != null)
-					mHelpMenu.setVisible(false);
+
+				//pushActionBarInfo(R.string.nav_item_cate, false);
+
 				break;
 			case R.id.nav_item_setting:
 				fragment = new SettingFragment();
 				tag = Const.FRAGMENT_TAG.SETTING;
-				actionBar.setTitle(getResources().getString(R.string.nav_item_setting));
-				if(mHelpMenu != null)
-					mHelpMenu.setVisible(false);
+
+				//pushActionBarInfo(R.string.nav_item_setting, false);
+
 				break;
 			case R.id.nav_item_keyword:
 				fragment = new KeywordFragment();
 				tag = Const.FRAGMENT_TAG.KEYWORD;
-				actionBar.setTitle(getResources().getString(R.string.nav_item_keyword));
-				if(mHelpMenu != null)
-					mHelpMenu.setVisible(false);
+				//pushActionBarInfo(R.string.nav_item_keyword, false);
+
 				break;
 			default:
 				//fragment = new AlarmFragment();
@@ -549,6 +559,30 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		return true;
 	}
 
+	public static void pushActionBarInfo(int id, boolean visible){
+		Log.d("pushactionbar", "string="+mContext.getResources().getString(id));
+		mActionbarTitle.push(mContext.getResources().getString(id));
+		mActionbarHelp.push(visible);
+		setActionBarInfo(mContext.getResources().getString(id), visible);
+	}
+	public static void popActionbarInfo(){
+		Log.d("pushactionbar", "pop = " + mActionbarTitle.lastElement());
+		if(mActionbarTitle.size() >= 2 && mActionbarHelp.size() >= 2) {
+			mActionbarTitle.pop();
+			mActionbarHelp.pop();
+		}else{
+			return;
+		}
+		Log.d("pushactionbar", "pop2 = " + mActionbarTitle.lastElement());
+		setActionBarInfo(mActionbarTitle.pop(), mActionbarHelp.pop());
+	}
+
+	private static void setActionBarInfo(String str, boolean bVisible){
+		actionBar.setTitle(str);
+		if(mHelpMenu != null)
+			mHelpMenu.setVisible(bVisible);
+	}
+
 	public void forceCrash(View view) {
 		throw new RuntimeException("This is a crash");
 	}
@@ -570,8 +604,10 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 		if(count == 0)
 			showFinishPopup();
-		else
+		else {
 			super.onBackPressed();
+			//popActionbarInfo();
+		}
 	}
 
 	public void showFinishPopup() {

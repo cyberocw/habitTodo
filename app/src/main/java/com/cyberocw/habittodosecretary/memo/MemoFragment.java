@@ -31,6 +31,7 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
@@ -118,6 +119,7 @@ public class MemoFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		MainActivity.pushActionBarInfo(R.string.nav_item_memo, false);
 		if (getArguments() != null) {
 			Bundle arguments = getArguments();
 
@@ -637,11 +639,11 @@ public class MemoFragment extends Fragment {
 		if (fragment != null) {
 			fragment.setTargetFragment(this, Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_CODE);
 		}
-
 	}
 
 	@Override
 	public void onDestroy() {
+		MainActivity.popActionbarInfo();
 		super.onDestroy();
 		Crashlytics.log(Log.DEBUG, this.toString(), "onDestroy");
 	}

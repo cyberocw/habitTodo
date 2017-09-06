@@ -74,6 +74,8 @@ public class KeywordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MainActivity.pushActionBarInfo(R.string.nav_item_keyword, false);
+
     }
 
     @Override
@@ -327,6 +329,12 @@ public class KeywordFragment extends Fragment {
                     }
                 });
         ab.show();
+    }
+
+    @Override
+    public void onDestroy() {
+        MainActivity.popActionbarInfo();
+        super.onDestroy();
     }
 
     public interface RefreshKeyword{

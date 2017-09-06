@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.WebViewActivity;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
@@ -77,6 +78,7 @@ public class SettingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MainActivity.pushActionBarInfo(R.string.nav_item_setting, false);
     }
 
     @Override
@@ -553,6 +555,7 @@ public class SettingFragment extends Fragment {
     @Override
     public void onDestroy() {
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
+        MainActivity.popActionbarInfo();
         super.onDestroy();
 
     }
