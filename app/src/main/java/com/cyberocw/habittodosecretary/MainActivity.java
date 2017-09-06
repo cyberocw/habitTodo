@@ -164,8 +164,9 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		String tag;
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "ocw vintent = " + intent + " get extras = " + intent.getExtras());
 		//시작하는 경우는 최초 실행, 메모보기, 알림 연장 의 경우로 아 래 로직을 탐
-		if(intent != null && intent.getExtras() != null) {
-			Bundle bundle = intent.getExtras();
+        Bundle bundle = intent.getExtras();
+		if(intent != null && bundle != null) {
+
 			for(String key : bundle.keySet()){
 				Log.d(this.toString(), "key=" + bundle.get(key));
 			}
@@ -193,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 					tag = Const.FRAGMENT_TAG.ALARM;
 				}
 			}else{
-				if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
+				if(bundle.getInt(Const.PARAM.MODE) != Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG && CommonUtils.isLocaleKo(getResources().getConfiguration())) {
 					fragment = new DashboardFragment();
 					tag = Const.FRAGMENT_TAG.DASHBOARD;
 					actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
