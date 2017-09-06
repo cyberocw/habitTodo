@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	public static Context mContext;
 	public static Stack<String> mActionbarTitle = new Stack<>();
 	public static Stack<Boolean> mActionbarHelp = new Stack<>();
+	public static boolean mIsPushed = false;
 
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawer;
@@ -564,20 +565,26 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		mActionbarTitle.push(mContext.getResources().getString(id));
 		mActionbarHelp.push(visible);
 		setActionBarInfo(mContext.getResources().getString(id), visible);
+		mIsPushed = true;
 	}
 	public static void popActionbarInfo(){
-		Log.d("pushactionbar", "pop = " + mActionbarTitle.lastElement());
-		if(mActionbarTitle.size() >= 2 && mActionbarHelp.size() >= 2) {
+		if(mIsPushed && mActionbarTitle.size() >= 2 && mActionbarHelp.size() >= 2) {
 			mActionbarTitle.pop();
 			mActionbarHelp.pop();
-		}else{
+			mIsPushed = true;
+		}
+		else if(mActionbarTitle.size() == 0){
 			return;
 		}
-		Log.d("pushactionbar", "pop2 = " + mActionbarTitle.lastElement());
-		setActionBarInfo(mActionbarTitle.pop(), mActionbarHelp.pop());
+		else {
+			mIsPushed = false;
+		}
+		setActionBarInfo(mActionbarTitle.lastElement(), mActionbarHelp.lastElement());
+
 	}
 
 	private static void setActionBarInfo(String str, boolean bVisible){
+		Log.d("pushactionbar", "str =" + str);
 		actionBar.setTitle(str);
 		if(mHelpMenu != null)
 			mHelpMenu.setVisible(bVisible);
