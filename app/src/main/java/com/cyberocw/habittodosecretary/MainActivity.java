@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			AlarmDataManager alarmDataManager = new AlarmDataManager(this, Calendar.getInstance());
 			AlarmVO vo = new AlarmVO();
 			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.MINUTE, 1);
+			cal.add(Calendar.MINUTE, 2);
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);
 			vo.setAlarmTitle(getString(R.string.ex_alarm_title));
