@@ -1,14 +1,28 @@
 package com.cyberocw.habittodosecretary.util;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.cyberocw.habittodosecretary.Const;
+import com.cyberocw.habittodosecretary.MainActivity;
+import com.cyberocw.habittodosecretary.R;
 
 import java.util.Locale;
 
@@ -48,8 +62,19 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
             //mIsNUll = false;
         }
         Intent checkIntent = new Intent();
-        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-        startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+        try {
+            checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+            startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+        }
+        catch(Exception e){
+            checkIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+            try{
+                startActivity(checkIntent);
+            }catch(Exception ee){
+                //Toast.makeText(this, "No TTs Engine", Toast.LENGTH_SHORT).show();
+                showTtsPopup();
+            }
+        }
     }
 
     @Override
@@ -74,7 +99,9 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
                 case TextToSpeech.LANG_COUNTRY_AVAILABLE:
                 case TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE:
                     //mTTS.setLanguage(Locale.getDefault());
-
+                    Context ctx = getApplicationContext();
+                    SharedPreferences setPrefs = ctx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+                    setPrefs.edit().putBoolean("TTS_TEST", true).commit();
                     startTTS(spokenText, mAlarmId);
 
                     break;
@@ -108,6 +135,12 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
         }
     }
 
+    private void showTtsPopup(){
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -120,6 +153,7 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(this.toString(), "onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         try {
             switch (requestCode) {
@@ -140,7 +174,9 @@ public class TTSNotiActivity extends AppCompatActivity implements TextToSpeech.O
                     break;
                 }
             }
-        }catch (Exception e){}
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         finally {
 
             finish();

@@ -19,6 +19,8 @@ public class Const {
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
 	public static final int ONGOING_ALARM_NOTI_ID = 999999998;
 
+	public static final int TTS_INSTALL = 911;
+
     public static final boolean IS_DEBUG = false;
 
 	public class PARAM{

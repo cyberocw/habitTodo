@@ -1,5 +1,6 @@
 package com.cyberocw.habittodosecretary;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.ContentValues;
@@ -221,6 +222,15 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				.replace(R.id.main_container, fragment, tag).commit();
 
 		afterUpdateVersion();
+		Context ctx = getApplicationContext();
+		SharedPreferences setPrefs = ctx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+
+		Crashlytics.log(Log.DEBUG, this.toString(), "TTS_TEST = " + setPrefs.getBoolean("TTS_TEST", false));
+		if(setPrefs.contains("TTS_TEST")) {
+			if (setPrefs.getBoolean("TTS_TEST", false) == false) {
+				playTTSActivity();
+			}
+		}
 
 		//showUpdateLog();
 	}
@@ -303,11 +313,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 			startActivity(i);*/
 
-			Intent ttsIntent = new Intent(getApplicationContext(), TTSNotiActivity.class);
-			ttsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-			ttsIntent.putExtra("alaramTitle", "TTS Test");
-			ttsIntent.putExtra("alarmId", -1L);
-			startActivity(ttsIntent);
+			setPrefs.edit().putBoolean("TTS_TEST", false).commit();
+			playTTSActivity();
 
 			//최초에만
 			if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
@@ -342,6 +349,42 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			editor.apply();
 		}
 
+	}
+
+	private void playTTSActivity(){
+		Log.d(this.toString(), "playTTSActivity");
+		//setPrefs.edit().putBoolean("TTS_TEST", false).commit();
+
+		Intent ttsIntent = new Intent(getApplicationContext(), TTSNotiActivity.class);
+		ttsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		ttsIntent.putExtra("alaramTitle", "TTS Test");
+		ttsIntent.putExtra("alarmId", -1L);
+		startActivityForResult(ttsIntent, Const.TTS_INSTALL);
+		//startActivity(ttsIntent);
+	}
+
+	public void showTTSAlert(){
+
+		AlertDialog.Builder alert_confirm = new AlertDialog.Builder(this);
+		alert_confirm.setMessage(getString(R.string.tts_store_msg)).setCancelable(false).setPositiveButton(getString(R.string.ok),
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Intent intent = new Intent();
+						intent.setData(Uri.parse("market://details?id=com.google.android.tts"));
+						startActivity(intent);
+						dialog.dismiss();
+					}
+				}).setNegativeButton(getString(R.string.cancel),
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// 'No'
+						dialog.dismiss();
+					}
+				});
+		AlertDialog alert = alert_confirm.create();
+		alert.show();
 	}
 
 	private void showUpdateLog(){
@@ -636,6 +679,16 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				});
 		AlertDialog alert = alert_confirm.create();
 		alert.show();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// Check which request we're responding to
+		Log.d(this.toString(), "requestCode="+requestCode + "  resultCode= " + resultCode);
+
+		if (requestCode == Const.TTS_INSTALL && resultCode == Activity.RESULT_OK) {
+			showTTSAlert();
+		}
 	}
 
 }
