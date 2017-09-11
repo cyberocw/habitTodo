@@ -46,7 +46,11 @@ import com.cyberocw.habittodosecretary.file.StorageHelper;
 import com.cyberocw.habittodosecretary.memo.MemoDataManager;
 import com.cyberocw.habittodosecretary.record.RecorderDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.cyberocw.habittodosecretary.util.PopMessageEvent;
+import com.cyberocw.habittodosecretary.util.TitleMessageEvent;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -123,7 +127,8 @@ public class AlarmFragment extends Fragment{
 		boolean visible = false;
 		if(CommonUtils.isLocaleKo(getResources().getConfiguration()))
 			visible = true;
-		MainActivity.pushActionBarInfo(R.string.nav_item_alaram, visible);
+		Log.d(this.toString(), "push title");
+		EventBus.getDefault().post(new TitleMessageEvent(getString(R.string.nav_item_alaram), visible));
 
 		if (getArguments() != null) {
 			mMode = getArguments().getInt(Const.PARAM.MODE);
@@ -1027,7 +1032,9 @@ public class AlarmFragment extends Fragment{
 		if(mAlarmDataManager != null)
 			mAlarmDataManager.close();
 		Crashlytics.log(Log.DEBUG, this.toString(), "on destroy");
-		MainActivity.popActionbarInfo();
+		//MainActivity.popActionbarInfo();
+
+		EventBus.getDefault().post(new PopMessageEvent());
 		super.onDestroy();
 
 	}

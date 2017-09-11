@@ -46,13 +46,19 @@ import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.settings.InitializeSetting;
 import com.cyberocw.habittodosecretary.settings.SettingFragment;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.cyberocw.habittodosecretary.util.PopMessageEvent;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
+import com.cyberocw.habittodosecretary.util.TitleMessageEvent;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -65,19 +71,19 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		SettingFragment.OnFragmentInteractionListener,
 		NavigationView.OnNavigationItemSelectedListener {
     public AlarmFragment mMainFragment;
-    public static String TAG = "mainActivity";
-	public static Context mContext;
-	public static Stack<String> mActionbarTitle = new Stack<>();
-	public static Stack<Boolean> mActionbarHelp = new Stack<>();
-	public static boolean mIsPushed = false;
+    public String TAG = "mainActivity";
+	public Context mContext;
+	public Stack<String> mActionbarTitle = new Stack<>();
+	public Stack<Boolean> mActionbarHelp = new Stack<>();
+	public boolean mIsPushed = false;
 
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawer;
 
-	private static ActionBar actionBar;
+	private ActionBar actionBar;
 	private final long FINISH_INTERVAL_TIME = 2000;
 	private long backPressedTime = 0;
-	private static MenuItem mHelpMenu = null;
+	private MenuItem mHelpMenu = null;
 
 	private AlarmDataManager mAlarmDataManager;
 
@@ -86,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		EventBus.getDefault().register(this);
+
 		Crashlytics cr = new Crashlytics();
 		Fabric.with(this, cr);
 		mContext = getApplicationContext();
@@ -125,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		initMainActivity(getIntent());
 
 		CommonUtils.logCustomEvent("MainActivity", "1");
+		//EventBus.getDefault().unregister(this);
     }
 
 	@Override
@@ -135,6 +144,20 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Log.d(this.toString(), "onstart");
+		EventBus.getDefault().unregister(this);
+		EventBus.getDefault().register(this);
+	}
+
+	@Override
+	protected void onStop() {
+		EventBus.getDefault().unregister(this);
+		super.onStop();
 	}
 
 	@Override
@@ -604,14 +627,22 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		return true;
 	}
 
-	public static void pushActionBarInfo(int id, boolean visible){
-		Log.d("pushactionbar", "string="+mContext.getResources().getString(id));
-		mActionbarTitle.push(mContext.getResources().getString(id));
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void onMessageEvent(TitleMessageEvent event) {
+		//Toast.makeText(getApplicationContext(), event.message, Toast.LENGTH_SHORT).show();
+		pushActionBarInfo(event.title, event.isShowHelp);
+	}
+
+	public void pushActionBarInfo(String title, boolean visible){
+		Log.d(this.toString(), "push title="+ title);
+		mActionbarTitle.push(title);
 		mActionbarHelp.push(visible);
-		setActionBarInfo(mContext.getResources().getString(id), visible);
+		setActionBarInfo(title, visible);
 		mIsPushed = true;
 	}
-	public static void popActionbarInfo(){
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void popActionbarInfo(PopMessageEvent event){
+
 		if(mIsPushed && mActionbarTitle.size() >= 2 && mActionbarHelp.size() >= 2) {
 			mActionbarTitle.pop();
 			mActionbarHelp.pop();
@@ -623,12 +654,11 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		else {
 			mIsPushed = false;
 		}
+		Log.d(this.toString(), "push pop="+ mActionbarTitle.lastElement());
 		setActionBarInfo(mActionbarTitle.lastElement(), mActionbarHelp.lastElement());
-
 	}
 
-	private static void setActionBarInfo(String str, boolean bVisible){
-		Log.d("pushactionbar", "str =" + str);
+	private void setActionBarInfo(String str, boolean bVisible){
 		actionBar.setTitle(str);
 		if(mHelpMenu != null)
 			mHelpMenu.setVisible(bVisible);

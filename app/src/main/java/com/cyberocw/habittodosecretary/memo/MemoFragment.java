@@ -44,8 +44,12 @@ import com.cyberocw.habittodosecretary.memo.ui.MemoDialogNew;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.record.RecorderDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.cyberocw.habittodosecretary.util.PopMessageEvent;
+import com.cyberocw.habittodosecretary.util.TitleMessageEvent;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -119,7 +123,8 @@ public class MemoFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		MainActivity.pushActionBarInfo(R.string.nav_item_memo, false);
+		//MainActivity.pushActionBarInfo(R.string.nav_item_memo, false);
+		EventBus.getDefault().post(new TitleMessageEvent(getString(R.string.nav_item_memo), false));
 		if (getArguments() != null) {
 			Bundle arguments = getArguments();
 
@@ -643,7 +648,8 @@ public class MemoFragment extends Fragment {
 
 	@Override
 	public void onDestroy() {
-		MainActivity.popActionbarInfo();
+		//MainActivity.popActionbarInfo();
+		EventBus.getDefault().post(new PopMessageEvent());
 		super.onDestroy();
 		Crashlytics.log(Log.DEBUG, this.toString(), "onDestroy");
 	}

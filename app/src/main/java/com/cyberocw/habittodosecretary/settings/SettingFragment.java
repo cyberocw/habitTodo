@@ -36,7 +36,11 @@ import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.file.StorageHelper;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.KeyboardUtils;
+import com.cyberocw.habittodosecretary.util.PopMessageEvent;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
+import com.cyberocw.habittodosecretary.util.TitleMessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
@@ -78,7 +82,8 @@ public class SettingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MainActivity.pushActionBarInfo(R.string.nav_item_setting, false);
+        //MainActivity.pushActionBarInfo(R.string.nav_item_setting, false);
+        EventBus.getDefault().post(new TitleMessageEvent(getString(R.string.nav_item_setting), false));
     }
 
     @Override
@@ -555,7 +560,8 @@ public class SettingFragment extends Fragment {
     @Override
     public void onDestroy() {
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
-        MainActivity.popActionbarInfo();
+        //MainActivity.popActionbarInfo();
+        EventBus.getDefault().post(new PopMessageEvent());
         super.onDestroy();
 
     }

@@ -35,6 +35,10 @@ import com.cyberocw.habittodosecretary.keyword.KeywordListAdapter;
 import com.cyberocw.habittodosecretary.memo.MemoDataManager;
 import com.cyberocw.habittodosecretary.memo.MemoListAdapter;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.cyberocw.habittodosecretary.util.PopMessageEvent;
+import com.cyberocw.habittodosecretary.util.TitleMessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Calendar;
 
@@ -89,7 +93,7 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCtx = getActivity();
-        MainActivity.pushActionBarInfo(R.string.nav_item_dashboard, false);
+        EventBus.getDefault().post(new TitleMessageEvent(getString(R.string.nav_item_dashboard), false));
     }
 
     @Override
@@ -285,7 +289,8 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     public void onDestroy() {
         if(mKeywordAPI != null && mKeywordAPI.getStatus() == AsyncTask.Status.RUNNING)
             mKeywordAPI.cancel(true);
-        MainActivity.popActionbarInfo();
+        //MainActivity.popActionbarInfo();
+        EventBus.getDefault().post(new PopMessageEvent());
         super.onDestroy();
     }
 }

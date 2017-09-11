@@ -31,6 +31,10 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.category.vo.CategoryVO;
 import com.cyberocw.habittodosecretary.memo.MemoFragment;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.cyberocw.habittodosecretary.util.PopMessageEvent;
+import com.cyberocw.habittodosecretary.util.TitleMessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by cyberocw on 2015-12-06.
@@ -68,7 +72,8 @@ public class CategoryFragment extends Fragment {
 		/*	isEtcMode = getArguments().getBoolean(Const.MEMO.MEMO_INTERFACE_CODE.ADD_MEMO_ETC_KEY, false);
 			mParam2 = getArguments().getString(ARG_PARAM2);*/
 		}
-		MainActivity.pushActionBarInfo(R.string.nav_item_cate, false);
+		//MainActivity.pushActionBarInfo(R.string.nav_item_cate, false);
+		EventBus.getDefault().post(new TitleMessageEvent(getString(R.string.nav_item_cate), false));
 	}
 
 	@Override
@@ -283,7 +288,8 @@ public class CategoryFragment extends Fragment {
 	public void onDestroy() {
 		super.onDestroy();
 		Crashlytics.log(Log.DEBUG, this.toString(), "onDestroy");
-		MainActivity.popActionbarInfo();
+		//MainActivity.popActionbarInfo();
+		EventBus.getDefault().post(new PopMessageEvent());
 	}
 
 	@Override

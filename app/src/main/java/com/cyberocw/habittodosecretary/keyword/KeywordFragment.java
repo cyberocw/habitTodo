@@ -39,7 +39,11 @@ import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
 import com.cyberocw.habittodosecretary.keyword.ui.KeywrordCalendarDialog;
 import com.cyberocw.habittodosecretary.keyword.vo.KeywordVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
+import com.cyberocw.habittodosecretary.util.PopMessageEvent;
+import com.cyberocw.habittodosecretary.util.TitleMessageEvent;
 import com.google.firebase.analytics.FirebaseAnalytics;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -74,7 +78,8 @@ public class KeywordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MainActivity.pushActionBarInfo(R.string.nav_item_keyword, false);
+        //MainActivity.pushActionBarInfo(R.string.nav_item_keyword, false);
+        EventBus.getDefault().post(new TitleMessageEvent(getString(R.string.nav_item_keyword), false));
 
     }
 
@@ -333,7 +338,8 @@ public class KeywordFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        MainActivity.popActionbarInfo();
+        //MainActivity.popActionbarInfo();
+        EventBus.getDefault().post(new PopMessageEvent());
         super.onDestroy();
     }
 
