@@ -90,8 +90,6 @@ public class HolidaySync {
                     java.security.cert.X509Certificate[] chain,
                     String authType)
                     throws java.security.cert.CertificateException {
-                // TODO Auto-generated method stub
-
             }
 
             @Override
@@ -99,8 +97,6 @@ public class HolidaySync {
                     java.security.cert.X509Certificate[] chain,
                     String authType)
                     throws java.security.cert.CertificateException {
-                // TODO Auto-generated method stub
-
             }
         } };
 
@@ -119,7 +115,6 @@ public class HolidaySync {
 
         @Override
         public boolean verify(String arg0, SSLSession arg1) {
-            // TODO Auto-generated method stub
             return true;
         }
     };

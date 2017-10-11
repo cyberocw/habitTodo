@@ -42,7 +42,6 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
-import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.category.CategoryFragment;
@@ -50,11 +49,9 @@ import com.cyberocw.habittodosecretary.common.vo.FileVO;
 import com.cyberocw.habittodosecretary.intro.Intro;
 import com.cyberocw.habittodosecretary.memo.vo.MemoVO;
 import com.cyberocw.habittodosecretary.record.RecorderCustomView;
-import com.cyberocw.habittodosecretary.record.RecorderDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.record.RecorderDialog;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -70,12 +67,12 @@ import static android.util.Log.d;
  * Created by cyberocw on 2015-08-19.
  * data colum 관련
  * alarm_title - 제목
- * alarm_date_type - 반복 0, 날짜 지정 1
+ * alarm_date_type - 반복 0, 날짜 지정 1 매달 ---
  * alarm_type - 1회 알림 계속 알림
-  * alarm_option - tts 여부 -- 나중에 컬럼 명 변경하기
+ * alarm_call_type - 1회 알림 계속 알림 -> calltime 에 대해서 옵션(몇분전)
+ * alarm_option -   (음성 옵션) 없음, tts, 녹음  -- 나중에 컬럼 명 변경하기
  * alaram_contents - 안씀
- * type - 안씀
- *
+ * type - etctype 연동 기능
  *
  */
 
@@ -87,6 +84,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 	private LinkedHashMap mEtcMap;
 	private int mModifyMode = 0;
 	private Boolean mIsInitMemoMode = false;
+	private int mAlarmReminderMode = Const.ALARM_REMINDER_MODE.ALARM;
 	private Spinner mSpAlarmType, mSpAppList, mSpDateType, mSpSoundType;
 	private Button mBtnAddAlarm = null, mBtnClose, mBtnSave, mBtnHelp;
 	private EditText mTxAlarmTitle;
@@ -96,18 +94,19 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 	private ScrollView mScvAddAlarm;
 	private int mAlarmOption = 1;
 	private int mAlarmDateType = Const.ALARM_DATE_TYPE.SET_DATE; //날짜지정 or repeat
-	private TextView mTvAlarmDate, mTvAlarmTime = null;
+	private TextView mTvAlarmDate, mTvAlarmTime = null, mTvAlarmTimeEnd = null;
     private Button mTvEtcTitle = null;
 	private CheckBox mCbHolidayAll = null;
 	private CheckBox mCbHolidayNone = null;
-	private CheckBox mCbTTS = null;
+	private CheckBox mCbMidTime = null;
 	private boolean mPrevRecord = false;
     private RecorderCustomView mRecorderCustomView;
-	private ToggleSwitch mToggleCallType = null;
-
+	private ToggleSwitch mToggleCallType = null, mToggleReminder = null;
+	private Bundle mSavedInstanceState;
 
 	//private RadioGroup mRgAlarmOption;
-	private LinearLayout mAlarmList, llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap, llHolidayOptionWrap, llRecorderWrap, llAlertTimeOptionWrap;
+	private LinearLayout mAlarmList, llTimerWrap, llDateTypeWrap, llDatePicWrap, llTimePickWrap, llRepeatDayWrap, llAlertTimeWrap,
+			llHolidayOptionWrap, llRecorderWrap, llAlertTimeOptionWrap, llAlarmOptionWrap, llTimePickEndWrap, llEtcWrap;
 	private HashMap<Integer, Button> mMapDay = new HashMap<>();
 	private int[] mArrDayString = {Calendar.SUNDAY, Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY};//{"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
 	private int[] mArrDayId = {R.id.btnRepeatSun, R.id.btnRepeatMon, R.id.btnRepeatTue, R.id.btnRepeatWed, R.id.btnRepeatThur, R.id.btnRepeatFri, R.id.btnRepeatSat};
@@ -133,6 +132,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		mView = view;
 
 		//mBtnClose = ButterKnife.findById(mView, R.id.btnClose);
+		//mToggleReminder = ButterKnife.findById(mView, R.id.toggleAlarmRemind);
 		mBtnSave = ButterKnife.findById(mView, R.id.btnSave);
 		mBtnHelp = ButterKnife.findById(mView, R.id.btnHelp);
 		mSpAlarmType = (Spinner) view.findViewById(R.id.spAlarmType);
@@ -151,10 +151,11 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 
 		mTvAlarmDate = (TextView) view.findViewById(R.id.tvAlarmDate);
 		mTvAlarmTime = (TextView) view.findViewById(R.id.tvAlarmTime);
+		mTvAlarmTimeEnd = (TextView) view.findViewById(R.id.tvAlarmTimeEnd);
 
 		mCbHolidayAll = (CheckBox) view.findViewById(R.id.cbHolidayAll);
 		mCbHolidayNone = (CheckBox) view.findViewById(R.id.cbHolidayNone);
-
+		mCbMidTime = (CheckBox) view.findViewById(R.id.cbMidTime);
 		//mTimePickerWrap = (LinearLayout) view.findViewById(R.id.timePickerWrap);
 
 		bindVarLayoutView(view);
@@ -198,6 +199,8 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		super.onActivityCreated(savedInstanceState);
 		Crashlytics.log(Log.DEBUG, this.toString(), " onActivityCreated ");
 
+		mSavedInstanceState = savedInstanceState;
+
 		if(savedInstanceState != null){
 		//	return;
 		}
@@ -214,6 +217,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 
 		if(arguments != null) {
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.PARAM.ALARM_VO);
+			mAlarmReminderMode = arguments.getInt(Const.PARAM.ALARM_REMINDER_MODE, Const.ALARM_REMINDER_MODE.ALARM);
 
 			if(mAlarmVO != null) {
 				try {
@@ -222,6 +226,8 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 					e.printStackTrace();
 				}
 				mModifyMode = 1;
+				mAlarmReminderMode = mAlarmVO.getAlarmReminderType();
+
 				if(mAlarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
 					//mPrevRecord = true;
 					//String fromPath = CommonUtils.getRecordFullPath(mCtx, mAlarmVO);
@@ -232,6 +238,8 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 					}
 				}
 			}
+
+
 			/*
 			if(mModifyMode == 1){
 				if(mAlarmVO.getAlarmOption() == Const.ALARM_OPTION_TO_SOUND.RECORD){
@@ -364,12 +372,35 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 
 			mToggleCallType.setCheckedTogglePosition(mAlarmVO.getAlarmCallType());
 
-			ArrayList<Integer> arrAlarmCall = mAlarmVO.getAlarmCallList();
-			int temp;
-			if(arrAlarmCall != null) {
-				for (int i = 0; i < arrAlarmCall.size(); i++) {
-					temp = arrAlarmCall.get(i);
-					appendAlarmRow(Math.abs(temp), (temp < 0 ? -1 : 1));
+			if(mAlarmReminderMode == Const.ALARM_REMINDER_MODE.REMINDER){
+				ArrayList<Integer> arrAlarmCall = mAlarmVO.getAlarmCallList();
+
+				Calendar cal = Calendar.getInstance();
+				if(arrAlarmCall != null) {
+					// 중간 없음
+
+					//int startTime = mAlarmVO.getHour() * 60 + mAlarmVO.getMinute();
+					cal.set(Calendar.HOUR_OF_DAY, mAlarmVO.getHour());
+					cal.set(Calendar.MINUTE, mAlarmVO.getMinute());
+
+					if(arrAlarmCall.size() == 2){
+						cal.add(Calendar.MINUTE, arrAlarmCall.get(1));
+					}
+					if(arrAlarmCall.size() == 3){
+						mCbMidTime.setChecked(true);
+						cal.add(Calendar.MINUTE, arrAlarmCall.get(2));
+					}
+				}
+				txTimeSet2(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+			}
+			else {
+				ArrayList<Integer> arrAlarmCall = mAlarmVO.getAlarmCallList();
+				int temp;
+				if (arrAlarmCall != null) {
+					for (int i = 0; i < arrAlarmCall.size(); i++) {
+						temp = arrAlarmCall.get(i);
+						appendAlarmRow(Math.abs(temp), (temp < 0 ? -1 : 1));
+					}
 				}
 			}
 			mEtcType = mAlarmVO.getEtcType();
@@ -383,6 +414,9 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		//신규 등록 모드
 		else {
 			txTimeSet(mCalendar.get(Calendar.HOUR_OF_DAY), mCalendar.get(Calendar.MINUTE));
+			Calendar cc = (Calendar) mCalendar.clone();
+			cc.add(Calendar.MINUTE, 30);
+			txTimeSet2(cc.get(Calendar.HOUR_OF_DAY), cc.get(Calendar.MINUTE));
 			appendAlarmRow(0, 1);
 			//mCbTTS.setChecked(true);
 			mSpSoundType.setSelection(CommonUtils.getAlarmOptionPosition(2222));
@@ -390,6 +424,10 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 
 		if(mIsInitMemoMode) {
 			initMemoMode();
+		}
+
+		if(mAlarmReminderMode == Const.ALARM_REMINDER_MODE.REMINDER){
+			changeRemindTypeView(mAlarmReminderMode);
 		}
 
 	}
@@ -470,22 +508,8 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		hour = (int) mTvAlarmTime.getTag(R.id.timeHourId);
 		minute = (int) mTvAlarmTime.getTag(R.id.timeMinuteId);
 
-		//alarmOption에 따라 time 가져오는게 다름 타이머 일 경우 arrAlarmCall에 초단위로 변환해서 삽입.
-		/*
-		if(mAlarmOption == Const.ALARM_OPTION.NO_DATE_TIMER) {
-			mArrAlarmCall.clear();
-
-			int m = mNpHour.getValue() * 60 + mNpMinute.getValue();
-			m = m * 60 + mNpSecond.getValue();
-			mArrAlarmCall.add(m);
-		}
-		*/
 		//알리는 방법
 		int alarmType = mSpAlarmType.getSelectedItemPosition();
-
-		//mArrAlarmCall
-
-		//int etcType = mSpAppList.getSelectedItemPosition();
 
 		AlarmVO vo;
 
@@ -494,6 +518,29 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		else
 			vo = new AlarmVO();
 
+		if(mAlarmReminderMode == Const.ALARM_REMINDER_MODE.REMINDER) {
+			int hour2 = (int) mTvAlarmTimeEnd.getTag(R.id.timeHourId);
+			int minute2 = (int) mTvAlarmTimeEnd.getTag(R.id.timeMinuteId);
+			int start = hour * 60 + minute;
+			int end = hour2 * 60 + minute2;
+			int callTime = 0;
+			//리마인더 모드일 경우 시작 시간과 종료 시간의 차를 구하여 미리 알림 시간으로 변경 저장
+			if(end > start){
+				callTime = end - start;
+			}else{
+				callTime = 24 * 60 - (start - end);
+			}
+			mArrAlarmCall.clear();
+			mArrAlarmCall.add(0);
+			//중간 알림 추가
+			if(mCbMidTime.isChecked()){
+				mArrAlarmCall.add(callTime / 2);
+			}
+
+			mArrAlarmCall.add(callTime);
+		}
+		vo.setAlarmReminderType(mAlarmReminderMode);
+		
 		vo.setAlarmTitle(alarmTitle);
 		vo.setAlarmType(alarmType);
 
@@ -525,7 +572,6 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		Intent intent = new Intent();
 		intent.putExtras(bundle);
 
-
 		int returnCode = mModifyMode == 1 ? Const.ALARM_INTERFACE_CODE.ADD_ALARM_MODIFY_FINISH_CODE : Const.ALARM_INTERFACE_CODE.ADD_ALARM_FINISH_CODE;
 		getTargetFragment().onActivityResult(getTargetRequestCode(), returnCode, intent);
 
@@ -544,6 +590,10 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		llHolidayOptionWrap = (LinearLayout) v.findViewById(R.id.holidayOptionWrap);
         llRecorderWrap = (LinearLayout) v.findViewById(R.id.recorderWrap);
 		llAlertTimeOptionWrap = (LinearLayout) v.findViewById(R.id.alertTimeOptionWrap);
+		llAlarmOptionWrap = (LinearLayout) v.findViewById(R.id.llAlarmOptionWrap);
+		llTimePickEndWrap = (LinearLayout) v.findViewById(R.id.llTimePickEndWrap);
+		llEtcWrap = (LinearLayout) v.findViewById(R.id.llEtcWrap);
+
 	}
 
 	@Override
@@ -588,9 +638,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 	//날짜 선택 - spinner 선택에 따른 - 내일 , 모레,
 	private void renderDateTypeUi(int alarmDateType, Calendar c) {
 		llTimePickWrap.setVisibility(View.VISIBLE);
-
 		mAlarmDateType = alarmDateType;
-
 
 		if(c == null)
 			c = Calendar.getInstance();
@@ -636,6 +684,9 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 				break;
 		}
 
+		if(mAlarmReminderMode == Const.ALARM_REMINDER_MODE.REMINDER)
+			llAlertTimeWrap.setVisibility(View.GONE);
+
 		Log.d(this.toString(), "renderDateTypeUi mAlarmDateType="+mAlarmDateType);
 	}
 
@@ -665,7 +716,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 	}
 	public void makeSpinnerSoundType(){
 		ArrayList<String> arrayList = new ArrayList<String>();
-		arrayList.add(getString(R.string.none));
+		arrayList.add(getString(R.string.default_sound));
 		arrayList.add(getString(R.string.dialog_alarm_sp_sound_tts));
 		arrayList.add(getString(R.string.dialog_alarm_sp_sound_record));
 		//arrayList.add(getString(R.string.dialog_alarm_sp_sound_file));
@@ -816,22 +867,50 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		});
 
 		mTvAlarmTime.setOnClickListener(new View.OnClickListener() {
-			Calendar calendar = Calendar.getInstance();
-			int hour = calendar.get(Calendar.HOUR_OF_DAY);
-			int minute = calendar.get(Calendar.MINUTE);
-
 			@Override
 			public void onClick(View v) {
+				Calendar calendar = Calendar.getInstance();
+				int hour, minute;
+				try{
+					hour = (int) mTvAlarmTime.getTag(R.id.timeHourId);
+					minute = (int) mTvAlarmTime.getTag(R.id.timeMinuteId);
+				}
+				catch(Exception e){
+					hour = calendar.get(Calendar.HOUR_OF_DAY);
+					minute = calendar.get(Calendar.MINUTE);
+				}
 				TimePickerDialog timePickerDialog = new TimePickerDialog(mCtx, new TimePickerDialog.OnTimeSetListener() {
 					@Override
 					public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 						txTimeSet(hourOfDay, minute);
 					}
-				}, hour, minute, false);
+				}, hour, minute, true);
 				timePickerDialog.show();
 			}
 		});
+		mTvAlarmTimeEnd.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Calendar calendar = Calendar.getInstance();
+				int hour, minute;
+				try{
+					hour = (int) mTvAlarmTimeEnd.getTag(R.id.timeHourId);
+					minute = (int) mTvAlarmTimeEnd.getTag(R.id.timeMinuteId);
+				}
+				catch(Exception e){
+					hour = calendar.get(Calendar.HOUR_OF_DAY);
+					minute = calendar.get(Calendar.MINUTE);
+				}
 
+				TimePickerDialog timePickerDialog = new TimePickerDialog(mCtx, new TimePickerDialog.OnTimeSetListener() {
+					@Override
+					public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+						txTimeSet2(hourOfDay, minute);
+					}
+				}, hour, minute, true);
+				timePickerDialog.show();
+			}
+		});
 		mCbHolidayAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -870,7 +949,12 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 				@Override
 				public void onClick(View v) {
 					Intent i = new Intent(mCtx, Intro.class);
-					i.putExtra(Const.PARAM.MODE, "alarmPopup");
+					if(mAlarmReminderMode == Const.ALARM_REMINDER_MODE.REMINDER){
+						i.putExtra(Const.PARAM.MODE, "reminderPopup");
+					}else{
+						i.putExtra(Const.PARAM.MODE, "alarmPopup");
+					}
+
 					i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 					startActivity(i);
 				}
@@ -903,7 +987,36 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 
 			}
 		});
+
+//		mToggleReminder.setOnToggleSwitchChangeListener(new BaseToggleSwitch.OnToggleSwitchChangeListener() {
+//			@Override
+//			public void onToggleSwitchChangeListener(int position, boolean isChecked) {
+//				changeRemindTypeView(position);
+//			}
+//		});
     }
+
+    private void changeRemindTypeView(int mode){
+		Log.d(this.toString(), "changeRemindTypeView(int mode="+ mode);
+		if(mode == Const.ALARM_REMINDER_MODE.ALARM){
+			llAlarmOptionWrap.setVisibility(View.VISIBLE);
+			llTimePickEndWrap.setVisibility(View.GONE);
+			((TextView) mView.findViewById(R.id.tvStartTime)).setText(getString(R.string.dialog_alarm_time_start));
+			llAlertTimeWrap.setVisibility(View.VISIBLE);
+			mAlarmList.setVisibility(View.VISIBLE);
+			llAlertTimeOptionWrap.setVisibility(View.GONE);
+			llEtcWrap.setVisibility(View.VISIBLE);
+		}
+		else{
+			llAlarmOptionWrap.setVisibility(View.GONE);
+			llTimePickEndWrap.setVisibility(View.VISIBLE);
+			((TextView) mView.findViewById(R.id.tvStartTime)).setText(getString(R.string.dialog_alarm_time_start));
+			mAlarmList.setVisibility(View.GONE);
+			llAlertTimeOptionWrap.setVisibility(View.GONE);
+			llEtcWrap.setVisibility(View.GONE);
+			llAlertTimeWrap.setVisibility(View.GONE);
+		}
+	}
 
     private void showRecordWrap(boolean isShow){
         if(isShow)
@@ -925,6 +1038,20 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 
 		mTvAlarmTime.setText((isPm ? "PM " : "AM ") + time + ":" + minute);
 	}
+	private void txTimeSet2(int hourOfDay, int minute){
+		boolean isPm = false;
+		if (hourOfDay >= 12)
+			isPm = true;
+		int time = hourOfDay % 12;
+		if (isPm && time == 0)
+			time = 12;
+
+		mTvAlarmTimeEnd.setTag(R.id.timeHourId, hourOfDay);
+		mTvAlarmTimeEnd.setTag(R.id.timeMinuteId, minute);
+
+		mTvAlarmTimeEnd.setText((isPm ? "PM " : "AM ") + time + ":" + minute);
+	}
+
 
 	private void alarmDateChange(int year, int monthOfYear, int dayOfMonth) {
 		mTvAlarmDate.setTag(R.id.timeYearId, year);

@@ -40,14 +40,6 @@ import org.greenrobot.eventbus.EventBus;
  * Created by cyberocw on 2015-12-06.
  */
 public class CategoryFragment extends Fragment {
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
-
-	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
 	private ActionBar mActionBar = null;
 	private View mView;
 	private Context mCtx;
@@ -277,7 +269,6 @@ public class CategoryFragment extends Fragment {
 		}
 	}
 
-	// TODO: Rename method, update argument and hook method into UI event
 	public void onButtonPressed(Uri uri) {
 		if (mListener != null) {
 			mListener.onFragmentInteraction(uri);
@@ -352,7 +343,6 @@ public class CategoryFragment extends Fragment {
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
 	public interface OnFragmentInteractionListener {
-		// TODO: Update argument type and name
 		void onFragmentInteraction(Uri uri);
 	}
 }

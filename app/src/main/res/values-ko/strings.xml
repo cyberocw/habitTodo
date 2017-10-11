@@ -6,7 +6,6 @@
     <string name="open_drawer">open drawer</string>
     <string name="close_drawer">닫기</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="ok">ok</string>
     <string name="cancel">취소</string>
     <string name="nav_item_alaram">알림</string>
@@ -20,6 +19,7 @@
     <string name="group_title_postpone">연기한 알람</string>
     <string name="group_title_tomorrow">내일</string>
     <string name="group_title_after_day_tomorrow">모레</string>
+    <string name="group_title_time_range">시간 범위</string>
     <string name="btn_memo_modify">내용 편집</string>
     <string name="btn_memo_alarm">알람 등록</string>
     <string name="btn_memo_alarm_edit">알람 편집</string>
@@ -194,5 +194,10 @@
     <string name="permission_record_cont">녹음 권한이 없으면 녹음 알람 기능을 사용 할 수 없습니다</string>
     <string name="setting_password_cont">데이터를 복구할때 사용할 암호를 입력해주세요.</string>
     <string name="tts_store_msg">앱을 이용하기 위해서는 TTS 음성엔진을 설치해야 합니다. 엔진을 설치 후 설정화면에서 볼륨조절을 하여 TTS 음성이 재생 되는지 확인하시기 바랍니다.\n\n다운로드 페이지로 이동하시겠습니까?</string>
+    <string name="dialog_alarm_time_end">종료 시간</string>
+    <string name="dialog_alarm_time_start">시작 시간</string>
+    <string name="dialog_alarm_mid_time">중간 알림 추가</string>
+    <string name="finish">완료</string>
+    <string name="default_sound">기본</string>
 
 </resources>

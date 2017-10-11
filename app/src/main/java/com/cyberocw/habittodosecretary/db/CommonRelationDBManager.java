@@ -111,7 +111,7 @@ public class CommonRelationDBManager extends DbHelper {
 		SQLiteDatabase db;
 
 		try{
-			db = this.getWritableDatabase();
+			db = getWritableDatabase();
 		}catch(Exception e){
 
 			try {

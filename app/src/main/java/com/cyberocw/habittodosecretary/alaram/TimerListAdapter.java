@@ -133,7 +133,6 @@ public class TimerListAdapter extends BaseAdapter {
 		Log.d(this.toString(), "mStartedTimerId = " + mStartedTimerId + "  this alarmId = " + mManager.getItem(position).getId()
 				+ "  mbound = " + mBound );
 
-		//// TODO: 2015-11-17 서비스 시작 및 복구 되도록 변경 하기
 		btnDateToggle.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -206,7 +205,6 @@ public class TimerListAdapter extends BaseAdapter {
 		mMapConvertView.put(position, convertView);
 	}
 
-	//// TODO: 2015-11-22 나중에 interface로 빼기
 	public void unbindService(){
 		//activity가 종료되는 경우 mConnection 값이 달라져서 unbindService 호출 에러가 뜸
 		Log.d(this.toString(), "unbindService ");

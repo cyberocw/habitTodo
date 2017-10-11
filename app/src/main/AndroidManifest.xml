@@ -58,8 +58,8 @@
             android:theme="@style/AppTheme"
             />
         <receiver android:name=".alaram.receiver.AlarmReceiver" />
-        <receiver android:name=".alaram.service.NotificationService$CloseButtonListener" />
-
+        <receiver android:name=".alaram.service.ReminderService$CloseButtonListener" />
+        <service android:name=".alaram.service.ReminderService" />
         <service android:name=".alaram.service.NotificationService" />
         <service android:name=".alaram.service.TimerService" />
         <service android:name=".alaram.service.AlarmBackgroudService" />

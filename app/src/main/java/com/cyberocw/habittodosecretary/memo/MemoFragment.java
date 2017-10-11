@@ -67,8 +67,6 @@ import butterknife.ButterKnife;
  * create an instance of this fragment.
  */
 public class MemoFragment extends Fragment {
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PARAM1 = "param1";
 	private static final String ARG_PARAM2 = "param2";
 
@@ -78,10 +76,6 @@ public class MemoFragment extends Fragment {
 	RecorderDataManager mRecorderDataManager;
 	FileDataManager mFileDataManager;
 	private CommonRelationDBManager mCommonRelationDBManager;
-
-	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
 
 	boolean mIsShareMode = false;
 	boolean mIsEtcMode = false;
@@ -97,24 +91,6 @@ public class MemoFragment extends Fragment {
 	FloatingActionsMenu mFab;
 
 	private OnFragmentInteractionListener mListener;
-
-	/**
-	 * Use this factory method to create a new instance of
-	 * this fragment using the provided parameters.
-	 *
-	 * @param param1 Parameter 1.
-	 * @param param2 Parameter 2.
-	 * @return A new instance of fragment MainFragment.
-	 */
-	// TODO: Rename and change types and number of parameters
-	public static MemoFragment newInstance(String param1, String param2) {
-		MemoFragment fragment = new MemoFragment();
-		Bundle args = new Bundle();
-		args.putString(ARG_PARAM1, param1);
-		args.putString(ARG_PARAM2, param2);
-		fragment.setArguments(args);
-		return fragment;
-	}
 
 	public MemoFragment() {
 		// Required empty public constructor
@@ -457,6 +433,8 @@ public class MemoFragment extends Fragment {
 							}
 						}
 						mAlarmDataManager.resetMinAlarmCall();
+						if(alarmVO.getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER)
+							mAlarmDataManager.resetReminderNoti();
 					}
 					else {
 						Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
@@ -470,6 +448,7 @@ public class MemoFragment extends Fragment {
 				}
 				else {
 					Toast.makeText(mCtx, getString(R.string.msg_failed_modify), Toast.LENGTH_LONG).show();
+					break;
 				}
 				//새롭게 등록할 알림이 있는경우
 				if(alarmVO != null) {
@@ -552,6 +531,8 @@ public class MemoFragment extends Fragment {
 						}
 					}
 					mAlarmDataManager.resetMinAlarmCall();
+					if(alarmVO.getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER)
+						mAlarmDataManager.resetReminderNoti();
 				}
 				//기존 알람이 있는데, 알람을 신규 드록했다가 다시 제거했을 경우
 				else if(bundle.containsKey(Const.MEMO.ORIGINAL_ALARM_ID_KEY)){
@@ -561,6 +542,8 @@ public class MemoFragment extends Fragment {
 						mAlarmDataManager.deleteItemFileDbReal(oriVO);
 					}
 					mAlarmDataManager.resetMinAlarmCall();
+					if(oriVO.getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER)
+						mAlarmDataManager.resetReminderNoti();
 				}
 				Toast.makeText(getActivity(), getString(R.string.success), Toast.LENGTH_SHORT).show();
 				break;
@@ -630,7 +613,7 @@ public class MemoFragment extends Fragment {
 			mRecorderDataManager = new RecorderDataManager(mCtx);
 		return mRecorderDataManager;
 	}
-	// TODO: Rename method, update argument and hook method into UI event
+
 	public void onButtonPressed(Uri uri) {
 		if (mListener != null) {
 			mListener.onFragmentInteraction(uri);
@@ -677,7 +660,6 @@ public class MemoFragment extends Fragment {
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
 	public interface OnFragmentInteractionListener {
-		// TODO: Update argument type and name
 		void onFragmentInteraction(Uri uri);
 	}
 

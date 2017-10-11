@@ -32,14 +32,18 @@ android {
         applicationId "com.cyberocw.habittodosecretary"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 30
-        versionName "1.2.4"
+        versionCode 33
+        versionName "1.2.6"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
+        }
+        debug {
+            //ext.enableCrashlytics = false
+
         }
     }
 }

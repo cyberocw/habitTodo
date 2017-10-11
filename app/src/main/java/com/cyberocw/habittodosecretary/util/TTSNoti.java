@@ -22,6 +22,7 @@ import com.cyberocw.habittodosecretary.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -43,6 +44,8 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 	private int mOriginalVolume, mPrefsTTSVol;
 	private String nowPlayingText = "", bindedText = "";
 	private boolean mIsBind = false;
+	private boolean mIsttsInit = false;
+	private Map<Integer, Integer> mMapUtterance ;
 
 	@Override
 	public void onCreate() {
@@ -66,20 +69,36 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 			mAlarmId = 1;
 			mArrText.add(intent.getExtras().getString("alaramTitle"));
 			mIsNUll = false;
-			Log.d(this.toString(), "mTTS  = " + mTTS );
+			Log.d(this.toString(), "mTTS  = " + mTTS);
 
-
-			AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+			AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 			switch (am.getRingerMode()) {
 				case AudioManager.RINGER_MODE_NORMAL:
-					try{Thread.sleep(1000);}catch (Exception e){}
+					try {
+						Thread.sleep(800);
+					} catch (Exception e) {
+					}
 					break;
 			}
+		}
+		if(mArrText.size() == 0)
+			return;
 
-			if(mTTS == null)
-				mTTS = new TextToSpeech(this, this);
-			else{
+		if(mTTS == null)
+			mTTS = new TextToSpeech(this, this);
+		else{
+			Log.d(this.toString(), "mIsttsInit="+mIsttsInit);
+			if(mIsttsInit == true)
 				speakText();
+			else {
+				new android.os.Handler().postDelayed(
+						new Runnable() {
+							public void run() {
+								//mArrText.remove(mArrText.size()-1);
+								init(null);
+							}
+						},
+						1000);
 			}
 		}
 	}
@@ -143,9 +162,9 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 					public void onError(String utteranceId) {
 						Crashlytics.log(Log.DEBUG, this.toString(), " error utteranceId="+utteranceId);
 
-						if(mAlarmId > -1)
-							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
-						speakText();
+//						if(mAlarmId > -1)
+//							mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
+//						speakText();
 					}
 				});
 
@@ -159,6 +178,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 				}
 
 			}
+			mIsttsInit = true;
 		}
 		else{
 			stopSelf();
@@ -166,10 +186,14 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 	}
 
 	private void speakText(){
-		Log.d(this.toString(), "speakText start");
+		Log.d(this.toString(), "speakText start size=" + mArrText.size());
 		if(mArrText.size() == 0) {
-			Log.d(this.toString(), "speakText size = 0 stopself start");
-			stopSelf();
+			Log.d(this.toString(), "mTTS.isSpeaking()="+mTTS.isSpeaking());
+			if(!mTTS.isSpeaking()) {
+				Log.d(this.toString(), "speakText size = 0 stopself start");
+				stopSelf();
+				//return;
+			}
 			return;
 		}
 		String spokenText = mArrText.get(0);
@@ -177,7 +201,7 @@ public class TTSNoti extends Service implements TextToSpeech.OnInitListener{
 		mIndex++;
 		mArrText.remove(0);
 
-		Log.d(this.toString(), "speakText ttsgreater");
+		Log.d(this.toString(), "speakText ttsgreater spokenText=" + spokenText);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			ttsGreater21(spokenText, mIndex);

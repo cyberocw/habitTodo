@@ -18,6 +18,8 @@ public class AlarmTimeVO implements Serializable{
 	private int alarmType;
 	private int alarmCallType;
 	private String etcType;
+	private int alarmReminderType = 0;
+	private int repeatDayId;
 
 	private static final long serialVersionUID = 1L;
 
@@ -107,6 +109,22 @@ public class AlarmTimeVO implements Serializable{
 
 	public void setAlarmCallType(int alarmCallType) {
 		this.alarmCallType = alarmCallType;
+	}
+
+	public int getAlarmReminderType() {
+		return alarmReminderType;
+	}
+
+	public void setAlarmReminderType(int alarmReminderType) {
+		this.alarmReminderType = alarmReminderType;
+	}
+
+	public int getRepeatDayId() {
+		return repeatDayId;
+	}
+
+	public void setRepeatDayId(int repeatDayId) {
+		this.repeatDayId = repeatDayId;
 	}
 
 	@Override

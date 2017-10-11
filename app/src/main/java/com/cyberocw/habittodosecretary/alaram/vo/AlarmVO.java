@@ -31,11 +31,12 @@ public class AlarmVO implements Serializable, Cloneable {
 
 	private int isHolidayALL = 0;
 	private int isHolidayNone = 0;
-
+	private int alarmReminderType = 0;
 	private Calendar createDt = null;
 	private Calendar updateDt = null;
 
 	private ArrayList<FileVO> fileList = null;
+	private int repeatDayId;
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
@@ -227,11 +228,27 @@ public class AlarmVO implements Serializable, Cloneable {
 		this.alarmCallType = alarmCallType;
 	}
 
+	public int getAlarmReminderType() {
+		return alarmReminderType;
+	}
+
+	public void setAlarmReminderType(int alarmReminderType) {
+		this.alarmReminderType = alarmReminderType;
+	}
+
 	public ArrayList<FileVO> getFileList() {
 		return fileList;
 	}
 
 	public void setFileList(ArrayList<FileVO> fileList) {
 		this.fileList = fileList;
+	}
+
+	public int getRepeatDayId() {
+		return repeatDayId;
+	}
+
+	public void setRepeatDayId(int repeatDayId) {
+		this.repeatDayId = repeatDayId;
 	}
 }

@@ -23,6 +23,7 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.AlarmDataManager;
 import com.cyberocw.habittodosecretary.alaram.AlarmFragment;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
+import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
@@ -190,6 +191,8 @@ public class RenderAlarmView {
                 else
                     vo.setUseYn(0);
 
+                Log.d(this.toString(), "dateType = " + vo.getAlarmDateType());
+
                 if(mManager.modifyUseYn(vo) == false)
                     Toast.makeText(ctx, "useYn 변환에 실패했습니다", Toast.LENGTH_SHORT).show();
                 else {
@@ -221,9 +224,8 @@ public class RenderAlarmView {
             tvDayTitle.setVisibility(View.GONE);
         }
 */
-
+        //순서형 출력
         if(listViewType == Const.ALARM_LIST_VIEW_TYPE.LIST){
-
             String result = "";
             switch (vo.getAlarmDateType()){
                 case Const.ALARM_DATE_TYPE.REPEAT_MONTH :
@@ -231,11 +233,23 @@ public class RenderAlarmView {
                 case Const.ALARM_DATE_TYPE.SET_DATE : result = ctx.getResources().getString(R.string.group_title_set_date); break;
                 case Const.ALARM_DATE_TYPE.POSTPONE_DATE : result = ctx.getResources().getString(R.string.group_title_postpone); break;
             }
+            if(vo.getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER){
+                result = "Reminder";
+            }
             tvGroupTitle.setText(result);
             tvGroupTitle.setVisibility(View.VISIBLE);
             headerVisible = true;
-        }else{
-            tvGroupTitle.setVisibility(View.GONE);
+        }
+        //그룹형 출력
+        else{
+            //그룹형일때도 reminder는 출력
+            if(vo.getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER){
+                tvGroupTitle.setText("Reminder");
+                tvGroupTitle.setVisibility(View.VISIBLE);
+                headerVisible = true;
+            }
+            else
+                tvGroupTitle.setVisibility(View.GONE);
         }
 
         TextView tvRelationTitle = ButterKnife.findById(convertView, R.id.tvRelationTitle);
@@ -255,25 +269,40 @@ public class RenderAlarmView {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(5, 0, 5, 0);
 
-        if(arrCall != null)
-            for(int i = 0 ; i < arrCall.size(); i++){
-                if(arrCall.get(i) == 0)
+        if(arrCall != null) {
+            Calendar alarmDate = (Calendar) mManager.mCalendar.clone();
+
+            alarmDate.set(Calendar.MINUTE, vo.getMinute());
+            alarmDate.set(Calendar.HOUR_OF_DAY, vo.getHour());
+            alarmDate.set(Calendar.SECOND, 0);
+            alarmDate.set(Calendar.MILLISECOND, 0);
+
+            LayoutInflater inflater = ((Activity) ctx).getLayoutInflater();
+
+            for (int i = 0; i < arrCall.size(); i++) {
+                if (arrCall.get(i) == 0)
                     continue;
                 int val = Math.abs(arrCall.get(i));
                 String t;
+                TextView tvTime = (TextView) inflater.inflate(R.layout.alarm_before_view, null);
 
-                if(val > 60){
-                    t = (arrCall.get(i)/60) + "h. " + (val % 60) + "m.";
-                }
-                else {
-                    t = arrCall.get(i) + "m.";
-                }
-                LayoutInflater inflater = ((Activity)ctx).getLayoutInflater();
-                View v = inflater.inflate(R.layout.alarm_before_view, null);
+                Calendar tempCal = (Calendar) alarmDate.clone();
+                //reminder는 +-가 아닌 시간을 표시
+                if (vo.getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER) {
+                    //arrCall.get(i)
+                    tempCal.add(Calendar.MINUTE, arrCall.get(i));
 
-                TextView tvTime = (TextView) v;
-                tvTime.setText(arrCall.get(i) < 0 ? t : "+" + t);
-                //tvTime.setLayoutParams(params);
+                    t = CommonUtils.numberDigit(2, tempCal.get(Calendar.HOUR_OF_DAY)) + ":" + CommonUtils.numberDigit(2, tempCal.get(Calendar.MINUTE));
+                    tvTime.setText(t);
+                } else {
+                    if (val > 60) {
+                        t = (arrCall.get(i) / 60) + "h. " + (val % 60) + "m.";
+                    } else {
+                        t = arrCall.get(i) + "m.";
+                    }
+                    tvTime.setText(arrCall.get(i) < 0 ? t : "+" + t);
+                }
+
                 tvTime.setTextColor(ContextCompat.getColor(ctx, R.color.black_semi_transparent));
                 tvTime.setBackground(ContextCompat.getDrawable(ctx, R.drawable.button_alarm_time_round));
                 //tvTime.setPadding(5, 2, 5, 2);
@@ -281,7 +310,7 @@ public class RenderAlarmView {
                 linearLayout.addView(tvTime);
                 headerVisible = true;
             }
-
+        }
         LinearLayout llTitleWrap = ButterKnife.findById(convertView, R.id.alarmViewTitleWrap);
         llTitleWrap.setVisibility(headerVisible == true ? View.VISIBLE : View.GONE);
     }

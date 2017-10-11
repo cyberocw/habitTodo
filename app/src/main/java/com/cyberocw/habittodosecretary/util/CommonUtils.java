@@ -43,12 +43,12 @@ public class CommonUtils {
 	}
 
 	public static String convertDateType(Calendar c){
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");// cal.get(Calendar.YEAR)
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);// cal.get(Calendar.YEAR)
 		return sdf.format(c.getTime());//sdf.format(c);
 	}
 
 	public static Calendar convertDateType(String s) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");// cal.get(Calendar.YEAR)
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);// cal.get(Calendar.YEAR)
 		Calendar cal = Calendar.getInstance();
 
 		try {
@@ -60,17 +60,17 @@ public class CommonUtils {
 	}
 
 	public static String convertKeywordDateType(Calendar c){
-		SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm");// cal.get(Calendar.YEAR)
+		SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm", Locale.ENGLISH);// cal.get(Calendar.YEAR)
 		return sdf.format(c.getTime());//sdf.format(c);
 	}
 
 	public static String convertKeywordSimpleDateType(Calendar c){
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");// cal.get(Calendar.YEAR)
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm", Locale.ENGLISH);// cal.get(Calendar.YEAR)
 		return sdf.format(c.getTime());//sdf.format(c);
 	}
 
 	public static String convertFullDateType(Calendar c){
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// cal.get(Calendar.YEAR)
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);// cal.get(Calendar.YEAR)
 		return sdf.format(c.getTime());//sdf.format(c);
 	}
 
@@ -198,5 +198,9 @@ public class CommonUtils {
     }
 	public static String getRecordFullPath(Context mCtx, long id) {
 		return mCtx.getFilesDir().getAbsolutePath() + File.separator + Environment.DIRECTORY_RINGTONES + File.separator +  id + ".wav";
+	}
+
+	public static String getReminderDayId(Calendar cal, int repeatDay, long alarmId){
+		return cal.get(Calendar.WEEK_OF_YEAR) + "." + repeatDay + "." + alarmId;
 	}
 }

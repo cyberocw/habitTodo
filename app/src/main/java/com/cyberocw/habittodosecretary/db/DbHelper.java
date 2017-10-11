@@ -10,6 +10,9 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 /**
  * Created by cyberocw on 2015-08-23.
  */
@@ -17,7 +20,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static DbHelper sInstance;
 
 	private static final String DB_NME = "habit_todo";
-	private static final int DB_VERSION = 20;
+	private static final int DB_VERSION = 21;
 
 	private static final String ARRAY_DIV = "_ho8c7wt_";
 
@@ -46,7 +49,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String KEY_REPEAT_DAY = "repeat_day";
 	public static final String KEY_ALARM_CALL_LIST = "alarm_call_list";
 	public static final String KEY_ALARM_CONTENTS = "alarm_Contents"; // key_type 이랑 동일하게 씀
-
+	public static final String KEY_ALARM_REMINDER_TYPE = "alarm_reminder_type"; //
 
 
 	public static final String KEY_HOLIDAY_ALL = "is_holiday_all";
@@ -133,6 +136,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				KEY_UPDATE_DATE + " integer, " +
 				KEY_HOLIDAY_ALL + " integer, " +
 				KEY_HOLIDAY_NONE + " integer, " +
+				KEY_ALARM_REMINDER_TYPE + " integer, " +
 				KEY_ALARM_CALL_TYPE  + " integer" +
 				");";
 
@@ -304,6 +308,11 @@ public class DbHelper extends SQLiteOpenHelper {
 		if(oldVersion <=19){
 			db.execSQL(getCreateTableQuery(TABLE_FILE_INFO));
 		}
+		if(oldVersion <=20) {
+			//mode 추가 (전광판 모드)
+			String sql = "ALTER TABLE " + TABLE_ALARM+ " ADD COLUMN " + KEY_ALARM_REMINDER_TYPE + " integer DEFAULT 0 ;";
+			db.execSQL(sql);
+		}
 	}
 
 	private String getCreateTableQuery(String tableName){
@@ -399,6 +408,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	}
 
 	public String serialize(Object content[]){
+		Arrays.sort(content);
 		return TextUtils.join(ARRAY_DIV, content);
 	}
 

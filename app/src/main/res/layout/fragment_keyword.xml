@@ -26,9 +26,8 @@
                 android:id="@+id/optionWrap"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@color/btn_gray_background"
-                >
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/btnPrevTime"
@@ -36,17 +35,15 @@
                     android:layout_height="30dp"
                     android:layout_alignBaseline="@+id/dateView"
                     android:layout_alignBottom="@+id/dateView"
-                    android:background="@drawable/ic_chevron_left_black_24dp"
                     android:layout_centerVertical="true"
-                    />
+                    android:background="@drawable/ic_chevron_left_black_24dp" />
 
                 <TextView
                     android:id="@+id/dateView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_centerVertical="true"
-                    android:textSize="12dp"
+                    android:layout_gravity="center"
                     android:layout_toEndOf="@+id/btnPrevTime"
                     android:layout_toRightOf="@+id/btnPrevTime"
                     android:elevation="1dp"
@@ -54,7 +51,8 @@
                     android:gravity="center_horizontal|fill_vertical"
                     android:singleLine="true"
                     android:text="17/08/14 18:00"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textSize="12dp" />
 
                 <Button
                     android:id="@+id/btnNextTime"
@@ -62,31 +60,31 @@
                     android:layout_height="30dp"
                     android:layout_alignBaseline="@+id/dateView"
                     android:layout_alignBottom="@+id/dateView"
+                    android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/dateView"
                     android:layout_toRightOf="@+id/dateView"
-                    android:layout_centerVertical="true"
                     android:background="@drawable/ic_chevron_right_black_24dp" />
 
                 <belka.us.androidtoggleswitch.widgets.ToggleSwitch
                     android:id="@+id/toggleKeywordType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
                     android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_toLeftOf="@+id/btnSetting"
+                    android:layout_toStartOf="@+id/btnSetting"
+                    android:gravity="center_vertical"
                     android:textSize="10sp"
                     custom:activeBgColor="@color/gray"
                     custom:activeTextColor="@android:color/white"
+                    custom:cornerRadius="0dp"
                     custom:inactiveBgColor="@color/btn_gray_background"
                     custom:inactiveTextColor="@android:color/black"
                     custom:separatorColor="@color/gray_very_light"
-                    custom:cornerRadius="0dp"
                     custom:textToggleLeft="누적 순위"
                     custom:textToggleRight="시점 순위"
-                    custom:toggleWidth="75dp"
-                    android:layout_toLeftOf="@+id/btnSetting"
-                    android:layout_toStartOf="@+id/btnSetting"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginEnd="8dp" />
+                    custom:toggleWidth="75dp" />
 
                 <Button
                     android:id="@+id/btnSetting"
@@ -94,11 +92,11 @@
                     android:layout_height="24dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:gravity="center_vertical"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:background="@drawable/ic_settings_black_24dp">
+                    android:background="@drawable/ic_settings_black_24dp"
+                    android:gravity="center_vertical">
 
                 </Button>
             </RelativeLayout>

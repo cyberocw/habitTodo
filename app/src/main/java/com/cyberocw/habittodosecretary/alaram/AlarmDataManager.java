@@ -20,6 +20,8 @@ import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.db.AlarmDbManager;
 import com.cyberocw.habittodosecretary.alaram.receiver.AlarmReceiver;
 import com.cyberocw.habittodosecretary.alaram.service.AlarmBackgroudService;
+import com.cyberocw.habittodosecretary.alaram.service.NotificationService;
+import com.cyberocw.habittodosecretary.alaram.service.ReminderService;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.common.vo.FileVO;
@@ -36,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import io.fabric.sdk.android.Fabric;
@@ -399,41 +402,11 @@ public class AlarmDataManager {
 	public boolean modifyItem(AlarmVO item){
 		//삭제 후 새로 insert, relation 또한 새로 insert 해줌 (일단 하나의 alarm은 하나의 relation만을 가진 상태의 로직)
 		long oriId = item.getId();
-
-		//알람 등록때 자동으로 다 지웠따가 등록함
-		/*CommonRelationDBManager relationDBManager = CommonRelationDBManager.getInstance(mCtx);
-		RelationVO rvo = relationDBManager.getByAlarmId(oriId);*/
-
 		boolean delResult = this.deleteItemById(oriId);
-
 		if(delResult == false)
 			return false;
-
 		item.setId(-1);
-
 		addItem(item);
-
-		/*
-		//변경 된 내용으로 새롭게 등록
-		if(item.getRfid() > -1 ){
-			rvo.setAlarmId(item.getId());
-			rvo.setType(item.getEtcType());
-			rvo.setfId(item.getRfid());
-			relationDBManager.insert(rvo);
-		}
-		//기존 정보 재등록
-		else if(rvo.getAlarmId() > -1){
-			rvo.setAlarmId(item.getId());
-			relationDBManager.insert(rvo);
-		}
-		*/
-		//기존 ETC 연계가 있었다면 재등록
-		/*
-		if(item.getRfid() rvo.getAlarmId() > -1) {
-			rvo.setAlarmId(item.getId());
-			relationDBManager.insert(rvo);
-		}
-		*/
 
 		if(item.getId() == -1){
 			Log.e(Const.DEBUG_TAG, "오류 : 알림 ID가 생성되지 않았습니다");
@@ -442,12 +415,16 @@ public class AlarmDataManager {
 		}
 
 		this.dataList.add(item);
-
 		return true;
 	}
 
 	public boolean modifyUseYn(AlarmVO item){
-		return mDb.modifyUse(item);
+		Log.d(this.toString(), "modifyUseYn start item.getAlarmDateType()=" + item.getAlarmReminderType());
+		boolean result = mDb.modifyUse(item);
+		if(item.getAlarmDateType() == Const.ALARM_REMINDER_MODE.REMINDER){
+			resetReminderNoti();
+		}
+		return result;
 	}
 
 	public void resetMinAlarmCall(){
@@ -486,6 +463,8 @@ public class AlarmDataManager {
 	public void resetMinAlarm(){
 		SharedPreferences prefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 		stopAllAlarm(prefs);
+
+		//resetReminderNoti();
 
 		SharedPreferences prefsSetting = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 		if(prefsSetting.getBoolean(Const.SETTING.IS_DISTURB_MODE, false)){
@@ -597,7 +576,6 @@ public class AlarmDataManager {
 					sender1.cancel();
 				}
 			}
-
 			//background 서비스 취소
 			Intent intentAlarmbackground = new Intent(mCtx, AlarmBackgroudService.class);
 			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "background Service stop");
@@ -746,6 +724,31 @@ public class AlarmDataManager {
 		ArrayList<FileVO> fileList = new ArrayList<FileVO>();
 		fileList.add(fileVO);
 		vo.setFileList(fileList);
+	}
+
+	public void resetReminderNoti(){
+		Log.d(this.toString(), "resetReminderNoti start");
+		Intent myIntent;
+		myIntent = new Intent(mCtx, ReminderService.class);
+		myIntent.putExtra(Const.PARAM.MODE, "RESET");
+		mCtx.startService(myIntent);
+
+		List<AlarmTimeVO> list = mDb.getReminderRunningList();
+		AlarmTimeVO vo;
+		for(int i = 0; i < list.size(); i++){
+			myIntent = new Intent(mCtx, ReminderService.class);
+			vo = list.get(i);
+			myIntent.putExtra("title", vo.getAlarmTitle());
+			myIntent.putExtra(Const.PARAM.ALARM_REMINDER_MODE, vo.getAlarmReminderType());
+			myIntent.putExtra(Const.PARAM.ETC_TYPE_KEY, vo.getEtcType());
+			myIntent.putExtra(Const.PARAM.REQ_CODE, vo.getReqCode());
+			myIntent.putExtra(Const.PARAM.ALARM_ID, vo.getfId());
+			myIntent.putExtra(Const.PARAM.CALL_TIME, vo.getCallTime());
+			myIntent.putExtra(Const.PARAM.REPEAT_DAY_ID, vo.getRepeatDayId());
+			myIntent.putExtra(Const.PARAM.MODE, "REFRESH");
+
+			mCtx.startService(myIntent);
+		}
 	}
 
 }

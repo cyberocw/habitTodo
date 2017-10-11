@@ -19,6 +19,7 @@ import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
+import com.cyberocw.habittodosecretary.alaram.vo.AlarmTimeVO;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
 import java.util.Calendar;
@@ -43,11 +44,14 @@ public class NotificationService extends Service{
 		Fabric.with(this, new Crashlytics());
 	}
 
-	@SuppressWarnings({ "static-access", "deprecation" })
+
 	@Override
-	public void onStart(Intent intent, int startId) {
-		super.onStart(intent, startId);
+	public int onStartCommand(Intent intent, int flag, int startId) {
+		if(intent == null)
+			return START_NOT_STICKY;
+
 		newNotification1(intent, startId);
+		return START_NOT_STICKY;
 	}
 
 	public void newNotification1(Intent intent, int startId){
@@ -98,8 +102,6 @@ public class NotificationService extends Service{
 		mCompatBuilder.setAutoCancel(true);
 
 		if(etcType.equals(Const.ETC_TYPE.MEMO)) {
-			remoteView.setViewVisibility(R.id.tvAlarmSubTitle, View.VISIBLE);
-			remoteView.setTextViewText(R.id.tvAlarmSubTitle, getString(R.string.service_noti_msg_view_memo_touch));
 			mCompatBuilder.setContentText(getString(R.string.service_noti_msg_view_memo_touch));
 		}else if(alarmId > -1){
 			// alarmId 가 -1 이면 timer에서 보낸 noti임
@@ -107,11 +109,11 @@ public class NotificationService extends Service{
 		}
 		Calendar now = Calendar.getInstance();
         remoteView.setTextViewText(R.id.tvAlarmTime, CommonUtils.numberDigit(2, now.get(Calendar.HOUR_OF_DAY)) + ":" + CommonUtils.numberDigit(2, now.get(Calendar.MINUTE)));
-
-		Intent closeButtonIntent = new Intent(this, CloseButtonListener.class);
-		closeButtonIntent.putExtra(Const.PARAM.REQ_CODE, reqCode);
-		PendingIntent pendingCloseButtonIntent = PendingIntent.getBroadcast(this, (int) reqCode, closeButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		remoteView.setOnClickPendingIntent(R.id.btnCloseNoti, pendingCloseButtonIntent);
+//
+//		Intent closeButtonIntent = new Intent(this, CloseButtonListener.class);
+//		closeButtonIntent.putExtra(Const.PARAM.REQ_CODE, reqCode);
+//		PendingIntent pendingCloseButtonIntent = PendingIntent.getBroadcast(this, (int) reqCode, closeButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//		//remoteView.setOnClickPendingIntent(R.id.btnCloseNoti, pendingCloseButtonIntent);
 
 		if(alarmId > -1) {
 			Intent intentAlarm = new Intent(this, MainActivity.class);
@@ -149,19 +151,5 @@ public class NotificationService extends Service{
 		super.onDestroy();
 	}
 
-    public static class CloseButtonListener extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "close button on receive bundle=" + intent.getExtras());
-
-            Bundle bundle = intent.getExtras();
-            if(bundle != null) {
-                NotificationManager manager = (NotificationManager) context.getSystemService(Service.NOTIFICATION_SERVICE);
-                int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
-                Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "reqCode="+reqCode);
-                manager.cancel(reqCode);
-            }
-        }
-    }
 }
 

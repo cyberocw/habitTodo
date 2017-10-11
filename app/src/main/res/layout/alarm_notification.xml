@@ -1,104 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/notiWrap"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="wrap_content"
     android:clickable="true"
     android:longClickable="true"
     android:orientation="horizontal"
-    android:padding="10dp"
+    android:padding="8dp"
+    android:background="@color/white"
     android:weightSum="1">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/linearLayout2"
+        android:layout_centerVertical="true"
 
+        android:padding="2dp"
         >
 
         <ImageView
             android:id="@+id/ivNoti"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-
-            android:background="@drawable/ic_launcher"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:adjustViewBounds="false"
+            android:layout_centerVertical="true"
+            android:background="@drawable/button_repeat_day"
+            android:backgroundTint="@color/background_repeat"
+            android:cropToPadding="false"
             android:elevation="0dp"
-            app:srcCompat="@mipmap/ic_launcher" />
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/ic_stat_noti" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginRight="130dp"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:padding="5dp">
+        android:layout_centerVertical="true"
+        android:padding="5dp"
+        android:layout_toRightOf="@+id/linearLayout2"
+        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp">
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_chevron_left_black_24dp"
+            android:id="@+id/ibLeft"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:id="@+id/tvAlarmTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxHeight="35dp"
+            android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text=" ㄴㅇㄹ sdf sdf asdv sdv s"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-        <TextView
-            android:id="@+id/tvAlarmSubTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:elegantTextHeight="false"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAlignment="center"
-            android:textSize="12sp"
-            android:visibility="gone" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="-130dp"
-        android:gravity="center">
+            android:layout_marginLeft="2dp"
+            android:layout_marginStart="2dp"
+            android:layout_toEndOf="@+id/ibLeft"
+            android:layout_toLeftOf="@+id/ibRight"
+            android:layout_toRightOf="@+id/ibLeft"
+            android:ellipsize="marquee"
+            android:text=" ㄴㅇㄹ sdf sf asdf sdf asdf sdaf sdf sdaf sdf dfvsvd "
+            android:textColor="@color/my_black_text" />
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_chevron_right_black_24dp"
+            android:id="@+id/ibRight"
+            android:layout_marginRight="2dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/btnClose"
+            android:layout_toStartOf="@+id/btnClose"
+             />
 
         <Button
-            android:id="@+id/btnPostpone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:text="미루기"
-            android:textSize="13sp" />
+            android:id="@+id/btnClose"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/my_black_text"
+            android:layout_width="48dp"
+            android:layout_height="34dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="4dp"
+            android:text="@string/finish"
+            android:textSize="12sp" />
+    </RelativeLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvAlarmTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="12:14"
-                android:textSize="12sp" />
 
-            <Button
-                android:id="@+id/btnCloseNoti"
-                android:layout_width="45dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@null"
-                android:padding="0dp"
-                android:text="X"
-                android:textAlignment="center"
-                android:textSize="16sp" />
-        </LinearLayout>
 
-    </LinearLayout>
-</LinearLayout>
+        <!--<LinearLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="vertical">-->
+
+            <!--<TextView-->
+                <!--android:id="@+id/tvAlarmTime"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:gravity="center"-->
+                <!--android:text="12:14"-->
+                <!--android:textSize="12sp" />-->
+
+            <!--<Button-->
+                <!--android:id="@+id/btnCloseNoti"-->
+                <!--android:layout_width="45dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:background="@null"-->
+                <!--android:padding="0dp"-->
+                <!--android:text="X"-->
+                <!--android:textAlignment="center"-->
+                <!--android:textSize="16sp" />-->
+        <!--</LinearLayout>-->
+
+
+</RelativeLayout>

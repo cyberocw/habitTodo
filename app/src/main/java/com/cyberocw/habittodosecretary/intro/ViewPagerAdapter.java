@@ -58,6 +58,12 @@ public class ViewPagerAdapter extends PagerAdapter {
                     R.drawable.help_alarm_popup
             };
         }
+        else if(mMode.equals("reminderPopup")){
+            galImages = new int[]{
+                    R.drawable.help_reminder_popup
+            };
+
+        }
     }
     @Override
     public int getCount() {
@@ -71,7 +77,6 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        // TODO Auto-generated method stub
         ImageView imageView = new ImageView(mCtx);
 
         //int padding = mCtx.getResources().getDimensionPixelSize(R.dimen.padding_medium);

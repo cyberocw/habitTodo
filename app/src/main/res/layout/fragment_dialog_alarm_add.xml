@@ -56,10 +56,38 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <!--<LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    style="@style/alarm_dialog_textview"
+                    android:text="리마인드 종류"
+                    />
+                <belka.us.androidtoggleswitch.widgets.ToggleSwitch
+                    android:id="@+id/toggleAlarmRemind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:layout_marginLeft="8dp"
+                    android:layout_centerVertical="true"
+                    android:textSize="11sp"
+                    custom:toggleWidth="120dp"
+                    custom:activeBgColor="@color/primary_header"
+                    custom:activeTextColor="@android:color/white"
+                    custom:inactiveBgColor="@color/btn_gray_background"
+                    custom:inactiveTextColor="@android:color/black"
+                    custom:separatorColor="@color/gray_very_light"
+                    custom:cornerRadius="20dp"
+                    custom:textToggleLeft="알람"
+                    custom:textToggleRight="시간 범위 상태바"
+                    />
+            </LinearLayout>-->
             <LinearLayout
                 android:id="@+id/llDateTypeWrap"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                >
 
                 <TextView
                     style="@style/alarm_dialog_textview"
@@ -101,6 +129,7 @@
                 android:layout_marginTop="15dp">
 
                 <TextView
+                    android:id="@+id/tvStartTime"
                     style="@style/alarm_dialog_textview"
                     android:text="@string/dialog_alarm_time"
                     />
@@ -112,6 +141,35 @@
                     android:layout_marginLeft="15dp"
                     android:text="pm 05:44"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/llTimePickEndWrap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginTop="15dp">
+
+                <TextView
+                    style="@style/alarm_dialog_textview"
+                    android:text="@string/dialog_alarm_time_end"
+                    />
+
+                <TextView
+                    android:id="@+id/tvAlarmTimeEnd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="pm 05:44"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <CheckBox
+                    android:id="@+id/cbMidTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/dialog_alarm_mid_time"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -230,6 +288,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llAlarmOptionWrap"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -371,6 +430,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llEtcWrap"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"

@@ -1,6 +1,5 @@
 package com.cyberocw.habittodosecretary.alaram.service;
 
-import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -27,10 +26,8 @@ import com.cyberocw.habittodosecretary.file.FileDataManager;
 import com.cyberocw.habittodosecretary.record.PlayRawAudio;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
-import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -57,6 +54,7 @@ public class AlarmBackgroudService extends Service {
     private CountDownTimer mCountDownTimer = null;
     private int mMinRemainPosition = -1;
     private String mTitle = "";
+    private int mCallTime = 0;
     private int mAlarmOption = -1;
     private int mAlarmType = -1;
     private String mAppTitle = "";
@@ -178,18 +176,21 @@ public class AlarmBackgroudService extends Service {
 
         startCountDownTimer(remainTime);
 
-        int callTime = alarmTimeVO.getCallTime();
+        int callTime = mCallTime = alarmTimeVO.getCallTime();
         int h = Math.abs(callTime / 60);
         int m = Math.abs(callTime % 60);
 
-        mTitle = alarmTimeVO.getAlarmTitle() + " " + (h != 0 ? h + getString(R.string.hours) + " " : "") +
-                    (callTime < 0 ?  m + getString(R.string.dialog_alarm_minute_before) : callTime > 0 ?  m + getString(R.string.dialog_alarm_minute_after) : "" );
+        //reminder는 몇분전 이런거 없음
+        if(alarmTimeVO.getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER){
+            mTitle = alarmTimeVO.getAlarmTitle();
+        }
+        else
+            mTitle = alarmTimeVO.getAlarmTitle() + " " + (h != 0 ? h + getString(R.string.hours) + " " : "") +
+                        (callTime < 0 ?  m + getString(R.string.dialog_alarm_minute_before) : callTime > 0 ?  m + getString(R.string.dialog_alarm_minute_after) : "" );
         //mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + getString(R.string.dialog_alarm_minute_before) : (callTime > 0 ? callTime + getString(R.string.dialog_alarm_minute_after) : ""));
 
         mAlarmOption = alarmTimeVO.getAlarmOption();
         mAlarmType = alarmTimeVO.getAlarmType();
-
-
 
         SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
         boolean isBackg = prefs.getBoolean(Const.SETTING.IS_BACKGROUND_NOTI_USE, true);
@@ -295,54 +296,66 @@ public class AlarmBackgroudService extends Service {
     }
 
     private void startNotibar(){
-        SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
-        boolean isTTS = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
-        boolean isTTSManner = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
-
-        if(isTTS && !isTTSManner){
-            AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-            switch (am.getRingerMode()) {
-                case AudioManager.RINGER_MODE_SILENT:
-                case AudioManager.RINGER_MODE_VIBRATE:
-                    isTTS = false;
-                    break;
-                case AudioManager.RINGER_MODE_NORMAL:
-                    break;
-            }
+        Log.d(this.toString(), "mArrAlarmVOList.get(mMinRemainPosition).getAlarmReminderType()=" + mArrAlarmVOList.get(mMinRemainPosition).getAlarmReminderType());
+        Intent myIntent;
+        if(mArrAlarmVOList.get(mMinRemainPosition).getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER){
+            myIntent = new Intent(mCtx, ReminderService.class);
         }
-        Intent myIntent = new Intent(mCtx, NotificationService.class);
-        Crashlytics.log(Log.DEBUG, this.toString(), " background mArrAlarmVOList.get(mMinRemainPosition).getReqCode() = " + mArrAlarmVOList.get(mMinRemainPosition).getReqCode());
+        else {
+            myIntent = new Intent(mCtx, NotificationService.class);
+        }
+        Crashlytics.log(Log.DEBUG, this.toString(), " background alarmId= " + mArrAlarmVOList.get(mMinRemainPosition).getfId() + " title = "+ mArrAlarmVOList.get(mMinRemainPosition).getAlarmTitle() + " mTitle=" + mTitle);
         myIntent.putExtra("title", mTitle);
+        myIntent.putExtra(Const.PARAM.ALARM_REMINDER_MODE, mArrAlarmVOList.get(mMinRemainPosition).getAlarmReminderType());
         myIntent.putExtra(Const.PARAM.ETC_TYPE_KEY, mArrAlarmVOList.get(mMinRemainPosition).getEtcType());
         myIntent.putExtra(Const.PARAM.REQ_CODE, mArrAlarmVOList.get(mMinRemainPosition).getReqCode());
         myIntent.putExtra(Const.PARAM.ALARM_ID, mArrAlarmVOList.get(mMinRemainPosition).getfId());
+        myIntent.putExtra(Const.PARAM.CALL_TIME, mCallTime);
+        myIntent.putExtra(Const.PARAM.REPEAT_DAY_ID, mArrAlarmVOList.get(mMinRemainPosition).getRepeatDayId());
+
         mCtx.startService(myIntent);
 
-        //mAlarmOption - 개별 알람 tts
-        if(mAlarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS) {
-            startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
-        }else if(mAlarmOption == Const.ALARM_OPTION_TO_SOUND.RECORD && isTTS){
-            //String fileName = CommonUtils.getRecordFullPath(mCtx, mArrAlarmVOList.get(mMinRemainPosition).getfId());
-            FileDataManager fdm = new FileDataManager(mCtx);
-            fdm.makeDataList(Const.ETC_TYPE.ALARM, mArrAlarmVOList.get(mMinRemainPosition).getfId());
+        if(!(mArrAlarmVOList.get(mMinRemainPosition).getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER)) {
+            SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
+            boolean isTTS = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
+            boolean isTTSManner = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
 
-            try {
-                ArrayList<FileVO> arrFile = fdm.getDataList();
-                FileVO fileVO = arrFile.get(0);
-                File f = new File(fileVO.getUriPath());
-                Log.d(this.toString(), "absolute="+f.getAbsolutePath() + " getPaht= " + f.getPath());
-
-                if(f.isFile()){
-                    PlayRawAudio pra = new PlayRawAudio(mCtx, f.getAbsolutePath());
-                    pra.execute();
+            if (isTTS && !isTTSManner) {
+                AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                switch (am.getRingerMode()) {
+                    case AudioManager.RINGER_MODE_SILENT:
+                    case AudioManager.RINGER_MODE_VIBRATE:
+                        isTTS = false;
+                        break;
+                    case AudioManager.RINGER_MODE_NORMAL:
+                        break;
                 }
-                else{
-                    Toast.makeText(mCtx, getResources().getString(R.string.msg_file_not_found), Toast.LENGTH_SHORT).show();
-                    startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
-                }
-            }catch (Exception e){
+            }
+            //mAlarmOption - 개별 알람 tts reminderservice에도 동일 로직 있음!!
+            if (mAlarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS) {
                 startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
-                e.printStackTrace();
+            } else if (mAlarmOption == Const.ALARM_OPTION_TO_SOUND.RECORD && isTTS) {
+                //String fileName = CommonUtils.getRecordFullPath(mCtx, mArrAlarmVOList.get(mMinRemainPosition).getfId());
+                FileDataManager fdm = new FileDataManager(mCtx);
+                fdm.makeDataList(Const.ETC_TYPE.ALARM, mArrAlarmVOList.get(mMinRemainPosition).getfId());
+
+                try {
+                    ArrayList<FileVO> arrFile = fdm.getDataList();
+                    FileVO fileVO = arrFile.get(0);
+                    File f = new File(fileVO.getUriPath());
+                    Log.d(this.toString(), "absolute=" + f.getAbsolutePath() + " getPaht= " + f.getPath());
+
+                    if (f.isFile()) {
+                        PlayRawAudio pra = new PlayRawAudio(mCtx, f.getAbsolutePath());
+                        pra.execute();
+                    } else {
+                        Toast.makeText(mCtx, getResources().getString(R.string.msg_file_not_found), Toast.LENGTH_SHORT).show();
+                        startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
+                    }
+                } catch (Exception e) {
+                    startTTS(mTitle, mArrAlarmVOList.get(mMinRemainPosition).getfId());
+                    e.printStackTrace();
+                }
             }
         }
     }

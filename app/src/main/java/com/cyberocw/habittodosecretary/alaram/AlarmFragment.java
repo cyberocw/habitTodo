@@ -49,6 +49,7 @@ import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.PopMessageEvent;
 import com.cyberocw.habittodosecretary.util.TitleMessageEvent;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -100,6 +101,7 @@ public class AlarmFragment extends Fragment{
 	private View mView;
 	TextView mDateTv = null;
 	TextView mTvListTitle = null;
+	FloatingActionsMenu mFab;
 
 	/**
 	 * Use this factory method to create a new instance of
@@ -175,7 +177,7 @@ public class AlarmFragment extends Fragment{
 
 		//선택된 날짜 텍스트 지정
 		setSelectedDateText(mCalendar);
-
+		mFab = ButterKnife.findById(mView, R.id.fabAddBtn);
 		llWeekOfDayWrap = (LinearLayout) mView.findViewById(R.id.weekOfDayWrap);
 		mAlarmDataManager = new AlarmDataManager(mCtx, mCalendar);
 		mTimerDataManager = new TimerDataManager(mCtx);
@@ -679,6 +681,8 @@ public class AlarmFragment extends Fragment{
 		}
 		mAlarmDataManager.resetMinAlarmCall();
 		refreshAlarmList();
+		if(vo.getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER)
+			mAlarmDataManager.resetReminderNoti();
 	}
 
 	public void selectedDateChange(Calendar cal){
@@ -731,8 +735,17 @@ public class AlarmFragment extends Fragment{
 			                           }
 		                           }
 		);
-		FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fabAddAlarm);
-		fab.setOnClickListener(new View.OnClickListener() {
+		//FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fabAddBtn);
+
+		FloatingActionButton fabAlarm = (FloatingActionButton) mView.findViewById(R.id.fabAddAlarm);
+		FloatingActionButton fabReminder = ButterKnife.findById(mView, R.id.fabAddReminder);
+		fabReminder.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showNewAlarmDialog(-1, Const.ALARM_REMINDER_MODE.REMINDER);
+			}
+		});
+		fabAlarm.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if(mViewType == Const.ALARM_OPTION.SET_DATE_TIMER)
@@ -826,6 +839,9 @@ public class AlarmFragment extends Fragment{
 		}
 	}
 	public void showNewTimerDialog(long id) {
+		if(mFab != null)
+			mFab.collapse();
+
 		FragmentManager fm;
 		fm = getFragmentManager();
 
@@ -850,13 +866,20 @@ public class AlarmFragment extends Fragment{
 	}
 
 	public void showNewAlarmDialog(long id) {
+		this.showNewAlarmDialog(id, Const.ALARM_REMINDER_MODE.ALARM);
+	}
+	public void showNewAlarmDialog(long id, int reminderMode) {
+		if(mFab != null)
+			mFab.collapse();
+
 		FragmentManager fm;
 		fm = getFragmentManager();
 
 		AlarmDialogNew alarmDialogNew = new AlarmDialogNew();
+		Bundle bundle = new Bundle();
+		bundle.putInt(Const.PARAM.ALARM_REMINDER_MODE, reminderMode);
 
 		if(id != -1) {
-			Bundle bundle = new Bundle();
 			AlarmVO alarmVO = mAlarmDataManager.getItemByIdInList(id);
 			if(alarmVO == null){
 				Toast.makeText(mCtx, "해당 알람이 데이터베이스에 없습니다.", Toast.LENGTH_SHORT).show();
@@ -866,9 +889,9 @@ public class AlarmFragment extends Fragment{
 				bundle.putSerializable(Const.PARAM.MEMO_VO, mMemoDataManager.getMemoInDb(alarmVO.getRfid()));
 			}
 			bundle.putSerializable(Const.PARAM.ALARM_VO, alarmVO);
-			alarmDialogNew.setArguments(bundle);
-		}
 
+		}
+		alarmDialogNew.setArguments(bundle);
 		alarmDialogNew.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE);
 
 		FragmentTransaction transaction = fm.beginTransaction();
@@ -921,6 +944,8 @@ public class AlarmFragment extends Fragment{
 							mAlarmDataManager.saveFile(vo, targetFile);
 						}
 					}
+					if(vo.getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER)
+						mAlarmDataManager.resetReminderNoti();
 				}catch(Exception e){
 					Toast.makeText(mCtx, getString(R.string.msg_failed_insert), Toast.LENGTH_LONG).show();
 					e.printStackTrace();
@@ -972,6 +997,8 @@ public class AlarmFragment extends Fragment{
 				// 수정일 경우 date type이 변경 될 수도 있기 때문에 두개 모두 갱신
 				mAlarmDataManager.resetMinAlarmCall();
 				refreshAlarmList();
+				if(vo.getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER)
+					mAlarmDataManager.resetReminderNoti();
 				break;
 
 			case Const.ALARM_INTERFACE_CODE.ADD_TIMER_FINISH_CODE :
@@ -1021,7 +1048,13 @@ public class AlarmFragment extends Fragment{
 		}
 	}
 
-	@Override
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.refreshAlarmList();
+    }
+
+    @Override
 	public void onDetach() {
 		super.onDetach();
 		mListener = null;
@@ -1050,7 +1083,6 @@ public class AlarmFragment extends Fragment{
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
 	public interface OnFragmentInteractionListener {
-		// TODO: Update argument type and name
 		void onFragmentInteraction(Uri uri);
 	}
 

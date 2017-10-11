@@ -2,6 +2,7 @@ package com.cyberocw.habittodosecretary.alaram.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -21,8 +22,10 @@ import com.cyberocw.habittodosecretary.util.CommonUtils;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -53,6 +56,7 @@ public class AlarmDbManager extends DbHelper{
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
+		values.put(KEY_ALARM_REMINDER_TYPE, vo.getAlarmReminderType());
 		values.put(KEY_ALARM_TITLE, vo.getAlarmTitle());
 		values.put(KEY_ALARM_TYPE, vo.getAlarmType());
 		values.put(KEY_ALARM_DATE_TYPE, vo.getAlarmDateType());
@@ -139,6 +143,7 @@ public class AlarmDbManager extends DbHelper{
 				KEY_F_ALARM_ID + " integer" +
 	 */
 	private void insertAlarmCallOrder(AlarmVO vo) {
+		Log.d(this.toString(), "insertAlarmCallOrder vo=" + vo.getAlarmTitle());
 		SQLiteDatabase db = this.getWritableDatabase();
 		ArrayList<Calendar> dateList = vo.getAlarmDateList();
 		Calendar cal, cal2;
@@ -177,7 +182,7 @@ public class AlarmDbManager extends DbHelper{
 	public ArrayList<AlarmTimeVO> getMinAlarmTime(long nowTime){
 		String selectQuery =
 				"SELECT B." + KEY_ID + ", A." + KEY_TIME_STAMP + ", A." + KEY_CALL_TIME + ", B." + KEY_ALARM_TITLE + ", A." + KEY_F_ALARM_ID +
-						", B." + KEY_ALARM_TYPE + ", B." + KEY_ALARM_OPTION + ", B." + KEY_TYPE + ", B." + KEY_ALARM_CALL_TYPE +
+						", B." + KEY_ALARM_TYPE + ", B." + KEY_ALARM_OPTION + ", B." + KEY_TYPE + ", B." + KEY_ALARM_CALL_TYPE + ", B." + KEY_ALARM_REMINDER_TYPE +
 						" FROM " + TABLE_ALARM_ORDER +" AS A INNER JOIN " + TABLE_ALARM + " AS B ON " +
 						" A." + KEY_F_ALARM_ID + " = B." + KEY_ID + " WHERE  B." + KEY_USE_YN + " = 1 AND A." + KEY_TIME_STAMP + " = " +
 						" (SELECT MIN(" + KEY_TIME_STAMP + " ) FROM " + TABLE_ALARM_ORDER + " AS C INNER JOIN " + TABLE_ALARM +
@@ -189,7 +194,6 @@ public class AlarmDbManager extends DbHelper{
 		try {
 			SQLiteDatabase db = this.getReadableDatabase();
 			c = db.rawQuery(selectQuery, null);
-
 
 			AlarmTimeVO vo;
 
@@ -207,7 +211,8 @@ public class AlarmDbManager extends DbHelper{
 					vo.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
 					vo.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
 					vo.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
-
+					vo.setAlarmReminderType(c.getInt(c.getColumnIndex(KEY_ALARM_REMINDER_TYPE)));
+					Log.d(this.toString(), "volist add =" + vo.getAlarmTitle());
 					alarmTimeVOList.add(vo);
 				} while (c.moveToNext());
 			}
@@ -293,6 +298,13 @@ public class AlarmDbManager extends DbHelper{
 	//반복 알람 가장 가까운 시간 가져오기
 	// day num = sun 1 mon 2 ...
 	public ArrayList<AlarmTimeVO> getMinRepeatAlarm(int dayNum) {
+		return getMinRepeatAlarm(dayNum, false);
+	}
+	public ArrayList<AlarmTimeVO> getMinRepeatAlarm(int dayNum, boolean isReminderMode) {
+		if(dayNum == -1) {
+			Calendar cal = Calendar.getInstance();
+			dayNum = cal.get(Calendar.DAY_OF_WEEK); //sun 1 mon 2 ...
+		}
 		HashMap<Integer, Integer> dayMap = new HashMap<>();
 		dayMap.put(Calendar.SUNDAY, 0);
 		dayMap.put(Calendar.MONDAY, 0);
@@ -336,32 +348,22 @@ public class AlarmDbManager extends DbHelper{
 		nowCal.set(Calendar.MILLISECOND, 0);
 
 		long nowTimeInMil = nowCal.getTimeInMillis();
-
-		Crashlytics.log(Log.DEBUG, this.toString(), " today month = " + nowCal.get(Calendar.MONTH));
-
 		// get holiday list for week
 
-		String startDate = String.valueOf(nowCal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, nowCal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, nowCal.get(Calendar.DAY_OF_MONTH));
+		String startDate = CommonUtils.convertDateType(nowCal);
 		cal.add(Calendar.DAY_OF_MONTH, 7);
-		String endDate = String.valueOf(cal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
+		String endDate = CommonUtils.convertDateType(cal);
 
 		SettingDbManager settingDb = SettingDbManager.getInstance(mCtx);
 		HashMap<String, ArrayList> holidayMap = settingDb.getHolidayMap(startDate, endDate);
 
-		/*
-		ArrayList<HolidayVO> tempArr = new ArrayList<HolidayVO>();
-		HolidayVO tempVO = new HolidayVO();
-		tempVO.setEtcType("i");
-		tempArr.add(tempVO);
-		holidayMap.put("20170219", tempArr);
-		*/
-
 		int dayofWeek, day2;
 		Cursor c = null;
+		SharedPreferences prefsReminder = mCtx.getSharedPreferences(Const.REMINDER.PREFS_ID, Context.MODE_PRIVATE);
 
 		//오늘 기준 7번 반복하면서 최소값 찾으면 +1 일 더 찾아보고 중지
 		for(int i = 0; i < arrDayResult.length; i++) {
-			queryString = "SELECT B." + KEY_ID + ", B." + KEY_ALARM_CALL_LIST + ", B." + KEY_ALARM_TITLE + ", B."+KEY_HOUR + ", B." + KEY_MINUTE + ", A." + KEY_F_ALARM_ID +
+			queryString = "SELECT B." + KEY_ID + ", B." + KEY_ALARM_CALL_LIST + ", B." + KEY_ALARM_REMINDER_TYPE + ", B." + KEY_ALARM_TITLE + ", B."+KEY_HOUR + ", B." + KEY_MINUTE + ", A." + KEY_F_ALARM_ID +
 					", B." + KEY_ALARM_OPTION + ", B." + KEY_ALARM_TYPE + ", B." + KEY_HOLIDAY_ALL + ", B." + KEY_HOLIDAY_NONE + ", B." + KEY_TYPE + ", B." + KEY_ALARM_CALL_TYPE +
 					" FROM " + TABLE_ALARM_REPEAT + " A INNER JOIN " + TABLE_ALARM + " B ON A." + KEY_F_ALARM_ID + " = B." + KEY_ID  +
 					" WHERE B." + KEY_USE_YN + " = 1 AND (A." + arrDayResult[i] + " = 1 ";
@@ -376,13 +378,11 @@ public class AlarmDbManager extends DbHelper{
 
 			//평일일 경우에만 holiday 여부 체크
 			if(dayofWeek != 1 && dayofWeek != 7){
-				String strCal = String.valueOf(cal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
-				Crashlytics.log(Log.DEBUG, this.toString(), "strCal = " + strCal);
+				String strCal = CommonUtils.convertDateType(cal);
 				if (holidayMap.containsKey(strCal)) {
 					ArrayList<HolidayVO> arrHoliday = holidayMap.get(strCal);
 					for (int m = 0; m < arrHoliday.size(); m++) {
 						HolidayVO hVO = arrHoliday.get(m);
-						Crashlytics.log(Log.DEBUG, this.toString(), "hVO type = " + hVO.getType());
 						if (hVO.getType().equals("h") || hVO.getType().equals("i")) {
 							queryString += " or B." + KEY_HOLIDAY_ALL + " = 1 ) and (B." + KEY_HOLIDAY_NONE + " <> 1";
 							break;
@@ -392,9 +392,7 @@ public class AlarmDbManager extends DbHelper{
 			}
 
 			queryString += ") ORDER BY B." + KEY_HOUR + ", B." + KEY_MINUTE;
-
 			c = db.rawQuery(queryString, null);
-
 			if (c.moveToFirst()) {
 				do {
 					hour =  c.getInt(c.getColumnIndex(KEY_HOUR));
@@ -416,48 +414,93 @@ public class AlarmDbManager extends DbHelper{
 					if (i > 0)
 						cal.add(Calendar.DAY_OF_MONTH, i);
 
+
+					Log.d(this.toString(), "reminder type="+c.getInt(c.getColumnIndex(KEY_ALARM_REMINDER_TYPE)) +  " title="+c.getString(c.getColumnIndex(KEY_ALARM_TITLE)));
+					if(c.getInt(c.getColumnIndex(KEY_ALARM_REMINDER_TYPE)) == Const.ALARM_REMINDER_MODE.REMINDER){
+						Log.d(this.toString(), "contains reminder key = " + prefsReminder.getBoolean(CommonUtils.getReminderDayId(cal, dayofWeek, c.getInt(c.getColumnIndex(KEY_ID))), false) +
+						" id =" + CommonUtils.getReminderDayId(cal, dayofWeek, c.getInt(c.getColumnIndex(KEY_ID))) + " dayofWeek="+dayofWeek);
+						if(prefsReminder.getBoolean(CommonUtils.getReminderDayId(cal, dayofWeek, c.getInt(c.getColumnIndex(KEY_ID))), false)) {
+							continue;
+						}
+					}
+
+
 					// 몇분전 값이 실제 시간이기 때문에 이부분에서 최소 값을 찾음
 					int val;
 					for(int j = 0 ; j < alarmCallList.length; j++) {
 						cal2 = (Calendar) cal.clone();
-						try{
-							cal2.add(Calendar.MINUTE, Integer.valueOf(alarmCallList[j]));
-						}catch(Exception e){
-							try {
-								Crashlytics.log(Log.ERROR, Const.ERROR_TAG, "alarmCallList[j] = " + alarmCallList[j]);
-							}catch(Exception el){
-								Crashlytics.log(Log.ERROR, Const.ERROR_TAG, e.getMessage() + " " + e.getCause());
-							}
-						}
-
+						cal2.add(Calendar.MINUTE, Integer.valueOf(alarmCallList[j]));
 						timeinMil = cal2.getTimeInMillis();
 
-						// - 몇분전/후 계산 값이 현재 시간보다 빠르면 건너 뜀
-						if(nowTimeInMil >= timeinMil)
-							continue;
+						//리마인더 계산시 0분이 현재보다 이후면 해당 알람 그룹 건너 뜀
+						//1.현재보다 0분이 이후에 있으면 모두 통과
+						//2.중간 혹은 마지막 알람이 현재 보다 이후에 있으면 진행중 - 0분은 현재보다 이전이면서
+						if(isReminderMode){
+							 if(Integer.valueOf(alarmCallList[j]) == 0) {
+								 //통과
+								 if (nowTimeInMil < timeinMil) {
+									 break;
+								 }
+								 else
+								 	continue;
+							 }
+							 //중간 혹은 막탐이 현재 이후인것 찾기
+							 else{
+								 if (nowTimeInMil < timeinMil) {
+									 alarmTimeVO = new AlarmTimeVO();
+									 alarmTimeVO.setAlarmReminderType(c.getInt(c.getColumnIndex(KEY_ALARM_REMINDER_TYPE)));
+									 alarmTimeVO.setCallTime(Integer.valueOf(alarmCallList[j]));
+									 alarmTimeVO.setTimeStamp(timeinMil);
+									 alarmTimeVO.setAlarmTitle(c.getString(c.getColumnIndex(KEY_ALARM_TITLE)));
+									 alarmTimeVO.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+									 alarmTimeVO.setfId(c.getInt(c.getColumnIndex(KEY_F_ALARM_ID)));
+									 alarmTimeVO.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
+									 alarmTimeVO.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
+									 alarmTimeVO.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
+									 alarmTimeVO.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
+									 alarmTimeVO.setRepeatDayId(dayofWeek);
+									 Log.d(this.toString(), "added vo = " + alarmTimeVO.getAlarmTitle());
+									 arrList.add(alarmTimeVO);
+									 break;
+								 }
 
-						// min 값을 arr에 추가 (동일 시간) , min보다 더 작을 경우 arr 초기화 후 추가
-						if (min >= timeinMil || min == 0) {
-							if(min > timeinMil){
-								arrList.clear();
-							}
-							min = timeinMil;
-
-							alarmTimeVO = new AlarmTimeVO();
-							alarmTimeVO.setCallTime(Integer.valueOf(alarmCallList[j]));
-							alarmTimeVO.setTimeStamp(timeinMil);
-							alarmTimeVO.setAlarmTitle(c.getString(c.getColumnIndex(KEY_ALARM_TITLE)));
-							alarmTimeVO.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-							alarmTimeVO.setfId(c.getInt(c.getColumnIndex(KEY_F_ALARM_ID)));
-							alarmTimeVO.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
-							alarmTimeVO.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
-							alarmTimeVO.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
-							alarmTimeVO.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
-							arrList.add(alarmTimeVO);
+							 }
 						}
-					}
+						else {
+							// - 몇분전/후 계산 값이 현재 시간보다 빠르면 건너 뜀
+							if (nowTimeInMil >= timeinMil)
+								continue;
+
+							// min 값을 arr에 추가 (동일 시간) , min보다 더 작을 경우 arr 초기화 후 추가
+							if (min >= timeinMil || min == 0) {
+								if (min > timeinMil) {
+									arrList.clear();
+								}
+								min = timeinMil;
+
+								alarmTimeVO = new AlarmTimeVO();
+								alarmTimeVO.setAlarmReminderType(c.getInt(c.getColumnIndex(KEY_ALARM_REMINDER_TYPE)));
+								alarmTimeVO.setCallTime(Integer.valueOf(alarmCallList[j]));
+								alarmTimeVO.setTimeStamp(timeinMil);
+								alarmTimeVO.setAlarmTitle(c.getString(c.getColumnIndex(KEY_ALARM_TITLE)));
+								alarmTimeVO.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+								alarmTimeVO.setfId(c.getInt(c.getColumnIndex(KEY_F_ALARM_ID)));
+								alarmTimeVO.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
+								alarmTimeVO.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
+								alarmTimeVO.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
+								alarmTimeVO.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
+								alarmTimeVO.setRepeatDayId(dayofWeek);
+								Log.d(this.toString(), "added vo22 = " + alarmTimeVO.getAlarmTitle());
+								arrList.add(alarmTimeVO);
+							}
+						}
+					}//end calltime for
 				} while (c.moveToNext());
 			}//movetofirst if end
+
+			if(isReminderMode && i >= 2){
+				break;
+			}
 
 			if(searchDayIndex >= 1)
 				break;
@@ -530,8 +573,6 @@ public class AlarmDbManager extends DbHelper{
 	나중에 한번 싹 정리해야 할 필요가 있음
 	 */
 	private ArrayList<AlarmVO> getAlarmList(long id, Calendar startDate, Calendar endDate, int[] dayName) {
-
-
 		String selectQuery =
 				"SELECT  A.*, B." + KEY_ID + " as " + KEY_REPEAT_ID + ", C." + KEY_ID + " as " + KEY_DATE_ID + ", sun, mon, tue, wed, thu, fri, sat, C." +
 						KEY_ALARM_DATE +", B." + KEY_REPEAT_DAY + ", D." + KEY_F_ID + ", A." + KEY_TYPE + " FROM " + TABLE_ALARM + " AS A LEFT JOIN " +
@@ -572,10 +613,48 @@ public class AlarmDbManager extends DbHelper{
 				}
 				//repeat 테이블 내용 불러옴
 				if (values.size() > 0) {
-					selectQuery += "(SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE 1=1 ";
+
+					SettingDbManager settingDb = SettingDbManager.getInstance(mCtx);
+					HashMap<String, ArrayList> holidayMap = null;
+					if(endDate == null){
+						holidayMap = settingDb.getHolidayMap(CommonUtils.convertDateType(startDate), CommonUtils.convertDateType(startDate));
+					}
+					else{
+						holidayMap = settingDb.getHolidayMap(CommonUtils.convertDateType(startDate), CommonUtils.convertDateType(endDate));
+					}
+					int dayofWeek = startDate.get(Calendar.DAY_OF_WEEK);
+					boolean isHoliday = false;
+					//평일일 경우에만 holiday 여부 체크
+					if (dayofWeek != 1 && dayofWeek != 7) {
+						String strCal = CommonUtils.convertDateType(startDate); //String.valueOf(startDate.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, startDate.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
+						Crashlytics.log(Log.DEBUG, this.toString(), "strCal = " + strCal);
+
+						if (holidayMap.containsKey(strCal)) {
+							ArrayList<HolidayVO> arrHoliday = holidayMap.get(strCal);
+							for (int m = 0; m < arrHoliday.size(); m++) {
+								HolidayVO hVO = arrHoliday.get(m);
+								Crashlytics.log(Log.DEBUG, this.toString(), "hVO type = " + hVO.getType());
+								if (hVO.getType().equals("h") || hVO.getType().equals("i")) {
+									isHoliday = true;
+									break;
+								}
+							}
+						}
+
+					}
+					//기본 주간 반복 select - in 다음 조건 붙이는 것임
+					selectQuery += "(SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE (1=1 ";
+
 					for (String key : values.keySet()) {
 						//and 인지 or인지 잘 구분 필요, 아직까지는 dayName이 배열일 경우는 없어서 and던 or던 상관 없음...(목금을 동시에 가져올 일이 업다는 뜻)
 						selectQuery += " AND " + key + " = 1";
+					}
+					if(isHoliday){
+						selectQuery += " AND " + KEY_HOLIDAY_NONE + " <> 1)";
+						selectQuery += " OR (" + KEY_HOLIDAY_ALL + " = 1  )";
+					}
+					else{
+						selectQuery += ")";
 					}
 					selectQuery += ")";
 				}
@@ -587,7 +666,11 @@ public class AlarmDbManager extends DbHelper{
 				//매달 반복 가져옴
 				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE " + KEY_REPEAT_DAY +
 						" = " + startDate.get(Calendar.DAY_OF_MONTH) + " ) ";
+
+
+
 			}
+			//범위
 			//////// 날짜 지정 알림에서 불러옴 - 주간 달력에 settime 유형 o 표시 위함 -> 주간 날짜 지정 알림만 가져옴
 			else if (startDate != null && endDate != null) {
 				selectQuery += " (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
@@ -621,7 +704,7 @@ public class AlarmDbManager extends DbHelper{
 		ArrayList<Integer> arrRepeatDay;
 		ArrayList<Integer> alarmCallList = new ArrayList<Integer>();
 		String alarmDate;
-		// TODO: 2015-08-30 date가 여럿일 경우는 고려하지 않았음, 일단 여러개일 경우를 대비하기 위해 테이블은 분리해 둠
+		// 2015-08-30 date가 여럿일 경우는 고려하지 않았음, 일단 여러개일 경우를 대비하기 위해 테이블은 분리해 둠
 
 		ArrayList<AlarmVO> alarmVOList = new ArrayList<AlarmVO>();
 		HashMap<Long, AlarmVO> voMap = new HashMap<Long, AlarmVO>();
@@ -667,6 +750,8 @@ public class AlarmDbManager extends DbHelper{
 
 					vo.setAlarmDateList(arrCal);
 				}
+
+				vo.setAlarmReminderType((c.getInt(c.getColumnIndex(KEY_ALARM_REMINDER_TYPE))));
 				vo.setAlarmTitle((c.getString(c.getColumnIndex(KEY_ALARM_TITLE))));
 				vo.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
 				vo.setHour(c.getInt(c.getColumnIndex(KEY_HOUR)));
@@ -859,4 +944,85 @@ public class AlarmDbManager extends DbHelper{
 		return result;
 	}
 
+	//호출 타임은 수정/삭제 + 재부팅
+	public ArrayList<AlarmTimeVO> getReminderRunningList(){
+		//setTime -> reminder중 현재시간 +23시간 59분 것 가져옴 지금부터 23시간59분 가능하니까 -> alarmVO 순회 하면서 startTime <현재 > endtime 시간으로 걸리는것 추려서 띄움
+		//repeat -> 기존 repeat 로직을 통해서 calltime for문 돌면서 startTime < > end time 검사해서 띄우면 될듯
+		Calendar cal = Calendar.getInstance();
+		ArrayList<AlarmTimeVO> list = getMinReminderTime(cal);
+		ArrayList<AlarmTimeVO> list2 =  getMinRepeatAlarm(-1, true);
+		Log.d(this.toString(), "lisot2 size="+list2.size());
+		list.addAll(list2);
+		return list;
+	}
+
+	//시간 순서에 따라 가장 가까운 시간 알림 가져옴
+	public ArrayList<AlarmTimeVO> getMinReminderTime(Calendar cal){
+		Calendar calEnd = (Calendar) cal.clone();
+		calEnd.add(Calendar.MINUTE, 59);
+
+		String selectQuery =
+				"SELECT B.*, A." + KEY_TIME_STAMP + ", A." + KEY_CALL_TIME + ", B." + KEY_ALARM_TITLE + ", A." + KEY_F_ALARM_ID +
+						", B." + KEY_ALARM_TYPE + ", B." + KEY_ALARM_OPTION + ", B." + KEY_TYPE + ", B." + KEY_ALARM_CALL_TYPE + ", B." + KEY_ALARM_REMINDER_TYPE +
+						" FROM " + TABLE_ALARM_ORDER +" AS A INNER JOIN " + TABLE_ALARM + " AS B ON " +
+						" A." + KEY_F_ALARM_ID + " = B." + KEY_ID + " WHERE B." + KEY_ALARM_REMINDER_TYPE + " = "  + Const.ALARM_REMINDER_MODE.REMINDER +
+						//" AND B." + KEY_CALL_TIME + " > 0 " +
+						" AND B." + KEY_USE_YN + " = 1 AND A." + KEY_TIME_STAMP + " >= " + cal.getTimeInMillis() +
+						" AND A." + KEY_TIME_STAMP + " <= " + calEnd.getTimeInMillis() ;
+		Cursor c = null;
+
+		ArrayList<AlarmTimeVO> alarmTimeVOList = new ArrayList<AlarmTimeVO>();
+		HashSet<Long> setAlarmId = new HashSet<Long>();
+		try {
+			SQLiteDatabase db = this.getReadableDatabase();
+			c = db.rawQuery(selectQuery, null);
+
+			AlarmTimeVO vo;
+
+			Crashlytics.log(Log.DEBUG, this.toString(), " min set time record count=" + c.getCount());
+
+			if (c.moveToFirst()) {
+				do {
+					long alarmId = (c.getLong(c.getColumnIndex(KEY_F_ALARM_ID)));
+					if(setAlarmId.contains(alarmId))
+						continue;
+					if(c.getInt(c.getColumnIndex(KEY_CALL_TIME)) == 0){
+						setAlarmId.add(alarmId);
+						continue;
+					}
+					vo = new AlarmTimeVO();
+					vo.setId(c.getLong((c.getColumnIndex(KEY_ID))));
+					vo.setAlarmTitle((c.getString(c.getColumnIndex(KEY_ALARM_TITLE))));
+					vo.setTimeStamp(c.getLong(c.getColumnIndex(KEY_TIME_STAMP)));
+					vo.setCallTime(c.getInt(c.getColumnIndex(KEY_CALL_TIME)));
+					vo.setfId(c.getLong(c.getColumnIndex(KEY_F_ALARM_ID)));
+					vo.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
+					vo.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
+					vo.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
+					vo.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
+					vo.setAlarmReminderType(c.getInt(c.getColumnIndex(KEY_ALARM_REMINDER_TYPE)));
+
+					alarmTimeVOList.add(vo);
+				} while (c.moveToNext());
+			}
+		} finally {
+			if (c != null)
+				c.close();
+		}
+		int len = alarmTimeVOList.size() ;
+
+		for(int i = 0 ; i < len; i++){
+			if(i >= alarmTimeVOList.size()){
+				break;
+			}
+			if(setAlarmId.contains(alarmTimeVOList.get(i).getfId())){
+				alarmTimeVOList.remove(i);
+				i--;
+				len = alarmTimeVOList.size();
+			}
+		}
+
+		closeDB();
+		return alarmTimeVOList;
+	}
 }

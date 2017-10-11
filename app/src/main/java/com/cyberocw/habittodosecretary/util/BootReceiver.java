@@ -21,6 +21,8 @@ public class BootReceiver extends BroadcastReceiver
 			AlarmDataManager alarmDataManager = new AlarmDataManager(context, Calendar.getInstance());
 			Log.d(this.toString(), "bootReceiver start");
 			alarmDataManager.resetMinAlarmCall();
+			alarmDataManager.resetReminderNoti();
+			//alarmDataManager.resetReminderNoti();
 		}
 	}
 }

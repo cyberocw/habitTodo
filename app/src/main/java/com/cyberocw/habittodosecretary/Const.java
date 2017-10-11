@@ -18,6 +18,8 @@ public class Const {
 	public static final String REQ_CODE_REPEAT = "reqCodeRepeat";
 	public static final int ONGOING_TIMER_NOTI_ID = 999999999;
 	public static final int ONGOING_ALARM_NOTI_ID = 999999998;
+	public static final int ONGOING_REMINDER_NOTI_ID = 999999997;
+
 
 	public static final int TTS_INSTALL = 911;
 
@@ -40,8 +42,12 @@ public class Const {
 		public static final String ALARM_ID_TIME_STAMP = "alarmIdTimeStamp";
 		public static final String IS_RECORD = "isRecord";
 		public static final String FILE_PATH = "filePath";
-
+		public static final String ALARM_REMINDER_MODE = "ALARM_REMINDER_MODE";
 		public static final String IS_TODO = "isTodo";
+		public static final String CALL_TIME = "callTime";
+		public static final String REPEAT_DAY_ID = "repeatDayId";
+		public static final String SOUND = "sound";
+
     }
 
 	public class ALARM_INTERFACE_CODE{
@@ -86,7 +92,9 @@ public class Const {
 		public static final int AFTER_DAY_TOMORROW = 3;
 		public static final int POSTPONE_DATE = 4;
 		public static final int REPEAT_MONTH = 5;
-		private static Integer[] arrDayNameCode = {R.string.group_title_repeat_day, R.string.group_title_repeat_month, R.string.group_title_set_date, R.string.group_title_tomorrow, R.string.group_title_after_day_tomorrow};
+
+		private static Integer[] arrDayNameCode = {R.string.group_title_repeat_day, R.string.group_title_repeat_month, R.string.group_title_set_date,
+				R.string.group_title_tomorrow, R.string.group_title_after_day_tomorrow};
 		private static final int[] arrDayCode = {REPEAT, REPEAT_MONTH,  SET_DATE, TOMORROW, AFTER_DAY_TOMORROW};
 		public static int getNumByPosition(int i){
 			return arrDayCode[i];
@@ -121,7 +129,10 @@ public class Const {
 		public static final int SET_DATE_TIMER = 0;
 		public static final int NO_DATE_TIMER = 1;
 	}
-
+	public class ALARM_REMINDER_MODE {
+		public static final int ALARM = 0;
+		public static final int REMINDER = 1;
+	}
 	/*
 		이게 실제 사용하는 것
 	 */
@@ -234,8 +245,6 @@ public class Const {
 			public static final String PREFS = "KEYWORD_PREFS";
 			public static final String VIEW_MODE = "viewMode";
 		}
-
-
 	}
 
 
@@ -245,6 +254,10 @@ public class Const {
 		public static final int CHANNEL_CONFIGURATION_OUT = AudioFormat.CHANNEL_OUT_MONO;
 		public static final int CHANNEL_CONFIGURATION_IN = AudioFormat.CHANNEL_IN_MONO;
 		public static final int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+	}
+
+	public class REMINDER{
+		public static final String PREFS_ID = "reminder_prefs";
 	}
 
 	public static String MIME_TYPE_IMAGE = "image/jpeg";

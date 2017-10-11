@@ -51,8 +51,6 @@ import io.fabric.sdk.android.Fabric;
  * Created by cyberocw on 2016-11-06.
  */
 public class SettingFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     CheckBox mCbAllAlarm;
@@ -577,7 +575,6 @@ public class SettingFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 

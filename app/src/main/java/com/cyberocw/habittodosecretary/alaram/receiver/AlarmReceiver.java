@@ -31,7 +31,6 @@ import io.fabric.sdk.android.Fabric;
 /**
  * Created by cyberocw on 2015-08-31.
  */
-//// TODO: 2016-10-03 데이터 전달할 객체 생성하여 전달하기 serializable 혹은 parceable
 public class AlarmReceiver extends WakefulBroadcastReceiver {
 	private AlarmBackgroudService mService;
 	private boolean mBound;

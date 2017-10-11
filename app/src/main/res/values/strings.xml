@@ -7,7 +7,6 @@
     <string name="open_drawer">open drawer</string>
     <string name="close_drawer">Close drawer</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="ok">ok</string>
     <string name="cancel">cancel</string>
     <string name="nav_item_alaram">Alarm</string>
@@ -22,6 +21,7 @@
     <string name="group_title_postpone">Postponed</string>
     <string name="group_title_tomorrow">Tomorrow</string>
     <string name="group_title_after_day_tomorrow">The day after tomorrow</string>
+    <string name="group_title_time_range">Time range</string>
     <string name="btn_memo_modify">Edit Text</string>
     <string name="btn_memo_alarm">Add Alarm</string>
     <string name="btn_memo_alarm_edit">Edit Alarm</string>
@@ -65,6 +65,8 @@
     <string name="dialog_alarm_date_option">Date Option</string>
     <string name="dialog_alarm_date_pick">Date</string>
     <string name="dialog_alarm_time">Time</string>
+    <string name="dialog_alarm_time_start">Start Time</string>
+    <string name="dialog_alarm_time_end">End Time</string>
     <string name="dialog_alarm_repeat_day">Repeat Day</string>
     <string name="dialog_alarm_holiday_option">Holiday Option</string>
     <string name="dialog_alarm_title">Title</string>
@@ -76,11 +78,14 @@
     <string name="dialog_alarm_linked_function">Linked function</string>
     <string name="dialog_alarm_sp_notification">One Time Notification</string>
     <string name="dialog_alarm_sp_user_stop">Alarm until user stops</string>
+    <string name="dialog_alarm_mid_time">add Intermediate notification </string>
+
     <string name="group_title_repeat_month">Repeat Month</string>
     <string name="group_title_repeat_day">Repeat Day</string>
     <string name="dialog_alarm_minute_before">minute before</string>
     <string name="dialog_alarm_minute_after">minute after</string>
     <string name="none">None</string>
+    <string name="default_sound">default</string>
     <string name="dialog_alarm_sp_sound_tts">Text to speech Voice</string>
     <string name="dialog_alarm_sp_sound_record">Record Voice</string>
     <string name="dialog_alarm_sp_sound_file">Play Sound File</string>
@@ -98,6 +103,7 @@
     <string name="dialog_memo_sort_title">Sorting Option</string>
     <string name="dialog_memo_importance">Importance</string>
     <string name="btn_memo_finish">Edit Finish</string>
+    <string name="finish">Finish</string>
     <string name="setting_data_title">Data management</string>
     <string name="setting_data_cont">Back up and recover all your data to the Documents folder.</string>
     <string name="setting_btn_backup">Data backup</string>

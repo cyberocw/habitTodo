@@ -70,7 +70,6 @@ public class RawToWave implements Runnable{
             mBOStream.close();
             Log.d(Const.DEBUG_TAG, "wave create ok ");
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
     }

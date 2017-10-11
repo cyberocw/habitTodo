@@ -124,9 +124,9 @@ public class CalendarManager {
 	private void getHolidayList(Calendar calOri){
 		Calendar cal = (Calendar) calOri.clone();
 
-		String startDate = String.valueOf(cal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
+		String startDate = CommonUtils.convertDateType(cal);
 		cal.add(Calendar.DAY_OF_MONTH, 7);
-		String endDate = String.valueOf(cal.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
+		String endDate = CommonUtils.convertDateType(cal);
 
 		mHolidayMap = mSettingDbManager.getHolidayMap(startDate, endDate);
 	}
@@ -238,7 +238,7 @@ public class CalendarManager {
 			}
 			// 공휴일정보 체크
 			arrTextDayName[i].setText("");
-			String strCal = String.valueOf(cal2.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, cal2.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal2.get(Calendar.DAY_OF_MONTH));
+			String strCal = CommonUtils.convertDateType(cal2);
 
 			if (mHolidayMap.containsKey(strCal)) {
 				ArrayList<HolidayVO> arrHoliday = mHolidayMap.get(strCal);
