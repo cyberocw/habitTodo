@@ -359,6 +359,9 @@ public class AlarmDbManager extends DbHelper{
 
 		int dayofWeek, day2;
 		Cursor c = null;
+		if(mCtx == null){
+			mCtx = mContext;
+		}
 		SharedPreferences prefsReminder = mCtx.getSharedPreferences(Const.REMINDER.PREFS_ID, Context.MODE_PRIVATE);
 
 		//오늘 기준 7번 반복하면서 최소값 찾으면 +1 일 더 찾아보고 중지

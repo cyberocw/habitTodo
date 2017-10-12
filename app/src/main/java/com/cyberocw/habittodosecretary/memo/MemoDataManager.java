@@ -120,14 +120,16 @@ public class MemoDataManager {
 			return false;
 
 		MemoVO vo = this.getItemById(id);
-		mFileDataManager = new FileDataManager(mCtx);
-		mFileDataManager.addDeleteItem(vo.getFileList());
-		mFileDataManager.addDeleteItem(vo.getDelFileList());
-		mFileDataManager.deleteAll();
-		for(int i = 0 ; i < dataList.size() ; i++){
-			if(dataList.get(i).getId() == id){
-				dataList.remove(i);
-				return true;
+		if(vo != null) {
+			mFileDataManager = new FileDataManager(mCtx);
+			mFileDataManager.addDeleteItem(vo.getFileList());
+			mFileDataManager.addDeleteItem(vo.getDelFileList());
+			mFileDataManager.deleteAll();
+			for (int i = 0; i < dataList.size(); i++) {
+				if (dataList.get(i).getId() == id) {
+					dataList.remove(i);
+					return true;
+				}
 			}
 		}
 		return false;
