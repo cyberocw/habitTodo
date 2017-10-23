@@ -103,25 +103,26 @@ public class CommonUtils {
 	}
 
 	public static void setupUI(View view, final Activity activity) {
-
-		// Set up touch listener for non-text box views to hide keyboard.
-		if (!(view instanceof EditText)) {
-			view.setOnTouchListener(new View.OnTouchListener() {
-				public boolean onTouch(View v, MotionEvent event) {
-					InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-					inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-					return false;
-				}
-			});
-		}
-
-		//If a layout container, iterate over children and seed recursion.
-		if (view instanceof ViewGroup) {
-			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-				View innerView = ((ViewGroup) view).getChildAt(i);
-				setupUI(innerView, activity);
+		try {
+			// Set up touch listener for non-text box views to hide keyboard.
+			if (!(view instanceof EditText)) {
+				view.setOnTouchListener(new View.OnTouchListener() {
+					public boolean onTouch(View v, MotionEvent event) {
+						InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+						inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+						return false;
+					}
+				});
 			}
-		}
+
+			//If a layout container, iterate over children and seed recursion.
+			if (view instanceof ViewGroup) {
+				for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+					View innerView = ((ViewGroup) view).getChildAt(i);
+					setupUI(innerView, activity);
+				}
+			}
+		}catch (Exception e){}
 	}
 
 	public static void setupUI(View view, final Activity activity, final Dialog dialog) {

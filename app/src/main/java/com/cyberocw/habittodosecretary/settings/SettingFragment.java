@@ -103,13 +103,6 @@ public class SettingFragment extends Fragment {
 
         initActivity();
         Fabric.with(mCtx, new Crashlytics());
-
-        if(StorageHelper.getAttachmentDir(mCtx).exists()){
-            for(File f : StorageHelper.getAttachmentDir(mCtx).listFiles()){
-                Log.d(this.toString(), "sd list file="+f.getAbsolutePath());
-            }
-        }
-
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             checkPermissionReadStorage(mCtx, getActivity());
 

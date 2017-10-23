@@ -63,6 +63,7 @@ public class ReminderService extends Service {
             stopSelf();
             return super.onStartCommand(intent, flags, startId);
         }
+
         Bundle bundle =  intent.getExtras();
         long alarmId = bundle.getLong(Const.PARAM.ALARM_ID);
         String mode = bundle.getString(Const.PARAM.MODE, "ADD");
@@ -82,8 +83,13 @@ public class ReminderService extends Service {
                 }
             }
             AlarmVO vo = mAlarmDataManager.getItemByIdInDB(alarmId);
+
+            if(vo == null) {
+                Toast.makeText(mCtx, "not found alarm", Toast.LENGTH_SHORT).show();
+                Crashlytics.log(Log.DEBUG, this.toString(), "not found alarm alarmId = "+alarmId);
+            }
             //날짜 지정
-            if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE){
+            else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE){
                 vo.setUseYn(0);
                 mAlarmDataManager.modifyUseYn(vo);
             }
@@ -135,7 +141,8 @@ public class ReminderService extends Service {
         }
 
         if(mode.equals("REFRESH")){
-            mArrayList.add(vo);
+            if(!isRunning)
+                mArrayList.add(vo);
         }
         //첫 알람, 중간 알람 -> 진행중인 알람이 아닐 경우 add
         else if(callTime == callList.get(0) || (callTime == callList.get(1) && hasMid)){
@@ -177,79 +184,27 @@ public class ReminderService extends Service {
     private void refreshNotibar(int index, String mode){
         Log.d(this.toString(), "mArrayList after size="+ mArrayList.size() + " get index="+index) ;
 
+        if(mArrayList.size() == 0){
+            mAlarmDataManager.resetMinAlarm();
+            stopALL();
+            return;
+        }
         if(index == -1)
             index = mArrayList.size()-1;
         else if(index >= mArrayList.size()){
             index = 0;
         }
-
         AlarmVO lastVO = mArrayList.get(index);
 
         //String txt = TextUtils.join(", ", mArrayList);
 
         notiReminder2(lastVO, index, mode);
     }
-    public void notiReminder(AlarmVO vo, int index, String mode){
-        SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
-        boolean isAlarmNoti = prefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
-
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_REMINDER_NOTI_ID, notificationIntent, 0);
-
-        NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this);
-
-        mCompatBuilder.setSmallIcon(R.drawable.ic_stat_noti);
-        mCompatBuilder.setTicker("Habit Todo");
-        mCompatBuilder.setWhen(System.currentTimeMillis());
-        mCompatBuilder.setContentTitle(vo.getAlarmTitle());
-
-        if(isAlarmNoti && mode.equals("ADD")) {
-            mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND);
-            mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 100L, 100L, 100L, 100L, 100L, 100L});
-        }
-        mCompatBuilder.setAutoCancel(false);
-        mCompatBuilder.setContentText("아래로 스크롤하면 이전/다음 알림 확인 및 완료처리 버튼이 보입니다");
-
-
-
-        //완료처리 버튼
-        Intent closeButtonIntent = new Intent(this, ReminderService.CloseButtonListener.class);
-        closeButtonIntent.putExtra(Const.PARAM.MODE, "CLOSE");
-        closeButtonIntent.putExtra(Const.PARAM.REQ_CODE, index);
-        closeButtonIntent.putExtra(Const.PARAM.ALARM_ID, vo.getId());
-        PendingIntent pendingCloseButtonIntent = PendingIntent.getBroadcast(this, 1, closeButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        //remoteView.setOnClickPendingIntent(R.id.btnClose, pendingCloseButtonIntent);
-
-        mCompatBuilder.addAction(R.drawable.ic_add_alert_black_24dp, "완료", pendingCloseButtonIntent);
-
-        //이전 버튼
-        Intent prevButtonIntent = new Intent(this, ReminderService.CloseButtonListener.class);
-        prevButtonIntent.putExtra(Const.PARAM.MODE, "PREV");
-        prevButtonIntent.putExtra(Const.PARAM.REQ_CODE, index);
-        prevButtonIntent.putExtra(Const.PARAM.ALARM_ID, vo.getId());
-        PendingIntent pendingMoveButtonIntent = PendingIntent.getBroadcast(this, 2, prevButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        //remoteView.setOnClickPendingIntent(R.id.ibLeft, pendingMoveButtonIntent);
-        mCompatBuilder.addAction(R.drawable.ic_add_alert_black_24dp, "이전", pendingMoveButtonIntent);
-        //다음 버튼
-        Intent nextButtonIntent = new Intent(this, ReminderService.CloseButtonListener.class);
-        nextButtonIntent.putExtra(Const.PARAM.MODE, "NEXT");
-        nextButtonIntent.putExtra(Const.PARAM.REQ_CODE, index);
-        nextButtonIntent.putExtra(Const.PARAM.ALARM_ID, vo.getId());
-        PendingIntent pendingMoveButtonIntent2 = PendingIntent.getBroadcast(this, 3, nextButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        //remoteView.setOnClickPendingIntent(R.id.ibRight, pendingMoveButtonIntent2);
-        mCompatBuilder.addAction(R.drawable.ic_add_alert_black_24dp, "이전", pendingMoveButtonIntent2);
-
-        //mCompatBuilder.setCustomContentView(remoteView);
-        //mCompatBuilder.setContent(remoteView);
-        Log.d(this.toString(), "start foreground");
-        startForeground(Const.ONGOING_REMINDER_NOTI_ID, mCompatBuilder.build());
-    }
 
     public void notiReminder2(AlarmVO vo, int index, String mode){
         SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
         boolean isAlarmNoti = prefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
-
+        CommonUtils.logCustomEvent("reminderService", "1");
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_REMINDER_NOTI_ID, notificationIntent, 0);

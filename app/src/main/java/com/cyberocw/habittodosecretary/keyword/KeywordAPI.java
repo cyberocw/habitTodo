@@ -1,5 +1,6 @@
 package com.cyberocw.habittodosecretary.keyword;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -222,7 +223,11 @@ public class KeywordAPI extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         if(bDialog && asyncDialog != null) {
-            asyncDialog.dismiss();
+            if(!((Activity) mCtx).isFinishing())
+            {
+                asyncDialog.dismiss();
+            }
+
         }
         else if(!bDialog) {
             ListView lv = keywordListAdapter.getListVIew();
@@ -233,8 +238,12 @@ public class KeywordAPI extends AsyncTask<String, Void, String> {
             Log.d(this.toString(), "asyncProgressbar="+asyncProgressbar);
         }
         if(result.equals("실패")) {
-            if(mCtx != null)
-                Toast.makeText(mCtx, "데이터를 불러오는데 실패했습니다", Toast.LENGTH_LONG).show();
+            if(!((Activity) mCtx).isFinishing())
+            {
+                if(mCtx != null)
+                    Toast.makeText(mCtx, "데이터를 불러오는데 실패했습니다", Toast.LENGTH_LONG).show();
+            }
+
             return;
         }
         keywordDataManager.setDataList(this.dataList);
