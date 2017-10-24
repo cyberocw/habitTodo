@@ -420,9 +420,7 @@ public class AlarmDbManager extends DbHelper{
 
 					Log.d(this.toString(), "reminder type="+c.getInt(c.getColumnIndex(KEY_ALARM_REMINDER_TYPE)) +  " title="+c.getString(c.getColumnIndex(KEY_ALARM_TITLE)));
 					if(c.getInt(c.getColumnIndex(KEY_ALARM_REMINDER_TYPE)) == Const.ALARM_REMINDER_MODE.REMINDER){
-						Log.d(this.toString(), "contains reminder key = " + prefsReminder.getBoolean(CommonUtils.getReminderDayId(cal, dayofWeek, c.getInt(c.getColumnIndex(KEY_ID))), false) +
-						" id =" + CommonUtils.getReminderDayId(cal, dayofWeek, c.getInt(c.getColumnIndex(KEY_ID))) + " dayofWeek="+dayofWeek);
-						if(prefsReminder.getBoolean(CommonUtils.getReminderDayId(cal, dayofWeek, c.getInt(c.getColumnIndex(KEY_ID))), false)) {
+						if(prefsReminder != null && prefsReminder.getBoolean(CommonUtils.getReminderDayId(cal, dayofWeek, c.getInt(c.getColumnIndex(KEY_ID))), false)) {
 							continue;
 						}
 					}
