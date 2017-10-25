@@ -199,5 +199,6 @@
     <string name="dialog_alarm_mid_time">중간 알림 추가</string>
     <string name="finish">완료</string>
     <string name="default_sound">기본</string>
+    <string name="vibration">진동</string>
 
 </resources>

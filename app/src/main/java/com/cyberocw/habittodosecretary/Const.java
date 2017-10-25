@@ -47,6 +47,7 @@ public class Const {
 		public static final String CALL_TIME = "callTime";
 		public static final String REPEAT_DAY_ID = "repeatDayId";
 		public static final String SOUND = "sound";
+		public static final String ALARM_OPTION_TO_SOUND = "ALARM_OPTION_TO_SOUND";
 
     }
 
@@ -140,7 +141,7 @@ public class Const {
 		public static final int NONE = 0;
 		public static final int TTS = 1;
 		public static final int RECORD = 2;
-		public static final int FILE = 3;
+		public static final int VIBRATION = 3;
 	}
 
 	public class ALARM_LIST_VIEW_TYPE {

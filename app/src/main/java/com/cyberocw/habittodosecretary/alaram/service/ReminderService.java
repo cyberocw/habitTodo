@@ -159,6 +159,7 @@ public class ReminderService extends Service {
             myIntent.putExtra(Const.PARAM.ETC_TYPE_KEY, vo.getEtcType());
             myIntent.putExtra(Const.PARAM.REQ_CODE, 500000 + index);
             myIntent.putExtra(Const.PARAM.ALARM_ID, vo.getId());
+            myIntent.putExtra(Const.PARAM.ALARM_OPTION_TO_SOUND, vo.getAlarmOption());
 
             mCtx.startService(myIntent);
 
@@ -222,7 +223,8 @@ public class ReminderService extends Service {
         remoteView.setTextViewText(R.id.tvAlarmTitle, "(" + (index+1) + "/" + mArrayList.size() + ") " + vo.getAlarmTitle());
 
         if(isAlarmNoti && mode.equals("ADD")) {
-            mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND);
+            if(vo.getAlarmOption() != Const.ALARM_OPTION_TO_SOUND.VIBRATION)
+                mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND);
             mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 100L, 100L, 100L, 100L, 100L, 100L});
         }
         remoteView.setImageViewResource(R.id.ivNoti, R.drawable.ic_stat_noti);

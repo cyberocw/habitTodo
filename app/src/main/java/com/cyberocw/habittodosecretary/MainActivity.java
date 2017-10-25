@@ -353,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 
 			//업그레이드시
 			if(!prefsSavedVersion.equals("0")){
-				//showUpdateLog();
+				showUpdateLog();
 				if(prefsSavedVersionCode < 25) {
 					putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);
 					FileDataManager fdm = new FileDataManager(getApplicationContext());
@@ -421,19 +421,15 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		});
 		String msg;
 		if(CommonUtils.isLocaleKo(getResources().getConfiguration())){
-			msg = "1. 리마인더 알림 기능이 추가되었습니다.\n\n" +
-					" - 시작 시간과 종료 시간을 설정하면 해당 시간동안 알림창에 해당 알림문구가 계속 출력됩니다.\n\n" +
-					" - 특정 시각이 아닌 범위 시간 중에 어떤 일을 해야 할 경우 리마인더 알림 기능을 사용해 보세요. 예) 오후 2~4시 사이에 신발 빨래하기\n\n" +
-					" - 리마인더 알림이 여러개가 겹칠 경우, 상태바에서 내용을 넘기면서 확인할 수 있습니다.\n\n" +
-					" - 상태바에서 완료 버튼을 누를 경우 해당 리마인더는 비활성화 됩니다.";
+			msg = "1. 알림 옵션에 진동만 울리도록하는 기능이 추가되었습니다.\n\n" +
+					" 2. 기타 버그를 수정했습니다" ;
+
 		}
 		else {
 			msg = "" +
-					"1. Reminder notification function has been added.\n\n" +
-					" - If you set the start time and the end time, the notification message will continue to be output in the notification window during that time.\n\n" +
-					" - If you need to do something during a range time instead of a specific time, try Reminder Notification. Ex) Washing shoes between 2 and 4 pm\n\n" +
-					" - If multiple reminder notifications overlap, you can check them while flipping through the status bar.\n\n" +
-					" - If you press the Done button on the status bar, the corresponding reminder is disabled." ;
+					"1. A notification option has been added that will only vibrate.\n\n" +
+					"2. Fixed other bugs" ;
+
 		}
 		alert.setMessage(msg);
 		alert.show();

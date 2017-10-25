@@ -8,14 +8,12 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.cyberocw.habittodosecretary.Const;
@@ -181,7 +179,7 @@ public class CommonUtils {
 				return 1;
 			case Const.ALARM_OPTION_TO_SOUND.RECORD :
 				return 2;
-			case Const.ALARM_OPTION_TO_SOUND.FILE :
+			case Const.ALARM_OPTION_TO_SOUND.VIBRATION:
 				return 3;
 			default :
 				return 1;

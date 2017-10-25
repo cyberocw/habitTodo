@@ -719,6 +719,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		arrayList.add(getString(R.string.default_sound));
 		arrayList.add(getString(R.string.dialog_alarm_sp_sound_tts));
 		arrayList.add(getString(R.string.dialog_alarm_sp_sound_record));
+		arrayList.add(getString(R.string.vibration));
 		//arrayList.add(getString(R.string.dialog_alarm_sp_sound_file));
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),

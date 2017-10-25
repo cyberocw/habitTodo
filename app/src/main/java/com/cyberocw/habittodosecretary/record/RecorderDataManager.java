@@ -79,7 +79,7 @@ public class RecorderDataManager {
             File f = new File(rootDir, id+".wav");
             Log.d(Const.DEBUG_TAG, "file id is file = ="+ f.isFile());
             if(f.isFile()){
-                Log.d(Const.DEBUG_TAG, "SOUND FILE IS");
+                Log.d(Const.DEBUG_TAG, "SOUND VIBRATION IS");
                 f.delete();
             }
         }

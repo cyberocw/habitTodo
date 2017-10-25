@@ -70,7 +70,7 @@ public class NotificationService extends Service{
 		int reqCode = bundle.getInt(Const.PARAM.REQ_CODE, -1);
 		//나중에 reqCode 가 int 범위를 넘어설것 같을때 별도 처리해주기 noti id는 int만 가능해서
 		long alarmId = bundle.getLong(Const.PARAM.ALARM_ID, -1l);
-
+		int alarmOption = bundle.getInt(Const.PARAM.ALARM_OPTION, 0);
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Intent intent1 = new Intent(this, MainActivity.class);
 		intent1.putExtra(Const.PARAM.ETC_TYPE_KEY, etcType);
@@ -90,7 +90,8 @@ public class NotificationService extends Service{
 
 		//mCompatBuilder.setContentText(noti_message);
 		if(isAlarmNoti) {
-			mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND);
+			if(alarmOption != Const.ALARM_OPTION_TO_SOUND.VIBRATION)
+				mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND);
 			mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 100L, 100L, 100L, 100L, 100L, 100L});
 		}
 

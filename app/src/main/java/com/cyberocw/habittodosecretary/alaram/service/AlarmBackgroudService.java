@@ -312,6 +312,7 @@ public class AlarmBackgroudService extends Service {
         myIntent.putExtra(Const.PARAM.ALARM_ID, mArrAlarmVOList.get(mMinRemainPosition).getfId());
         myIntent.putExtra(Const.PARAM.CALL_TIME, mCallTime);
         myIntent.putExtra(Const.PARAM.REPEAT_DAY_ID, mArrAlarmVOList.get(mMinRemainPosition).getRepeatDayId());
+        myIntent.putExtra(Const.PARAM.ALARM_OPTION, mArrAlarmVOList.get(mMinRemainPosition).getAlarmOption());
 
         mCtx.startService(myIntent);
 

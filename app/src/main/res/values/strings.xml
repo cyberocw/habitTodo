@@ -201,5 +201,6 @@
     <string name="permission_record_cont">If you do not have recording rights, you can not use the recording alarm function</string>
     <string name="setting_password_cont">Please enter the password to be used for restore data.</string>
     <string name="tts_store_msg">To use the app, you need to install the TTS speech engine. After installing the engine, adjust the volume on the setting screen and check if the TTS audio is played back.\n\nDo you want to go to the download page?</string>
+    <string name="vibration">Vibration</string>
 
 </resources>
