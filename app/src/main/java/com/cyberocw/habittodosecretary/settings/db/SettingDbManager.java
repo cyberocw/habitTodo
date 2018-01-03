@@ -117,6 +117,8 @@ public class SettingDbManager extends DbHelper {
                 values.put(KEY_NAME, jsonObject.getString("name"));
                 values.put(KEY_FULL_DATE, jsonObject.getString("year") + jsonObject.getString("month") + jsonObject.getString("day"));
 
+                Log.d(this.toString(), "holiday = " + jsonObject.getString("name") + " date =" + jsonObject.getString("year") + jsonObject.getString("month") + jsonObject.getString("day"));
+
                 db.insert(TABLE_HOLIDAY, null, values);
             }
             db.setTransactionSuccessful();

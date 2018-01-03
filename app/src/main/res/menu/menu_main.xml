@@ -30,4 +30,8 @@
         android:title="@string/setting"
         android:orderInCategory="100"
         app:showAsAction="never" />
+    <item android:id="@+id/contact"
+        android:title="@string/contact"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 </menu>

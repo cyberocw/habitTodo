@@ -115,6 +115,7 @@ public class CalendarManager {
 
 		for(int i = 0; i < arrVO.size(); i++){
 			Crashlytics.log(Log.DEBUG, getClass().toString(), " alarm day  = " + arrVO.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
+			Log.d(this.toString(), "alarmVo title = " + arrVO.get(i).getAlarmTitle());
 			if(arrVO.get(i).getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE)
 				continue;
 			mArrAlarmList.add(arrVO.get(i).getAlarmDateList().get(0).get(Calendar.DAY_OF_MONTH));
@@ -147,6 +148,7 @@ public class CalendarManager {
 		dayWrap.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				Log.d(this.toString(), "on djay click");
 				mListener.onDateSet(null, (int) mArrDateMap[index].get("year"), (int) mArrDateMap[index].get("month"), (int) mArrDateMap[index].get("day"));
 			}
 		});

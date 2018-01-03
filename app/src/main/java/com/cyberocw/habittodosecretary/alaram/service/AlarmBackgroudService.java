@@ -321,8 +321,10 @@ public class AlarmBackgroudService extends Service {
             boolean isTTS = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
             boolean isTTSManner = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
 
+            AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if(am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
+                isTTS = false;
             if (isTTS && !isTTSManner) {
-                AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                 switch (am.getRingerMode()) {
                     case AudioManager.RINGER_MODE_SILENT:
                     case AudioManager.RINGER_MODE_VIBRATE:

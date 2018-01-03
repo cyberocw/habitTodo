@@ -76,200 +76,107 @@
                     android:text="@string/btnToggleViewTimer" />
             </RelativeLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/contents"
+        <com.cyberocw.habittodosecretary.alaram.ui.CustomViewFlipper
+            android:id="@+id/calendarViewFlipper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/header"
             android:layout_gravity="center"
-            android:orientation="vertical">
+            >
 
             <LinearLayout
-                android:id="@+id/weekDayWrap"
+                android:id="@+id/contents"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnPrevWeek"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/ic_chevron_left_black_24dp" />
-
-                <LinearLayout
-                    android:id="@+id/weekOfDayWrap"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                </LinearLayout>
-                <!--
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="일"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="15"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="월"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="15"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="화"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="15"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="수"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="15"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="목"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="15"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="금"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="15"/>
-                </LinearLayout>
-                <LinearLayout
-                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:layout_weight="1">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="토"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:gravity="center"
-                        android:text="15"/>
-                </LinearLayout>
-                -->
-                <Button
-                    android:id="@+id/btnNextWeek"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/ic_chevron_right_black_24dp" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textAlignment="center"
+
                 >
-                <TextView
-                    android:id="@+id/tvListTitle"
+
+                <LinearLayout
+                    android:id="@+id/weekDayWrap"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Alarm List"
-                    android:gravity="center"
-                    android:layout_marginLeft="@dimen/margin_small"
-                    android:layout_marginRight="@dimen/margin_small"
-                    android:background="@drawable/button_header_round"
-                    android:textColor="@color/white"
-                    android:textSize="12sp"
-                    android:textAlignment="center" />
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/alarmListViewWrap"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
 
-                android:layout_marginTop="2dp">
+                    android:orientation="horizontal">
 
-                <ExpandableListView
-                    android:id="@+id/alramListView"
+                    <Button
+                        android:id="@+id/btnPrevWeek"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ic_chevron_left_black_24dp" />
+
+                    <LinearLayout
+                        android:id="@+id/weekOfDayWrap"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                    </LinearLayout>
+                    <Button
+                        android:id="@+id/btnNextWeek"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ic_chevron_right_black_24dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    >
+                    <TextView
+                        android:id="@+id/tvListTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Alarm List"
+                        android:gravity="center"
+                        android:layout_marginLeft="@dimen/margin_small"
+                        android:layout_marginRight="@dimen/margin_small"
+                        android:background="@drawable/button_header_round"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textAlignment="center" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/alarmListViewWrap"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:clickable="true"
-                    android:longClickable="true"
-                    tools:listitem="@layout/alarm_view" />
+
+                    android:layout_marginTop="2dp">
+
+                    <ExpandableListView
+                        android:id="@+id/alramListView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:longClickable="true"
+                        tools:listitem="@layout/alarm_view" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/verticalViewPagerWrap"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+                <!-- <com.cyberocw.habittodosecretary.calendar.MonthView
+                     android:id="@+id/contentsCal"
+                     android:layout_width="match_parent"
+                     android:layout_height="match_parent"
+                     android:paddingBottom="0dp"
+                     />-->
+                <com.cyberocw.habittodosecretary.calendar.CalendarViewPager
+                    android:id="@+id/verticalViewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                </com.cyberocw.habittodosecretary.calendar.CalendarViewPager>
             </LinearLayout>
 
-        </LinearLayout>
+        </com.cyberocw.habittodosecretary.alaram.ui.CustomViewFlipper>
+
+
         <com.getbase.floatingactionbutton.FloatingActionsMenu
             android:id="@+id/fabAddBtn"
             android:layout_width="wrap_content"
@@ -281,9 +188,9 @@
             fab:fab_addButtonColorPressed="@color/pink_pressed"
             fab:fab_addButtonPlusIconColor="@color/white"
             fab:fab_labelStyle="@style/menu_labels_style"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginEnd="10dp">
+            android:layout_marginBottom="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginEnd="0dp">
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabAddReminder"

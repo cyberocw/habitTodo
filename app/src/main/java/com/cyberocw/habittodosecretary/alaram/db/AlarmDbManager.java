@@ -667,9 +667,6 @@ public class AlarmDbManager extends DbHelper{
 				//매달 반복 가져옴
 				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE " + KEY_REPEAT_DAY +
 						" = " + startDate.get(Calendar.DAY_OF_MONTH) + " ) ";
-
-
-
 			}
 			//범위
 			//////// 날짜 지정 알림에서 불러옴 - 주간 달력에 settime 유형 o 표시 위함 -> 주간 날짜 지정 알림만 가져옴

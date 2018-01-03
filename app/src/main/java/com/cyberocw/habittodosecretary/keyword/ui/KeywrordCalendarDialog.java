@@ -13,17 +13,12 @@ import android.view.View;
 import android.widget.CalendarView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.R;
-import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
-import com.cyberocw.habittodosecretary.calendar.CalendarManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 
-import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

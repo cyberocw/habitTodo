@@ -218,6 +218,10 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		if(arguments != null) {
 			mAlarmVO = (AlarmVO) arguments.getSerializable(Const.PARAM.ALARM_VO);
 			mAlarmReminderMode = arguments.getInt(Const.PARAM.ALARM_REMINDER_MODE, Const.ALARM_REMINDER_MODE.ALARM);
+			long timeMillis = arguments.getLong("timeInMillis");
+			mCalendar = Calendar.getInstance();
+			if(timeMillis > 0)
+				mCalendar.setTimeInMillis(timeMillis);
 
 			if(mAlarmVO != null) {
 				try {
@@ -314,7 +318,7 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 
 		}
 
-		mCalendar = Calendar.getInstance();
+		//mCalendar = Calendar.getInstance();
 		//수정 모드
 		if(mModifyMode == 1) {
 

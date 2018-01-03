@@ -1,5 +1,6 @@
 package com.cyberocw.habittodosecretary.alaram;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -35,11 +36,14 @@ import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
 import com.cyberocw.habittodosecretary.R;
 import com.cyberocw.habittodosecretary.alaram.ui.AlarmDialogNew;
+import com.cyberocw.habittodosecretary.alaram.ui.CustomViewFlipper;
 import com.cyberocw.habittodosecretary.alaram.ui.TimerDialog;
 import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.alaram.vo.TimerVO;
-import com.cyberocw.habittodosecretary.calendar.CalendarDialog;
+import com.cyberocw.habittodosecretary.calendar.CalendarAdapter;
 import com.cyberocw.habittodosecretary.calendar.CalendarManager;
+import com.cyberocw.habittodosecretary.calendar.CalendarViewPager;
+import com.cyberocw.habittodosecretary.calendar.MonthView;
 import com.cyberocw.habittodosecretary.common.vo.FileVO;
 import com.cyberocw.habittodosecretary.file.FileDataManager;
 import com.cyberocw.habittodosecretary.file.StorageHelper;
@@ -59,6 +63,9 @@ import java.util.Calendar;
 import java.util.Random;
 
 import butterknife.ButterKnife;
+import me.kaelaela.verticalviewpager.VerticalViewPager;
+import me.kaelaela.verticalviewpager.transforms.DefaultTransformer;
+import me.kaelaela.verticalviewpager.transforms.ZoomOutTransformer;
 
 
 /**
@@ -79,17 +86,21 @@ public class AlarmFragment extends Fragment{
 	private TimerDataManager mTimerDataManager;
 	private FileDataManager mFileDataManager;
 	private RecorderDataManager mRecorderDataManager;
-	private LinearLayout llWeekOfDayWrap;
+	private LinearLayout llWeekOfDayWrap, llVerticalViewPagerWrap;
+	CustomViewFlipper mViewFlipper;
 	private String mParam1;
 	private String mParam2;
 	private Calendar mCalendar = null;
+	MonthView mMonthView = null;
 	MemoDataManager mMemoDataManager;
-
+	private boolean mIsMonthView = false;
 	AlarmListAdapterInterface mAlarmAdapter;
 	//AlarmExListAdapter mAlarmAdapter;
 	TimerListAdapter mTimerAdapter;
 	CalendarManager mCalendarManager;
 	SharedPreferences mPrefs;
+	CalendarViewPager mViewPager;
+	CalendarAdapter mCalendarAdapter;
 	private int mViewType = Const.ALARM_OPTION.SET_DATE_TIMER;
 	private int mListViewType = Const.ALARM_LIST_VIEW_TYPE.EXPENDABLE_LIST; // 1: listview 2: expendable view
 	private int mMode = -1;
@@ -102,6 +113,11 @@ public class AlarmFragment extends Fragment{
 	TextView mDateTv = null;
 	TextView mTvListTitle = null;
 	FloatingActionsMenu mFab;
+
+	public CalendarAdapter.OnPageScrolledListener onPageScrolledListener = null;
+	public MonthView.OnClickDayListener onClickDayListener = null;
+
+    float down_x, up_x;
 
 	/**
 	 * Use this factory method to create a new instance of
@@ -170,7 +186,8 @@ public class AlarmFragment extends Fragment{
 
 	}
 
-	private void initActivity() {
+	@SuppressLint("ClickableViewAccessibility")
+    private void initActivity() {
 		Crashlytics.log(Log.DEBUG, this.toString(), "initActivity started");
 
 		mCalendar = Calendar.getInstance();
@@ -178,13 +195,19 @@ public class AlarmFragment extends Fragment{
 		//선택된 날짜 텍스트 지정
 		setSelectedDateText(mCalendar);
 		mFab = ButterKnife.findById(mView, R.id.fabAddBtn);
+
 		llWeekOfDayWrap = (LinearLayout) mView.findViewById(R.id.weekOfDayWrap);
+		llVerticalViewPagerWrap = ButterKnife.findById(mView, R.id.verticalViewPagerWrap);
 		mAlarmDataManager = new AlarmDataManager(mCtx, mCalendar);
 		mTimerDataManager = new TimerDataManager(mCtx);
 		mMemoDataManager = new MemoDataManager(mCtx);
 		mCalendarManager = new CalendarManager(mCtx, llWeekOfDayWrap, mCalendar, mDateTv);
 		mCalendarManager.setDayClickListener(myDateSetListener);
 		mCalendarManager.init();
+		initViewPager();
+		mViewFlipper = ButterKnife.findById(mView, R.id.calendarViewFlipper);
+		mViewFlipper.setAlarmFragment(this);
+
 		mFileDataManager = new FileDataManager(mCtx);
 
 		mTimerAdapter = new TimerListAdapter(this, mCtx, mTimerDataManager);
@@ -218,7 +241,38 @@ public class AlarmFragment extends Fragment{
 		//checkFileList();
 	}
 
+	private void initViewPager() {
+		onClickDayListener = new MonthView.OnClickDayListener() {
+			@Override
+			public void onClick(Calendar calendar) {
+				//onDateChange(calendar);
+				int year = calendar.get(Calendar.YEAR),
+				month = calendar.get(Calendar.MONTH), day = calendar.get(Calendar.DAY_OF_MONTH);
 
+				mCalendar.set(year, month, day);
+				setSelectedDateText(year, month, day);
+				//mCalendarManager.renderDayNum();
+				refreshAlarmList();
+				mViewFlipper.showNext();
+			}
+		};
+
+		onPageScrolledListener = new CalendarAdapter.OnPageScrolledListener() {
+			@Override
+			public void onChange(int year, int month) {
+				mDateTv.setText(year +"/" + CommonUtils.numberDigit(2, month + 1));
+			}
+		};
+
+//		mViewPager = ButterKnife.findById(mView, R.id.verticalViewPager);
+//		mViewPager.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+		mCalendarAdapter = new CalendarAdapter(mCtx, mCalendarManager);
+		mCalendarAdapter.setOnClickDayListener(onClickDayListener);
+		mCalendarAdapter.setOnPageScrolledListener(onPageScrolledListener);
+
+		resetViewPager();
+	}
 
 	public void checkFileList(){
 		//mFileDataManager.migrationFile(mCtx);
@@ -414,30 +468,6 @@ public class AlarmFragment extends Fragment{
 		});
 
 		dialog.show();
-
-		/*
-
-		FragmentManager fm;
-		fm = getFragmentManager();
-
-		AlarmDialogNew alarmDialogNew = new AlarmDialogNew();
-
-		if(id != -1) {
-			Bundle bundle = new Bundle();
-
-			bundle.putSerializable(Const.ALARM_VO, mAlarmDataManager.getItemByIdInList(id));
-
-
-			if(mMode == Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG){
-				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, " put mode ok " ) ;
-				bundle.putInt(Const.PARAM.MODE, mMode);
-			}
-			alarmDialogNew.setArguments(bundle);
-		}
-
-		alarmDialogNew.show(fm, "fragment_dialog_alarm_add");
-		alarmDialogNew.setTargetFragment(this, Const.ALARM_INTERFACE_CODE.ADD_ALARM_CODE);
-		*/
 	}
 
 	private void initTimerUi(){
@@ -514,14 +544,6 @@ public class AlarmFragment extends Fragment{
 			});
 
 			newLv.setLongClickable(true);
-			/*newLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-				@Override
-				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-					longClickPopup(position, id);
-					return true;
-				}
-			});
-			*/
 		}else{
 			//종류별 ui
 			mAlarmAdapter = new AlarmExListAdapter(this, mCtx, mAlarmDataManager);
@@ -559,16 +581,7 @@ public class AlarmFragment extends Fragment{
 					showNewAlarmDialog(id);
 				}
 			});
-
 			newLv.setLongClickable(true);
-			/*newLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-				@Override
-				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-					Log.d(Const.DEBUG_TAG, "ex long click id="+id);
-					longClickPopup(position, id);
-					return true;
-				}
-			});*/
 		}
 
 		mAlarmAdapter.notifyDataSetChanged();
@@ -691,12 +704,21 @@ public class AlarmFragment extends Fragment{
 
 	public DatePickerDialog.OnDateSetListener myDateSetListener = new DatePickerDialog.OnDateSetListener() {
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+			if(mCalendar.get(Calendar.MONTH) != monthOfYear){
+				//
+			}
 			mCalendar.set(year, monthOfYear, dayOfMonth);
-			setSelectedDateText(year, monthOfYear, dayOfMonth);
-			//mCalendarManager.renderDayNum();
-			refreshAlarmList();
+			onDateChange(mCalendar);
 		}
 	};
+	public void onDateChange(Calendar calendar){
+
+		if(calendar != null)
+			mCalendar = calendar;
+		setSelectedDateText(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
+		//mCalendarManager.renderDayNum();
+		refreshAlarmList();
+	}
 
 	public void setSelectedDateText(Calendar calendar){
 		setSelectedDateText(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
@@ -715,6 +737,53 @@ public class AlarmFragment extends Fragment{
 		mAlarmDataManager.makeDataList(mCalendar);
 		mAlarmAdapter.notifyDataSetChanged();
 		mCalendarManager.renderDayNum();
+		if(mViewPager != null && mCalendarAdapter != null) {
+
+
+			Log.d(this.toString(), "refreshalarmList destroyItem get position = " + mCalendarAdapter.getPosition(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH)));
+			//mCalendarAdapter.notifyDataSetChanged();
+			//mViewPager.setAdapter(mCalendarAdapter);
+			resetViewPager();
+			mViewPager.setCurrentItem(mCalendarAdapter.getPosition(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH)), false);
+
+			//mCalendarAdapter.notifyDataSetChanged();
+
+			/*mViewPager.invalidate();
+			mViewPager.refreshDrawableState();*/
+			//mViewPager.refreshDrawableState();
+		}
+	}
+	public void resetViewPager(){
+		if(mViewPager != null) {
+			mViewPager.setAdapter(null);
+			mViewPager.destroyDrawingCache();
+			mViewPager.removeAllViewsInLayout();
+		}
+		llVerticalViewPagerWrap.removeAllViewsInLayout();
+		mViewPager = new CalendarViewPager(mCtx);
+		mViewPager.init();
+		mCalendarAdapter.setViewPager(mViewPager);
+		mViewPager.setAdapter(mCalendarAdapter);
+		mViewPager.addOnPageChangeListener(mCalendarAdapter);
+		mViewPager.setOffscreenPageLimit(1);
+		llVerticalViewPagerWrap.addView(mViewPager);
+	}
+	public void toggleCalendarView(){
+		//mMonthView.setOnClickListener2(monthOnClickListener);
+		mMonthView.make(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH));
+		mMonthView.setVisibility(View.VISIBLE);
+
+		if(1==1) return;
+
+//		if(!mIsMonthView) {
+//
+//			mView.findViewById(R.id.contents).setVisibility(View.GONE);
+//			mView.findViewById(R.id.contentsCal).setVisibility(View.VISIBLE);
+//		}else{
+//			mView.findViewById(R.id.contents).setVisibility(View.VISIBLE);
+//			mView.findViewById(R.id.contentsCal).setVisibility(View.GONE);
+//		}
+		mIsMonthView = !mIsMonthView;
 	}
 
 	public void bindEvent(){
@@ -722,16 +791,21 @@ public class AlarmFragment extends Fragment{
 		mDateTv.setOnClickListener(new View.OnClickListener() {
 			                           @Override
 			                           public void onClick(View v) {
+			                           	mViewFlipper.showNext();
 										   if(mViewType == Const.ALARM_OPTION.NO_DATE_TIMER)
 										   		return;
-										   CalendarDialog d = new CalendarDialog();
+
+										   //mViewPager.setCurrentItem(1073741834, false);
+
+										   //toggleCalendarView();
+										   /*CalendarDialog d = new CalendarDialog();
 										   Bundle bundle = new Bundle();
 										   bundle.putString("selectedDate", CommonUtils.convertDateType(mCalendar));
 										   d.setArguments(bundle);
 
 
 										   d.show(getFragmentManager(), "calendarDialog");
-										   d.setTargetFragment(targetFragment, Const.ALARM_INTERFACE_CODE.SELECT_CALENDAR_DATE);
+										   d.setTargetFragment(targetFragment, Const.ALARM_INTERFACE_CODE.SELECT_CALENDAR_DATE);*/
 			                           }
 		                           }
 		);
@@ -878,7 +952,7 @@ public class AlarmFragment extends Fragment{
 		AlarmDialogNew alarmDialogNew = new AlarmDialogNew();
 		Bundle bundle = new Bundle();
 		bundle.putInt(Const.PARAM.ALARM_REMINDER_MODE, reminderMode);
-
+		bundle.putLong("timeInMillis", mCalendar.getTimeInMillis());
 		if(id != -1) {
 			AlarmVO alarmVO = mAlarmDataManager.getItemByIdInList(id);
 			if(alarmVO == null){

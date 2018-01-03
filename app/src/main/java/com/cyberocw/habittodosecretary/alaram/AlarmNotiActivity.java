@@ -174,9 +174,13 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		boolean isTTS = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
 		boolean isTTSManner = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
 
-		//매너/무음모드에서도 재생 여부 결정
+		//매너모드에서도 재생 여부 결정
+		AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+		//무음에서는 재생 안함
+		if(am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
+			isTTS = false;
+		//매너모드 강제 TTS 재생 옵션이 활성화 되어 있지 않으면 모드에 따라 재생 안함
 		if(alarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS && !isTTSManner){
-			AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 			switch (am.getRingerMode()) {
 				case AudioManager.RINGER_MODE_SILENT:
 				case AudioManager.RINGER_MODE_VIBRATE:
@@ -190,9 +194,6 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		if(alarmOption == Const.ALARM_OPTION_TO_SOUND.TTS && isTTS) {
 			startTTS(title, mAlarmId);
 		}else if(alarmOption == Const.ALARM_OPTION_TO_SOUND.RECORD && isTTS){
-
-
-
 			FileDataManager fdm = new FileDataManager(mCtx);
 			fdm.makeDataList(Const.ETC_TYPE.ALARM, mAlarmId);
 
@@ -334,7 +335,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		long nowTime = Calendar.getInstance().getTimeInMillis();
 		Log.d(this.toString(), "onStop timeMils = " + (nowTime - mStartedTimeInMilis));
 
-		if(nowTime - mStartedTimeInMilis > 500 && isButtonClick == false) {
+		if(nowTime - mStartedTimeInMilis > 3500 && isButtonClick == false) {
 			stopAll();
 			autoPostpone();
 		}

@@ -200,5 +200,6 @@
     <string name="finish">완료</string>
     <string name="default_sound">기본</string>
     <string name="vibration">진동</string>
+    <string name="contact">개발자에게 문의</string>
 
 </resources>
