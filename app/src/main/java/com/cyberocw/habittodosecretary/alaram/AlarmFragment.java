@@ -759,6 +759,7 @@ public class AlarmFragment extends Fragment{
 			mViewPager.destroyDrawingCache();
 			mViewPager.removeAllViewsInLayout();
 		}
+		//mCalendarAdapter.resetMonthView();
 		llVerticalViewPagerWrap.removeAllViewsInLayout();
 		mViewPager = new CalendarViewPager(mCtx);
 		mViewPager.init();

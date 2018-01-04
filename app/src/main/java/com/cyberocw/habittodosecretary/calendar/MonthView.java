@@ -166,9 +166,9 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
     public void make(int year, int month)
     {
         Log.d("monthView", "make start year=" + year + " month="+ month);
-        if(mYear == year && mMonth == month) {
-            return;
-        }
+//        if(mYear == year && mMonth == month) {
+//            return;
+//        }
 
         long makeTime = System.currentTimeMillis();
         this.mYear = year;

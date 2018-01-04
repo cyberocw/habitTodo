@@ -171,10 +171,10 @@ public class DayView extends RelativeLayout {
 
         if(alarmList != null && alarmList.size() > 0) {
             for (int i = 0; i < alarmList.size(); i++) {
-                View view =  View.inflate(getContext(), R.layout.calendar_day_alarm, alarmListWrap);
+                View view =  View.inflate(getContext(), R.layout.calendar_day_alarm, null);
                 TextView tv = (TextView) view.findViewById(R.id.tvAlarmTitle);
                 tv.setText(alarmList.get(i).getAlarmTitle());
-                //alarmListWrap.addView(view);
+                alarmListWrap.addView(view);
             }
         }
 

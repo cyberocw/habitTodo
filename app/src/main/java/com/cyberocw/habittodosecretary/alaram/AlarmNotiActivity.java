@@ -131,7 +131,11 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		}
 		SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
 		boolean isAlarmNoti = prefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
-		if(isAlarmNoti) {
+
+		//매너모드에서도 재생 여부 결정
+		AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+		//무음에서는 재생 안함
+		if(isAlarmNoti && am.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
 			mVibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 			long[] pattern = {1000, 200, 1000, 2000, 1200};          // 진동, 무진동, 진동 무진동 숫으로 시간을 설정한다.
 			mVibe.vibrate(pattern, 0);                                         // 패턴을 지정하고 반복횟수를 지정
@@ -175,7 +179,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 		boolean isTTSManner = prefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
 
 		//매너모드에서도 재생 여부 결정
-		AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+		//AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 		//무음에서는 재생 안함
 		if(am.getRingerMode() == AudioManager.RINGER_MODE_SILENT)
 			isTTS = false;

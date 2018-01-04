@@ -421,14 +421,20 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		});
 		String msg;
 		if(CommonUtils.isLocaleKo(getResources().getConfiguration())){
-			msg = "1. 알림 옵션에 진동만 울리도록하는 기능이 추가되었습니다.\n\n" +
-					" 2. 기타 버그를 수정했습니다" ;
+			msg = "1. 월간 캘린더 뷰 기능이 추가 되었습니다. 주간 일정 화면에서 좌우로 스크롤하면 월간/주간 뷰가 전환 됩니다.\n\n" +
+					" 월간 캘린더 기능은 아직 테스트 단계로, 요일 반복 알람의 출력 여부 조정 기능 등 몇가지 기능을 더 추가할 예정입니다.\n\n" +
+					"2. 무음 모드에서는 모든 알림의 진동 및 소리가 재생되지 않도록 수정했습니다.\n\n" +
+					"3. 일부 기기에서 끌때까지 알림 기능이 제대로 동작하지 않던 문제를 수정했습니다.\n\n" +
+					"4. 알림 추가 화면 진입시에 현재 선택되어진 날짜가 기본값으로 설정 되도록 수정했습니다.";
 
 		}
 		else {
 			msg = "" +
-					"1. A notification option has been added that will only vibrate.\n\n" +
-					"2. Fixed other bugs" ;
+					"1. Monthly calendar view function has been added. If you scroll left or right on the weekly schedule screen, the monthly / weekly view changes.\n\n" +
+					" The monthly calendar function is still in the test phase.\n\n" +
+					"2. In silent mode, all announcements are now prevented from vibrating and sounding.\n\n" +
+					"3. Fixed an issue where notifications did not work correctly until you turned off some devices.\n\n" +
+					"4. Fixed the default setting of the currently selected date when entering the notification add screen.";
 
 		}
 		alert.setMessage(msg);
