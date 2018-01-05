@@ -830,11 +830,13 @@ public class AlarmDialogNew extends DialogFragment implements RecorderDialog.rec
 		});
 
 		for(int i = 0; i < mArrDayString.length; i++){
+			final int finalI = i;
 			mMapDay.get(mArrDayString[i]).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					//mDataRepeatDay.contains(mArrDayString[i]);
-					int index = Arrays.binarySearch(mArrDayId, v.getId());
+
+					int index = finalI; //Arrays.binarySearch(mArrDayId, v.getId());
 					int index2 = mDataRepeatDay.indexOf(mArrDayString[index]);
 
 					//Toast.makeText(mCtx, index, Toast.LENGTH_SHORT).show();
