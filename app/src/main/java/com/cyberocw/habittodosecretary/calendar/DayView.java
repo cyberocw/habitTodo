@@ -161,13 +161,18 @@ public class DayView extends RelativeLayout {
             msgTv.setVisibility(GONE);
         }
 
-        if(one.getIsToday()){
-            //오늘 날짜
-            //dayTv.setBackgroundResource(R.drawable.dot);
-            dayTv.setTextColor(Color.GREEN);
+        if(one.getIsSelDay()){
+            //dayTv.setTextColor(Color.MAGENTA);
+            dayTv.setBackgroundResource(R.drawable.day_of_week_ring);
         }
         else
             dayTv.setBackgroundResource(0);
+
+        if(one.getIsToday()){
+            //오늘 날짜
+            //
+            dayTv.setTextColor(Color.GREEN);
+        }
 
         if(alarmList != null && alarmList.size() > 0) {
             for (int i = 0; i < alarmList.size(); i++) {

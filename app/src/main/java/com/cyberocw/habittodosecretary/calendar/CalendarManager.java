@@ -310,6 +310,10 @@ public class CalendarManager {
 		mListener = dayClickListener;
 	}
 
+	public Calendar getCalendar() {
+		return mCalendar;
+	}
+
 	public ArrayList<AlarmVO> getAlarmList(Calendar mCalendar) {
 		return mAlarmDbManager.getAlarmList((Calendar) mCalendar.clone());
 	}

@@ -176,10 +176,14 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
 
 
         //if(viewRect.width() == 0 || viewRect.height() == 0) return;
+        Calendar selectedDateCal = mCalendarManager.getCalendar();
 
         Calendar todayCal = Calendar.getInstance();
         int todayNum = todayCal.get(Calendar.DAY_OF_MONTH);
+        int selectedDayNum = selectedDateCal.get(Calendar.DAY_OF_MONTH);
+
         String strToday = CommonUtils.convertDateType(todayCal);
+        String strSelDay = CommonUtils.convertDateType(selectedDateCal);
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, 1);
@@ -240,6 +244,7 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
             }
             Log.d(TAG, "<<<<< take 444 timeMillis : " + (System.currentTimeMillis() - makeTime));
         }
+
         // add previous month
         int seekDay;
         String dayString;
@@ -252,8 +257,12 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
             one.setDay(cal);
             one.setHolidayList(holidayMap.get(dayString));
             one.setAlarmList(alarmMap.get(dayString));
-            //Log.d(this.toString(), "todayNum = " + todayNum + " dayCal = " + cal.get(Calendar.DAY_OF_MONTH));
 
+            if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
+                one.setIsSelDay(true);
+            }
+            else
+                one.setIsSelDay(false);
             if(todayNum == cal.get(Calendar.DAY_OF_MONTH) && strToday.equals(dayString)){
                 one.setIsToday(true);
             }
@@ -273,6 +282,11 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
             one.setDay(cal);
             one.setHolidayList(holidayMap.get(dayString));
             one.setAlarmList(alarmMap.get(dayString));
+            if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
+                one.setIsSelDay(true);
+            }
+            else
+                one.setIsSelDay(false);
             if(todayNum == cal.get(Calendar.DAY_OF_MONTH) && strToday.equals(dayString)){
                 one.setIsToday(true);
             }
@@ -291,6 +305,11 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
                 one.setDay(cal);
                 one.setHolidayList(holidayMap.get(dayString));
                 one.setAlarmList(alarmMap.get(dayString));
+                if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
+                    one.setIsSelDay(true);
+                }
+                else
+                    one.setIsSelDay(false);
                 if(todayNum == cal.get(Calendar.DAY_OF_MONTH) && strToday.equals(dayString)){
                     one.setIsToday(true);
                 }

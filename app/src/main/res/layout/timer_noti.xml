@@ -46,7 +46,7 @@
             android:layout_centerHorizontal="true" />
 
         <Button
-            android:id="@+id/btnTimerStop"
+            android:id="@+id/btnPostpone"
             style="@style/button_primary"
             android:layout_width="184dp"
             android:layout_height="40dp"
@@ -54,36 +54,43 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:padding="10dp"
-            android:text="STOP" />
+            android:text="@string/service_noti_postpone" />
 
         <Button
-            android:id="@+id/btnPostpone"
+            android:id="@+id/btnTimerStop"
             style="@style/button_primary"
             android:layout_width="184dp"
             android:layout_height="40dp"
-            android:layout_below="@+id/btnTimerStop"
+            android:layout_below="@+id/btnPostpone"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:padding="10dp"
-            android:text="@string/service_noti_postpone" />
+            android:text="STOP" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/btnPostpone"
+            android:layout_below="@+id/btnTimerStop"
             android:layout_centerHorizontal="true"
             android:gravity="center"
             android:layout_marginTop="25dp"
             >
-            <com.google.android.gms.ads.NativeExpressAdView
-                xmlns:ads="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/adViewFront"
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/adView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_gravity="center"
-                ads:adSize="MEDIUM_RECTANGLE"
-                ads:adUnitId="@string/banner_ad_unit_id_front"
-                />
+                app:adSize="MEDIUM_RECTANGLE"
+                app:adUnitId="@string/banner_ad_unit_id_alarm_noti"></com.google.android.gms.ads.AdView>
+            <!--<com.google.android.gms.ads.NativeExpressAdView-->
+                <!--xmlns:ads="http://schemas.android.com/apk/res-auto"-->
+                <!--android:id="@+id/adViewFront"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:layout_gravity="center"-->
+                <!--ads:adSize="MEDIUM_RECTANGLE"-->
+                <!--ads:adUnitId="@string/banner_ad_unit_id_front"-->
+                <!--/>-->
         </LinearLayout>
 
 

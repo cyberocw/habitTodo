@@ -424,6 +424,8 @@ public class AlarmDbManager extends DbHelper{
 							continue;
 						}
 					}
+					if(isReminderMode && c.getInt(c.getColumnIndex(KEY_ALARM_REMINDER_TYPE)) != Const.ALARM_REMINDER_MODE.REMINDER)
+						continue;
 
 
 					// 몇분전 값이 실제 시간이기 때문에 이부분에서 최소 값을 찾음
@@ -460,7 +462,7 @@ public class AlarmDbManager extends DbHelper{
 									 alarmTimeVO.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
 									 alarmTimeVO.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
 									 alarmTimeVO.setRepeatDayId(dayofWeek);
-									 Log.d(this.toString(), "added vo = " + alarmTimeVO.getAlarmTitle());
+									 Log.d(this.toString(), "added vo = " + alarmTimeVO.getAlarmTitle() + " reminderType="+alarmTimeVO.getAlarmReminderType());
 									 arrList.add(alarmTimeVO);
 									 break;
 								 }

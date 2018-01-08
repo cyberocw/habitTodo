@@ -32,6 +32,7 @@ import com.cyberocw.habittodosecretary.record.RecorderDataManager;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.TTSNoti;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.NativeExpressAdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -62,11 +63,10 @@ public class AlarmNotiActivity extends AppCompatActivity {
 	PlayAudio mPra = null;
 	private FirebaseAnalytics mFirebaseAnalytics;
 	boolean isPlaying = false;
-	NativeExpressAdView adView;
 	Intent mTTSIntent = null;
 	TTSNoti mTTSNotiService;
 	boolean mBound = false;
-
+	@BindView(R.id.adView) AdView adView;
 	@BindView(R.id.tvAlarmTitle) TextView mTvTitle;
 	@BindView(R.id.btnEtcView) Button mBtnEtcView;
 	@BindView(R.id.btnPostpone) Button mBtnPostpone;
@@ -154,7 +154,7 @@ public class AlarmNotiActivity extends AppCompatActivity {
 
 		//TextView tvTitle = (TextView) findViewById(R.id.tvAlarmTitle);
 
-		adView = (NativeExpressAdView) findViewById(R.id.adViewFront);
+		//adView = (NativeExpressAdView) findViewById(R.id.adViewFront);
 
         MobileAds.initialize(this, "ca-app-pub-8072677228798230~8421474102"); // real
 
