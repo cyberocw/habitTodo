@@ -126,11 +126,11 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
             }
         }
 
-        //미리보기
+/*        //미리보기
         if(1==1 || isInEditMode()) {
-            /*Calendar cal = Calendar.getInstance();
-            make(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH));*/
-        }
+            Calendar cal = Calendar.getInstance();
+            make(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH));
+        }*/
 
     }
 
@@ -170,6 +170,7 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
 //            return;
 //        }
 
+
         long makeTime = System.currentTimeMillis();
         this.mYear = year;
         this.mMonth = month;
@@ -199,6 +200,7 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
         lastDayCal.add(Calendar.DAY_OF_MONTH, 42);
         HashMap<String, List<HolidayVO>> holidayMap = new HashMap<>();
         HashMap<String, List<AlarmVO>> alarmMap = new HashMap<>();
+
         if(mCalendarManager != null) {
             Log.d(TAG, "<<<<< take 111 timeMillis : " + (System.currentTimeMillis() - makeTime));
             ArrayList<HolidayVO> holidayList = mCalendarManager.getHolidayList(cal, lastDayCal);
@@ -242,6 +244,7 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
                     }
                 }
             }
+
             Log.d(TAG, "<<<<< take 444 timeMillis : " + (System.currentTimeMillis() - makeTime));
         }
 
@@ -257,6 +260,8 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
             one.setDay(cal);
             one.setHolidayList(holidayMap.get(dayString));
             one.setAlarmList(alarmMap.get(dayString));
+            one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
+            one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));
 
             if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
                 one.setIsSelDay(true);
@@ -282,6 +287,9 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
             one.setDay(cal);
             one.setHolidayList(holidayMap.get(dayString));
             one.setAlarmList(alarmMap.get(dayString));
+            one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
+            one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));
+
             if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
                 one.setIsSelDay(true);
             }
@@ -305,6 +313,9 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
                 one.setDay(cal);
                 one.setHolidayList(holidayMap.get(dayString));
                 one.setAlarmList(alarmMap.get(dayString));
+                one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
+                one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));
+
                 if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
                     one.setIsSelDay(true);
                 }

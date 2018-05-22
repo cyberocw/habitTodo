@@ -64,7 +64,20 @@
         <service android:name=".alaram.service.TimerService" />
         <service android:name=".alaram.service.AlarmBackgroudService" />
         <service android:name=".util.TTSNoti" />
+        <receiver
+            android:name=".calendar.CalendarWidgetProvider"
+            android:label="위젯 테스트 (일반)" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="widgetPrevMonth" />
+                <action android:name="widgetNextMonth" />
+                <action android:name="widgetToday" />
+            </intent-filter>
 
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_provider_basic" />
+        </receiver>
         <receiver
             android:name=".util.BootReceiver"
             android:enabled="true">

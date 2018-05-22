@@ -49,9 +49,14 @@ public class CalendarManager {
 	private Calendar mEndDate;
 	int pixelsHeight, pixelsIcon, pixelsDayName, pixelsIconWrapHeight;
 	private HashMap<String, ArrayList> mHolidayMap;
-
+	ArrayList<AlarmVO>[] mArrRepeatList;
+	ArrayList<AlarmVO> mRepeatHolidayList;
+	ArrayList[] mArrRepeatNonHolidayList;
+	//int[] mArrRepeatCountNormal;
+	int[] mArrRepeatCountHoliday, mArrRepeatCountDay;
 
 	public CalendarManager(Context context) {
+		mCtx = context;
 		mAlarmDbManager = AlarmDbManager.getInstance(mCtx);
 		mSettingDbManager = SettingDbManager.getInstance(mCtx);
 	}
@@ -71,10 +76,107 @@ public class CalendarManager {
 	}
 
 	public void init(){
+		this.init(false);
+	}
+
+	public void init(boolean isInit){
 		mAlarmDbManager = AlarmDbManager.getInstance(mCtx);
 		mSettingDbManager = SettingDbManager.getInstance(mCtx);
-		initWeekDay();
-		renderDayNum();
+
+		if(!isInit) {
+			initWeekDay();
+			renderDayNum();
+		}
+		makeRepeatHolidayInfo();
+	}
+
+	public void makeRepeatHolidayInfo(){
+		//순수요일
+		mArrRepeatList = new ArrayList[8];
+		//반복 공휴일
+		mRepeatHolidayList = new ArrayList();
+		//휴일 아닐 경우
+		mArrRepeatNonHolidayList = new ArrayList[8];
+		//휴일 카운트
+		mArrRepeatCountHoliday = new int[8];
+		mArrRepeatCountDay = new int[8];
+
+		ArrayList<AlarmVO> alarmRepeatList = getAlarmRepeatList();
+		if(alarmRepeatList != null){
+			AlarmVO alarmVO;
+			ArrayList<Integer> arrRepeatDay;
+			for(int i = 0 ; i < 8; i++)
+				mArrRepeatList[i] = new ArrayList<>();
+			Log.d(this.toString(), "alarmRepeatList.size()="+alarmRepeatList.size());
+			for (int i = 0; i < alarmRepeatList.size(); i++) {
+				alarmVO = alarmRepeatList.get(i);
+				arrRepeatDay = alarmVO.getRepeatDay();
+				if(alarmVO.getIsHolidayALL() == 1) {
+					mRepeatHolidayList.add(alarmVO);
+				}
+				for(int k = 0; k < arrRepeatDay.size(); k++){
+
+					if(mArrRepeatList[arrRepeatDay.get(k)] == null)
+						mArrRepeatList[arrRepeatDay.get(k)] = new ArrayList<AlarmVO>();
+
+
+					//해야 할것 - > 휴일 포함일 경우 그냥 요일이 겹치면 -1
+					mArrRepeatList[arrRepeatDay.get(k)].add(alarmVO);
+					mArrRepeatCountDay[arrRepeatDay.get(k)]+=1;
+
+					if(arrRepeatDay.get(k) == 1 || arrRepeatDay.get(k) == 7)
+						continue;
+
+					if(alarmVO.getIsHolidayALL() == 1){
+						//mRepeatHolidayList.add(alarmVO);
+						// repeat 이랑 그냥 요일 2개 제거
+						mArrRepeatCountHoliday[arrRepeatDay.get(k)] -= 1;
+					}
+					else{
+
+					}
+					if(alarmVO.getIsHolidayNone() == 1){
+						if(alarmVO.getIsHolidayALL() == 1)
+							mArrRepeatCountHoliday[arrRepeatDay.get(k)] -= 2;
+						else
+							mArrRepeatCountHoliday[arrRepeatDay.get(k)] -= 1;
+
+						if(mArrRepeatNonHolidayList[arrRepeatDay.get(k)] == null)
+							mArrRepeatNonHolidayList[arrRepeatDay.get(k)] = new ArrayList();
+						mArrRepeatNonHolidayList[arrRepeatDay.get(k)].add(alarmVO);
+					}
+					//todo -> 공휴일 제외 카운트, 공휴일 포함 카운트 별도 array에 담아두기
+				}
+
+			}
+
+			for(int i = 0 ; i < 8; i++){
+				Log.d(this.toString(), "marrrepeat i = " + i + "  mArrRepeatCountDay size="+mArrRepeatCountDay[i]);
+				mArrRepeatCountHoliday[i] = mArrRepeatCountHoliday[i] + mArrRepeatCountDay[i] + mRepeatHolidayList.size();
+			}
+
+			/*int oriCnt = 0;
+			boolean isFind = false;
+			for(int i = 0 ;i < mArrRepeatList.length; i++){
+				oriCnt = mArrRepeatList[i].size();
+				for(int k = 0 ; k < mArrRepeatList[i].size(); k++){
+					for(int m = 0; m < mRepeatHolidayList.size(); m++){
+						if(mRepeatHolidayList.get(m).getId() == mArrRepeatList[i].get(k).getId()){
+							isFind = true;
+						}
+					}
+				}
+				mArrRepeatCountHoliday[i] =
+			}*/
+		}
+	}
+
+
+	public int getRepeatHolidayCnt(int dayNum, boolean isHoliday){
+		if(isHoliday)
+			return mArrRepeatCountHoliday[dayNum];
+		else
+			return mArrRepeatCountDay[dayNum];
 	}
 
 	public ArrayList<AlarmVO> getAlarmMonthList(Calendar dateOri){
@@ -89,6 +191,10 @@ public class CalendarManager {
 
 	public ArrayList<AlarmVO> getAlarmList(Calendar startDate, Calendar endDate){
 		return mAlarmDbManager.getAlarmList(startDate, endDate);
+	}
+
+	public ArrayList<AlarmVO> getAlarmRepeatList(){
+		return mAlarmDbManager.getAlarmRepeatList();
 	}
 
 	public ArrayList<HolidayVO> getHolidayMonthList(Calendar dateOri){
@@ -311,7 +417,11 @@ public class CalendarManager {
 	}
 
 	public Calendar getCalendar() {
-		return mCalendar;
+		return (Calendar) mCalendar.clone();
+	}
+
+	public void setCalendar(Calendar cal) {
+		mCalendar = cal;
 	}
 
 	public ArrayList<AlarmVO> getAlarmList(Calendar mCalendar) {

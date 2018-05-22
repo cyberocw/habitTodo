@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+    <RelativeLayout
+        android:id="@+id/verticalViewPagerWrap"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:paddingLeft="10dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/ic_chevron_left_black_24dp"
+            android:id="@+id/ibLeft"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/dateView"
+            android:textSize="13sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textColor="@color/my_black_text"
+            android:layout_toEndOf="@+id/ibLeft"
+            android:layout_toRightOf="@+id/ibLeft"
+            android:text="2018-02-11" />
+
+        <ImageButton
+            android:id="@+id/ibRight"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="3dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/dateView"
+            android:layout_toRightOf="@+id/dateView"
+            android:background="@drawable/ic_chevron_right_black_24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnToday"
+            android:textSize="12sp"
+            android:background="@color/white"
+            android:textColor="@color/my_black_text"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:text="Today" />
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/calendar"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </LinearLayout>
+</LinearLayout>

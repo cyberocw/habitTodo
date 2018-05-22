@@ -17,7 +17,7 @@ public class DayVO {
     private CharSequence msg = "";
     List<HolidayVO> holidayList = null;
     List<AlarmVO> alarmList = null;
-    int year, month, day;
+    int year, month, day, repeatCount, repeatHolidayCount;
     boolean isToday = false, isSelDay = false;
     /**
      * OneDayData
@@ -121,5 +121,21 @@ public class DayVO {
 
     public boolean getIsSelDay() {
         return isSelDay;
+    }
+
+    public void setRepeatCount(int repeatCount) {
+        this.repeatCount = repeatCount;
+    }
+
+    public void setRepeatHolidayCount(int repeatHolidayCount) {
+        this.repeatHolidayCount = repeatHolidayCount;
+    }
+
+    public int getRepeatCount() {
+        return repeatCount;
+    }
+
+    public int getRepeatHolidayCount() {
+        return repeatHolidayCount;
     }
 }

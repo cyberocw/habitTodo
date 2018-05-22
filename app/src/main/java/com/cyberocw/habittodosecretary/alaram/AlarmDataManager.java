@@ -214,9 +214,9 @@ public class AlarmDataManager {
 
 		for(int i = 0 ; i < this.dataList.size(); i++){
 			vo = this.dataList.get(i);
-			if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT || vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
+			if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT){
 				arrRepeat.add(vo);
-			}else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE){
+			}else if(vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.SET_DATE  || vo.getAlarmDateType() == Const.ALARM_DATE_TYPE.REPEAT_MONTH){
 				arrSetTime.add(vo);
 			}else{
 				arrPostpone.add(vo);

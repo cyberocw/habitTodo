@@ -550,7 +550,7 @@ public class AlarmDbManager extends DbHelper{
 	}
 
 	/**
-	 * getting all todos
+	 * 하루치 일정 모두 가져옴 - 날짜지정 + 요일 반복 알림
 	 * */
 	public ArrayList<AlarmVO> getAlarmList(Calendar date){
 		int[] day = {date.get(Calendar.DAY_OF_WEEK)};
@@ -561,6 +561,10 @@ public class AlarmDbManager extends DbHelper{
 		//1주일치 불러와서 아래 o 아이콘 삽입을 위한 용도
 		Crashlytics.log(Log.DEBUG, this.toString(), "getAlarmList start, end date is not null");
 		return getAlarmList(-1, startDate, endDate, null);
+	}
+	public ArrayList<AlarmVO> getAlarmRepeatList(){
+		int[] day = {1,2,3,4,5,6,7};
+		return getAlarmList(-1, null, null, day);
 	}
 	public AlarmVO getAlarmById(long id){
 		Crashlytics.log(Log.DEBUG, this.toString(), "getAlarmList getAlarmById");
@@ -618,39 +622,47 @@ public class AlarmDbManager extends DbHelper{
 				if (values.size() > 0) {
 
 					SettingDbManager settingDb = SettingDbManager.getInstance(mCtx);
-					HashMap<String, ArrayList> holidayMap = null;
-					if(endDate == null){
+					HashMap<String, ArrayList> holidayMap = new HashMap<>();
+					//하루 휴일 정보 가져옴
+					if(startDate != null && endDate == null){
 						holidayMap = settingDb.getHolidayMap(CommonUtils.convertDateType(startDate), CommonUtils.convertDateType(startDate));
 					}
-					else{
+					//날짜 범위 휴일 정보
+					else if(startDate != null && endDate != null){
 						holidayMap = settingDb.getHolidayMap(CommonUtils.convertDateType(startDate), CommonUtils.convertDateType(endDate));
 					}
-					int dayofWeek = startDate.get(Calendar.DAY_OF_WEEK);
 					boolean isHoliday = false;
-					//평일일 경우에만 holiday 여부 체크
-					if (dayofWeek != 1 && dayofWeek != 7) {
-						String strCal = CommonUtils.convertDateType(startDate); //String.valueOf(startDate.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, startDate.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
-						Crashlytics.log(Log.DEBUG, this.toString(), "strCal = " + strCal);
+					if(startDate != null) {
+						int dayofWeek = startDate.get(Calendar.DAY_OF_WEEK);
 
-						if (holidayMap.containsKey(strCal)) {
-							ArrayList<HolidayVO> arrHoliday = holidayMap.get(strCal);
-							for (int m = 0; m < arrHoliday.size(); m++) {
-								HolidayVO hVO = arrHoliday.get(m);
-								Crashlytics.log(Log.DEBUG, this.toString(), "hVO type = " + hVO.getType());
-								if (hVO.getType().equals("h") || hVO.getType().equals("i")) {
-									isHoliday = true;
-									break;
+						//평일일 경우에만 holiday 여부 체크
+						//토일 제외
+						if (dayofWeek != 1 && dayofWeek != 7) {
+							String strCal = CommonUtils.convertDateType(startDate); //String.valueOf(startDate.get(Calendar.YEAR)) + CommonUtils.numberDigit(2, startDate.get(Calendar.MONTH) + 1) + CommonUtils.numberDigit(2, cal.get(Calendar.DAY_OF_MONTH));
+							Crashlytics.log(Log.DEBUG, this.toString(), "strCal = " + strCal);
+							//현재는 startDate 하루만 계산함....
+							if (holidayMap.containsKey(strCal)) {
+								ArrayList<HolidayVO> arrHoliday = holidayMap.get(strCal);
+								for (int m = 0; m < arrHoliday.size(); m++) {
+									HolidayVO hVO = arrHoliday.get(m);
+									Crashlytics.log(Log.DEBUG, this.toString(), "hVO type = " + hVO.getType());
+									if (hVO.getType().equals("h") || hVO.getType().equals("i")) {
+										isHoliday = true;
+										break;
+									}
 								}
 							}
 						}
-
 					}
 					//기본 주간 반복 select - in 다음 조건 붙이는 것임
-					selectQuery += "(SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE (1=1 ";
-
+					selectQuery += "(SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE ( ";
+					int tempIndex = 0;
 					for (String key : values.keySet()) {
 						//and 인지 or인지 잘 구분 필요, 아직까지는 dayName이 배열일 경우는 없어서 and던 or던 상관 없음...(목금을 동시에 가져올 일이 업다는 뜻)
-						selectQuery += " AND " + key + " = 1";
+						//일단은 달력에서 월~금 다 가져오는 경우가 있어서 OR 처리
+
+						selectQuery +=  (tempIndex > 0 ? " OR " : " ") +  key + " = 1";
+						tempIndex++;
 					}
 					if(isHoliday){
 						selectQuery += " AND " + KEY_HOLIDAY_NONE + " <> 1)";
@@ -666,9 +678,11 @@ public class AlarmDbManager extends DbHelper{
 					selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_DATE + " WHERE " +
 							KEY_ALARM_DATE + " = " + CommonUtils.convertDateType(startDate) + ")";
 				}
-				//매달 반복 가져옴
-				selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE " + KEY_REPEAT_DAY +
-						" = " + startDate.get(Calendar.DAY_OF_MONTH) + " ) ";
+				if (startDate != null) {
+					//매달 반복 가져옴
+					selectQuery += " OR A." + KEY_ID + " IN (SELECT " + KEY_F_ALARM_ID + " FROM " + TABLE_ALARM_REPEAT + " WHERE " + KEY_REPEAT_DAY +
+							" = " + startDate.get(Calendar.DAY_OF_MONTH) + " ) ";
+				}
 			}
 			//범위
 			//////// 날짜 지정 알림에서 불러옴 - 주간 달력에 settime 유형 o 표시 위함 -> 주간 날짜 지정 알림만 가져옴

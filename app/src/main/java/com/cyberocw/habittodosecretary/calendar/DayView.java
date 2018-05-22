@@ -15,6 +15,8 @@ import com.cyberocw.habittodosecretary.alaram.vo.AlarmVO;
 import com.cyberocw.habittodosecretary.alaram.vo.HolidayVO;
 import com.cyberocw.habittodosecretary.calendar.vo.DayVO;
 
+import org.w3c.dom.Text;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -31,7 +33,7 @@ public class DayView extends RelativeLayout {
     private int defaultColor = Color.BLACK;
 
     /** number text field */
-    private TextView dayTv, tvAlarm;
+    private TextView dayTv, tvAlarm, tvRepeatCnt;
     /** message text field*/
     private TextView msgTv;
     private LinearLayout alarmListWrap;
@@ -65,6 +67,7 @@ public class DayView extends RelativeLayout {
 
         dayTv = (TextView) v.findViewById(R.id.onday_dayTv);
         msgTv = (TextView) v.findViewById(R.id.onday_msgTv);
+        tvRepeatCnt = (TextView) v.findViewById(R.id.tvRepeatCnt);
         //tvAlarm = (TextView) v.findViewById(R.id.tvAlarm);
         alarmListWrap = (LinearLayout) v.findViewById(R.id.alarmListWrap);
         alarmListWrap.removeAllViews();
@@ -149,28 +152,37 @@ public class DayView extends RelativeLayout {
         List<AlarmVO> alarmList = one.getAlarmList();
         String holiday = "";
         alarmListWrap.removeAllViewsInLayout();
+        msgTv.setText("");
         if(holidayList != null && one.getHolidayList().size() > 0) {
             dayTv.setTextColor(Color.RED);
             for (int i = 0; i < holidayList.size(); i++) {
                 holiday += holidayList.get(i).getName() + "\n";
             }
+
+            if(one.get(Calendar.DAY_OF_WEEK) == 1 || one.get(Calendar.DAY_OF_WEEK) == 7)
+                tvRepeatCnt.setText(String.valueOf(one.getRepeatCount()));
+            else
+                tvRepeatCnt.setText(String.valueOf(one.getRepeatHolidayCount()));
+
             msgTv.setVisibility(VISIBLE);
             msgTv.setText(holiday);
+
         }else {
             dayTv.setTextColor(defaultColor);
             msgTv.setVisibility(GONE);
+            msgTv.setText("");
+            tvRepeatCnt.setText(String.valueOf(one.getRepeatCount()));
         }
 
         if(one.getIsSelDay()){
             //dayTv.setTextColor(Color.MAGENTA);
             dayTv.setBackgroundResource(R.drawable.day_of_week_ring);
         }
-        else
-            dayTv.setBackgroundResource(0);
-
+        else {
+            //dayTv.setBackgroundResource(0);
+        }
         if(one.getIsToday()){
             //오늘 날짜
-            //
             dayTv.setTextColor(Color.GREEN);
         }
 

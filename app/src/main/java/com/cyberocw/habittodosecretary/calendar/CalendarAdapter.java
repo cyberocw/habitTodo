@@ -49,18 +49,10 @@ public class CalendarAdapter extends PagerAdapter implements ViewPager.OnPageCha
         base.set(BASE_YEAR, BASE_MONTH, 1);
         BASE_CAL = base;
         mCalendarManager = calendarManager;
+
         monthViews = new MonthView[PAGES];
         for(int i = 0; i < PAGES; i++) {
             monthViews[i] = new MonthView(context);
-        }
-    }
-    public void resetMonthView(){
-        //monthViews = new MonthView[PAGES];
-        for(int i = 0; i < PAGES; i++) {
-            Log.d(this.toString(), "pages create");
-            monthViews[i].removeAllViewsInLayout();
-            monthViews[i].setOnClickDayListener(null);
-            monthViews[i] = new MonthView(mContext);
         }
     }
 

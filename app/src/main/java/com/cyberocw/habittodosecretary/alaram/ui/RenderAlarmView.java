@@ -228,8 +228,8 @@ public class RenderAlarmView {
         if(listViewType == Const.ALARM_LIST_VIEW_TYPE.LIST){
             String result = "";
             switch (vo.getAlarmDateType()){
-                case Const.ALARM_DATE_TYPE.REPEAT_MONTH :
                 case Const.ALARM_DATE_TYPE.REPEAT : result = ctx.getResources().getString(R.string.group_title_repeat); break;
+                case Const.ALARM_DATE_TYPE.REPEAT_MONTH :
                 case Const.ALARM_DATE_TYPE.SET_DATE : result = ctx.getResources().getString(R.string.group_title_set_date); break;
                 case Const.ALARM_DATE_TYPE.POSTPONE_DATE : result = ctx.getResources().getString(R.string.group_title_postpone); break;
             }

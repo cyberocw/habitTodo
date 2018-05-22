@@ -110,7 +110,7 @@ public class AlarmFragment extends Fragment{
 
 	private OnFragmentInteractionListener mListener;
 	private View mView;
-	TextView mDateTv = null;
+	TextView mDateTv = null, mDateTv2 = null;
 	TextView mTvListTitle = null;
 	FloatingActionsMenu mFab;
 
@@ -180,6 +180,7 @@ public class AlarmFragment extends Fragment{
 		}
 
 		mDateTv = (TextView) mView.findViewById(R.id.dateView);
+		mDateTv2 = (TextView) mView.findViewById(R.id.dateView2);
 		mCtx = getActivity();
 		mPrefs = mCtx.getSharedPreferences(Const.ALARM_SERVICE_ID, Context.MODE_PRIVATE);
 		initActivity();
@@ -260,7 +261,7 @@ public class AlarmFragment extends Fragment{
 		onPageScrolledListener = new CalendarAdapter.OnPageScrolledListener() {
 			@Override
 			public void onChange(int year, int month) {
-				mDateTv.setText(year +"/" + CommonUtils.numberDigit(2, month + 1));
+				mDateTv2.setText(year +"/" + CommonUtils.numberDigit(2, month + 1));
 			}
 		};
 
@@ -725,7 +726,9 @@ public class AlarmFragment extends Fragment{
 	}
 
 	public void setSelectedDateText(int year, int monthOfYear, int dayOfMonth){
-		mDateTv.setText(String.valueOf(year) + "/" + CommonUtils.numberDigit(2, monthOfYear + 1) + "/" + CommonUtils.numberDigit(2, dayOfMonth));
+		String strDay = String.valueOf(year) + "/" + CommonUtils.numberDigit(2, monthOfYear + 1) + "/" + CommonUtils.numberDigit(2, dayOfMonth);
+		mDateTv.setText(strDay);
+		mDateTv2.setText(strDay);
 	}
 
 	public void refreshTimerList(){
@@ -737,6 +740,7 @@ public class AlarmFragment extends Fragment{
 		mAlarmDataManager.makeDataList(mCalendar);
 		mAlarmAdapter.notifyDataSetChanged();
 		mCalendarManager.renderDayNum();
+		mCalendarManager.makeRepeatHolidayInfo();
 		if(mViewPager != null && mCalendarAdapter != null) {
 
 
@@ -751,6 +755,8 @@ public class AlarmFragment extends Fragment{
 			/*mViewPager.invalidate();
 			mViewPager.refreshDrawableState();*/
 			//mViewPager.refreshDrawableState();
+
+			AlarmWidgetBroadcast.updateWidget(getContext());
 		}
 	}
 	public void resetViewPager(){
@@ -769,47 +775,22 @@ public class AlarmFragment extends Fragment{
 		mViewPager.setOffscreenPageLimit(1);
 		llVerticalViewPagerWrap.addView(mViewPager);
 	}
-	public void toggleCalendarView(){
-		//mMonthView.setOnClickListener2(monthOnClickListener);
-		mMonthView.make(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH));
-		mMonthView.setVisibility(View.VISIBLE);
-
-		if(1==1) return;
-
-//		if(!mIsMonthView) {
-//
-//			mView.findViewById(R.id.contents).setVisibility(View.GONE);
-//			mView.findViewById(R.id.contentsCal).setVisibility(View.VISIBLE);
-//		}else{
-//			mView.findViewById(R.id.contents).setVisibility(View.VISIBLE);
-//			mView.findViewById(R.id.contentsCal).setVisibility(View.GONE);
-//		}
-		mIsMonthView = !mIsMonthView;
-	}
 
 	public void bindEvent(){
 		final Fragment targetFragment = this;
 		mDateTv.setOnClickListener(new View.OnClickListener() {
 			                           @Override
 			                           public void onClick(View v) {
-			                           	mViewFlipper.showNext();
-										   if(mViewType == Const.ALARM_OPTION.NO_DATE_TIMER)
-										   		return;
-
-										   //mViewPager.setCurrentItem(1073741834, false);
-
-										   //toggleCalendarView();
-										   /*CalendarDialog d = new CalendarDialog();
-										   Bundle bundle = new Bundle();
-										   bundle.putString("selectedDate", CommonUtils.convertDateType(mCalendar));
-										   d.setArguments(bundle);
-
-
-										   d.show(getFragmentManager(), "calendarDialog");
-										   d.setTargetFragment(targetFragment, Const.ALARM_INTERFACE_CODE.SELECT_CALENDAR_DATE);*/
+										   mViewFlipper.showNext();
 			                           }
 		                           }
 		);
+		mDateTv2.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mViewFlipper.showNext();
+			}
+		});
 		//FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fabAddBtn);
 
 		FloatingActionButton fabAlarm = (FloatingActionButton) mView.findViewById(R.id.fabAddAlarm);
@@ -840,7 +821,15 @@ public class AlarmFragment extends Fragment{
 				selectedDateChange(Calendar.getInstance());
 			}
 		});
-
+		Button btnToday2 = (Button) mView.findViewById(R.id.btnToday2);
+		btnToday2.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(mViewType == Const.ALARM_OPTION.NO_DATE_TIMER)
+					return;
+				selectedDateChange(Calendar.getInstance());
+			}
+		});
 		//toggle alarm view
 		Button btnToggleViewTimer = (Button) mView.findViewById(R.id.btnToggleViewTimer);
 
