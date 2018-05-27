@@ -202,5 +202,6 @@
     <string name="default_sound">기본</string>
     <string name="vibration">진동</string>
     <string name="contact">개발자에게 문의</string>
+    <string name="widget_repeat">반복</string>
 
 </resources>

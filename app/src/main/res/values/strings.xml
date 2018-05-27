@@ -205,5 +205,5 @@
     <string name="tts_store_msg">To use the app, you need to install the TTS speech engine. After installing the engine, adjust the volume on the setting screen and check if the TTS audio is played back.\n\nDo you want to go to the download page?</string>
     <string name="vibration">Vibration</string>
     <string name="contact">Contact to developer</string>
-
+    <string name="widget_repeat">repeat</string>
 </resources>

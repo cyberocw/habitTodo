@@ -453,7 +453,7 @@ public class CalendarWidgetProvider extends AppWidgetProvider{
             //오늘 날짜
             view.setTextColor(R.id.onday_dayTv, Color.GREEN);
         }
-
+        view.removeAllViews(R.id.alarmListWrap);
         if(alarmList != null && alarmList.size() > 0) {
             for (int i = 0; i < alarmList.size(); i++) {
                 //View view =  View.inflate(getContext(), R.layout.calendar_day_alarm, null);
@@ -463,6 +463,7 @@ public class CalendarWidgetProvider extends AppWidgetProvider{
 
                 //수동으로 추가해줘야 함
                 //RemoteViews ov = new RemoteViews(context.getPackageName(), R.layout.calendar_day_alarm);
+
                 view.addView(R.id.alarmListWrap, alarmView);
                 /*alarmListWrap = (LinearLayout) v.findViewById(R.id.alarmListWrap);
                 alarmListWrap.addView(view);*/

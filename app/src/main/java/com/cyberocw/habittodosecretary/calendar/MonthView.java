@@ -342,13 +342,11 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
         Log.d(TAG, "<<<<< take 5555 2222 timeMillis : " + (System.currentTimeMillis() - makeTime));
         int count = 0;
         for(DayVO oneday : DayVOs) {
-
             if(count % 7 == 0) {
                 addView(weeks.get(count / 7));
             }
             DayView ov = dayViews.get(count);
             ov.setDay(oneday);
-            ov.setMsg("");
             ov.refresh();
             count++;
         }

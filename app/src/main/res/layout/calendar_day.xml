@@ -35,7 +35,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
 
-                android:text="반복"
+                android:text="@string/widget_repeat"
                 android:textColor="@color/btn_gray_font_color"
                 android:textSize="7sp"
                 android:visibility="visible" />

@@ -66,7 +66,7 @@
         <service android:name=".util.TTSNoti" />
         <receiver
             android:name=".calendar.CalendarWidgetProvider"
-            android:label="위젯 테스트 (일반)" >
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="widgetPrevMonth" />

@@ -109,21 +109,6 @@ public class DayView extends RelativeLayout {
         return one;
     }
 
-    /**
-     * Set the message to display
-     * @param msg message
-     */
-    public void setMsg(String msg){
-        one.setMessage(msg);
-    }
-
-    /**
-     * Get the message is displaying
-     * @return message
-     */
-    public CharSequence getMsg(){
-        return  one.getMessage();
-    }
 
     /**
      * Returns the value of the given field after computing the field values by
@@ -152,7 +137,7 @@ public class DayView extends RelativeLayout {
         List<AlarmVO> alarmList = one.getAlarmList();
         String holiday = "";
         alarmListWrap.removeAllViewsInLayout();
-        msgTv.setText("");
+
         if(holidayList != null && one.getHolidayList().size() > 0) {
             dayTv.setTextColor(Color.RED);
             for (int i = 0; i < holidayList.size(); i++) {
@@ -175,11 +160,10 @@ public class DayView extends RelativeLayout {
         }
 
         if(one.getIsSelDay()){
-            //dayTv.setTextColor(Color.MAGENTA);
             dayTv.setBackgroundResource(R.drawable.day_of_week_ring);
         }
         else {
-            //dayTv.setBackgroundResource(0);
+            dayTv.setBackgroundResource(0);
         }
         if(one.getIsToday()){
             //오늘 날짜
@@ -194,9 +178,6 @@ public class DayView extends RelativeLayout {
                 alarmListWrap.addView(view);
             }
         }
-
-        //msgTv.setText((one.getMessage()==null)?"":one.getMessage());
-
     }
 
 

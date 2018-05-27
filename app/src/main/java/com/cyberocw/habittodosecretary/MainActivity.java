@@ -421,14 +421,15 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		});
 		String msg;
 		if(CommonUtils.isLocaleKo(getResources().getConfiguration())){
-			msg = "1. 특정 상황에 따라 리마인더가 일반 요일 반복 알람과 섞여서 생기던 버그를 수정했습니다.\n\n" +
-					"2. 월간 캘린더에 현재 선택되어진 날짜도 파란 선으로 표시하도록 수정했습니다.";
+			msg = "한동안 바빠서 업데이트가 늦어졌습니다.\n" +
+					"이번 업데이트를 통해 월간 달력 위젯 기능을 추가했습니다.\n";
 
 		}
 		else {
 			msg = "" +
-					"1. Fixed a bug that caused the reminder to blend with normal day repeating alarms under certain circumstances.\n\n" +
-					"2. We have also modified the display of the current date in the monthly calendar to show as a blue line.";
+					"I was busy for a while and the update was delayed.\n" +
+
+					"With this update, we added the monthly calendar widget function.";
 
 		}
 		alert.setMessage(msg);

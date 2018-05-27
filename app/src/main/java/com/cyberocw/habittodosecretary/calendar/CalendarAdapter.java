@@ -202,5 +202,4 @@ public class CalendarAdapter extends PagerAdapter implements ViewPager.OnPageCha
             this.month = month;
         }
     }
-
 }
