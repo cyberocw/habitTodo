@@ -122,7 +122,7 @@
                     android:layout_gravity="center_horizontal"
                     android:text="상태바 알림 받기" />
             </LinearLayout>
-            <LinearLayout
+            <!--<LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -133,7 +133,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <!--<TextView
+                    &lt;!&ndash;<TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="알람전 노티바 활성화 "
@@ -145,7 +145,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="" />-->
+                        android:text="" />&ndash;&gt;
                     <Switch
                         android:id="@+id/checkBackgroundNoti"
                         android:layout_width="wrap_content"
@@ -165,7 +165,7 @@
                         android:text="@string/setting_statu_bar_cont"
                         />
                 </LinearLayout>
-            </LinearLayout>
+            </LinearLayout>-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

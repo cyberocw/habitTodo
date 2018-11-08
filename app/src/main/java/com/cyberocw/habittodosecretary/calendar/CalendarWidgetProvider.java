@@ -7,16 +7,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.net.Uri;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RemoteViews;
-import android.widget.TextView;
 
 import com.cyberocw.habittodosecretary.Const;
 import com.cyberocw.habittodosecretary.MainActivity;
@@ -146,19 +141,23 @@ public class CalendarWidgetProvider extends AppWidgetProvider{
     }
 
     private void bindEvent(Context context, RemoteViews wrap, int appWidgetId){
-        Intent in = new Intent("widgetPrevMonth");
+        //Intent in = new Intent("widgetPrevMonth");
+        Intent in = new Intent(context, CalendarWidgetProvider.class);
+        in.setAction(WIDGET_PREV);
         in.putExtra(YEAR, mCalendar.get(Calendar.YEAR));
         in.putExtra(MONTH, mCalendar.get(Calendar.MONTH));
         PendingIntent pi = PendingIntent.getBroadcast(context,0,in,0);
         wrap.setOnClickPendingIntent(R.id.ibLeft, pi);
 
-        in = new Intent("widgetNextMonth");
+        in = new Intent(context, CalendarWidgetProvider.class);
+        in.setAction(WIDGET_NEXT);
         in.putExtra(YEAR, mCalendar.get(Calendar.YEAR));
         in.putExtra(MONTH, mCalendar.get(Calendar.MONTH));
         pi = PendingIntent.getBroadcast(context,0,in,0);
         wrap.setOnClickPendingIntent(R.id.ibRight, pi);
 
-        in = new Intent("widgetToday");
+        in = new Intent(context, CalendarWidgetProvider.class);
+        in.setAction(WIDGET_TODAY);
         in.putExtra(YEAR, mCalendar.get(Calendar.YEAR));
         in.putExtra(MONTH, mCalendar.get(Calendar.MONTH));
         pi = PendingIntent.getBroadcast(context,0,in,0);

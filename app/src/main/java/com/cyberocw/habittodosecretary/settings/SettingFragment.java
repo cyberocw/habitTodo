@@ -212,9 +212,9 @@ public class SettingFragment extends Fragment {
         tvReqCode.setText(prefs.getString(Const.PARAM.REQ_CODE, "없음"));
         */
         mCbAllAlarm = (CheckBox) mView.findViewById(R.id.checkAllAlarm);
-        final Switch cbBackgroundNoti = (Switch) mView.findViewById(R.id.checkBackgroundNoti);
+        //final Switch cbBackgroundNoti = (Switch) mView.findViewById(R.id.checkBackgroundNoti);
         boolean isUseNotibar = mPrefs.getBoolean(Const.SETTING.IS_NOTIBAR_USE, true);
-        boolean isBackgNoti = mPrefs.getBoolean(Const.SETTING.IS_BACKGROUND_NOTI_USE, true);
+        //boolean isBackgNoti = mPrefs.getBoolean(Const.SETTING.IS_BACKGROUND_NOTI_USE, true);
         boolean isAlarmNoti = mPrefs.getBoolean(Const.SETTING.IS_ALARM_NOTI, true);
         boolean isTTSNoti = mPrefs.getBoolean(Const.SETTING.IS_TTS_NOTI, true);
         boolean isTTSNotiManner = mPrefs.getBoolean(Const.SETTING.IS_TTS_NOTI_MANNER, true);
@@ -222,8 +222,8 @@ public class SettingFragment extends Fragment {
 
         if(isUseNotibar)
             mCbAllAlarm.setChecked(true);
-        if(isBackgNoti)
-            cbBackgroundNoti.setChecked(true);
+        /*if(isBackgNoti)
+            cbBackgroundNoti.setChecked(true);*/
         if(isAlarmNoti)
             swAlarmNoti.setChecked(true);
         if(isTTSNoti)
@@ -234,8 +234,8 @@ public class SettingFragment extends Fragment {
             swTTSNotiManner.setChecked(true);
         if(isDisturb)
             swDisturb.setChecked(true);
-
-
+/*
+        cbBackgroundNoti.setChecked(true);
         cbBackgroundNoti.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -252,7 +252,7 @@ public class SettingFragment extends Fragment {
                 editor.commit();
                 mAlarmDataManager.resetMinAlarm();
             }
-        });
+        });*/
 
         mCbAllAlarm.setOnClickListener(new View.OnClickListener() {
             @Override

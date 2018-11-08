@@ -55,7 +55,7 @@ public class ReminderService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "onStartCommand ");
+        Crashlytics.log(Log.DEBUG, this.toString(), "onStartCommand ");
         if(mAlarmDataManager == null){
             mAlarmDataManager = new AlarmDataManager(this);
         }
@@ -71,6 +71,7 @@ public class ReminderService extends Service {
         int callTime = bundle.getInt(Const.PARAM.CALL_TIME, 0);
         int repeatDayId = bundle.getInt(Const.PARAM.REPEAT_DAY_ID, 0);
         Log.d(this.toString(), "mode = " +mode + " alarmId="+alarmId);
+        fakeStartForeground();
         if(mode.equals("RESET")){
             stopALL();
             return super.onStartCommand(intent, flags, startId);
@@ -210,23 +211,26 @@ public class ReminderService extends Service {
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_REMINDER_NOTI_ID, notificationIntent, 0);
 
-        NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this);
-
-        mCompatBuilder.setSmallIcon(R.drawable.ic_stat_noti);
-        mCompatBuilder.setTicker("Habit Todo");
-
-        RemoteViews remoteView = new RemoteViews(this.getPackageName(), R.layout.alarm_notification);
-        remoteView.setOnClickPendingIntent(R.id.notiWrap, pendingIntent);
-
-        //title 생성
-
-        remoteView.setTextViewText(R.id.tvAlarmTitle, "(" + (index+1) + "/" + mArrayList.size() + ") " + vo.getAlarmTitle());
-
+        NotificationCompat.Builder mCompatBuilder = null;
         if(isAlarmNoti && mode.equals("ADD")) {
+            mCompatBuilder = new NotificationCompat.Builder(this, Const.CHANNEL.REMINDER_ID);
             if(vo.getAlarmOption() != Const.ALARM_OPTION_TO_SOUND.VIBRATION)
                 mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND);
             mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 100L, 100L, 100L, 100L, 100L, 100L});
         }
+        else{
+            mCompatBuilder = new NotificationCompat.Builder(this, Const.CHANNEL.SILENT_ID);
+            mCompatBuilder.setVibrate(null);
+            mCompatBuilder.setSound(null);
+            mCompatBuilder.setPriority(NotificationCompat.PRIORITY_LOW);
+        }
+        mCompatBuilder.setSmallIcon(R.drawable.ic_stat_noti);
+        mCompatBuilder.setTicker("Habit Todo");
+        RemoteViews remoteView = new RemoteViews(this.getPackageName(), R.layout.alarm_notification);
+        remoteView.setOnClickPendingIntent(R.id.notiWrap, pendingIntent);
+
+        //title 생성
+        remoteView.setTextViewText(R.id.tvAlarmTitle, "(" + (index+1) + "/" + mArrayList.size() + ") " + vo.getAlarmTitle());
         remoteView.setImageViewResource(R.id.ivNoti, R.drawable.ic_stat_noti);
 
         //완료처리 버튼
@@ -254,10 +258,8 @@ public class ReminderService extends Service {
         PendingIntent pendingMoveButtonIntent2 = PendingIntent.getBroadcast(this, 3, nextButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteView.setOnClickPendingIntent(R.id.ibRight, pendingMoveButtonIntent2);
 
-
-        //mCompatBuilder.setCustomContentView(remoteView);
         mCompatBuilder.setContent(remoteView);
-        Log.d(this.toString(), "start foreground");
+        Log.d(this.toString(), "reminder start foreground");
         startForeground(Const.ONGOING_REMINDER_NOTI_ID, mCompatBuilder.build());
         if(mode.equals("ADD"))
             startSound(vo);
@@ -361,5 +363,14 @@ public class ReminderService extends Service {
 //                manager.cancel(reqCode);
             }
         }
+    }
+
+    private void fakeStartForeground() {
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this, Const.CHANNEL.SILENT_ID)
+                        .setContentTitle("")
+                        .setContentText("");
+
+        startForeground(Const.ONGOING_REMINDER_NOTI_ID, builder.build());
     }
 }

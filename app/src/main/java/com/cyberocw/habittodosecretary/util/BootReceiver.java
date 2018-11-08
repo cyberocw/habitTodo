@@ -22,7 +22,6 @@ public class BootReceiver extends BroadcastReceiver
 			Log.d(this.toString(), "bootReceiver start");
 			alarmDataManager.resetMinAlarmCall();
 			alarmDataManager.resetReminderNoti();
-			//alarmDataManager.resetReminderNoti();
 		}
 	}
 }

@@ -203,5 +203,7 @@
     <string name="vibration">진동</string>
     <string name="contact">개발자에게 문의</string>
     <string name="widget_repeat">반복</string>
+    <string name="alarm_noti_cancel">알람 비활성화</string>
+    <string name="alarm_noti_cancel_success">알람이 비활성화 되었습니다</string>
 
 </resources>

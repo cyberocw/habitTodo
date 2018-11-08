@@ -146,7 +146,7 @@ public class TimerService extends Service {
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_TIMER_NOTI_ID, notificationIntent, 0);
 
-		NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this);
+		NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this, Const.CHANNEL.SILENT_ID);
 		mCompatBuilder.setSmallIcon(R.drawable.ic_stat_noti);
 		mCompatBuilder.setTicker(getResources().getString(R.string.app_name));
 		mCompatBuilder.setWhen(System.currentTimeMillis());
@@ -156,7 +156,10 @@ public class TimerService extends Service {
 				":" + mNumberFormat.format(second));
 		//mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
 		mCompatBuilder.setContentIntent(pendingIntent);
-		//mCompatBuilder.setAutoCancel(true);
+		mCompatBuilder.setVibrate(null)
+		.setSound(null);
+		mCompatBuilder.setAutoCancel(false);
+		Crashlytics.log(Log.DEBUG, this.toString(), "timer noti start");
 		startForeground(Const.ONGOING_TIMER_NOTI_ID, mCompatBuilder.build());
 		startCaountDownTimer(remainTime);
 	}

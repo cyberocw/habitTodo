@@ -15,6 +15,7 @@ public class AlarmTimeVO implements Serializable{
 	private long fId;
 	private String alarmTitle;
 	private int alarmOption;
+	private int alarmDateType;
 	private int alarmType;
 	private int alarmCallType;
 	private String etcType;
@@ -125,6 +126,14 @@ public class AlarmTimeVO implements Serializable{
 
 	public void setRepeatDayId(int repeatDayId) {
 		this.repeatDayId = repeatDayId;
+	}
+
+	public int getAlarmDateType() {
+		return alarmDateType;
+	}
+
+	public void setAlarmDateType(int alarmDateType) {
+		this.alarmDateType = alarmDateType;
 	}
 
 	@Override

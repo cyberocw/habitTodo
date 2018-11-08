@@ -6,11 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -75,60 +78,41 @@ public class AlarmBackgroudService extends Service {
         // wakelock 사용
 
         wakeLock.acquire();
+
+        //startForeground();
         Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "wakeLock acquire");
         super.onCreate();
-
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Crashlytics.log(Log.DEBUG, this.toString(), "onStartCommand" + " mCountdownTimer is null=" + (mCountDownTimer == null));
+        fakeStartForeground();
         //if(mCountDownTimer != null)
         //	mTimerListAdapter.showRunningAlert();
         mAppTitle = getApplicationContext().getResources().getString(R.string.app_name);
-
         Bundle extras = intent.getExtras();
-
         CommonUtils.putLogPreference(mCtx, this.toString() + "background service start");
-
         if(extras == null){
             Crashlytics.log(Log.DEBUG, this.toString(), "extras null!!!");
         }
-
         // Get messager from the Activity
         if (extras != null) {
             Crashlytics.log(Log.DEBUG, "service", "onBind with extra @@@@@@@@@@@@ mArrAlarmVOList size=" + mArrAlarmVOList.size());
-            //mMillisRemainTime = (Long) extras.get("realTime");
-/*
-
-            Set<String> keySet = extras.keySet();
-            StringBuilder sb = new StringBuilder();
-            for (String key: keySet
-                    ) {
-                sb.append(key + "\n");
-            }
-            Crashlytics.log(Log.DEBUG, this.toString(), " extara keys = " + sb.toString());
-*/
-
             AlarmTimeVO alarmTimeVO = (AlarmTimeVO) intent.getSerializableExtra(Const.PARAM.ALARM_TIME_VO);
 
             Crashlytics.log(Log.DEBUG, this.toString(), "alarmTimeVO = "+alarmTimeVO);
-
             CommonUtils.putLogPreference(mCtx, this.toString() + "alarmTimeVO = "+alarmTimeVO);
-
             int index = findAlarmIndex(alarmTimeVO);
-
             if(index == -1) {
                 mArrAlarmVOList.add(alarmTimeVO);
                 setMinReaminTime();
                 startTimer();
             }
         }
-
-
         return START_REDELIVER_INTENT;
-        //return super.onStartCommand(intent, flags, startId);
     }
+
     public void setMinReaminTime(){
         mMillisRemainTime = -1;
         mMinRemainPosition = -1;
@@ -163,6 +147,7 @@ public class AlarmBackgroudService extends Service {
 
     public void startTimer() {
         if(mMillisRemainTime == -1){
+            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "startimer stopForeground");
             stopForeground(true);
             stopSelf();
         }
@@ -187,36 +172,53 @@ public class AlarmBackgroudService extends Service {
         else
             mTitle = alarmTimeVO.getAlarmTitle() + " " + (h != 0 ? h + getString(R.string.hours) + " " : "") +
                         (callTime < 0 ?  m + getString(R.string.dialog_alarm_minute_before) : callTime > 0 ?  m + getString(R.string.dialog_alarm_minute_after) : "" );
-        //mTitle = alarmTimeVO.getAlarmTitle() + " " + (callTime < 0 ? callTime + getString(R.string.dialog_alarm_minute_before) : (callTime > 0 ? callTime + getString(R.string.dialog_alarm_minute_after) : ""));
-
         mAlarmOption = alarmTimeVO.getAlarmOption();
         mAlarmType = alarmTimeVO.getAlarmType();
 
         SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
-        boolean isBackg = prefs.getBoolean(Const.SETTING.IS_BACKGROUND_NOTI_USE, true);
+        boolean isBackg = true;// = prefs.getBoolean(Const.SETTING.IS_BACKGROUND_NOTI_USE, true);
 
+        Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "is backg="+isBackg);
         if(isBackg) {
-            Intent notificationIntent = new Intent(this, MainActivity.class);
+            Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+            notificationIntent.setAction(Intent.ACTION_MAIN);
+            notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, Const.ONGOING_ALARM_NOTI_ID, notificationIntent, 0);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), Const.ONGOING_ALARM_NOTI_ID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Calendar alertTime = Calendar.getInstance();
             alertTime.setTimeInMillis(alarmTimeVO.getTimeStamp());
 
-            android.support.v4.app.NotificationCompat.Builder mCompatBuilder = new android.support.v4.app.NotificationCompat.Builder(this);
-            mCompatBuilder.setSmallIcon(R.drawable.ic_stat_noti);
-            mCompatBuilder.setTicker(getResources().getString(R.string.app_name));
-            mCompatBuilder.setWhen(System.currentTimeMillis());
-            //mCompatBuilder.setVibrate(new long[] { 100L, 100L, 200L, 200L, 300L, 300L, 400L, 400L });
-            mCompatBuilder.setContentTitle(mAppTitle);
-            mCompatBuilder.setContentText(mTitle + " " + alertTime.get(Calendar.HOUR_OF_DAY) + ":" + alertTime.get(Calendar.MINUTE) + " " + getString(R.string.service_alarm_scheduled));
-            //mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-            mCompatBuilder.setContentIntent(pendingIntent);
-            //mCompatBuilder.setAutoCancel(true);
+            String notiName = mTitle + " " + alertTime.get(Calendar.HOUR_OF_DAY) + ":" + alertTime.get(Calendar.MINUTE) + " " + getString(R.string.service_alarm_scheduled);
 
+            NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this, Const.CHANNEL.SILENT_ID);
+            mCompatBuilder.setSmallIcon(R.drawable.ic_stat_noti)
+            .setTicker(getResources().getString(R.string.app_name))
+            .setColor
+                    (ContextCompat.getColor(this, R.color.blue))
+            .setWhen(System.currentTimeMillis())
+            .setContentTitle(mAppTitle)
+            .setVibrate(null)
+            .setSound(null)
+            .setContentText(notiName)
+            .setContentIntent(pendingIntent)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW);
+
+            if(alarmTimeVO.getAlarmDateType() == Const.ALARM_DATE_TYPE.POSTPONE_DATE){
+                Intent intentCancel = new Intent(this, MainActivity.class);
+                intentCancel.putExtra(Const.PARAM.ALARM_ID, alarmTimeVO.getId());
+                intentCancel.putExtra(Const.PARAM.MODE, Const.ALARM_INTERFACE_CODE.ALARM_CANCEL);
+                intentCancel.putExtra(Const.PARAM.REQ_CODE, alarmTimeVO.getReqCode());
+                intentCancel.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                PendingIntent pendingIntentCancel = PendingIntent.getActivity(this, 0, intentCancel, PendingIntent.FLAG_UPDATE_CURRENT);
+                mCompatBuilder.addAction(R.drawable.ic_add_alert_black_24dp, getString(R.string.alarm_noti_cancel), pendingIntentCancel);
+            }
+            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "start foreground");
             startForeground(Const.ONGOING_TIMER_NOTI_ID, mCompatBuilder.build());
         }
     }
+
     private void startCountDownTimer(long millisRemainTime){
         if(mHandler == null)
             mHandler = new Handler();
@@ -314,7 +316,12 @@ public class AlarmBackgroudService extends Service {
         myIntent.putExtra(Const.PARAM.REPEAT_DAY_ID, mArrAlarmVOList.get(mMinRemainPosition).getRepeatDayId());
         myIntent.putExtra(Const.PARAM.ALARM_OPTION, mArrAlarmVOList.get(mMinRemainPosition).getAlarmOption());
 
-        mCtx.startService(myIntent);
+        if (mArrAlarmVOList.get(mMinRemainPosition).getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mCtx.startForegroundService(myIntent);
+        }
+        else{
+            mCtx.startService(myIntent);
+        }
 
         if(!(mArrAlarmVOList.get(mMinRemainPosition).getAlarmReminderType() == Const.ALARM_REMINDER_MODE.REMINDER)) {
             SharedPreferences prefs = getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
@@ -418,6 +425,7 @@ public class AlarmBackgroudService extends Service {
             //setMinAlarm 호출해서 다시 등록 루틴 타야함
             AlarmDataManager mAlarmDataManager = new AlarmDataManager(mCtx, Calendar.getInstance());
             mAlarmDataManager.resetMinAlarmCall();
+            Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "cancelTimer stopForeground");
             stopForeground(true);
             stopSelf();
         }
@@ -436,6 +444,7 @@ public class AlarmBackgroudService extends Service {
         if(mHandler != null){
             mHandler.removeCallbacksAndMessages(null);
         }
+        Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "ondestroy stopForeground");
         stopForeground(true);
         if(mHandler == null) {
             mHandler = new Handler();
@@ -459,6 +468,13 @@ public class AlarmBackgroudService extends Service {
         // We don't provide binding, so return null
         return null;
     }
+    private void fakeStartForeground() {
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this, Const.CHANNEL.SILENT_ID)
+                        .setContentTitle("")
+                        .setContentText("");
 
+        startForeground(Const.ONGOING_TIMER_NOTI_ID, builder.build());
+    }
 
 }

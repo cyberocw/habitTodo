@@ -1,16 +1,20 @@
 package com.cyberocw.habittodosecretary;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.NavigationView;
@@ -47,11 +51,9 @@ import com.cyberocw.habittodosecretary.settings.InitializeSetting;
 import com.cyberocw.habittodosecretary.settings.SettingFragment;
 import com.cyberocw.habittodosecretary.util.CommonUtils;
 import com.cyberocw.habittodosecretary.util.PopMessageEvent;
-import com.cyberocw.habittodosecretary.util.TTSNoti;
 import com.cyberocw.habittodosecretary.util.TTSNotiActivity;
 import com.cyberocw.habittodosecretary.util.TitleMessageEvent;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -95,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		EventBus.getDefault().register(this);
 
 		Crashlytics cr = new Crashlytics();
-		Fabric.with(this, cr);
+		Fabric.with(this, cr, new Crashlytics());
 		mContext = getApplicationContext();
 		mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -110,6 +112,13 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 	    mDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
 	    mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
 	    mNavigationView.setNavigationItemSelectedListener(this);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			createChannel(Const.CHANNEL.SILENT_ID, "snooze channel");
+			createChannel(Const.CHANNEL.NOTI_ID, "notification channel");
+			createChannel(Const.CHANNEL.REMINDER_ID, "reminder channel");
+		}
+
 
 		MobileAds.initialize(this, "ca-app-pub-8072677228798230~8421474102"); // real
 		if(!CommonUtils.isLocaleKo(getResources().getConfiguration())) {
@@ -167,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			Bundle bundle = intent.getExtras();
 
 			if (bundle != null) {
-
 				NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
 				int reqCode = bundle.getInt(Const.PARAM.REQ_CODE);
 				Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "reqCode=" + reqCode);
@@ -218,11 +226,15 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 					tag = Const.FRAGMENT_TAG.ALARM;
 				}
 			}else{
-				if(bundle.getInt(Const.PARAM.MODE) != Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG && CommonUtils.isLocaleKo(getResources().getConfiguration())) {
+				if(bundle.getInt(Const.PARAM.MODE) == Const.ALARM_INTERFACE_CODE.ALARM_CANCEL){
+					alarmCancel(bundle.getLong(Const.PARAM.ALARM_ID, -1));
+					return;
+				}
+				/*else if(bundle.getInt(Const.PARAM.MODE) != Const.ALARM_INTERFACE_CODE.ALARM_POSTPONE_DIALOG && CommonUtils.isLocaleKo(getResources().getConfiguration())) {
 					fragment = new DashboardFragment();
 					tag = Const.FRAGMENT_TAG.DASHBOARD;
 					actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
-				}else{
+				}*/else{
 					fragment = new AlarmFragment();
 					tag = Const.FRAGMENT_TAG.ALARM;
 					actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
@@ -230,15 +242,15 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			}
 			fragment.setArguments(bundle);
 		}else {
-			if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
+			/*if(CommonUtils.isLocaleKo(getResources().getConfiguration())) {
 				fragment = new DashboardFragment();
 				tag = Const.FRAGMENT_TAG.DASHBOARD;
 				actionBar.setTitle(getResources().getString(R.string.nav_item_dashboard));
-			}else{
+			}else{*/
 				fragment = new AlarmFragment();
 				tag = Const.FRAGMENT_TAG.ALARM;
 				actionBar.setTitle(getResources().getString(R.string.nav_item_alaram));
-			}
+			//}
 		}
 
 		fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -256,6 +268,19 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		}
 
 		//showUpdateLog();
+	}
+
+	private void alarmCancel(long alarmId){
+		AlarmDataManager alarmDataManager = new AlarmDataManager(getApplicationContext());
+		if(alarmId == -1)
+			return;
+
+		final AlarmVO alarmVO = alarmDataManager.getItemByIdInDB(alarmId);
+		alarmVO.setUseYn(0);
+		alarmDataManager.modifyUseYn(alarmVO);
+		Toast.makeText(getApplicationContext(), getString(R.string.success), Toast.LENGTH_LONG).show();
+		alarmDataManager.resetMinAlarmCall();
+		finish();
 	}
 
 	private void afterUpdateVersion(){
@@ -276,6 +301,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		} catch (PackageManager.NameNotFoundException e) {
 
 		}
+
+
 
 		Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "versionName = " + versionName + " , prefsSavedVersion= " + prefsSavedVersion);
 
@@ -350,10 +377,9 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 			File rootDir = new File(getApplicationContext().getFilesDir(), Environment.DIRECTORY_RINGTONES);
 			if(!rootDir.isDirectory())
 				rootDir.mkdirs();
-
 			//업그레이드시
 			if(!prefsSavedVersion.equals("0")){
-				showUpdateLog();
+				//showUpdateLog();
 				if(prefsSavedVersionCode < 25) {
 					putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);
 					FileDataManager fdm = new FileDataManager(getApplicationContext());
@@ -373,7 +399,32 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		}
 
 	}
+	@TargetApi(26)
+	private void createChannel(String title, String desc) {
+		NotificationManager notifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+		if(notifyManager.getNotificationChannel(title) != null){
+			//return;
+		}
+		String name = title;
+		String description = desc;
 
+		int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+		NotificationChannel mChannel = new NotificationChannel(name, name, importance);
+		mChannel.setDescription(description);
+		mChannel.enableLights(true);
+		mChannel.setLightColor(Color.BLUE);
+		mChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+
+		if(title.equals(Const.CHANNEL.SILENT_ID)){
+			mChannel.setSound(null, null);
+			mChannel.enableLights(false);
+			mChannel.enableVibration(false);
+			mChannel.enableLights(false);
+		}
+
+		notifyManager.createNotificationChannel(mChannel);
+	}
 	private void playTTSActivity(){
 		Log.d(this.toString(), "playTTSActivity");
 		//setPrefs.edit().putBoolean("TTS_TEST", false).commit();
@@ -421,16 +472,11 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		});
 		String msg;
 		if(CommonUtils.isLocaleKo(getResources().getConfiguration())){
-			msg = "한동안 바빠서 업데이트가 늦어졌습니다.\n" +
-					"이번 업데이트를 통해 월간 달력 위젯 기능을 추가했습니다.\n";
-
+			msg = "안드로이드 오레오 버젼에서 신규 다운로드한 경우 상태바에 알림이 보이지 않던 버그를 수정했습니다.";
 		}
 		else {
 			msg = "" +
-					"I was busy for a while and the update was delayed.\n" +
-
-					"With this update, we added the monthly calendar widget function.";
-
+					"Fixed a bug where the status bar did not show a notification when a new download was made from the Android Oreo version." ;
 		}
 		alert.setMessage(msg);
 		alert.show();
@@ -546,11 +592,11 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		String tag = "";
 		//int id = item.getItemId();
 		switch (id) {
-			case R.id.nav_item_dashboard:
+			/*case R.id.nav_item_dashboard:
 				fragment = new DashboardFragment();
 				tag = Const.FRAGMENT_TAG.DASHBOARD;
 				//pushActionBarInfo(R.string.nav_item_dashboard, false);
-				break;
+				break;*/
 			case R.id.nav_item_alaram:
 				fragment = new AlarmFragment();
 				tag = Const.FRAGMENT_TAG.ALARM;

@@ -80,15 +80,13 @@ public class NotificationService extends Service{
 		intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, -1, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this);
+		NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this, Const.CHANNEL.NOTI_ID);
 
 		mCompatBuilder.setSmallIcon(R.drawable.ic_stat_noti);
 		mCompatBuilder.setTicker("Habit Todo");
 		mCompatBuilder.setWhen(System.currentTimeMillis());
 		mCompatBuilder.setContentTitle(noti_title);
-		//mCompatBuilder.setContentTitle(noti_title);
 
-		//mCompatBuilder.setContentText(noti_message);
 		if(isAlarmNoti) {
 			if(alarmOption != Const.ALARM_OPTION_TO_SOUND.VIBRATION)
 				mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND);
@@ -129,8 +127,6 @@ public class NotificationService extends Service{
 			mCompatBuilder.addAction(R.drawable.ic_add_alert_black_24dp, getString(R.string.service_noti_postpone), pendingIntentAlarm);
 		}
 		//mCompatBuilder.setCustomContentView(remoteView);
-
-
 		//NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.mipmap.ic_launcher, "연장하기", pendingIntentAlarm).build();
 		//mCompatBuilder.addAction(action);
 

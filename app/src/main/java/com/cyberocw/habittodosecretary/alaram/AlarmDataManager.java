@@ -418,6 +418,7 @@ public class AlarmDataManager {
 		return true;
 	}
 
+	//별도 후처리 안함
 	public boolean modifyUseYn(AlarmVO item){
 		Log.d(this.toString(), "modifyUseYn start item.getAlarmDateType()=" + item.getAlarmReminderType());
 		boolean result = mDb.modifyUse(item);
@@ -506,11 +507,8 @@ public class AlarmDataManager {
 			alarmTimeList.addAll(alarmTimeList2);
 		}
 
-		//SharedPreferences prefsSetting = mCtx.getSharedPreferences(Const.SETTING.PREFS_ID, Context.MODE_PRIVATE);
-
 		//새로 등록
 		if(alarmTimeList == null || alarmTimeList.size() == 0) {
-			//Toast.makeText(mCtx, mCtx.getString(R.string.dashboard_no_alarm), Toast.LENGTH_SHORT).show();
 			return;
 		}
 
@@ -530,7 +528,6 @@ public class AlarmDataManager {
 
 			CommonUtils.putLogPreference(mCtx, aa);
 			Crashlytics.log(Log.DEBUG, this.toString(), aa);
-			//Toast.makeText(mCtx, aa, Toast.LENGTH_SHORT).show();
 		}
 
 		String newReqCode = TextUtils.join("," , arrReq);
@@ -587,11 +584,11 @@ public class AlarmDataManager {
 		Random mRand = new Random();
 		int rand = mRand.nextInt(10000);
 
-		int BACKGROUND_LIMIT_TIME = 1;
+		int backgroundLimitTime = Const.ALARM_DEFAULT_OPTION.BACKGROUND_LIMIT_TIME;
 		int EXACT_LIMIT_TIME = 15;
 		if(mSdkVersion < Build.VERSION_CODES.M && mSdkVersion >= Build.VERSION_CODES.KITKAT) {
-			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "BACKGROUND_LIMIT_TIME = 5");
-			BACKGROUND_LIMIT_TIME = 5;
+			Crashlytics.log(Log.DEBUG, Const.DEBUG_TAG, "backgroundLimitTime = 5");
+			backgroundLimitTime = Const.ALARM_DEFAULT_OPTION.BACKGROUND_LIMIT_TIME_OLD;
 		}
 
 		Calendar ccc = Calendar.getInstance();
@@ -610,20 +607,22 @@ public class AlarmDataManager {
 		ccc.set(Calendar.MILLISECOND, 0);
 
 		alarmTimeVO.setReqCode(reqCode);
-		// ----------------------- Doze 모드 때문에 제공되는 API만 사용
-		ccc.add(Calendar.MINUTE, -1 * BACKGROUND_LIMIT_TIME);
-		//1분 혹은 lollipop 5분 초 이내일 경우 service 돌림
+
+		//1분 혹은 lollipop 5분 초 이내일 경우 AlarmBackgroudService 돌림
+		ccc.add(Calendar.MINUTE, -1 * backgroundLimitTime);
 		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			Intent myIntent = new Intent(mCtx, AlarmBackgroudService.class);
-
 			myIntent.putExtra(Const.PARAM.ALARM_TIME_VO, alarmTimeVO);
 
 			Crashlytics.log(Log.DEBUG, this.getClass().toString(), "timer background start service alarmVO id=" + alarmTimeVO.getId() + " title =" + alarmTimeVO.getAlarmTitle());
-			mCtx.startService(myIntent);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				mCtx.startForegroundService(myIntent);
+			} else {
+				mCtx.startService(myIntent);
+			}
 			return reqCode;
 		}
-
-		//15분 이상일 경우 setTime 시킴
+		//5분 이상일 경우 setTime 시킴
 		AlarmManager alarmDataManager = (AlarmManager) mCtx.getSystemService(Context.ALARM_SERVICE);
 		Intent myIntent = new Intent(mCtx, AlarmReceiver.class);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -645,21 +644,21 @@ public class AlarmDataManager {
 		}
 
 		//총 -15분 만들어줌
-		ccc.add(Calendar.MINUTE, -1 * (EXACT_LIMIT_TIME - BACKGROUND_LIMIT_TIME));
+		ccc.add(Calendar.MINUTE, -1 * (EXACT_LIMIT_TIME - backgroundLimitTime));
 		boolean isSetAlarmClock = false;
 
 		//Log.d(this.toString(), " calendar diff ccc=" +CommonUtils.convertFullDateType(ccc) + "  now = " + CommonUtils.convertFullDateType(nowCal));
 
 		ccc.set(Calendar.SECOND, 1);
-		//15분 이내일 경우 setAlarmClock으로 원래 알람의 1분 전(BACKGROUND_LIMIT_TIME) 울리도록 함
+		//15분 이내 알람일 경우 setAlarmClock으로 원래 알람의 backgroundLimitTime 분 전(backgroundLimitTime) 울리도록 함
 		if(ccc.getTimeInMillis() <= nowCal.getTimeInMillis()){
 			isSetAlarmClock = true;
-			ccc.add(Calendar.MINUTE, (EXACT_LIMIT_TIME - BACKGROUND_LIMIT_TIME));
+			ccc.add(Calendar.MINUTE, (EXACT_LIMIT_TIME - backgroundLimitTime));
 			if(mSdkVersion >= Build.VERSION_CODES.M) {
-				ccc.set(Calendar.SECOND, 45);
+				ccc.set(Calendar.SECOND, 0);
 			}
 		}else{
-			//그냥 -14분 전에 울리도록
+			//원래 알람의 -14분 전에 울리도록
 			ccc.add(Calendar.MINUTE, 1);
 			//ccc.add(Calendar.SECOND, 55);
 		}
@@ -731,7 +730,12 @@ public class AlarmDataManager {
 		Intent myIntent;
 		myIntent = new Intent(mCtx, ReminderService.class);
 		myIntent.putExtra(Const.PARAM.MODE, "RESET");
-		mCtx.startService(myIntent);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			mCtx.startForegroundService(myIntent);
+		}
+		else{
+			mCtx.startService(myIntent);
+		}
 
 		List<AlarmTimeVO> list = mDb.getReminderRunningList();
 		AlarmTimeVO vo;
@@ -747,7 +751,12 @@ public class AlarmDataManager {
 			myIntent.putExtra(Const.PARAM.REPEAT_DAY_ID, vo.getRepeatDayId());
 			myIntent.putExtra(Const.PARAM.MODE, "REFRESH");
 
-			mCtx.startService(myIntent);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				mCtx.startForegroundService(myIntent);
+			}
+			else{
+				mCtx.startService(myIntent);
+			}
 		}
 	}
 

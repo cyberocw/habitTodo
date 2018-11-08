@@ -206,4 +206,6 @@
     <string name="vibration">Vibration</string>
     <string name="contact">Contact to developer</string>
     <string name="widget_repeat">repeat</string>
+    <string name="alarm_noti_cancel">disable alarm</string>
+    <string name="alarm_noti_cancel_success">disabled alarm</string>
 </resources>

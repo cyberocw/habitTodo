@@ -57,12 +57,14 @@ public class Const {
 		public static final int ADD_ALARM_MODIFY_FINISH_CODE = 113;
 
 		public static final int ALARM_POSTPONE_DIALOG = 114;
+		public static final int ALARM_CANCEL = 115;
 
 		public static final int ADD_TIMER_CODE = 221;
 		public static final int ADD_TIMER_FINISH_CODE = 222;
 		public static final int ADD_TIMER_MODIFY_FINISH_CODE = 223;
 
 		public static final int SELECT_CALENDAR_DATE = 224;
+
 
 	}
 
@@ -124,6 +126,11 @@ public class Const {
 		public static Integer[] getTextList(){
 			return arrDayNameCode;
 		}
+	}
+
+	public class ALARM_DEFAULT_OPTION{
+		public static final int BACKGROUND_LIMIT_TIME = 3;
+		public static final int BACKGROUND_LIMIT_TIME_OLD = 5;
 	}
 
 	public class ALARM_OPTION{
@@ -268,4 +275,11 @@ public class Const {
 	public static String MIME_TYPE_VIDEO = "video/mp4";
 	public static String MIME_TYPE_SKETCH = "image/png";
 	public static String MIME_TYPE_FILES = "file/*";
+
+	public class CHANNEL{
+		public static final String SILENT_ID = "SILENT";
+		public static final String REMINDER_ID = "REMINDER";
+		public static final String NOTI_ID = "NOTI";
+		public static final String TIMER_ID = "TIMER";
+	}
 }

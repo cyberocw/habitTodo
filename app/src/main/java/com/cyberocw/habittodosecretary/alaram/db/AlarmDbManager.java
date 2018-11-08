@@ -183,6 +183,7 @@ public class AlarmDbManager extends DbHelper{
 		String selectQuery =
 				"SELECT B." + KEY_ID + ", A." + KEY_TIME_STAMP + ", A." + KEY_CALL_TIME + ", B." + KEY_ALARM_TITLE + ", A." + KEY_F_ALARM_ID +
 						", B." + KEY_ALARM_TYPE + ", B." + KEY_ALARM_OPTION + ", B." + KEY_TYPE + ", B." + KEY_ALARM_CALL_TYPE + ", B." + KEY_ALARM_REMINDER_TYPE +
+						", B." + KEY_ALARM_DATE_TYPE +
 						" FROM " + TABLE_ALARM_ORDER +" AS A INNER JOIN " + TABLE_ALARM + " AS B ON " +
 						" A." + KEY_F_ALARM_ID + " = B." + KEY_ID + " WHERE  B." + KEY_USE_YN + " = 1 AND A." + KEY_TIME_STAMP + " = " +
 						" (SELECT MIN(" + KEY_TIME_STAMP + " ) FROM " + TABLE_ALARM_ORDER + " AS C INNER JOIN " + TABLE_ALARM +
@@ -209,6 +210,7 @@ public class AlarmDbManager extends DbHelper{
 					vo.setfId(c.getLong(c.getColumnIndex(KEY_F_ALARM_ID)));
 					vo.setAlarmType(c.getInt(c.getColumnIndex(KEY_ALARM_TYPE)));
 					vo.setAlarmOption(c.getInt(c.getColumnIndex(KEY_ALARM_OPTION)));
+					vo.setAlarmDateType(c.getInt(c.getColumnIndex(KEY_ALARM_DATE_TYPE)));
 					vo.setEtcType(c.getString(c.getColumnIndex(KEY_TYPE)));
 					vo.setAlarmCallType(c.getInt(c.getColumnIndex(KEY_ALARM_CALL_TYPE)));
 					vo.setAlarmReminderType(c.getInt(c.getColumnIndex(KEY_ALARM_REMINDER_TYPE)));
