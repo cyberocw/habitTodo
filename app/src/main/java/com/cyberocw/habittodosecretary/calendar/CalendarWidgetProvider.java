@@ -313,8 +313,8 @@ public class CalendarWidgetProvider extends AppWidgetProvider{
             one.setDay(cal);
             one.setHolidayList(holidayMap.get(dayString));
             one.setAlarmList(alarmMap.get(dayString));
-            one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
-            one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));
+            /*one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
+            one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));*/
 
             if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
                 one.setIsSelDay(true);
@@ -340,8 +340,8 @@ public class CalendarWidgetProvider extends AppWidgetProvider{
             one.setDay(cal);
             one.setHolidayList(holidayMap.get(dayString));
             one.setAlarmList(alarmMap.get(dayString));
-            one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
-            one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));
+            /*one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
+            one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));*/
 
             if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
                 one.setIsSelDay(true);
@@ -366,8 +366,8 @@ public class CalendarWidgetProvider extends AppWidgetProvider{
                 one.setDay(cal);
                 one.setHolidayList(holidayMap.get(dayString));
                 one.setAlarmList(alarmMap.get(dayString));
-                one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
-                one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));
+                /*one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
+                one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));*/
 
                 if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
                     one.setIsSelDay(true);
@@ -425,18 +425,20 @@ public class CalendarWidgetProvider extends AppWidgetProvider{
             for (int i = 0; i < holidayList.size(); i++) {
                 holiday += holidayList.get(i).getName() + "\n";
             }
+/*
 
             if(one.get(Calendar.DAY_OF_WEEK) == 1 || one.get(Calendar.DAY_OF_WEEK) == 7)
                 view.setTextViewText(R.id.tvRepeatCnt, String.valueOf(one.getRepeatCount()));
             else
                 view.setTextViewText(R.id.tvRepeatCnt, String.valueOf(one.getRepeatHolidayCount()));
+*/
 
             view.setTextViewText(R.id.onday_msgTv, holiday);
         }else {
             //view.setTextColor(R.id.onday_dayTv, defaultColor);
             //msgTv.setVisibility(GONE);
             view.setTextViewText(R.id.onday_msgTv, "");
-            view.setTextViewText(R.id.tvRepeatCnt, String.valueOf(one.getRepeatCount()));
+//            view.setTextViewText(R.id.tvRepeatCnt, String.valueOf(one.getRepeatCount()));
             //tvRepeatCnt.setText(String.valueOf(one.getRepeatCount()));
         }
 

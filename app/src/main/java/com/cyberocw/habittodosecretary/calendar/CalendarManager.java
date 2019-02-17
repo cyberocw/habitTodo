@@ -87,7 +87,7 @@ public class CalendarManager {
 			initWeekDay();
 			renderDayNum();
 		}
-		makeRepeatHolidayInfo();
+		//makeRepeatHolidayInfo();
 	}
 
 	public void makeRepeatHolidayInfo(){

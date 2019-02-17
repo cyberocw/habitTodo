@@ -67,7 +67,7 @@ public class DayView extends RelativeLayout {
 
         dayTv = (TextView) v.findViewById(R.id.onday_dayTv);
         msgTv = (TextView) v.findViewById(R.id.onday_msgTv);
-        tvRepeatCnt = (TextView) v.findViewById(R.id.tvRepeatCnt);
+        //tvRepeatCnt = (TextView) v.findViewById(R.id.tvRepeatCnt);
         //tvAlarm = (TextView) v.findViewById(R.id.tvAlarm);
         alarmListWrap = (LinearLayout) v.findViewById(R.id.alarmListWrap);
         alarmListWrap.removeAllViews();
@@ -144,11 +144,11 @@ public class DayView extends RelativeLayout {
                 holiday += holidayList.get(i).getName() + "\n";
             }
 
-            if(one.get(Calendar.DAY_OF_WEEK) == 1 || one.get(Calendar.DAY_OF_WEEK) == 7)
+            /*if(one.get(Calendar.DAY_OF_WEEK) == 1 || one.get(Calendar.DAY_OF_WEEK) == 7)
                 tvRepeatCnt.setText(String.valueOf(one.getRepeatCount()));
             else
                 tvRepeatCnt.setText(String.valueOf(one.getRepeatHolidayCount()));
-
+*/
             msgTv.setVisibility(VISIBLE);
             msgTv.setText(holiday);
 
@@ -156,7 +156,7 @@ public class DayView extends RelativeLayout {
             dayTv.setTextColor(defaultColor);
             msgTv.setVisibility(GONE);
             msgTv.setText("");
-            tvRepeatCnt.setText(String.valueOf(one.getRepeatCount()));
+            //tvRepeatCnt.setText(String.valueOf(one.getRepeatCount()));
         }
 
         if(one.getIsSelDay()){

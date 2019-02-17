@@ -120,7 +120,8 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		}
 
 
-		MobileAds.initialize(this, "ca-app-pub-8072677228798230~8421474102"); // real
+		//MobileAds.initialize(this, "ca-app-pub-8072677228798230~8421474102"); // real
+		MobileAds.initialize(this, "ca-app-pub-5927217128374160~4682927760");
 		if(!CommonUtils.isLocaleKo(getResources().getConfiguration())) {
             MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.nav_item_keyword);
             if(menuItem != null)
@@ -266,8 +267,6 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				playTTSActivity();
 			}
 		}
-
-		//showUpdateLog();
 	}
 
 	private void alarmCancel(long alarmId){
@@ -379,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 				rootDir.mkdirs();
 			//업그레이드시
 			if(!prefsSavedVersion.equals("0")){
-				//showUpdateLog();
+				showUpdateLog();
 				if(prefsSavedVersionCode < 25) {
 					putAlarmPreference(Const.SETTING.IS_DISTURB_MODE, false);
 					FileDataManager fdm = new FileDataManager(getApplicationContext());
@@ -472,11 +471,11 @@ public class MainActivity extends AppCompatActivity implements AlarmFragment.OnF
 		});
 		String msg;
 		if(CommonUtils.isLocaleKo(getResources().getConfiguration())){
-			msg = "안드로이드 오레오 버젼에서 신규 다운로드한 경우 상태바에 알림이 보이지 않던 버그를 수정했습니다.";
+			msg = "속도 개선을 위해, 월간 달력에서 주간 반복일정 카운트 내용을 제거했습니다.";
 		}
 		else {
 			msg = "" +
-					"Fixed a bug where the status bar did not show a notification when a new download was made from the Android Oreo version." ;
+					"To improve speed, we removed weekly recurrence counts from the monthly calendar." ;
 		}
 		alert.setMessage(msg);
 		alert.show();

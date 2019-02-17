@@ -27,30 +27,30 @@
                 android:textSize="12sp"
 
                 />
+            <!--
+                        <TextView
+                            android:id="@+id/onday_moonTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
 
-            <TextView
-                android:id="@+id/onday_moonTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
+                            android:text="@string/widget_repeat"
+                            android:textColor="@color/btn_gray_font_color"
+                            android:textSize="7sp"
+                            android:visibility="visible" />
 
-                android:text="@string/widget_repeat"
-                android:textColor="@color/btn_gray_font_color"
-                android:textSize="7sp"
-                android:visibility="visible" />
-
-            <TextView
-                android:id="@+id/tvRepeatCnt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/onday_moonTv"
-                android:text="12"
-                android:textColor="@color/btn_gray_font_color"
-                android:textSize="7sp"
-                android:visibility="visible" />
+                           <TextView
+                            android:id="@+id/tvRepeatCnt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_below="@id/onday_moonTv"
+                            android:text="12"
+                            android:textColor="@color/btn_gray_font_color"
+                            android:textSize="7sp"
+                            android:visibility="visible" />-->
         </RelativeLayout>
         <TextView
             android:id="@+id/onday_msgTv"

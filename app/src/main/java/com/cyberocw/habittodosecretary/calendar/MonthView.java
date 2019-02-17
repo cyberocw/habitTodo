@@ -260,8 +260,8 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
             one.setDay(cal);
             one.setHolidayList(holidayMap.get(dayString));
             one.setAlarmList(alarmMap.get(dayString));
-            one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
-            one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));
+            /*one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
+            one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));*/
 
             if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
                 one.setIsSelDay(true);
@@ -287,8 +287,8 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
             one.setDay(cal);
             one.setHolidayList(holidayMap.get(dayString));
             one.setAlarmList(alarmMap.get(dayString));
-            one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
-            one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));
+            /*one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
+            one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));*/
 
             if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
                 one.setIsSelDay(true);
@@ -313,8 +313,8 @@ public class MonthView extends LinearLayout implements View.OnClickListener{
                 one.setDay(cal);
                 one.setHolidayList(holidayMap.get(dayString));
                 one.setAlarmList(alarmMap.get(dayString));
-                one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
-                one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));
+                /*one.setRepeatHolidayCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), true));
+                one.setRepeatCount(mCalendarManager.getRepeatHolidayCnt(cal.get(Calendar.DAY_OF_WEEK), false));*/
 
                 if(selectedDayNum == cal.get(Calendar.DAY_OF_MONTH) && strSelDay.equals(dayString)){
                     one.setIsSelDay(true);

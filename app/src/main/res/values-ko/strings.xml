@@ -42,10 +42,9 @@
     <!-- test ad -->
     <!--string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string-->
     <!-- real ad -->
-    <string name="banner_ad_unit_id">ca-app-pub-8072677228798230/9898207305</string>
-    <string name="banner_ad_unit_id_front">ca-app-pub-8072677228798230/2762328471</string>
+    <string name="banner_ad_unit_id">ca-app-pub-5927217128374160/7155626980</string>
     <string name="banner_ad_unit_id_webview">ca-app-pub-8072677228798230/1453912904</string>
-    <string name="banner_ad_unit_id_alarm_noti">ca-app-pub-8072677228798230/7025967221</string>
+    <string name="banner_ad_unit_id_alarm_noti">ca-app-pub-5927217128374160/9411799825</string>
     <string name="alarm_sort_type_time">시간순</string>
     <string name="alarm_sort_type">종류별</string>
     <string name="alarm_date_today">오늘</string>

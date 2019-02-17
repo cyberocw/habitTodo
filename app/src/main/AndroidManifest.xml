@@ -96,7 +96,12 @@
         </provider>
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="93d0706282144a1eb8ba6454ab25046d770d30aa" />
+            android:value="93d0706282144a1eb8ba6454ab25046d770d30aa"
+            />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-5927217128374160~4682927760"
+            />
 
     </application>
 
